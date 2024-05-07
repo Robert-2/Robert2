@@ -29,10 +29,6 @@
         border-bottom-left-radius: 0;
     }
 
-    &__action-button {
-        width: 100%;
-    }
-
     //
     // - Menu
     //
@@ -42,9 +38,12 @@
         z-index: 1;
         top: 100%;
         right: 0;
+        display: flex;
+        flex-direction: column;
         margin: 2px 0 0;
         padding: 0;
-        background: globals.$bg-color-dropdown;
+        background: globals.$dropdown-background-color;
+        gap: 2px;
         box-shadow: 0 4px 9px #1b1b1b;
         transform-origin: 50% 0%;
         transform: scaleY(0);
@@ -53,13 +52,26 @@
 
         &__item {
             flex: 0 0 auto;
+            display: flex;
             margin: 0;
             white-space: nowrap;
             list-style: none;
+        }
+    }
 
-            & + & {
-                margin-top: 2px;
-            }
+    &__action-button {
+        flex: 1;
+
+        &--primary {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &--secondary {
+            flex: 0 0 auto;
+            border-left: 1px solid globals.$divider-color;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
         }
     }
 

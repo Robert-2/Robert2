@@ -1,0 +1,101 @@
+@use 'sass:color';
+@use '~@/themes/default/style/globals';
+
+.DatePicker {
+    display: inline-block;
+    width: 100%;
+
+    &__input {
+        width: 100%;
+    }
+
+    &__full-days {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.95rem;
+        gap: globals.$spacing-thin;
+    }
+
+    &__toggle-mode {
+        width: 100%;
+    }
+
+    &__snippets {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        height: 100%;
+        min-height: 0;
+        gap: globals.$spacing-medium;
+
+        &__group {
+            @extend %reset-dl;
+
+            display: flex;
+            flex-direction: column;
+
+            & + & {
+                padding-top: globals.$spacing-medium;
+                border-top: 1px solid #525252;
+            }
+        }
+    }
+
+    &__snippet {
+        $sub-block: &;
+
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 5px 10px;
+        border-radius: globals.$border-radius-normal;
+        cursor: pointer;
+        gap: 0 globals.$spacing-medium;
+
+        &__label {
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        &__value {
+            @extend %reset-dd;
+
+            color: globals.$text-soft-color;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        &:hover {
+            background: rgba(globals.$primary-color, 0.5);
+
+            #{$sub-block}__value {
+                color: color.adjust(globals.$primary-color, $lightness: 30%, $saturation: -80%);
+            }
+        }
+
+        &--active {
+            &,
+            &:hover {
+                background: rgba(globals.$primary-color, 0.2);
+                color: color.adjust(globals.$primary-color, $lightness: 45%);
+                font-weight: 500;
+
+                #{$sub-block}__value {
+                    color: color.adjust(globals.$primary-color, $lightness: 45%, $alpha: -0.4);
+                }
+            }
+        }
+    }
+
+    //
+    // - Statut: Invalide
+    //
+
+    &--invalid {
+        .mx-input:not(:focus) {
+            border-color: globals.$input-error-border-color;
+            background-color: globals.$input-error-background-color;
+            color: globals.$input-error-text-color;
+        }
+    }
+}

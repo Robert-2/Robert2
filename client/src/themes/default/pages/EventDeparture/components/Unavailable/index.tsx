@@ -1,9 +1,10 @@
 import { defineComponent } from '@vue/composition-api';
+import { DateTimeReadableFormat } from '@/utils/datetime';
 import StateMessage, { State } from '@/themes/default/components/StateMessage';
 
-import type { Moment } from 'moment';
+import type DateTime from '@/utils/datetime';
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 import type { Action } from '@/themes/default/components/StateMessage';
 
 export enum UnavailabilityReason {
@@ -24,7 +25,7 @@ const REASONS_STATE = {
 
 type Props = {
     /** L'événement concerné par l'inventaire de départ. */
-    event: Event,
+    event: EventDetails,
 
     /**
      * La raison pour laquelle l'inventaire de départ est indisponible.
@@ -37,7 +38,7 @@ type Props = {
      * Un objet contenant des éventuelles variable à
      * utiliser dans le message lié à la raison.
      */
-    variables?: Record<string, any>,
+    variables?: AnyLiteralObject,
 };
 
 const EventDepartureUnavailable = defineComponent({
@@ -96,10 +97,9 @@ const EventDepartureUnavailable = defineComponent({
             }
             if (reason === UnavailabilityReason.TOO_SOON) {
                 if (variables.inventoryPeriodStart) {
-                    const date: Moment = variables.inventoryPeriodStart;
+                    const date: DateTime = variables.inventoryPeriodStart;
                     return __('unavailabilities.inventory-period-not-started-details', {
-                        date: date.format('L'),
-                        time: date.format('LT'),
+                        date: date.toReadable(DateTimeReadableFormat.MEDIUM),
                     });
                 }
                 return __('unavailabilities.inventory-period-not-started');
@@ -128,8 +128,8 @@ const EventDepartureUnavailable = defineComponent({
             return {
                 type: 'primary',
                 icon: 'arrow-left',
-                target: { name: 'calendar' },
-                label: __('global.back-to-calendar'),
+                target: { name: 'schedule' },
+                label: __('global.back-to-schedule'),
             };
         };
 

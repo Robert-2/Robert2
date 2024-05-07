@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class AllowEmptyRentalPrice extends AbstractMigration
 {
@@ -22,8 +24,10 @@ final class AllowEmptyRentalPrice extends AbstractMigration
     public function down(): void
     {
         $prefix = Config::get('db.prefix');
-        $builder = $this->getQueryBuilder();
-        $builder
+
+        /** @var UpdateQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+        $qb
             ->update(sprintf('%smaterials', $prefix))
             ->set('rental_price', 0.0)
             ->where(['rental_price IS' => null])

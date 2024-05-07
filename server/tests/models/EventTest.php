@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace Loxya\Tests;
 
 use Illuminate\Support\Carbon;
-use Loxya\Errors\Exception\ConflictException;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Attribute;
 use Loxya\Models\Event;
-use Loxya\Models\Technician;
 use Loxya\Models\User;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
@@ -17,42 +15,6 @@ use Loxya\Support\Period;
 
 final class EventTest extends TestCase
 {
-    public function testGetAll(): void
-    {
-        Carbon::setTestNow(Carbon::create(2020, 06, 15, 12, 0, 0));
-
-        // - La méthode `getAll` ne doit retourner que les événements dans l'année courante.
-        $expected = [
-            [
-                'id' => 5,
-                'title' => "Kermesse de l'école des trois cailloux",
-                'description' => null,
-                'reference' => null,
-                'start_date' => '2020-01-01 00:00:00',
-                'end_date' => '2020-01-01 23:59:59',
-                'color' => null,
-                'is_confirmed' => false,
-                'is_archived' => false,
-                'location' => "Saint-Jean-la-Forêt",
-                'is_billable' => false,
-                'is_departure_inventory_done' => false,
-                'departure_inventory_author_id' => null,
-                'departure_inventory_datetime' => null,
-                'is_return_inventory_done' => false,
-                'return_inventory_author_id' => null,
-                'return_inventory_datetime' => null,
-                'created_at' => '2019-12-25 14:59:40',
-                'note' => null,
-                'author_id' => 1,
-                'preparer_id' => null,
-                'updated_at' => null,
-                'deleted_at' => null,
-            ],
-        ];
-        $results = (new Event)->getAll()->get()->toArray();
-        $this->assertEquals($expected, $results);
-    }
-
     public function testInPeriodScope(): void
     {
         // - Récupère les événements de 2018
@@ -63,18 +25,21 @@ final class EventTest extends TestCase
                 'title' => "Avant-premier événement",
                 'description' => null,
                 'reference' => null,
-                'start_date' => "2018-12-15 00:00:00",
-                'end_date' => "2018-12-16 23:59:59",
+                'mobilization_start_date' => '2018-12-15 08:30:00',
+                'mobilization_end_date' => '2018-12-16 15:45:00',
+                'operation_start_date' => '2018-12-15 09:00:00',
+                'operation_end_date' => '2018-12-17 00:00:00',
+                'operation_is_full_days' => false,
                 'color' => null,
                 'is_confirmed' => false,
                 'is_archived' => true,
                 'location' => "Brousse",
                 'is_billable' => false,
                 'is_departure_inventory_done' => true,
-                'departure_inventory_datetime' => '2018-12-15 01:00:00',
+                'departure_inventory_datetime' => '2018-12-15 08:17:00',
                 'departure_inventory_author_id' => 1,
                 'is_return_inventory_done' => true,
-                'return_inventory_datetime' => '2018-12-16 23:59:59',
+                'return_inventory_datetime' => '2018-12-16 15:42:00',
                 'return_inventory_author_id' => 1,
                 'note' => null,
                 'author_id' => 1,
@@ -88,8 +53,11 @@ final class EventTest extends TestCase
                 'title' => "Premier événement",
                 'description' => null,
                 'reference' => null,
-                'start_date' => "2018-12-17 00:00:00",
-                'end_date' => "2018-12-18 23:59:59",
+                'mobilization_start_date' => '2018-12-16 15:45:00',
+                'mobilization_end_date' => '2018-12-19 00:00:00',
+                'operation_start_date' => '2018-12-17 10:00:00',
+                'operation_end_date' => '2018-12-18 18:00:00',
+                'operation_is_full_days' => false,
                 'color' => null,
                 'is_confirmed' => false,
                 'is_archived' => false,
@@ -113,8 +81,11 @@ final class EventTest extends TestCase
                 'title' => "Second événement",
                 'description' => null,
                 'reference' => null,
-                'start_date' => "2018-12-18 00:00:00",
-                'end_date' => "2018-12-19 23:59:59",
+                'mobilization_start_date' => '2018-12-18 00:00:00',
+                'mobilization_end_date' => '2018-12-20 00:00:00',
+                'operation_start_date' => '2018-12-18 00:00:00',
+                'operation_end_date' => '2018-12-20 00:00:00',
+                'operation_is_full_days' => true,
                 'color' => '#ffba49',
                 'is_confirmed' => false,
                 'is_archived' => false,
@@ -148,7 +119,12 @@ final class EventTest extends TestCase
         $this->assertEquals(3, $results[0]->id);
 
         // - Doit accepter les formats relatifs.
-        $results = Event::inPeriod('first day of December 2018', 'third sat of December 2018')->get();
+        $results = Event::query()
+            ->inPeriod(
+                'first day of December 2018', // -> `2018-12-01`
+                'third sun of December 2018', // -> `2018-12-16`
+            )
+            ->get();
         $this->assertCount(1, $results);
         $this->assertEquals(3, $results[0]->id);
     }
@@ -162,6 +138,17 @@ final class EventTest extends TestCase
                 ['id' => 3, 'title' => 'Avant-premier événement'],
             ],
             Event::search('premier')
+                ->select(['id', 'title'])
+                ->get()->toArray(),
+        );
+
+        // - Retourne les événements qui ont un bénéficiaire dont le nom contient "tain".
+        $this->assertSame(
+            [
+                ['id' => 1, 'title' => 'Premier événement'],
+                ['id' => 5, 'title' => "Kermesse de l'école des trois cailloux"],
+            ],
+            Event::search('tain')
                 ->select(['id', 'title'])
                 ->get()->toArray(),
         );
@@ -192,46 +179,66 @@ final class EventTest extends TestCase
 
     public function testHasMissingMaterials(): void
     {
-        // - L'événement #4 contient des pénuries.
-        $result = Event::find(1)
-            ->fill(['end_date' => (new \Datetime('tomorrow'))->format('Y-m-d H:i:s')])
-            ->setAppends(['has_missing_materials']);
-        $this->assertSame(true, $result->hasMissingMaterials);
+        Carbon::setTestNow(Carbon::create(2024, 2, 26, 13, 40, 0));
+
+        // - L'événement #1 contient des pénuries.
+        $event = tap(Event::findOrFail(1), static function (Event $event) {
+            $event->is_return_inventory_done = false;
+            $event->return_inventory_datetime = null;
+            $event->return_inventory_author_id = null;
+            $event->mobilization_end_date = '2024-02-26 13:30:00';
+            $event->save();
+            $event->refresh();
+        });
+        $this->assertTrue($event->has_missing_materials);
 
         // - L'événement #3 est archivé, pas de calcul des pénuries.
-        $result = Event::find(3)
-            ->fill([
-                'start_date' => (new \Datetime)->format('Y-m-d H:i:s'),
-                'end_date' => (new \Datetime('tomorrow'))->format('Y-m-d H:i:s'),
-            ])
-            ->setAppends(['has_missing_materials']);
-        $this->assertSame(null, $result->hasMissingMaterials);
+        $event = tap(Event::findOrFail(3), static function (Event $event) {
+            // - On met à jour les dates (en annulant l'archivage + inventaire de retour)
+            $event->is_archived = false;
+            $event->is_departure_inventory_done = false;
+            $event->departure_inventory_datetime = null;
+            $event->departure_inventory_author_id = null;
+            $event->is_return_inventory_done = false;
+            $event->return_inventory_datetime = null;
+            $event->return_inventory_author_id = null;
+            $event->mobilization_period = new Period('2024-02-25 13:30:00', '2024-02-26 13:30:00', false);
+            $event->operation_period = new Period('2024-02-26', '2024-02-26', true);
+            $event->save();
+
+            // - Puis on ré-active l'inventaire de retour + on ré-archive ...
+            $event->is_archived = true;
+            $event->is_departure_inventory_done = true;
+            $event->departure_inventory_datetime = '2024-02-25 13:30:00';
+            $event->is_return_inventory_done = true;
+            $event->return_inventory_datetime = '2024-02-26 13:30:00';
+            $event->save();
+            $event->refresh();
+        });
+        $this->assertNull($event->has_missing_materials);
 
         // - L'événement #3 lorsqu'il est désarchivé, ne contient pas de pénurie.
-        $event = tap(Event::find(3), function (Event $event) {
+        $event = tap(Event::findOrFail(3), static function (Event $event) {
             $event->is_archived = false;
-            $event->fill([
-                'start_date' => (new \Datetime)->format('Y-m-d H:i:s'),
-                'end_date' => (new \Datetime('tomorrow'))->format('Y-m-d H:i:s'),
-            ]);
+            $event->is_return_inventory_done = false;
+            $event->return_inventory_datetime = null;
+            $event->return_inventory_author_id = null;
+            $event->save();
+            $event->refresh();
         });
-        $result = $event->setAppends(['has_missing_materials']);
-        $this->assertSame(false, $result->hasMissingMaterials);
+        $this->assertFalse($event->has_missing_materials);
     }
 
     public function testHasNotReturnedMaterials(): void
     {
         // - Event #1 does not have material not returned
-        $result = Event::find(1)->setAppends(['has_not_returned_materials']);
-        $this->assertSame(false, $result->hasNotReturnedMaterials);
+        $this->assertFalse(Event::findOrFail(1)->has_not_returned_materials);
 
-        // - Event #2 have some materials not returned
-        $result = Event::find(2)->setAppends(['has_not_returned_materials']);
-        $this->assertSame(true, $result->hasNotReturnedMaterials);
+        // - Event #2 have some materials not returned.
+        $this->assertTrue(Event::findOrFail(2)->has_not_returned_materials);
 
         // - L'événement #3 est archivé, pas de calcul du matériel non retourné.
-        $result = Event::find(3)->setAppends(['has_not_returned_materials']);
-        $this->assertSame(null, $result->hasNotReturnedMaterials);
+        $this->assertNull(Event::findOrFail(3)->has_not_returned_materials);
     }
 
     public function testTotalWithoutDiscount(): void
@@ -270,33 +277,44 @@ final class EventTest extends TestCase
     {
         $data = [
             'title' => "Test dates validation",
-            'start_date' => '2020-03-01 00:00:00',
+            'mobilization_period' => new Period('2020-02-27 14:30:00', '2020-03-06 10:00:00'),
+            'operation_period' => new Period('2020-03-01', '2020-03-04', false),
             'is_confirmed' => false,
             'author_id' => 1,
         ];
 
-        // - Validation pass: dates are OK
-        $testData = array_merge(
-            $data,
-            ['end_date' => '2020-03-03 23:59:59']
-        );
-        (new Event($testData))->validate();
+        // - Pas de soucis au niveau des dates.
+        $this->assertTrue((new Event($data))->isValid());
 
-        // - Validation fail: end date is after start date
-        $this->expectException(ValidationException::class);
-        $testData = array_merge(
-            $data,
-            ['end_date' => '2020-02-20 23:59:59']
-        );
-        (new Event($testData))->validate();
+        // - Erreur: La date de fin est avant la date de début.
+        $testData = array_merge($data, [
+            'mobilization_period' => new Period('2020-03-01 00:00:00', '2020-03-05 00:00:00', false),
+            'operation_start_date' => '2020-03-01 00:00:00',
+            'operation_end_date' => '2020-02-21 00:00:00',
+            'operation_is_full_days' => false,
+        ]);
+        $expectedErrors = [
+            'operation_end_date' => ['La date de fin doit être postérieure à la date de début.'],
+        ];
+        $this->assertSameCanonicalize($expectedErrors, (new Event($testData))->validationErrors());
+
+        // - Erreur: Les dates de mobilisation ne sont pas arrondies au quart d'heure près.
+        $testData = array_merge($data, [
+            'mobilization_period' => new Period('2020-02-27 14:12:00', '2020-03-06 10:02:30'),
+        ]);
+        $expectedErrors = [
+            'mobilization_end_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
+            'mobilization_start_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
+        ];
+        $this->assertSameCanonicalize($expectedErrors, (new Event($testData))->validationErrors());
     }
 
     public function testValidateIsArchived(): void
     {
         $baseData = [
             'title' => "Test is_archived validation",
-            'start_date' => '2020-03-01 00:00:00',
-            'end_date' => '2020-03-03 23:59:59',
+            'operation_period' => new Period('2020-03-01', '2020-03-03', true),
+            'mobilization_period' => new Period('2020-03-01', '2020-03-03', true),
             'is_confirmed' => false,
             'author_id' => 1,
         ];
@@ -328,8 +346,8 @@ final class EventTest extends TestCase
 
         $event = new Event([
             'title' => "Test is_archive validation failure",
-            'start_date' => '2120-03-01 00:00:00',
-            'end_date' => '2120-03-03 23:59:59',
+            'operation_period' => new Period('2120-03-01', '2120-03-03', true),
+            'mobilization_period' => new Period('2120-03-01 00:00:00', '2120-03-04 00:00:00'),
             'is_confirmed' => true,
             'author_id' => 1,
         ]);
@@ -341,8 +359,8 @@ final class EventTest extends TestCase
     {
         $data = [
             'title' => "Test dates validation",
-            'start_date' => '2020-03-01 00:00:00',
-            'end_date' => '2020-03-03 23:59:59',
+            'mobilization_period' => new Period('2020-03-01', '2020-03-03', true),
+            'operation_period' => new Period('2020-03-01', '2020-03-03', true),
             'is_confirmed' => false,
             'author_id' => 1,
         ];
@@ -359,11 +377,11 @@ final class EventTest extends TestCase
 
     public function testValidation(): void
     {
-        $generateEvent = function (array $data = []): Event {
+        $generateEvent = static function (array $data = []): Event {
             $data = Arr::defaults($data, [
                 'title' => "Les vieilles charrues",
-                'start_date' => '2020-03-01 00:00:00',
-                'end_date' => '2020-03-03 23:59:59',
+                'mobilization_period' => new Period('2020-02-22', '2020-04-03', true),
+                'operation_period' => new Period('2020-03-01', '2020-03-03', true),
                 'is_confirmed' => false,
                 'author_id' => 1,
             ]);
@@ -411,15 +429,13 @@ final class EventTest extends TestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'start_time' => '2019-03-01 10:00:00',
-                    'end_time' => '2019-03-02 19:00:00',
                     'position' => ' Testeur ',
+                    'period' => new Period('2019-03-01 10:00:00', '2019-03-02 19:00:00'),
                 ],
                 [
                     'id' => 2,
-                    'start_time' => '2019-03-02 09:00:00',
-                    'end_time' => '2019-03-02 16:00:00',
                     'position' => 'Stagiaire observateur',
+                    'period' => new Period('2019-03-02 09:00:00', '2019-03-02 16:00:00'),
                 ],
             ],
             'materials' => [
@@ -448,18 +464,24 @@ final class EventTest extends TestCase
                             'id' => 4,
                             'event_id' => 4,
                             'technician_id' => 1,
-                            'start_time' => '2019-03-01 10:00:00',
-                            'end_time' => '2019-03-02 19:00:00',
                             'position' => 'Testeur',
+                            'period' => [
+                                'start' => '2019-03-01 10:00:00',
+                                'end' => '2019-03-02 19:00:00',
+                                'isFullDays' => false,
+                            ],
                             'technician' => TechniciansTest::data(1),
                         ],
                         [
                             'id' => 5,
                             'event_id' => 4,
                             'technician_id' => 2,
-                            'start_time' => '2019-03-02 09:00:00',
-                            'end_time' => '2019-03-02 16:00:00',
                             'position' => 'Stagiaire observateur',
+                            'period' => [
+                                'start' => '2019-03-02 09:00:00',
+                                'end' => '2019-03-02 16:00:00',
+                                'isFullDays' => false,
+                            ],
                             'technician' => TechniciansTest::data(2),
                         ],
                     ],
@@ -511,14 +533,10 @@ final class EventTest extends TestCase
                         ]),
                     ],
                     'updated_at' => '2019-02-20 13:30:00',
-                ]
+                ],
             ),
             $event->serialize(Event::SERIALIZE_DETAILS),
         );
-
-        // - Si l'inventaire de retour de l'événement est fait, on attend une `LogicException`.
-        $this->expectException(\LogicException::class);
-        Event::staticEdit(1, $data);
     }
 
     public function testStaticEditBadBeneficiaries(): void
@@ -558,11 +576,6 @@ final class EventTest extends TestCase
         $this->assertEquals(2, count($event->beneficiaries));
         $this->assertEquals('Client Benef', $event->beneficiaries[0]['full_name']);
         $this->assertEquals('Roger Rabbit', $event->beneficiaries[1]['full_name']);
-
-        // - Si l'inventaire de retour de l'événement est fait, on attend une `LogicException`.
-        $this->expectException(\LogicException::class);
-        $event = Event::findOrFail(1);
-        $event->syncBeneficiaries($beneficiaries);
     }
 
     public function testSyncTechnicians(): void
@@ -572,43 +585,35 @@ final class EventTest extends TestCase
         $technicians = [
             [
                 'id' => 1,
-                'start_time' => '2019-03-01 08:00:00',
-                'end_time' => '2019-03-01 20:00:00',
                 'position' => 'Roadie déballage',
+                'period' => new Period('2019-03-01 08:00:00', '2019-03-01 20:00:00'),
             ],
             [
                 'id' => 1,
-                'start_time' => '2019-04-10 08:00:00',
-                'end_time' => '2019-04-10 20:00:00',
                 'position' => 'Roadie remballage',
+                'period' => new Period('2019-04-10 08:00:00', '2019-04-10 20:00:00'),
             ],
             [
                 'id' => 2,
-                'start_time' => '2019-03-02 10:00:00',
-                'end_time' => '2019-04-09 17:00:00',
                 'position' => 'Régisseur',
+                'period' => new Period('2019-03-02 10:00:00', '2019-04-09 17:00:00'),
             ],
         ];
         $event = Event::findOrFail(4);
         $event->syncTechnicians($technicians);
         $this->assertCount(3, $event->technicians);
         $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
-        $this->assertEquals('2019-03-01 08:00:00', $event->technicians[0]['start_time']);
-        $this->assertEquals('2019-03-01 20:00:00', $event->technicians[0]['end_time']);
+        $this->assertEquals('2019-03-01 08:00:00', $event->technicians[0]['start_date']);
+        $this->assertEquals('2019-03-01 20:00:00', $event->technicians[0]['end_date']);
         $this->assertEquals('Roadie déballage', $event->technicians[0]['position']);
         $this->assertEquals('Jean Technicien', $event->technicians[1]['technician']['full_name']);
-        $this->assertEquals('2019-03-02 10:00:00', $event->technicians[1]['start_time']);
-        $this->assertEquals('2019-04-09 17:00:00', $event->technicians[1]['end_time']);
+        $this->assertEquals('2019-03-02 10:00:00', $event->technicians[1]['start_date']);
+        $this->assertEquals('2019-04-09 17:00:00', $event->technicians[1]['end_date']);
         $this->assertEquals('Régisseur', $event->technicians[1]['position']);
         $this->assertEquals('Roger Rabbit', $event->technicians[2]['technician']['full_name']);
-        $this->assertEquals('2019-04-10 08:00:00', $event->technicians[2]['start_time']);
-        $this->assertEquals('2019-04-10 20:00:00', $event->technicians[2]['end_time']);
+        $this->assertEquals('2019-04-10 08:00:00', $event->technicians[2]['start_date']);
+        $this->assertEquals('2019-04-10 20:00:00', $event->technicians[2]['end_date']);
         $this->assertEquals('Roadie remballage', $event->technicians[2]['position']);
-
-        // - Si l'inventaire de retour de l'événement est fait, on attend une `LogicException`.
-        $this->expectException(\LogicException::class);
-        $event = Event::findOrFail(1);
-        $event->syncTechnicians($technicians);
     }
 
     public function testSyncTechniciansValidationErrors(): void
@@ -618,15 +623,13 @@ final class EventTest extends TestCase
         $technicians = [
             [
                 'id' => 1,
-                'start_time' => '2019-03-02 08:00:00',
-                'end_time' => '2019-03-01 20:00:00',
                 'position' => 'Roadie déballage',
+                'period' => new Period('2019-03-01 20:00:00', '2019-03-02 08:00:00'),
             ],
             [
                 'id' => 2,
-                'start_time' => '2019-04-10 10:00:00',
-                'end_time' => '2019-04-11 17:00:00',
                 'position' => 'Régisseur',
+                'period' => new Period('2019-04-10 10:00:00', '2019-04-11 17:00:00'),
             ],
         ];
         $event = Event::findOrFail(4);
@@ -639,13 +642,9 @@ final class EventTest extends TestCase
         }
 
         $expectedErrors = [
-            1 => [
-                'start_time' => ['La date de fin doit être postérieure à la date de début.'],
-                'end_time' => ['La date de fin doit être postérieure à la date de début.'],
-            ],
             2 => [
-                'start_time' => ["L'assignation de ce technicien se termine après l'événement."],
-                'end_time' => ["L'assignation de ce technicien se termine après l'événement."],
+                'start_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+                'end_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
             ],
         ];
         $this->assertEquals($expectedErrors, $errors);
@@ -682,7 +681,10 @@ final class EventTest extends TestCase
     public function testDuplicateBadData(): void
     {
         $this->expectException(ValidationException::class);
-        Event::findOrFail(1)->duplicate(['start_date' => 'invalid-date']);
+        Event::findOrFail(1)->duplicate([
+            // - Période invalide: La start date ne contient pas une heure pile.
+            'operation_period' => new Period('2021-08-01 10:38:20', '2021-08-02'),
+        ]);
     }
 
     public function testDuplicate(): void
@@ -691,8 +693,8 @@ final class EventTest extends TestCase
 
         // - Test simple.
         $newEvent = Event::findOrFail(1)->duplicate([
-            'start_date' => '2021-08-01 00:00:00',
-            'end_date' => '2021-08-02 23:59:59',
+            'mobilization_period' => new Period('2021-08-01', '2021-08-02', true),
+            'operation_period' => new Period('2021-08-01', '2021-08-02', true),
             'author_id' => 1,
         ]);
         $expected = [
@@ -700,8 +702,11 @@ final class EventTest extends TestCase
             'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
-            'start_date' => '2021-08-01 00:00:00',
-            'end_date' => '2021-08-02 23:59:59',
+            'mobilization_start_date' => '2021-08-01 00:00:00',
+            'mobilization_end_date' => '2021-08-03 00:00:00',
+            'operation_start_date' => '2021-08-01 00:00:00',
+            'operation_end_date' => '2021-08-03 00:00:00',
+            'operation_is_full_days' => true,
             'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
@@ -713,26 +718,7 @@ final class EventTest extends TestCase
             'is_return_inventory_done' => false,
             'return_inventory_author_id' => null,
             'return_inventory_datetime' => null,
-            'technicians' => [
-                [
-                    'id' => 4,
-                    'event_id' => 8,
-                    'technician_id' => 1,
-                    'start_time' => '2021-08-01 09:00:00',
-                    'end_time' => '2021-08-02 22:00:00',
-                    'position' => 'Régisseur',
-                    'technician' => Technician::find(1)->toArray(),
-                ],
-                [
-                    'id' => 5,
-                    'event_id' => 8,
-                    'technician_id' => 2,
-                    'start_time' => '2021-08-02 14:00:00',
-                    'end_time' => '2021-08-02 18:00:00',
-                    'position' => 'Technicien plateau',
-                    'technician' => Technician::find(2)->toArray(),
-                ],
-            ],
+            'technicians' => [],
             'note' => null,
             'author_id' => null,
             'preparer_id' => null,
@@ -751,10 +737,10 @@ final class EventTest extends TestCase
         // - Test avec un événement dupliqué plus long que l'original.
         $newEvent = Event::findOrFail(1)->duplicate(
             [
-                'start_date' => '2021-08-03 00:00:00',
-                'end_date' => '2021-08-05 23:59:59', // - Un jour de plus que l'original.
+                // - Un jour de plus que l'original.
+                'mobilization_period' => new Period('2021-08-03', '2021-08-05', true),
+                'operation_period' => new Period('2021-08-03', '2021-08-05', true),
             ],
-            false,
             User::findOrFail(1),
         );
         $expected = [
@@ -762,8 +748,11 @@ final class EventTest extends TestCase
             'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
-            'start_date' => '2021-08-03 00:00:00',
-            'end_date' => '2021-08-05 23:59:59',
+            'mobilization_start_date' => '2021-08-03 00:00:00',
+            'mobilization_end_date' => '2021-08-06 00:00:00',
+            'operation_start_date' => '2021-08-03 00:00:00',
+            'operation_end_date' => '2021-08-06 00:00:00',
+            'operation_is_full_days' => true,
             'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
@@ -775,26 +764,7 @@ final class EventTest extends TestCase
             'is_return_inventory_done' => false,
             'return_inventory_author_id' => null,
             'return_inventory_datetime' => null,
-            'technicians' => [
-                [
-                    'id' => 6,
-                    'event_id' => 9,
-                    'technician_id' => 1,
-                    'start_time' => '2021-08-03 09:00:00',
-                    'end_time' => '2021-08-04 22:00:00',
-                    'position' => 'Régisseur',
-                    'technician' => Technician::find(1)->toArray(),
-                ],
-                [
-                    'id' => 7,
-                    'event_id' => 9,
-                    'technician_id' => 2,
-                    'start_time' => '2021-08-04 14:00:00',
-                    'end_time' => '2021-08-04 18:00:00',
-                    'position' => 'Technicien plateau',
-                    'technician' => Technician::find(2)->toArray(),
-                ],
-            ],
+            'technicians' => [],
             'note' => null,
             'author_id' => 1,
             'preparer_id' => null,
@@ -810,16 +780,20 @@ final class EventTest extends TestCase
 
         // - Test avec un événement dupliqué plus court que l'original.
         $newEvent = Event::findOrFail(1)->duplicate([
-            'start_date' => '2021-08-06 00:00:00',
-            'end_date' => '2021-08-06 23:59:59', // - Un jour de moins que l'original
+            // - Un jour de moins que l'original.
+            'mobilization_period' => new Period('2021-08-06', '2021-08-06', true),
+            'operation_period' => new Period('2021-08-06', '2021-08-06', true),
         ]);
         $expected = [
             'id' => 10,
             'reference' => null,
             'title' => 'Premier événement',
             'description' => null,
-            'start_date' => '2021-08-06 00:00:00',
-            'end_date' => '2021-08-06 23:59:59',
+            'mobilization_start_date' => '2021-08-06 00:00:00',
+            'mobilization_end_date' => '2021-08-07 00:00:00',
+            'operation_start_date' => '2021-08-06 00:00:00',
+            'operation_end_date' => '2021-08-07 00:00:00',
+            'operation_is_full_days' => true,
             'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
@@ -831,17 +805,7 @@ final class EventTest extends TestCase
             'is_return_inventory_done' => false,
             'return_inventory_author_id' => null,
             'return_inventory_datetime' => null,
-            'technicians' => [
-                [
-                    'id' => 8,
-                    'event_id' => 10,
-                    'technician_id' => 1,
-                    'start_time' => '2021-08-06 09:00:00',
-                    'end_time' => '2021-08-07 00:00:00',
-                    'position' => 'Régisseur',
-                    'technician' => Technician::find(1)->toArray(),
-                ],
-            ],
+            'technicians' => [],
             'note' => null,
             'author_id' => null,
             'preparer_id' => null,
@@ -861,21 +825,9 @@ final class EventTest extends TestCase
         $assertQuantities = function (Event $event, $expectedQuantities) {
             $this->assertSameCanonicalize($expectedQuantities, (
                 $event->materials
-                    ->map(fn ($material) => [
+                    ->map(static fn ($material) => [
                         'id' => $material->id,
                         'quantity' => $material->pivot->quantity,
-                    ])
-                    ->all()
-            ));
-        };
-        $assertTechnicians = function (Event $event, $expectedTechnicians) {
-            $this->assertSameCanonicalize($expectedTechnicians, (
-                $event->technicians
-                    ->map(fn ($technician) => [
-                        'id' => $technician->technician_id,
-                        'start_time' =>  $technician->start_time,
-                        'end_time' =>  $technician->end_time,
-                        'position' =>  $technician->position,
                     ])
                     ->all()
             ));
@@ -902,136 +854,93 @@ final class EventTest extends TestCase
 
         // - On duplique à un endroit "sans problème".
         $newEvent1 = Event::findOrFail(7)->duplicate([
-            'start_date' => '2023-01-01 00:00:00',
-            'end_date' => '2023-01-10 23:59:59',
+            'mobilization_period' => new Period('2023-01-01', '2023-01-10', true),
+            'operation_period' => new Period('2023-01-01', '2023-01-10', true),
         ]);
         $this->assertInstanceOf(Event::class, $newEvent1);
         $assertQuantities($newEvent1, $expectedQuantities);
-
-        // - On duplique l'événement #7 pendant l'événement #4, cela va
-        //   créer un conflit d'unité #1, déjà utilisée au même moment.
-        $newEvent2 = Event::findOrFail(7)->duplicate([
-            'start_date' => '2019-03-03 00:00:00',
-            'end_date' => '2019-03-05 23:59:59',
-        ]);
-        $this->assertInstanceOf(Event::class, $newEvent2);
-        $assertQuantities($newEvent2, $expectedQuantities);
-
-        // - On duplique l'événement #1 pendant la même période que l'événement #7, cela va
-        //   créer un conflit de technicien mobilisé au même moment (#2, du 25 au 28).
-        $expectedException = new ConflictException(
-            'Technician #2 already busy at this time.',
-            ConflictException::TECHNICIAN_ALREADY_BUSY,
-        );
-        $this->assertException($expectedException, fn () => (
-            Event::findOrFail(1)->duplicate([
-                'start_date' => '2023-05-25 00:00:00',
-                'end_date' => '2023-05-26 23:59:59',
-            ])
-        ));
-
-        // - Idem que ci-dessus mais on force la duplication.
-        //   (ce qui est censé avoir pour effet de supprimer les
-        //   techniciens en conflit du nouvel événement)
-        $newEvent3 = Event::findOrFail(1)->duplicate(
-            [
-                'start_date' => '2023-05-26 00:00:00',
-                'end_date' => '2023-05-26 23:59:59',
-            ],
-            true,
-        );
-        $this->assertInstanceOf(Event::class, $newEvent3);
-        $assertTechnicians($newEvent3, [
-            [
-                'id' => 1,
-                'end_time' => '2023-05-27 00:00:00',
-                'start_time' => '2023-05-26 09:00:00',
-                'position' => 'Régisseur',
-            ],
-        ]);
-
-        // - On force la duplication de l'événement #7 pendant la même période, cela va créer :
-        //   - Un conflit d'unité utilisé au même moment (#5 et #8).
-        //   - Un conflit de technicien mobilisé au même moment (#2, du 25 au 28).
-        $newEvent4 = Event::findOrFail(7)->duplicate(
-            [
-                'start_date' => '2023-05-26 00:00:00',
-                'end_date' => '2023-05-26 23:59:59',
-            ],
-            true,
-        );
-        $this->assertInstanceOf(Event::class, $newEvent4);
-        $assertQuantities($newEvent4, $expectedQuantities);
-        $assertTechnicians($newEvent4, []);
     }
 
     public function testChangeDatesLonger(): void
     {
         Carbon::setTestNow(Carbon::create(2018, 11, 10, 15, 0, 0));
 
-        // On invalide l'inventaire de retour pour pouvoir modifier
+        // - On invalide l'inventaire de retour pour pouvoir modifier.
         $event = Event::findOrFail(1);
+        $event->is_departure_inventory_done = false;
+        $event->departure_inventory_datetime = null;
+        $event->departure_inventory_author_id = null;
         $event->is_return_inventory_done = false;
+        $event->return_inventory_datetime = null;
+        $event->return_inventory_author_id = null;
         $event->save();
 
         $event = Event::staticEdit(1, [
-            'end_date' => '2018-12-19 23:59:59', // - Un jour de plus
+            // - Un jour de plus.
+            'mobilization_period' => new Period('2018-12-17', '2018-12-19', true),
+            'operation_period' => new Period('2018-12-17', '2018-12-19', true),
         ]);
         $this->assertCount(2, $event->technicians);
         $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
-        $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
-        $this->assertEquals('2018-12-18 22:00:00', $event->technicians[0]['end_time']);
+        $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_date']);
+        $this->assertEquals('2018-12-18 22:00:00', $event->technicians[0]['end_date']);
         $this->assertEquals('Jean Technicien', $event->technicians[1]['technician']['full_name']);
-        $this->assertEquals('2018-12-18 14:00:00', $event->technicians[1]['start_time']);
-        $this->assertEquals('2018-12-18 18:00:00', $event->technicians[1]['end_time']);
+        $this->assertEquals('2018-12-18 14:00:00', $event->technicians[1]['start_date']);
+        $this->assertEquals('2018-12-18 18:00:00', $event->technicians[1]['end_date']);
     }
 
     public function testChangeDatesHalfTime(): void
     {
         Carbon::setTestNow(Carbon::create(2018, 12, 10, 15, 0, 0));
 
-        // On invalide l'inventaire de retour pour pouvoir modifier
+        // - On invalide l'inventaire de retour pour pouvoir modifier.
         $event = Event::findOrFail(1);
+        $event->is_departure_inventory_done = false;
+        $event->departure_inventory_datetime = null;
+        $event->departure_inventory_author_id = null;
         $event->is_return_inventory_done = false;
+        $event->return_inventory_datetime = null;
+        $event->return_inventory_author_id = null;
         $event->save();
 
         $event = Event::staticEdit(1, [
-            'end_date' => '2018-12-17 23:59:59', // - Un jour de moins
+            // - Un jour de moins.
+            'mobilization_period' => new Period('2018-12-17', '2018-12-17', true),
+            'operation_period' => new Period('2018-12-17', '2018-12-17', true),
         ]);
         $this->assertCount(1, $event->technicians);
         $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
-        $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_time']);
-        $this->assertEquals('2018-12-18 00:00:00', $event->technicians[0]['end_time']);
+        $this->assertEquals('2018-12-17 09:00:00', $event->technicians[0]['start_date']);
+        $this->assertEquals('2018-12-18 00:00:00', $event->technicians[0]['end_date']);
     }
 
     public function testGetAllNotReturned(): void
     {
-        // - Test à une date qui contient un événement, mais dont l'inventaire
-        //   est terminé (#1).
-        $this->assertEmpty(Event::notReturned(new Carbon('2018-12-18'))->get()->toArray());
+        // - Test à une date qui contient un événement, mais dont l'inventaire est terminé (#1).
+        $period = new Period('2018-12-18', '2018-12-18', true);
+        $this->assertEmpty(Event::notReturned($period)->get()->toArray());
 
-        // - Test à une date qui contient un événement dont l'inventaire n'est pas terminé,
-        //   mais qui est archivé (#3).
-        $this->assertEmpty(Event::notReturned(new Carbon('2018-12-16'))->get()->toArray());
+        // - Test à une date qui contient un événement dont l'inventaire
+        //   n'est pas terminé, mais qui est archivé (#3).
+        $period = new Period('2018-12-16', '2018-12-16', true);
+        $this->assertEmpty(Event::notReturned($period)->get()->toArray());
 
-        // - Test à une date qui correspond à la date de fin d'un événement non archivé,
-        //   dont l'inventaire n'est pas terminé (#4).
-        $results = Event::notReturned(new Carbon('2019-04-10'))->get()->pluck('id')->all();
+        // - Test à une date qui correspond à la date de fin d'un événement
+        //   non archivé, dont l'inventaire n'est pas terminé (#4).
+        $period = new Period('2019-04-10', '2019-04-10', true);
+        $results = Event::notReturned($period)->get()->pluck('id')->all();
         $this->assertEquals([4], $results);
 
         // - Test pour une période qui contient deux événements non-archivés,
         //   dont l'inventaire n'est pas terminé (#4 et #5).
-        $period = new Period(
-            new Carbon('2018-01-01'),
-            new Carbon('2020-01-15')
-        );
+        $period = new Period('2018-01-01', '2020-01-15', true);
         $results = Event::notReturned($period)->get()->pluck('id')->all();
         $this->assertEquals([4, 5], $results);
     }
 
     public function testTotalisableAttributes(): void
     {
-        $getTestValues = fn (Attribute $attribute) => (
+        $getTestValues = static fn (Attribute $attribute) => (
             array_intersect_key(
                 $attribute->append('value')->toArray(),
                 array_flip(['id', 'name', 'value', 'unit']),

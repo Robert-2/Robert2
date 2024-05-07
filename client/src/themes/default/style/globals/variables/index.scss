@@ -1,5 +1,14 @@
+@forward './base';
 @forward './colors';
 @forward './icons';
 @forward './dimensions';
 
-$text-base-font-family: 'Avenir', Helvetica, Arial, sans-serif;
+//
+// - Variables utilisées par plusieurs components.
+//
+
+@forward './shared/calendar';
+@forward './shared/dropdown';
+@forward './shared/form';
+@forward './shared/input';
+@forward './shared/badge';

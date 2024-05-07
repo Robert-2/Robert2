@@ -169,7 +169,7 @@ const BeneficiaryEdit = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="beneficiary-edit" title={pageTitle}>
+                <Page name="beneficiary-edit" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );

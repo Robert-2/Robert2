@@ -1,7 +1,7 @@
 import './index.scss';
 import debounce from 'lodash/debounce';
 import { defineComponent } from '@vue/composition-api';
-import { DEBOUNCE_WAIT } from '@/globals/constants';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
 import MaterialsFilters from '@/themes/default/components/MaterialsFilters';
 import SwitchToggle from '@/themes/default/components/SwitchToggle';
 import Input from '@/themes/default/components/Input';
@@ -60,7 +60,10 @@ const MaterialsSelectorFilters = defineComponent({
         },
     },
     created() {
-        this.handleSearchChangeDebounced = debounce(this.handleSearchChange.bind(this), DEBOUNCE_WAIT);
+        this.handleSearchChangeDebounced = debounce(
+            this.handleSearchChange.bind(this),
+            DEBOUNCE_WAIT_DURATION.asMilliseconds(),
+        );
     },
     beforeDestroy() {
         this.handleSearchChangeDebounced?.cancel();

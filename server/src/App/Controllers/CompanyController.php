@@ -5,7 +5,7 @@ namespace Loxya\Controllers;
 
 use Loxya\Controllers\Traits\WithCrud;
 
-class CompanyController extends BaseController
+final class CompanyController extends BaseController
 {
     use WithCrud;
 }

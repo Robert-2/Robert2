@@ -1,8 +1,6 @@
+@use './variables' as *;
 @use '~@/themes/default/style/globals';
 @use 'sass:color';
-
-$group-border-color: #636363 !default;
-$group-item-max-height: 65px !default;
 
 .Timeline {
     position: relative;
@@ -26,17 +24,20 @@ $group-item-max-height: 65px !default;
     &__item {
         $sub-block: &;
 
+        height: 49px;
         margin: 0;
-        padding: 1.2rem 1.1rem;
         border: none;
         font-size: 1rem;
 
         &.vis-range {
+            --background-color: #{$range-item-background-color};
+            --color: #{$range-item-text-color};
+
             border: none;
-            border-radius: globals.$border-radius-large;
-            background-color: globals.$calendar-event-normal-color;
-            color: globals.$calendar-event-normal-text-color;
-            box-shadow: 1px 2px 3px rgba(#000, 0.5);
+            border-radius: $item-border-radius;
+            background-color: var(--background-color);
+            color: var(--color);
+            box-shadow: $range-item-box-shadow;
 
             &.vis-selected {
                 filter: brightness(110%);
@@ -45,8 +46,8 @@ $group-item-max-height: 65px !default;
 
         &.vis-background {
             padding: 0.5rem 0.8rem;
-            background-color: rgba(31, 31, 31, 0.6);
-            color: rgba(255, 255, 255, 0.5);
+            background-color: $background-item-background-color;
+            color: $background-item-text-color;
         }
 
         &:not(.vis-readonly):not(.vis-background) {
@@ -54,12 +55,12 @@ $group-item-max-height: 65px !default;
 
             .vis-drag-left {
                 left: 0;
-                border-radius: globals.$border-radius-large 0 0 globals.$border-radius-large;
+                border-radius: $item-border-radius 0 0 $item-border-radius;
             }
 
             .vis-drag-right {
                 right: 0;
-                border-radius: 0 globals.$border-radius-large globals.$border-radius-large 0;
+                border-radius: 0 $item-border-radius $item-border-radius 0;
             }
         }
 
@@ -69,16 +70,50 @@ $group-item-max-height: 65px !default;
             }
         }
 
+        &--actual {
+            &.vis-range {
+                z-index: 1;
+
+                // - `!important` pour désactiver tout `background` qui viendrait à
+                //   être appliqué sur cet éléments dont le fond est géré dans le `::before`.
+                // stylelint-disable-next-line declaration-no-important
+                background: none !important;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    border-radius: $item-border-radius;
+                    background-color: var(--background-color);
+                    opacity: 0.8;
+                }
+            }
+        }
+
+        &--expected {
+            &.vis-range {
+                z-index: 0;
+
+                // - `!important` pour désactiver tout `box-shadow` qui viendrait à
+                //   être appliqué sur cet éléments qui doit rester un élément "fantôme".
+                // stylelint-disable-next-line declaration-no-important
+                box-shadow: none !important;
+            }
+        }
+
         &--with-custom-color {
             &.vis-range {
-                background-color: var(--timeline-item-color);
+                --background-color: var(--timeline-item-color);
 
                 &#{$sub-block}--with-dark-color {
-                    color: globals.$calendar-event-text-color-light;
+                    --color: #{globals.$calendar-event-text-color-light};
                 }
 
                 &#{$sub-block}--with-light-color {
-                    color: globals.$calendar-event-text-color-dark;
+                    --color: #{globals.$calendar-event-text-color-dark};
                 }
             }
         }
@@ -86,6 +121,7 @@ $group-item-max-height: 65px !default;
         .vis-item-overflow {
             display: flex;
             align-items: center;
+            padding: 1.2rem 1.1rem;
         }
 
         .vis-item-content {
@@ -112,17 +148,19 @@ $group-item-max-height: 65px !default;
             border-radius: globals.$border-radius-normal;
 
             &::after {
-                content: '\f1f8';
+                content: '\f00d';
                 color: globals.$text-danger-color;
                 // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
                 font-family: 'Font Awesome 5 Free';
-                font-size: 1.7rem;
-                font-weight: 900;
+                font-size: 1.4rem;
+                font-weight: 800;
             }
 
             &:hover {
+                background-color: transparent;
+
                 &::after {
-                    color: #fff;
+                    color: globals.$text-danger-color;
                 }
             }
         }
@@ -130,7 +168,8 @@ $group-item-max-height: 65px !default;
 
     .vis-timeline {
         border: none;
-        background-color: globals.$calendar-main-background-color;
+        border-radius: $border-radius;
+        background-color: $background-color;
 
         .vis-panel {
             &.vis-bottom,
@@ -144,13 +183,13 @@ $group-item-max-height: 65px !default;
 
         .vis-time-axis {
             &.vis-foreground {
-                background: rgba(#fff, 0.05);
-                box-shadow: 0 0 5px rgba(#000, 0.25);
+                background: $header-background-color;
+                box-shadow: $header-box-shadow;
             }
 
             // stylelint-disable-next-line selector-max-compound-selectors
             .vis-text {
-                color: globals.$text-soft-color;
+                color: $header-text-color;
                 text-align: center;
 
                 // stylelint-disable-next-line selector-max-compound-selectors
@@ -164,18 +203,28 @@ $group-item-max-height: 65px !default;
 
         .vis-grid {
             &.vis-vertical {
-                border-color: globals.$calendar-cells-border-color;
+                border-color: $separator-color;
+
+                &.vis-monday {
+                    border-left: 3px solid $separator-color;
+                }
             }
 
             &.vis-today {
-                background-color: globals.$calendar-current-date-background-color;
+                border-color: $today-border-color;
+                background-color: $today-background-color;
+
+                // stylelint-disable-next-line selector-max-compound-selectors
+                + .vis-vertical {
+                    border-left-color: $today-border-color;
+                }
             }
         }
 
         .vis-current-time {
             max-height: calc(100% - 42px);
             margin-top: 42px;
-            background-color: globals.$calendar-time-cursor-color;
+            background-color: $today-time-cursor-color;
         }
 
         .vis-label {
@@ -187,12 +236,12 @@ $group-item-max-height: 65px !default;
         overflow: hidden;
         max-width: 50%;
         margin: 30px 0 0 15px;
-        padding: globals.$spacing-medium;
+        padding: globals.$spacing-medium globals.$spacing-large;
         border: none;
-        border-radius: globals.$border-radius-normal;
+        border-radius: globals.$border-radius-large;
         background-color: globals.$bg-color-tooltip;
         color: globals.$text-base-color;
-        font-family: globals.$text-base-font-family;
+        font-family: globals.$base-font-family;
         white-space: pre-wrap;
         text-overflow: ellipsis;
 
@@ -213,12 +262,26 @@ $group-item-max-height: 65px !default;
     }
 
     &--grouped {
+        $group-item-max-height: 65px;
+
         .vis-timeline {
-            background-color: color.scale(globals.$calendar-main-background-color, $alpha: -30%);
+            background-color: color.scale(globals.$calendar-background-color, $alpha: -30%);
+
+            .vis-grid {
+                &.vis-today {
+                    border-color: $separator-color;
+                    background-color: transparent;
+
+                    // stylelint-disable-next-line selector-max-compound-selectors
+                    + .vis-vertical {
+                        border-left-color: $separator-color;
+                    }
+                }
+            }
         }
 
         .vis-vertical {
-            background-color: globals.$calendar-main-background-color;
+            background-color: globals.$calendar-background-color;
         }
 
         .vis-labelset {
@@ -227,7 +290,7 @@ $group-item-max-height: 65px !default;
 
             .vis-label {
                 box-sizing: content-box;
-                border-bottom: 1px solid $group-border-color;
+                border-bottom: 1px solid $separator-color;
                 color: globals.$text-base-color;
             }
 
@@ -235,17 +298,14 @@ $group-item-max-height: 65px !default;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                padding: 10px;
-
-                // Faux positif, @see https://github.com/stylelint-scss/stylelint-scss/issues/486
-                // stylelint-disable-next-line scss/no-global-function-names, order/properties-order
                 min-height: max(100%, 55px);
+                padding: 10px;
             }
         }
 
         .vis-foreground .vis-group {
             box-sizing: content-box;
-            border-bottom: 1px solid $group-border-color;
+            border-bottom: 1px solid $separator-color;
         }
 
         .vis-item {

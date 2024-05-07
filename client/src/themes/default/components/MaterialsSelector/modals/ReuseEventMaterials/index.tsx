@@ -9,15 +9,22 @@ import apiEvents from '@/stores/api/events';
 import SearchEvents from './SearchEvents';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
+import type { Booking } from '@/stores/api/bookings';
 
 type Props = {
+    /**
+     * L'éventuel booking dans lequel le matériel de l'événement va être importé.
+     * Utile notamment pour exclure celui-ci des propositions si c'est un événement.
+     */
+    booking?: Booking,
+
     /** Doit-on afficher les montants de location ? */
     withRentalPrices?: boolean,
 };
 
 type Data = {
-    selected: Event | null,
+    selected: EventDetails | null,
     isLoading: boolean,
     error: unknown | null,
 };
@@ -31,25 +38,21 @@ const ReuseEventMaterials = defineComponent({
         clickToClose: true,
     },
     props: {
+        booking: {
+            type: Object as PropType<Props['booking']>,
+            default: undefined,
+        },
         withRentalPrices: {
             type: Boolean as PropType<Required<Props>['withRentalPrices']>,
             default: false,
         },
     },
-    data(): Data {
-        return {
-            selected: null,
-            isLoading: false,
-            error: null,
-        };
-    },
-    computed: {
-        excludeEvent() {
-            const { id } = this.$route.params;
-            return id ? Number.parseInt(id, 10) : null;
-        },
-
-    },
+    emits: ['close'],
+    data: (): Data => ({
+        selected: null,
+        isLoading: false,
+        error: null,
+    }),
     methods: {
         handleClearSelection() {
             this.selected = null;
@@ -82,10 +85,10 @@ const ReuseEventMaterials = defineComponent({
         const {
             $t: __,
             error,
+            booking,
             isLoading,
             selected,
             withRentalPrices,
-            excludeEvent,
             handleClose,
             handleSelectEvent,
             handleSubmit,
@@ -142,7 +145,7 @@ const ReuseEventMaterials = defineComponent({
                 </div>
                 <div class={bodyClassNames}>
                     <SearchEvents
-                        exclude={excludeEvent}
+                        exclude={booking?.id ?? null}
                         onSelect={handleSelectEvent}
                     />
                     {renderSelection()}

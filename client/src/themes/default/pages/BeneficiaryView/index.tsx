@@ -68,14 +68,16 @@ const BeneficiaryView = defineComponent({
             const { $t: __, id, tabsIndexes, selectedTabIndex } = this;
 
             switch (tabsIndexes[selectedTabIndex]) {
-                case TabName.INFO:
+                case TabName.INFO: {
                     return [
-                        <Button type="edit" to={{ name: 'edit-beneficiary', params: { id } }}>
+                        <Button type="edit" to={{ name: 'edit-beneficiary', params: { id } }} collapsible>
                             {__('action-edit')}
                         </Button>,
                     ];
-                default:
+                }
+                default: {
                     return [];
+                }
             }
         },
     },
@@ -146,7 +148,7 @@ const BeneficiaryView = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="beneficiary-view" title={pageTitle}>
+                <Page name="beneficiary-view" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
@@ -155,7 +157,7 @@ const BeneficiaryView = defineComponent({
         const { stats } = beneficiary!;
 
         return (
-            <Page name="beneficiary-view" title={pageTitle} isLoading={isLoading}>
+            <Page name="beneficiary-view" title={pageTitle} loading={isLoading}>
                 <div class="BeneficiaryView">
                     <Tabs
                         defaultIndex={selectedTabIndex}
@@ -170,7 +172,10 @@ const BeneficiaryView = defineComponent({
                                 <Billing beneficiary={beneficiary} />
                             </Tab>
                         )}
-                        <Tab title={__('page.beneficiary-view.borrowings.title', { count: stats.borrowings })} icon="history">
+                        <Tab
+                            title={__('page.beneficiary-view.borrowings.title', { count: stats.borrowings })}
+                            icon="calendar-alt"
+                        >
                             <Borrowings beneficiary={beneficiary} />
                         </Tab>
                     </Tabs>

@@ -4,17 +4,20 @@ import IconMessage from '@/themes/default/components/IconMessage';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 
 type Props = {
     /** L'événement dont on veut obtenir le footer d'inventaire de retour. */
-    event: Event,
+    event: EventDetails,
 
     /** Indique si l'inventaire de retour peut-être "terminée" ou non. */
     canTerminate: boolean,
 
     /** L'inventaire de retour est-il en cours de sauvegarde ? */
     isSaving?: boolean,
+
+    /** Des notifications de non retour sont-elles en cours d'envoi ? */
+    isNotifying?: boolean,
 };
 
 /** Footer de la page d'inventaire de retour d'événement. */

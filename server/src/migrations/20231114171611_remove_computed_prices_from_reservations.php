@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 use Brick\Math\BigDecimal as Decimal;
 use Brick\Math\RoundingMode;
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
@@ -85,7 +87,9 @@ final class RemoveComputedPricesFromReservations extends AbstractMigration
                 ? null
                 : $reservationMaterial['unit_price'] * $reservationMaterial['quantity'];
 
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sreservation_materials', $prefix))
                 ->set(['total_price' => $totalPrice])
                 ->where(['id' => $reservationMaterial['id']])
@@ -100,13 +104,13 @@ final class RemoveComputedPricesFromReservations extends AbstractMigration
 
             $materials = $this->fetchAll(vsprintf(
                 'SELECT * FROM `%sreservation_materials` WHERE `reservation_id` = %d',
-                [$prefix, $reservation['id']]
+                [$prefix, $reservation['id']],
             ));
 
             $dailyTotalWithoutTaxes = array_reduce(
                 $materials,
-                fn ($acc, $material) => $acc->plus(Decimal::of($material['total_price'])),
-                Decimal::zero()
+                static fn ($acc, $material) => $acc->plus(Decimal::of($material['total_price'])),
+                Decimal::zero(),
             )->toScale(2, RoundingMode::UNNECESSARY);
 
             $dailyTotalTaxes = $dailyTotalWithoutTaxes
@@ -129,7 +133,9 @@ final class RemoveComputedPricesFromReservations extends AbstractMigration
                 ->plus($totalTaxes)
                 ->toScale(2, RoundingMode::UNNECESSARY);
 
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sreservations', $prefix))
                 ->set([
                     'daily_total_without_taxes' => (string) $dailyTotalWithoutTaxes,

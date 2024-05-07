@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Carbon\Carbon;
 use Loxya\Config\Config;
 use Phinx\Migration\AbstractMigration;
@@ -12,7 +14,7 @@ final class EventTechniciansDatesInLocalTime extends AbstractMigration
         $prefix = Config::get('db.prefix');
         $data = $this->fetchAll(sprintf(
             'SELECT `id`, `start_time`, `end_time` FROM `%1$sevent_technicians`',
-            $prefix
+            $prefix,
         ));
         foreach ($data as $eventTechnicianData) {
             $startTime = Carbon::createFromFormat('Y-m-d H:i:s', $eventTechnicianData['start_time'], 'UTC')
@@ -23,7 +25,8 @@ final class EventTechniciansDatesInLocalTime extends AbstractMigration
                 ->setTimezone(date_default_timezone_get())
                 ->format('Y-m-d H:i:s');
 
-            $qb = $this->getQueryBuilder();
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
             $qb
                 ->update(sprintf('%sevent_technicians', $prefix))
                 ->set('start_time', $startTime)
@@ -38,7 +41,7 @@ final class EventTechniciansDatesInLocalTime extends AbstractMigration
         $prefix = Config::get('db.prefix');
         $data = $this->fetchAll(sprintf(
             'SELECT `id`, `start_time`, `end_time` FROM `%1$sevent_technicians`',
-            $prefix
+            $prefix,
         ));
         foreach ($data as $eventTechnicianData) {
             $startTime = Carbon::createFromFormat('Y-m-d H:i:s', $eventTechnicianData['start_time'])
@@ -49,7 +52,8 @@ final class EventTechniciansDatesInLocalTime extends AbstractMigration
                 ->setTimezone('UTC')
                 ->format('Y-m-d H:i:s');
 
-            $qb = $this->getQueryBuilder();
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
             $qb
                 ->update(sprintf('%sevent_technicians', $prefix))
                 ->set('start_time', $startTime)

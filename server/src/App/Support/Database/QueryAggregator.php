@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Loxya\Support\Database;
 
-use Illuminate\Database\Query\Builder as CoreBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as CoreBuilder;
 use Illuminate\Database\Query\Expression;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Loxya\Support\Paginator\LengthAwarePaginator;
 
 final class QueryAggregator
 {
@@ -105,14 +105,14 @@ final class QueryAggregator
     {
         $unionQueries = $this->queries
             ->map(function (Relation|Builder|CoreBuilder $query, string $modelClass) {
-                $alias = (new $modelClass)->getTable();
+                $alias = (new $modelClass())->getTable();
 
                 /** @var CoreBuilder $unionQuery */
                 $unionQuery = $query
                     ->clone()
                     ->when(
                         !($query instanceof CoreBuilder),
-                        fn ($builder) => $builder->toBase(),
+                        static fn ($builder) => $builder->toBase(),
                     )
                     ->select([
                         new Expression(sprintf("'%s' as `entity`", md5($modelClass))),
@@ -126,8 +126,8 @@ final class QueryAggregator
                 return $unionQuery;
             })
             ->values()
-            ->reduce(fn (CoreBuilder|null $unionQueries, CoreBuilder $query) => (
-                $unionQueries !== null ? $unionQueries->unionAll($query) : $query
+            ->reduce(static fn (CoreBuilder|null $unionQueries, CoreBuilder $query) => (
+                $unionQueries?->unionAll($query) ?? $query
             ));
 
         foreach ($this->orders as $order) {
@@ -142,19 +142,19 @@ final class QueryAggregator
         $pagination = $unionQueries->paginate($perPage, ['id', 'entity'], $pageName, $page);
 
         $entities = $pagination->getCollection()->reduce(
-            function ($entities, $result, $index) {
+            static function ($entities, $result, $index) {
                 $result = (array) $result;
 
                 $entities[$result['entity']] ??= [];
                 $entities[$result['entity']][$result['id']] = $index;
                 return $entities;
             },
-            []
+            [],
         );
 
         $data = $this->queries
             ->reduce(
-                function (
+                static function (
                     Collection $collection,
                     Relation|Builder|CoreBuilder $query,
                     string $modelClass,
@@ -165,7 +165,7 @@ final class QueryAggregator
                     }
 
                     $ids = array_keys($entities[$identifier]);
-                    $alias = (new $modelClass)->getTable();
+                    $alias = (new $modelClass())->getTable();
 
                     $results = $query
                         ->cloneWithout(['orders', 'limit', 'offset'])
@@ -174,16 +174,16 @@ final class QueryAggregator
                         ->get();
 
                     return $collection->concat(
-                        $results->map(fn ($item) => [
+                        $results->map(static fn ($item) => [
                             'position' => $entities[$identifier][$item->id],
                             'data' => $item,
-                        ])
+                        ]),
                     );
                 },
                 new Collection(),
             )
-            ->sortBy(fn ($result) => $result['position'])
-            ->map(fn ($result) => $result['data'])
+            ->sortBy(static fn ($result) => $result['position'])
+            ->map(static fn ($result) => $result['data'])
             ->values();
 
         return new LengthAwarePaginator(

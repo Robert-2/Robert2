@@ -11,8 +11,11 @@ use Illuminate\Database\DatabaseTransactionsManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Events\Dispatcher as EventDispatcher;
-use Respect\Validation\Factory as ValidatorFactory;
 use Loxya\Config\Config;
+use Loxya\Support\Paginator\CursorPaginator;
+use Loxya\Support\Paginator\LengthAwarePaginator;
+use Loxya\Support\Paginator\Paginator;
+use Respect\Validation\Factory as ValidatorFactory;
 
 final class Kernel
 {
@@ -25,7 +28,7 @@ final class Kernel
         if (!is_null(static::$instance)) {
             return static::$instance;
         }
-        return static::$instance = new static;
+        return static::$instance = new static();
     }
 
     public static function get(): static
@@ -38,7 +41,9 @@ final class Kernel
 
     public static function reset(): void
     {
-        static::$instance = new static;
+        IlluminateContainer::getInstance()->flush();
+
+        static::$instance = new static();
     }
 
     // ------------------------------------------------------
@@ -79,25 +84,42 @@ final class Kernel
     {
         ValidatorFactory::setDefaultInstance(
             (new ValidatorFactory())
-                ->withTranslator(fn($value) => (
+                ->withTranslator(fn ($value) => (
                     $this->container->get('i18n')->translate($value)
-                ))
+                )),
         );
     }
 
     protected function initializeDatabase(): void
     {
         // - Illuminate container.
-        $illuminateContainer = new IlluminateContainer;
-        $illuminateContainer->singleton('db.transactions', fn() => (
-            new DatabaseTransactionsManager
+        $illuminateContainer = IlluminateContainer::getInstance();
+        $illuminateContainer->singleton('db.transactions', static fn () => (
+            new DatabaseTransactionsManager()
         ));
+        $illuminateContainer->bind(
+            \Illuminate\Pagination\LengthAwarePaginator::class,
+            LengthAwarePaginator::class,
+        );
+        $illuminateContainer->bind(
+            \Illuminate\Pagination\CursorPaginator::class,
+            CursorPaginator::class,
+        );
+        $illuminateContainer->bind(
+            \Illuminate\Pagination\Paginator::class,
+            Paginator::class,
+        );
 
         // - Database.
         $database = new Database($illuminateContainer);
         $database->addConnection(Config::getDbConfig());
         $database->setEventDispatcher(
-            new EventDispatcher($illuminateContainer)
+            (new EventDispatcher($illuminateContainer))
+                ->setTransactionManagerResolver(static fn () => (
+                    $illuminateContainer->bound('db.transactions')
+                        ? $illuminateContainer->make('db.transactions')
+                        : null
+                )),
         );
         $database->bootEloquent();
 

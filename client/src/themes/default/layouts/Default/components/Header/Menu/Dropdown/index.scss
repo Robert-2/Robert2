@@ -12,7 +12,7 @@
         align-items: center;
         height: 100%;
         padding: 0 globals.$spacing-medium;
-        background-color: globals.$bg-color-main-header;
+        background-color: globals.$bg-color-emphasis;
         color: globals.$color-base-button;
         text-transform: capitalize;
         transition: all 300ms;
@@ -26,7 +26,7 @@
         }
 
         &:hover {
-            background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
+            background-color: color.adjust(globals.$bg-color-emphasis, $lightness: 8%);
             color: globals.$color-hover-button;
         }
     }
@@ -42,7 +42,7 @@
         flex-direction: column;
         min-width: globals.$dropdown-min-width;
         border-radius: 0 0 globals.$border-radius-normal globals.$border-radius-normal;
-        background-color: globals.$bg-color-main-header;
+        background-color: globals.$bg-color-emphasis;
         box-shadow: -2px 6px 6px rgba(0, 0, 0, 0.25);
         transform-origin: 50% 0%;
         transform: scaleY(0);
@@ -52,7 +52,7 @@
             flex: 0 0 auto;
 
             &:hover {
-                background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
+                background-color: color.adjust(globals.$bg-color-emphasis, $lightness: 8%);
             }
 
             &:last-child {
@@ -67,7 +67,7 @@
         }
 
         #{$block}__button {
-            background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
+            background-color: color.adjust(globals.$bg-color-emphasis, $lightness: 8%);
         }
     }
 }

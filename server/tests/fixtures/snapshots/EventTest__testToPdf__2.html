@@ -111,6 +111,7 @@
         .half { width: 50%; }
         .third { width: 33.33%; }
         .two-third { width: 66.66%; }
+        .max50mm { max-width: 50mm; }
         .left { text-align: left; }
         .center { text-align: center; }
         .right { text-align: right; }
@@ -137,6 +138,8 @@
         .lighter { color: #666; }
         .lightest { color: #aaa; }
         .changePage { page-break-before: always; }
+        .picture-cell { width: 20mm; text-align: center; }
+        .material-picture { max-width: 18mm; max-height: 12mm; }
 
             </style>
 </head>
@@ -144,7 +147,12 @@
     <table class="layout-table">
     <tr>
         <td class="half">
-<p class="size12 strong">Testing corp.<br>5 rue des tests<br>05555 Testville<br>France</p>
+<p class="size12 strong">
+    Testing corp.<br>
+    5 rue des tests<br>
+    05555 Testville<br>
+    France
+</p>
 <p>SIRET: 543 210 080 20145<br>APE: 947A<br></p>
 <p>Phone: +33123456789<br>E-mail: jean@testing-corp.dev</p>
 <p>VAT number: FR11223344556600</p>
@@ -188,9 +196,9 @@
         <tr>
             <th>Ref.</th>
             <th>Designation</th>
-            <th>Qty</th>
             <th>Repl. Val.</th>
             <th>Total Repl. Val.</th>
+            <th>Qty</th>
             <th>Qty Return</th>
         </tr>
     </thead>
@@ -204,9 +212,9 @@
 <span class="lighter">Couleur&nbsp;:&nbsp;Grise</span>
 <span class="lighter">Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
 </td>
-    <td class="center">3</td>
     <td class="right lighter">&euro;19,400.00</td>
     <td class="right lighter">&euro;58,200.00</td>
+    <td class="center">3</td>
     <td></td>
 </tr>
 <tr>
@@ -214,9 +222,9 @@
     <td>Processeur DBX PA2 <em class="lighter">(default)</em><br><span class="lighter">Poids&nbsp;:&nbsp;2.2&nbsp;kg.</span>
 <span class="lighter">Puissance&nbsp;:&nbsp;35&nbsp;W.</span>
 </td>
-    <td class="center">2</td>
     <td class="right lighter">&euro;349.90</td>
     <td class="right lighter">&euro;699.80</td>
+    <td class="center">2</td>
     <td></td>
 </tr>
     </tbody>
@@ -246,14 +254,12 @@
     <tr>
         <td class="half inset">
             <h3 class="center">Output</h3>
-            <p class="strong">Scheduled for: 18 December 2018</p>
-            <p>Effective date:</p>
+            <p>Date:</p>
             <p class="strong vspace5 spaceBottom5">Signature:</p>
         </td>
         <td class="inset">
             <h3 class="center">Return</h3>
-            <p class="strong">Scheduled for: 19 December 2018</p>
-            <p>Effective date:</p>
+            <p>Date:</p>
             <p class="strong vspace5 spaceBottom5">Signature:</p>
         </td>
     </tr>

@@ -20,7 +20,7 @@ final class ParkObserver
 
         //
         // - Si un parc est supprimé, tout le matériel qu'il contient est
-        //   aussi supprimé, et on supprime donc le cache lié.
+        //   aussi supprimé, on supprime donc le cache lié.
         //
 
         foreach ($park->materials as $material) {

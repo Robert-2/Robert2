@@ -1,7 +1,7 @@
 import type { Tag } from '@/stores/api/tags';
 import type { Park } from '@/stores/api/parks';
 import type { Category } from '@/stores/api/categories';
-import type { Subcategory } from '@/stores/api/subcategories';
+import type { SubCategory } from '@/stores/api/subcategories';
 import type { Material } from '@/stores/api/materials';
 
 export type Filters = {
@@ -18,7 +18,7 @@ export type Filters = {
     category: Category['id'] | 'uncategorized' | null,
 
     /** Filtre sur la sous-catégorie des matériels. */
-    subCategory: Subcategory['id'] | null,
+    subCategory: SubCategory['id'] | null,
 
     /**
      * Filtre sur l'état de sélection des matériels.
@@ -28,12 +28,6 @@ export type Filters = {
 
     /** Filtre sur les tags des matériels (recherche de type `OR`). */
     tags: Array<Tag['id']>,
-};
-
-export type SelectedQuantities = {
-    id: Material['id'],
-    requested: number,
-    available: number,
 };
 
 export type SelectedMaterial = {

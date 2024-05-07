@@ -4,11 +4,11 @@
 
 /// Padding vertical des boutons.
 /// @type Number
-$padding-y: 0.45rem !default;
+$padding-y: 7px !default;
 
 /// Padding horizontal des boutons.
 /// @type Number
-$padding-x: 0.626rem !default;
+$padding-x: 10px !default;
 
 /// Marge entre les éléments internes du bouton (texte, icône(s)).
 /// @type Number
@@ -83,13 +83,13 @@ $primary-variant: (
 
     // - Focused
     focused-color: #fff,
-    focused-background: color.adjust(globals.$primary-color, $saturation: 23.3%, $lightness: 5.5%),
-    focused-border-color: color.adjust(globals.$primary-color, $saturation: 23.3%, $lightness: 5.5%),
+    focused-background: color.adjust(globals.$primary-color, $lightness: 5.5%),
+    focused-border-color: color.adjust(globals.$primary-color, $lightness: 5.5%),
 
     // - Active
     active-color: #fff,
-    active-background: color.adjust(globals.$primary-color, $saturation: 23.8%, $lightness: -4.5%),
-    active-border-color: color.adjust(globals.$primary-color, $saturation: 23.8%, $lightness: -4.5%),
+    active-background: color.adjust(globals.$primary-color, $lightness: -4.5%),
+    active-border-color: color.adjust(globals.$primary-color, $lightness: -4.5%),
 ) !default;
 
 //
@@ -98,19 +98,19 @@ $primary-variant: (
 
 // stylelint-disable-next-line value-list-max-empty-lines
 $secondary-variant: (
-    color: #fff,
-    background: color.adjust(globals.$primary-color, $saturation: -25%, $lightness: -22%),
-    border-color: globals.$primary-color,
+    color: color.adjust(globals.$primary-color, $saturation: -30%, $lightness: 60%),
+    background: color.adjust(globals.$primary-color, $alpha: -0.7),
+    border-color: transparent,
 
     // - Focused
-    focused-color: map.get($primary-variant, focused-color),
-    focused-background: map.get($primary-variant, focused-background),
-    focused-border-color: map.get($primary-variant, focused-border-color),
+    focused-color: color.adjust(globals.$primary-color, $saturation: -30%, $lightness: 65%),
+    focused-background: color.adjust(globals.$primary-color, $alpha: -0.7, $lightness: 10%),
+    focused-border-color: transparent,
 
     // - Active
-    active-color: map.get($primary-variant, active-color),
-    active-background: map.get($primary-variant, active-background),
-    active-border-color: map.get($primary-variant, active-border-color),
+    active-color: color.adjust(globals.$primary-color, $saturation: -30%, $lightness: 55%),
+    active-background: color.adjust(globals.$primary-color, $alpha: -0.7, $lightness: -6%),
+    active-border-color: transparent,
 ) !default;
 
 //

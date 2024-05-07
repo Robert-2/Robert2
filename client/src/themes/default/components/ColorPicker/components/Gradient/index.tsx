@@ -27,6 +27,7 @@ const ColorPickerGradient = defineComponent({
             required: true,
         },
     },
+    emits: ['change'],
     setup: (): InstanceProperties => ({
         debouncedMoveMarker: undefined,
     }),

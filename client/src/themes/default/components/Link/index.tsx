@@ -58,6 +58,7 @@ const Link = defineComponent({
             default: false,
         },
     },
+    emits: ['click'],
     computed: {
         normalizedIcon() {
             if (!this.icon) {

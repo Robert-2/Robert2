@@ -1,4 +1,5 @@
 @use '~@/themes/default/style/globals';
+@use 'sass:color';
 
 .DefaultLayoutSidebarMenuItem {
     $block: &;
@@ -23,7 +24,7 @@
 
             // - Permet de surcharger le style de base des liens.
             // stylelint-disable-next-line declaration-no-important
-            color: globals.$link-hover-color !important;
+            color: color.adjust(globals.$primary-color, $saturation: 10%, $lightness: 5%) !important;
         }
     }
 
@@ -46,8 +47,8 @@
         margin-left: 5px;
         padding: 3px 6px;
         border-radius: 10px;
-        background-color: globals.$bg-color-button-danger;
-        color: globals.$text-base-color;
+        background-color: globals.$badge-background-color;
+        color: globals.$badge-text-color;
         font-size: 11px;
         font-weight: 600;
         line-height: 1;

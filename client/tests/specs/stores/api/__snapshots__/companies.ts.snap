@@ -1,0 +1,150 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Companies Api all() parse the returned data correctly 1`] = `
+{
+  "data": [
+    {
+      "country": {
+        "code": "FR",
+        "id": 1,
+        "name": "France",
+      },
+      "country_id": 1,
+      "full_address": "1, company st.
+1234 Megacity",
+      "id": 1,
+      "legal_name": "Testing, Inc",
+      "locality": "Megacity",
+      "note": "Just for tests",
+      "phone": "+4123456789",
+      "postal_code": "1234",
+      "street": "1, company st.",
+    },
+    {
+      "country": null,
+      "country_id": null,
+      "full_address": null,
+      "id": 2,
+      "legal_name": "Obscure",
+      "locality": null,
+      "note": null,
+      "phone": null,
+      "postal_code": null,
+      "street": null,
+    },
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "perPage": 2,
+    "total": {
+      "items": 2,
+      "pages": 1,
+    },
+  },
+}
+`;
+
+exports[`Companies Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
+  "full_address": "1, company st.
+1234 Megacity",
+  "id": 1,
+  "legal_name": "Testing, Inc",
+  "locality": "Megacity",
+  "note": "Just for tests",
+  "phone": "+4123456789",
+  "postal_code": "1234",
+  "street": "1, company st.",
+}
+`;
+
+exports[`Companies Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "country": null,
+  "country_id": null,
+  "full_address": null,
+  "id": 2,
+  "legal_name": "Obscure",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "street": null,
+}
+`;
+
+exports[`Companies Api one() parse the returned data correctly (with #1) 1`] = `
+{
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
+  "full_address": "1, company st.
+1234 Megacity",
+  "id": 1,
+  "legal_name": "Testing, Inc",
+  "locality": "Megacity",
+  "note": "Just for tests",
+  "phone": "+4123456789",
+  "postal_code": "1234",
+  "street": "1, company st.",
+}
+`;
+
+exports[`Companies Api one() parse the returned data correctly (with #2) 1`] = `
+{
+  "country": null,
+  "country_id": null,
+  "full_address": null,
+  "id": 2,
+  "legal_name": "Obscure",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "street": null,
+}
+`;
+
+exports[`Companies Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
+  "full_address": "1, company st.
+1234 Megacity",
+  "id": 1,
+  "legal_name": "Testing, Inc",
+  "locality": "Megacity",
+  "note": "Just for tests",
+  "phone": "+4123456789",
+  "postal_code": "1234",
+  "street": "1, company st.",
+}
+`;
+
+exports[`Companies Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "country": null,
+  "country_id": null,
+  "full_address": null,
+  "id": 2,
+  "legal_name": "Obscure",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "street": null,
+}
+`;

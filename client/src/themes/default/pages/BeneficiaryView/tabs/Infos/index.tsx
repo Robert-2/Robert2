@@ -1,16 +1,17 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
+import apiGroups from '@/stores/api/groups';
 import NextBookings from './NextBookings';
 
 import type { PropType } from '@vue/composition-api';
 import type { BeneficiaryDetails } from '@/stores/api/beneficiaries';
 
 type Props = {
-    /* Le bénéficiaire dont on veut afficher les informations. */
+    /** Le bénéficiaire dont on veut afficher les informations. */
     beneficiary: BeneficiaryDetails,
 };
 
-/* Contenu de l'onglet "infos" de la page de détails d'un bénéficiaire. */
+/** Contenu de l'onglet "infos" de la page de détails d'un bénéficiaire. */
 const BeneficiaryViewInfos = defineComponent({
     name: 'BeneficiaryViewInfos',
     props: {
@@ -19,8 +20,18 @@ const BeneficiaryViewInfos = defineComponent({
             required: true,
         },
     },
+    computed: {
+        userGroup(): string | undefined {
+            const { user } = this.beneficiary;
+            if (!user) {
+                return undefined;
+            }
+
+            return apiGroups.one(user.group)?.name;
+        },
+    },
     render() {
-        const { $t: __, beneficiary } = this;
+        const { $t: __, beneficiary, userGroup } = this;
         const {
             id,
             full_name: fullName,
@@ -31,6 +42,7 @@ const BeneficiaryViewInfos = defineComponent({
             country,
             stats: { borrowings },
             note,
+            user,
             company,
         } = beneficiary;
 
@@ -103,6 +115,19 @@ const BeneficiaryViewInfos = defineComponent({
                         </dl>
                     </div>
                     <div class="BeneficiaryViewInfos__main__extras">
+                        {!!user && (
+                            <dl class="BeneficiaryViewInfos__info">
+                                <dt class="BeneficiaryViewInfos__info__label">
+                                    {__('page.beneficiary-view.infos.user-account')}
+                                </dt>
+                                <dd class="BeneficiaryViewInfos__info__value">
+                                    <span class="BeneficiaryViewInfos__user-pseudo-at">@</span>{user.pseudo}
+                                    <span class="BeneficiaryViewInfos__user-group">
+                                        ({userGroup})
+                                    </span>
+                                </dd>
+                            </dl>
+                        )}
                         {!!note && (
                             <dl class="BeneficiaryViewInfos__info">
                                 <dt class="BeneficiaryViewInfos__info__label">

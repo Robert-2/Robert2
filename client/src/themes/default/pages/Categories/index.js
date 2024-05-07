@@ -167,7 +167,7 @@ const Categories = defineComponent({
 
         if (hasCriticalError || !isFetched) {
             return (
-                <Page name="categories" title={__('page.categories.title')}>
+                <Page name="categories" title={__('page.categories.title')} centered>
                     {hasCriticalError ? <CriticalError /> : <Loading />}
                 </Page>
             );
@@ -175,7 +175,7 @@ const Categories = defineComponent({
 
         if (categories.length === 0) {
             return (
-                <Page name="categories" title={__('page.categories.title')}>
+                <Page name="categories" title={__('page.categories.title')} centered>
                     <EmptyMessage
                         message={__('page.categories.no-category-yet')}
                         action={{
@@ -193,9 +193,14 @@ const Categories = defineComponent({
                 name="categories"
                 title={__('page.categories.title')}
                 help={__('page.categories.help')}
-                isLoading={isSaving}
+                loading={isSaving}
                 actions={[
-                    <Button type="add" class="Categories__create" onClick={handleClickNewCategory}>
+                    <Button
+                        type="add"
+                        class="Categories__create"
+                        onClick={handleClickNewCategory}
+                        collapsible
+                    >
                         {__('page.categories.new-category')}
                     </Button>,
                 ]}
@@ -204,10 +209,11 @@ const Categories = defineComponent({
                     {categories.map((category) => (
                         <Item
                             key={category.id}
+                            class="Categories__item"
                             category={category}
                             onEditCategory={handleEditCategory}
                             onDeleteCategory={handleDeleteCategory}
-                            onSubcategoryChange={handleSubCategoryChange}
+                            onSubCategoryChange={handleSubCategoryChange}
                         />
                     ))}
                 </ul>

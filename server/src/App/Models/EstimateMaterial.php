@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Casts\AsDecimal;
+use Respect\Validation\Validator as V;
 
 /**
  * Matériel dans un devis.

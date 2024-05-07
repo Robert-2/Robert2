@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Loxya\Tests;
 
-use Carbon\CarbonImmutable;
-use Loxya\Models\Event;
 use Loxya\Models\EventTechnician;
 use Loxya\Support\Period;
 
@@ -12,218 +10,160 @@ final class EventTechnicianTest extends TestCase
 {
     public function testValidation(): void
     {
-        $eventTechnician = new EventTechnician([
+        // - Test simple.
+        $eventTechnician1 = new EventTechnician([
             'event_id' => 4,
             'technician_id' => 1,
-            'start_time' => '',
-            'end_time' => '',
+            'start_date' => '',
+            'end_date' => '',
             'position' => 'a',
         ]);
-        $this->assertEquals(
-            [
-                'start_time' => ["Cette date est invalide."],
-                'end_time' => ["Cette date est invalide."],
-                'position' => ['2 caractères min., 191 caractères max.'],
-            ],
-            $eventTechnician->validationErrors(),
-        );
-    }
+        $expectedErrors1 = [
+            'start_date' => ["Ce champ est invalide."],
+            'end_date' => ["Ce champ est invalide."],
+            'position' => ['2 caractères min., 191 caractères max.'],
+        ];
+        $this->assertSameCanonicalize($expectedErrors1, $eventTechnician1->validationErrors());
 
-    public function testValidationDatesInverted(): void
-    {
-        $eventTechnician = new EventTechnician([
-            'event_id' => 4,
-            'technician_id' => 1,
-            'start_time' => '2019-03-02 10:00:00',
-            'end_time' => '2019-03-01 20:00:00',
-        ]);
-        $this->assertEquals(
-            [
-                'start_time' => ['La date de fin doit être postérieure à la date de début.'],
-                'end_time' => ['La date de fin doit être postérieure à la date de début.'],
-            ],
-            $eventTechnician->validationErrors(),
-        );
-    }
-
-    public function testValidationDatesOutsideEvent(): void
-    {
-        // - Test 1.
-        $eventTechnician = new EventTechnician([
-            'event_id' => 4,
-            'technician_id' => 1,
-            'start_time' => '2019-01-01 10:00:00',
-            'end_time' => '2021-05-01 20:00:00',
-        ]);
-        $this->assertEquals(
-            [
-                'start_time' => ["L'assignation de ce technicien commence avant l'événement."],
-                'end_time' => ["L'assignation de ce technicien commence avant l'événement."],
-            ],
-            $eventTechnician->validationErrors(),
-        );
-
-        // - Test 2.
-        $eventTechnician->start_time = '2019-05-01 10:00:00';
-        $this->assertEquals(
-            [
-                'start_time' => ["L'assignation de ce technicien se termine après l'événement."],
-                'end_time' => ["L'assignation de ce technicien se termine après l'événement."],
-            ],
-            $eventTechnician->validationErrors(),
-        );
-    }
-
-    public function testValidationDatesNotQuarter(): void
-    {
-        // - Dates qui ne sont pas placées au quart d'heure près
-        $eventTechnician = new EventTechnician([
-            'technician_id' => 1,
-            'event_id' => 1,
-            'start_time' => '2018-12-18 22:12:00',
-            'end_time' => '2018-12-18 23:35:00',
-        ]);
-        $this->assertEquals(
-            [
-                'start_time' => ["La date doit respecter une précision d'un quart d'heure (:00, :15, :30 ou :45)."],
-                'end_time' => ["La date doit respecter une précision d'un quart d'heure (:00, :15, :30 ou :45)."],
-            ],
-            $eventTechnician->validationErrors(),
-        );
-    }
-
-    public function testValidationDatesAlreadyAssigned(): void
-    {
-        // - Dates qui chevauchent la fin d'une assignation existante
-        $eventTechnician1 = new EventTechnician([
-            'technician_id' => 1,
-            'event_id' => 1,
-            'start_time' => '2018-12-18 20:00:00',
-            'end_time' => '2018-12-18 22:00:00',
-        ]);
-        $this->assertEquals(
-            [
-                'start_time' => ['Ce technicien est déjà occupé pour cette période.'],
-                'end_time' => ['Ce technicien est déjà occupé pour cette période.'],
-            ],
-            $eventTechnician1->validationErrors(),
-        );
-
-        // - Dates qui chevauchent le début d'une assignation existante
+        // - Test avec des dates inversées.
         $eventTechnician2 = new EventTechnician([
+            'event_id' => 4,
             'technician_id' => 1,
-            'event_id' => 1,
-            'start_time' => '2018-12-17 07:00:00',
-            'end_time' => '2018-12-17 09:30:00',
+            'start_date' => '2019-03-02 10:00:00',
+            'end_date' => '2019-03-01 20:00:00',
         ]);
-        $this->assertEquals(
-            [
-                'start_time' => ['Ce technicien est déjà occupé pour cette période.'],
-                'end_time' => ['Ce technicien est déjà occupé pour cette période.'],
-            ],
-            $eventTechnician2->validationErrors(),
-        );
+        $expectedErrors2 = [
+            'start_date' => ['La date de fin doit être postérieure à la date de début.'],
+            'end_date' => ['La date de fin doit être postérieure à la date de début.'],
+        ];
+        $this->assertSameCanonicalize($expectedErrors2, $eventTechnician2->validationErrors());
 
-        // - Dates qui sont comprises dans une assignation existante
+        // - Test avec des dates en dehors de l'événement (1).
         $eventTechnician3 = new EventTechnician([
+            'event_id' => 4,
+            'technician_id' => 1,
+            'start_date' => '2019-01-01 10:00:00',
+            'end_date' => '2021-05-01 20:00:00',
+        ]);
+        $expectedErrors3 = [
+            'start_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+            'end_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+        ];
+        $this->assertSameCanonicalize($expectedErrors3, $eventTechnician3->validationErrors());
+
+        // - Test avec des dates en dehors de l'événement (2).
+        $eventTechnician3->start_date = '2019-05-01 10:00:00';
+        $expectedErrors4 = [
+            'start_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+            'end_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+        ];
+        $this->assertSameCanonicalize($expectedErrors4, $eventTechnician3->validationErrors());
+
+        // - Test avec des dates non arrondies au quart d'heure.
+        $eventTechnician5 = new EventTechnician([
             'technician_id' => 1,
             'event_id' => 1,
-            'start_time' => '2018-12-17 10:00:00',
-            'end_time' => '2018-12-18 20:00:00',
+            'start_date' => '2018-12-18 22:12:00',
+            'end_date' => '2018-12-18 23:35:00',
         ]);
-        $this->assertEquals(
-            [
-                'start_time' => ['Ce technicien est déjà occupé pour cette période.'],
-                'end_time' => ['Ce technicien est déjà occupé pour cette période.'],
-            ],
-            $eventTechnician3->validationErrors(),
-        );
+        $expectedErrors5 = [
+            'start_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
+            'end_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
+        ];
+        $this->assertSameCanonicalize($expectedErrors5, $eventTechnician5->validationErrors());
+
+        // - Test avec des dates qui chevauchent la fin d'une assignation existante.
+        $eventTechnician6 = new EventTechnician([
+            'technician_id' => 1,
+            'event_id' => 1,
+            'start_date' => '2018-12-18 20:00:00',
+            'end_date' => '2018-12-18 22:00:00',
+        ]);
+        $expectedErrors6 = [
+            'start_date' => ['Ce technicien est déjà occupé pour cette période.'],
+            'end_date' => ['Ce technicien est déjà occupé pour cette période.'],
+        ];
+        $this->assertSameCanonicalize($expectedErrors6, $eventTechnician6->validationErrors());
+
+        // - Test avec des dates qui chevauchent le début d'une assignation existante.
+        $eventTechnician7 = new EventTechnician([
+            'technician_id' => 1,
+            'event_id' => 1,
+            'start_date' => '2018-12-17 07:00:00',
+            'end_date' => '2018-12-17 09:30:00',
+        ]);
+        $expectedErrors7 = [
+            'start_date' => ['Ce technicien est déjà occupé pour cette période.'],
+            'end_date' => ['Ce technicien est déjà occupé pour cette période.'],
+        ];
+        $this->assertSameCanonicalize($expectedErrors7, $eventTechnician7->validationErrors());
+
+        // - Test avec des dates qui sont comprises dans une assignation existante.
+        $eventTechnician8 = new EventTechnician([
+            'technician_id' => 1,
+            'event_id' => 1,
+            'start_date' => '2018-12-17 10:00:00',
+            'end_date' => '2018-12-18 20:00:00',
+        ]);
+        $expectedErrors8 = [
+            'start_date' => ['Ce technicien est déjà occupé pour cette période.'],
+            'end_date' => ['Ce technicien est déjà occupé pour cette période.'],
+        ];
+        $this->assertSameCanonicalize($expectedErrors8, $eventTechnician8->validationErrors());
+
+        // - Test valide: Nouvelle assignation après une existante.
+        $eventTechnician9 = new EventTechnician([
+            'technician_id' => 1,
+            'event_id' => 1,
+            'start_date' => '2018-12-18 22:15:00',
+            'end_date' => '2018-12-18 23:30:00',
+        ]);
+        $this->assertTrue($eventTechnician9->isValid());
+
+        // - Test valide: Modification d'une assignation existante.
+        $eventTechnician10 = EventTechnician::findOrFail(1)->fill([
+            'technician_id' => 1,
+            'event_id' => 1,
+            'start_date' => '2018-12-17 10:45:00',
+            'end_date' => '2018-12-18 23:45:00',
+        ]);
+        $this->assertTrue($eventTechnician10->isValid());
     }
 
-    public function testValidationDatesOk(): void
+    public function testComputeNewPeriod(): void
     {
-        // - Nouvelle assignation après une existante.
-        $eventTechnician1 = new EventTechnician([
-            'technician_id' => 1,
-            'event_id' => 1,
-            'start_time' => '2018-12-18 22:15:00',
-            'end_time' => '2018-12-18 23:30:00',
-        ]);
-        $this->assertTrue($eventTechnician1->isValid());
+        // - Si les nouvelles dates comprennent l'assignation, pas de changement.
+        $expected = new Period('2018-12-17 09:00:00', '2018-12-18 22:00:00');
+        $result = EventTechnician::findOrFail(1)->computeNewPeriod($expected);
+        $this->assertEquals($expected, $result);
 
-        // - Modification d'une assignation existante.
-        $eventTechnician2 = EventTechnician::findOrFail(1)->fill([
-            'technician_id' => 1,
-            'event_id' => 1,
-            'start_time' => '2018-12-17 10:45:00',
-            'end_time' => '2018-12-18 23:45:00',
-        ]);
-        $this->assertTrue($eventTechnician2->isValid());
-    }
+        $period = new Period('2018-12-17', '2018-12-18', true);
+        $result = EventTechnician::findOrFail(1)->computeNewPeriod($period);
+        $this->assertEquals($expected, $result);
 
-    public function testGetForNewDates(): void
-    {
-        $event = Event::findOrFail(1);
-        $originalStartDate = new CarbonImmutable($event->start_date);
+        // - Si les nouvelles dates comprennent en partie l'assignation, on tronque.
+        $period = new Period('2018-12-17', '2018-12-17', true);
+        $expected = new Period('2018-12-17 09:00:00', '2018-12-18 00:00:00');
+        $result = EventTechnician::findOrFail(1)->computeNewPeriod($period);
+        $this->assertEquals($expected, $result);
 
-        // - Avec un offset de -1 mois, et une durée égale
-        $newTechnicians = EventTechnician::getForNewDates(
-            $event->technicians,
-            $originalStartDate,
-            new Period('2018-11-17 00:00:00', '2018-11-18 23:59:59'),
-        );
-        $expected = [
-            [
-                'id' => 1,
-                'start_time' => '2018-11-17 09:00:00',
-                'end_time' => '2018-11-18 22:00:00',
-                'position' => 'Régisseur',
-            ],
-            [
-                'id' => 2,
-                'start_time' => '2018-11-18 14:00:00',
-                'end_time' => '2018-11-18 18:00:00',
-                'position' => 'Technicien plateau',
-            ],
-        ];
-        $this->assertEquals($expected, $newTechnicians);
+        $period = new Period('2018-12-17 08:00:00', '2018-12-17 09:30:00');
+        $expected = new Period('2018-12-17 09:00:00', '2018-12-17 09:30:00');
+        $result = EventTechnician::findOrFail(1)->computeNewPeriod($period);
+        $this->assertEquals($expected, $result);
 
-        // - Avec un offset de +1 mois, et une durée d'un jour de plus
-        $newTechnicians = EventTechnician::getForNewDates(
-            $event->technicians,
-            $originalStartDate,
-            new Period('2019-01-17 00:00:00', '2019-01-19 23:59:59'),
-        );
-        $expected = [
-            [
-                'id' => 1,
-                'start_time' => '2019-01-17 09:00:00',
-                'end_time' => '2019-01-18 22:00:00',
-                'position' => 'Régisseur',
-            ],
-            [
-                'id' => 2,
-                'start_time' => '2019-01-18 14:00:00',
-                'end_time' => '2019-01-18 18:00:00',
-                'position' => 'Technicien plateau',
-            ],
-        ];
-        $this->assertEquals($expected, $newTechnicians);
+        $period = new Period('2018-12-17 10:22:00', '2018-12-18 08:12:00');
+        $expected = new Period('2018-12-17 10:30:00', '2018-12-18 08:00:00');
+        $result = EventTechnician::findOrFail(1)->computeNewPeriod($period);
+        $this->assertEquals($expected, $result);
 
-        // - Sans offset, et une durée d'un jour de moins
-        $newTechnicians = EventTechnician::getForNewDates(
-            $event->technicians,
-            $originalStartDate,
-            new Period('2019-01-17 00:00:00', '2019-01-17 23:59:59'),
-        );
-        $expected = [
-            [
-                'id' => 1,
-                'start_time' => '2019-01-17 09:00:00',
-                'end_time' => '2019-01-18 00:00:00',
-                'position' => 'Régisseur',
-            ],
-        ];
-        $this->assertEquals($expected, $newTechnicians);
+        // - Si les nouvelles dates ne permettant pas de conserver l'assignation, on retourne `null`.
+        $period = new Period('2018-12-18 22:00:00', '2018-12-18 23:00:00');
+        $result = EventTechnician::findOrFail(1)->computeNewPeriod($period);
+        $this->assertNull($result);
+
+        $period = new Period('2018-12-17 08:00:00', '2018-12-17 09:00:00');
+        $result = EventTechnician::findOrFail(1)->computeNewPeriod($period);
+        $this->assertNull($result);
     }
 }

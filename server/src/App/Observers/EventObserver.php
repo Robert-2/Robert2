@@ -106,11 +106,11 @@ final class EventObserver
 
         //
         // - On invalide le cache du matériel manquant des bookables voisins à celui qui vient
-        //   d'être modifié lors de la modification de la date de début / fin d'événement.
-        //   (anciens voisins ou nouveau, peu importe)
+        //   d'être modifié lors de la modification de la période de mobilisation de l'événement.
+        //   (anciens voisins ou nouveau, peu importe).
         //
 
-        if (!$event->wasChanged(['start_date', 'end_date'])) {
+        if (!$event->wasChanged(['mobilization_start_date', 'mobilization_end_date'])) {
             return;
         }
         $oldData = $event->getOriginal();
@@ -122,8 +122,8 @@ final class EventObserver
         $newNeighborEvents = Event::inPeriod($event)->get();
         $oldNeighborEvents = Event::query()
             ->inPeriod(
-                $oldData['start_date'],
-                $oldData['end_date']
+                $oldData['mobilization_start_date'],
+                $oldData['mobilization_end_date'],
             )
             ->get();
 
@@ -139,7 +139,13 @@ final class EventObserver
     private function onUpdateSyncDepartureInventories(Event $event): void
     {
         // - Si les dates de l'événement n'ont pas changées, on ne va pas plus loin.
-        if (!$event->wasChanged(['start_date', 'end_date'])) {
+        $dateFields = [
+            'operation_start_date',
+            'operation_end_date',
+            'mobilization_start_date',
+            'mobilization_end_date',
+        ];
+        if (!$event->wasChanged($dateFields)) {
             return;
         }
 
@@ -148,12 +154,12 @@ final class EventObserver
             return;
         }
 
-        // - Si la période d'inventaire n'est pas ouverte, on supprime l'inventaire de départ.
-        dbTransaction(function () use ($event) {
+        // - Si la période d'inventaire départ n'est pas ouverte, on supprime l'inventaire.
+        dbTransaction(static function () use ($event) {
             $event->is_departure_inventory_done = false;
             $event->departure_inventory_author_id = null;
             $event->departure_inventory_datetime = null;
-            $event->saveQuietly();
+            $event->saveQuietly(['validate' => false]);
             $event->refresh();
 
             foreach ($event->materials as $material) {
@@ -161,32 +167,22 @@ final class EventObserver
                 $eventMaterial = $material->pivot;
                 $eventMaterial->quantity_departed = null;
                 $eventMaterial->departure_comment = null;
-                $eventMaterial->save();
+                $eventMaterial->save(['validate' => false]);
             }
         });
     }
 
     private function onUpdateSyncReturnInventories(Event $event): void
     {
-        // - Si les dates de l'événement n'ont pas changées, on ne va pas plus loin.
-        if (!$event->wasChanged(['start_date', 'end_date'])) {
+        // - Si les dates  de l'événement n'ont pas changées, on ne va pas plus loin.
+        $dateFields = [
+            'operation_start_date',
+            'operation_end_date',
+            'mobilization_start_date',
+            'mobilization_end_date',
+        ];
+        if (!$event->wasChanged($dateFields)) {
             return;
-        }
-
-        // FIXME: Cette condition devra être modifiée lorsque les dates
-        //        de mobilisation auront été implémentées.
-        // - L'inventaire de retour ne peut pas être marqué comme terminé
-        //   avant le jour de fin de l'événement.
-        $canBeTerminated = (
-            $event->getEndDate()->isPast() ||
-            $event->getEndDate()->isSameDay()
-        );
-        if (!$canBeTerminated) {
-            $event->is_return_inventory_done = false;
-            $event->return_inventory_author_id = null;
-            $event->return_inventory_datetime = null;
-            $event->saveQuietly();
-            $event->refresh();
         }
 
         // - Si la période d'inventaire est "ouverte", on laisse passer.
@@ -194,14 +190,21 @@ final class EventObserver
             return;
         }
 
-        // - Sinon, on reset les quantités d'inventaire.
-        dbTransaction(function () use ($event) {
+        // - Si la période d'inventaire de retour n'est pas ouverte, on supprime l'inventaire.
+        dbTransaction(static function () use ($event) {
+            $event->is_archived = false;
+            $event->is_return_inventory_done = false;
+            $event->return_inventory_author_id = null;
+            $event->return_inventory_datetime = null;
+            $event->saveQuietly(['validate' => false]);
+            $event->refresh();
+
             foreach ($event->materials()->get() as $material) {
                 /** @var EventMaterial $eventMaterial */
                 $eventMaterial = $material->pivot;
                 $eventMaterial->quantity_returned = null;
                 $eventMaterial->quantity_returned_broken = null;
-                $eventMaterial->save();
+                $eventMaterial->save(['validate' => false]);
             }
         });
     }

@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = {
+    compact: false,
     presets: [
         'vca-jsx',
-        '@vue/babel-preset-app',
+        '@vue/cli-plugin-babel/preset',
         '@babel/preset-typescript',
     ],
 };

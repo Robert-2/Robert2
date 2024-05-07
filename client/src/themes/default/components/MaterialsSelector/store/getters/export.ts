@@ -8,7 +8,7 @@ import type { MaterialState, State } from '../_types';
  *
  * @returns Une fonction permettant de récupérer les données du store, formatées.
  */
-/* eslint-disable @typescript-eslint/lines-around-comment */
+/* eslint-disable @stylistic/ts/lines-around-comment */
 const exportData = (state: State) => (
     /**
      * Permet de récupérer les données du store, formatées.
@@ -24,6 +24,6 @@ const exportData = (state: State) => (
             }))
     )
 );
-/* eslint-enable @typescript-eslint/lines-around-comment */
+/* eslint-enable @stylistic/ts/lines-around-comment */
 
 export default exportData;

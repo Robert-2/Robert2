@@ -19,10 +19,6 @@ final class Dataseed
 
     public function set(string $table): void
     {
-        if (!$table) {
-            throw new \Exception("Missing 'table' argument.");
-        }
-
         $tableQuery = sprintf("TRUNCATE `%s`;\n", $table);
 
         $tableData = $this->_getData($table);
@@ -34,7 +30,7 @@ final class Dataseed
         $fields = implode('`,`', array_keys($tableData[0]));
         $tableQuery .= vsprintf(
             "INSERT INTO `%s` (`%s`) VALUES",
-            [$table, $fields]
+            [$table, $fields],
         );
 
         foreach ($tableData as $entry) {
@@ -47,7 +43,7 @@ final class Dataseed
 
     public function getFinalQuery(): string
     {
-        $query  = "SET FOREIGN_KEY_CHECKS=0;\n\n";
+        $query = "SET FOREIGN_KEY_CHECKS=0;\n\n";
         $query .= $this->dataseedQuery . "\n";
         $query .= "SET FOREIGN_KEY_CHECKS=1;";
 
@@ -69,12 +65,12 @@ final class Dataseed
 
         $seedFilePath = sprintf('tests/fixtures/seed/%s.json', $table);
         if (!is_file($seedFilePath)) {
-            throw new \Exception("Missing json data seed file for model '$table'.");
+            throw new \Exception(sprintf("Missing JSON data seed file for table `%s`.", $table));
         }
 
         $seedData = json_decode(file_get_contents($seedFilePath), true);
         if (!is_array($seedData)) {
-            throw new \Exception("Unable to json decode data seed file.");
+            throw new \Exception("Unable to JSON decode data seed file.");
         }
 
         return static::$cachedData[$table] = $seedData;

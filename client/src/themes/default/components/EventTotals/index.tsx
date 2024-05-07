@@ -1,17 +1,16 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import formatAmount from '@/utils/formatAmount';
-import Fragment from '@/components/Fragment';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event, EventMaterial } from '@/stores/api/events';
+import type { EventDetails, EventMaterial } from '@/stores/api/events';
 
 type Props = {
     /** L'événement dont on veut afficher les totaux. */
-    event: Event,
+    event: EventDetails,
 };
 
-// @vue/component
+/** Totaux d'un événement.  */
 const EventTotals = defineComponent({
     name: 'EventTotals',
     props: {
@@ -21,15 +20,9 @@ const EventTotals = defineComponent({
         },
     },
     computed: {
-        itemsCount(): number {
-            const { materials } = this.event;
-
-            return materials.reduce(
-                (total: number, material: EventMaterial) => (
-                    total + material.pivot.quantity
-                ),
-                0,
-            );
+        duration(): number {
+            const { operation_period: operationPeriod } = this.event;
+            return operationPeriod.asDays();
         },
 
         useTaxes(): boolean {
@@ -39,7 +32,7 @@ const EventTotals = defineComponent({
             }
 
             const { vat_rate: vatRate } = this.event;
-            return !vatRate.isZero();
+            return vatRate.greaterThan(0);
         },
 
         hasDiscount(): boolean {
@@ -49,7 +42,7 @@ const EventTotals = defineComponent({
             }
 
             const { discount_rate: discountRate } = this.event;
-            return !discountRate.isZero();
+            return discountRate.greaterThan(0);
         },
 
         isNotFullyDiscountable(): boolean {
@@ -65,15 +58,33 @@ const EventTotals = defineComponent({
 
             return !totalDiscountable.eq(totalWithoutDiscount);
         },
+
+        itemsCount(): number {
+            const { materials } = this.event;
+
+            return materials.reduce(
+                (total: number, material: EventMaterial) => (
+                    total + material.pivot.quantity
+                ),
+                0,
+            );
+        },
     },
     created() {
         this.$store.dispatch('categories/fetch');
     },
     render() {
-        const { $t: __, event, itemsCount, useTaxes, hasDiscount, isNotFullyDiscountable } = this;
+        const {
+            $t: __,
+            event,
+            itemsCount,
+            duration,
+            useTaxes,
+            hasDiscount,
+            isNotFullyDiscountable,
+        } = this;
         const {
             is_billable: isBillable,
-            duration,
             total_replacement: totalReplacement,
             currency,
         } = event;
@@ -84,14 +95,14 @@ const EventTotals = defineComponent({
 
         const renderInfos = (): JSX.Element => (
             <div class="EventTotals__infos">
-                <div class="EventTotals__items-count">
-                    {__('total')} {__('items-count', { count: itemsCount }, itemsCount)}
+                <div class="EventTotals__infos__item">
+                    {__('items-count-total', { count: itemsCount }, itemsCount)}
                 </div>
-                <div class="EventTotals__duration">
-                    {__('duration-days', { duration: duration.days }, duration.days)}
+                <div class="EventTotals__infos__item">
+                    {__('duration-days', { duration }, duration)}
                 </div>
-                <div class="EventTotals__total-replacement">
-                    {__('total-replacement')} {formatAmount(totalReplacement, currency)}
+                <div class="EventTotals__infos__item">
+                    {__('total-replacement', { total: formatAmount(totalReplacement, currency) })}
                 </div>
             </div>
         );
@@ -105,9 +116,9 @@ const EventTotals = defineComponent({
         }
 
         const {
-            degressive_rate: degressiveRate,
             vat_rate: vatRate,
             daily_total: dailyTotal,
+            degressive_rate: degressiveRate,
             total_without_discount: totalWithoutDiscount,
             discount_rate: discountRate,
             total_discountable: totalDiscountable,
@@ -121,86 +132,88 @@ const EventTotals = defineComponent({
             <div class="EventTotals">
                 {renderInfos()}
                 <div class="EventTotals__billing">
-                    <div class="EventTotals__line">
-                        <div class="EventTotals__line__title">
-                            {useTaxes ? __('daily-total-without-tax') : __('daily-total')}
+                    <div class="EventTotals__billing__group">
+                        <div class="EventTotals__billing__line">
+                            <div class="EventTotals__billing__line__title">
+                                {useTaxes ? __('daily-total-without-tax') : __('daily-total')}
+                            </div>
+                            <div class="EventTotals__billing__line__price">
+                                {formatAmount(dailyTotal, currency)}
+                            </div>
                         </div>
-                        <div class="EventTotals__line__price">
-                            {formatAmount(dailyTotal, currency)}
+                        <div class="EventTotals__billing__line">
+                            <div class="EventTotals__billing__line__title">
+                                {__('days-count', { duration }, duration)}, {__('ratio')}
+                            </div>
+                            <div class="EventTotals__billing__line__price">
+                                &times; {degressiveRate.toString()}
+                            </div>
                         </div>
-                    </div>
-                    <div class="EventTotals__line">
-                        <div class="EventTotals__line__title">
-                            {__('days-count', { duration: duration.days }, duration.days)}, {__('ratio')}
-                        </div>
-                        <div class="EventTotals__line__price">
-                            &times; {degressiveRate.toString()}
-                        </div>
-                    </div>
-                    <div class="EventTotals__line EventTotals__line--grand-total">
-                        <div class="EventTotals__line__title">
-                            {useTaxes ? __('total-without-taxes') : __('total')}
-                        </div>
-                        <div class="EventTotals__line__price">
-                            {formatAmount(totalWithoutDiscount, currency)}
+                        <div class="EventTotals__billing__line EventTotals__billing__line--grand-total">
+                            <div class="EventTotals__billing__line__title">
+                                {useTaxes ? __('total-without-taxes') : __('total')}
+                            </div>
+                            <div class="EventTotals__billing__line__price">
+                                {formatAmount(totalWithoutDiscount, currency)}
+                            </div>
                         </div>
                     </div>
                     {hasDiscount && (
-                        <Fragment>
+                        <div class="EventTotals__billing__group">
                             {isNotFullyDiscountable && (
-                                <div class="EventTotals__line">
-                                    <div class="EventTotals__line__title">
+                                <div class="EventTotals__billing__line">
+                                    <div class="EventTotals__billing__line__title">
                                         {__('total-discountable')}
                                     </div>
-                                    <div class="EventTotals__line__price">
+                                    <div class="EventTotals__billing__line__price">
                                         {formatAmount(totalDiscountable, currency)}
                                     </div>
                                 </div>
                             )}
-                            <div class="EventTotals__line">
-                                <div class="EventTotals__line__title">
-                                    {__('discount-rate', { rate: discountRate })}
+                            <div class="EventTotals__billing__line">
+                                <div class="EventTotals__billing__line__title">
+                                    {__('discount-rate', { rate: discountRate.toString() })}
                                 </div>
-                                <div class="EventTotals__line__price">
+                                <div class="EventTotals__billing__line__price">
                                     - {formatAmount(totalDiscount, currency)}
                                 </div>
                             </div>
-                            <div class="EventTotals__line EventTotals__line--grand-total">
-                                <div class="EventTotals__line__title">
+                            <div class="EventTotals__billing__line EventTotals__billing__line--grand-total">
+                                <div class="EventTotals__billing__line__title">
                                     {__('total-after-discount')}
                                 </div>
-                                <div class="EventTotals__line__price">
+                                <div class="EventTotals__billing__line__price">
                                     {formatAmount(totalWithoutTaxes, currency)}
                                 </div>
                             </div>
-                        </Fragment>
+                        </div>
                     )}
                     {useTaxes && (
-                        <Fragment>
-                            <div class="EventTotals__line">
-                                <div class="EventTotals__line__title">
+                        <div class="EventTotals__billing__group">
+                            <div class="EventTotals__billing__line">
+                                <div class="EventTotals__billing__line__title">
                                     {__('total-taxes')} {vatRate.toNumber()}%
                                 </div>
-                                <div class="EventTotals__line__price">
+                                <div class="EventTotals__billing__line__price">
                                     {formatAmount(totalTaxes, currency)}
                                 </div>
                             </div>
-                            <div class="EventTotals__line EventTotals__line--grand-total">
-                                <div class="EventTotals__line__title">
+                            <div class="EventTotals__billing__line EventTotals__billing__line--grand-total">
+                                <div class="EventTotals__billing__line__title">
                                     {__('total-with-taxes')}
                                 </div>
-                                <div class="EventTotals__line__price">
+                                <div class="EventTotals__billing__line__price">
                                     {formatAmount(totalWithTaxes, currency)}
                                 </div>
                             </div>
-                        </Fragment>
+                        </div>
                     )}
                     {(!hasDiscount && isNotFullyDiscountable) && (
-                        <div class="EventTotals__line EventTotals__line--secondary">
-                            <div class="EventTotals__line__title">
+                        <div class="EventTotals__billing__line EventTotals__billing__line--secondary">
+                            <div class="EventTotals__billing__line__title">
                                 {__('total-discountable')}
                             </div>
-                            <div class="EventTotals__line__price">
+                            <div class="EventTotals__billing__line__price">
                                 {formatAmount(totalDiscountable, currency)}
                             </div>
                         </div>

@@ -10,8 +10,7 @@ const MinimalistLayout = defineComponent({
     name: 'MinimalistLayout',
     computed: {
         version(): string {
-            const { version } = config.api;
-            return version;
+            return config.version;
         },
     },
     render() {
@@ -30,10 +29,25 @@ const MinimalistLayout = defineComponent({
                 </div>
                 <div class="MinimalistLayout__footer">
                     {__('layout.minimalist.footer-text')}<br />
-                    | <a href="https://robertmanager.org" target="_blank" rel="noreferrer">{__('external-links.official-website')}</a>{' '}
-                    | <a href="https://forum.robertmanager.org" target="_blank" rel="noreferrer">{__('external-links.community-forum')}</a>{' '}
-                    | <a href="https://github.com/robert-2/Robert2" target="_blank" rel="noreferrer">{__('external-links.github-repository')}</a>{' '}
-                    | v{version}
+                    <a
+                        class="MinimalistLayout__footer__link"
+                        href="https://robertmanager.org"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        {__('external-links.official-website')}
+                    </a>
+                    {' '}|{' '}
+                    <a
+                        class="MinimalistLayout__footer__link"
+                        href="https://forum.robertmanager.org"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        {__('external-links.community-forum')}
+                    </a>
+                    {' '}|{' '}
+                    v{version}
                 </div>
             </div>
         );

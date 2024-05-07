@@ -11,8 +11,7 @@ export default {
     },
     data() {
         const year = (new Date()).getFullYear();
-        const { version } = config.api;
-        return { year, version };
+        return { year, version: config.version };
     },
     render() {
         const { isOpen, year, version } = this;

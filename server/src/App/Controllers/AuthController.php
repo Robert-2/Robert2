@@ -7,19 +7,18 @@ use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Config\Config;
-use Loxya\Http\Enums\AppContext;
 use Loxya\Http\Enums\FlashType;
 use Loxya\Http\Request;
 use Loxya\Models\User;
 use Loxya\Services\Auth;
-use Psr\Http\Message\ResponseInterface;
 use Loxya\Services\Auth\Exceptions\AuthException;
 use Odan\Session\FlashInterface;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
 
-class AuthController extends BaseController
+final class AuthController extends BaseController
 {
     private FlashInterface $flash;
 
@@ -38,7 +37,7 @@ class AuthController extends BaseController
 
     public function getSelf(Request $request, Response $response): ResponseInterface
     {
-        $user = Auth::user()->serialize(User::SERIALIZE_DETAILS);
+        $user = Auth::user()->serialize(User::SERIALIZE_SESSION);
 
         return $response->withJson($user, StatusCode::STATUS_OK);
     }
@@ -47,7 +46,6 @@ class AuthController extends BaseController
     {
         $identifier = $request->getParsedBodyParam('identifier');
         $password = $request->getParsedBodyParam('password');
-        $context = $request->getParsedBodyParam('context', AppContext::INTERNAL);
 
         if (empty($identifier) || empty($password)) {
             throw new HttpBadRequestException($request, "Insufficient credentials provided.");
@@ -55,11 +53,11 @@ class AuthController extends BaseController
 
         try {
             $user = User::fromLogin($identifier, $password);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException) {
             throw new HttpUnauthorizedException($request, "Wrong credentials provided.");
         }
 
-        $result = $user->serialize(User::SERIALIZE_DETAILS);
+        $result = $user->serialize(User::SERIALIZE_SESSION);
 
         $result['token'] = Auth\JWT::generateToken($user);
         if (Config::getEnv() === 'test') {
@@ -76,8 +74,8 @@ class AuthController extends BaseController
 
         try {
             return $this->auth->logout($redirectUrl);
-        } catch (AuthException $e) {
-            $this->flash->add(FlashType::ERROR, 'logout-failed');
+        } catch (AuthException) {
+            $this->flash->add(FlashType::ERROR->value, 'logout-failed');
             $redirectUrl = (string) Config::getBaseUri();
             return $response->withRedirect($redirectUrl);
         }

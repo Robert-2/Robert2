@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
+use Cake\Database\Query;
+use Cake\Database\Query\DeleteQuery;
 use Loxya\Config\Config;
 use Loxya\Support\Str;
+use Phinx\Migration\AbstractMigration;
 
 final class AddPublicCalendarSettings extends AbstractMigration
 {
@@ -25,15 +27,17 @@ final class AddPublicCalendarSettings extends AbstractMigration
     public function down(): void
     {
         $prefix = Config::get('db.prefix');
-        $builder = $this->getQueryBuilder();
-        $builder
+
+        /** @var DeleteQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_DELETE);
+        $qb
             ->delete(sprintf('%ssettings', $prefix))
-            ->where(function ($exp) {
-                return $exp->in('key', [
+            ->where(static fn ($exp) => (
+                $exp->in('key', [
                     'calendar.public.enabled',
                     'calendar.public.uuid',
-                ]);
-            })
+                ])
+            ))
             ->execute();
     }
 }

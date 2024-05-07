@@ -12,6 +12,11 @@ event-summary:
     display-legal-numbers: Display legal numbers?
     material-list: Materials list
     display-mode: Display mode
+    display-replacement-prices: "Display replacement prices?"
+    display-descriptions: "Display descriptions?"
+    display-tags: "Display associated tags?"
+    display-units-serial-numbers: "Display serial numbers of units?"
+    display-pictures: "Display pictures (thumbnails)?"
     list-display-mode-categories: Sorted by categories
     list-display-mode-sub-categories: Sorted by sub-categories
     list-display-mode-parks: Sorted by parks

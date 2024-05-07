@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class CreateGroupsOfUsers extends AbstractMigration
 {
@@ -31,11 +31,11 @@ final class CreateGroupsOfUsers extends AbstractMigration
 
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = 'admin' WHERE `group_id` = '1'",
-            $prefix
+            $prefix,
         ));
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = 'member' WHERE `group_id` = '2'",
-            $prefix
+            $prefix,
         ));
 
         $users
@@ -60,11 +60,11 @@ final class CreateGroupsOfUsers extends AbstractMigration
 
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = '1' WHERE `group_id` = 'admin'",
-            $prefix
+            $prefix,
         ));
         $this->execute(sprintf(
             "UPDATE `%susers` SET `group_id` = '2' WHERE `group_id` = 'member'",
-            $prefix
+            $prefix,
         ));
 
         $users

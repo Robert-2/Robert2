@@ -1,39 +1,66 @@
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
 
-//
-// - Types
-//
+import type { SchemaInfer } from '@/utils/validation';
 
-export type Tag = {
-    id: number,
-    name: string,
-};
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
+
+export const TagSchema = z.strictObject({
+    id: z.number(),
+    name: z.string(),
+});
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Tag = SchemaInfer<typeof TagSchema>;
+
+//
+// - Edition
+//
 
 export type TagEdit = {
     name: string,
 };
 
+//
+// - Récupération
+//
+
 type GetAllParams = { deleted?: boolean };
 
-//
-// - Fonctions
-//
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
 
-const all = async (params: GetAllParams): Promise<Tag[]> => (
-    (await requester.get('/tags', { params })).data
-);
+const all = async (params: GetAllParams = {}): Promise<Tag[]> => {
+    const response = await requester.get('/tags', { params });
+    return TagSchema.array().parse(response.data);
+};
 
-const create = async (data: TagEdit): Promise<Tag> => (
-    (await requester.post('/tags', data)).data
-);
+const create = async (data: TagEdit): Promise<Tag> => {
+    const response = await requester.post('/tags', data);
+    return TagSchema.parse(response.data);
+};
 
-const update = async (id: Tag['id'], data: TagEdit): Promise<Tag> => (
-    (await requester.put(`/tags/${id}`, data)).data
-);
+const update = async (id: Tag['id'], data: TagEdit): Promise<Tag> => {
+    const response = await requester.put(`/tags/${id}`, data);
+    return TagSchema.parse(response.data);
+};
 
-const restore = async (id: Tag['id']): Promise<Tag> => (
-    (await requester.put(`/tags/restore/${id}`)).data
-);
+const restore = async (id: Tag['id']): Promise<Tag> => {
+    const response = await requester.put(`/tags/restore/${id}`);
+    return TagSchema.parse(response.data);
+};
 
 const remove = async (id: Tag['id']): Promise<void> => {
     await requester.delete(`/tags/${id}`);

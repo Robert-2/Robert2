@@ -1,21 +1,20 @@
-import moment from 'moment';
 import { BookingEntity } from '@/stores/api/bookings';
 
-import type { BookingSummary } from '@/stores/api/bookings';
+import type DateTime from '@/utils/datetime';
+import type { BookingContext } from '../_types';
 
-const getTimelineBookingClassNames = (booking: BookingSummary, now: number = Date.now()): string[] => {
+const getTimelineBookingClassNames = (context: BookingContext, now: DateTime): string[] => {
+    const { isExcerpt, booking } = context;
+    const isOngoing = now.isBetween(booking.mobilization_period);
+    const isPast = booking.mobilization_period.isBefore(now);
+    const isFuture = !booking.mobilization_period.isBeforeOrDuring(now);
     const {
-        start_date: startDate,
-        end_date: endDate,
         is_archived: isArchived,
-        has_missing_materials: hasMissingMaterials,
         is_return_inventory_done: isReturnInventoryDone,
         has_not_returned_materials: hasNotReturnedMaterials,
     } = booking;
-    const isOngoing = moment(now).isBetween(startDate, endDate, 'day', '[]');
-    const isPast = moment(endDate).isBefore(now, 'day');
 
-    // - Si c'est une réservation, elle est automatiquement confirmée.
+    // - Si ce n'est pas un événement, c'est automatiquement confirmé.
     const isConfirmed = booking.entity === BookingEntity.EVENT
         ? booking.is_confirmed
         : true;
@@ -44,9 +43,9 @@ const getTimelineBookingClassNames = (booking: BookingSummary, now: number = Dat
 
     const hasWarnings = (
         // - Si le booking est en cours ou à venir et qu'il manque du matériel.
-        (!isPast && hasMissingMaterials) ||
+        (isFuture && !isExcerpt && booking.has_missing_materials) ||
 
-        // - Si le booking est passé et qu'il a du matériel manquant.
+        // - Si le booking est passé et qu'il a du matériel non retourné.
         (isPast && !isArchived && hasNotReturnedMaterials)
     );
     if (hasWarnings) {

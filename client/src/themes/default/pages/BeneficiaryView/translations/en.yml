@@ -6,13 +6,11 @@ title: "Beneficiary: \"{name}\""
 #
 
 infos:
-    reservations-allowed: Allowed.
-    reservations-no-access: No access.
     user-account: User account
     borrowings-count: Borrowings count
     no-borrowing: None.
     next-borrowings-title: Current and future borrowings
-    no-borrowing-planned: No reservations or events planned.
+    no-borrowing-planned: No events planned.
 
 billing:
     title: Estimates & Invoices
@@ -29,5 +27,5 @@ borrowings:
     title: Borrowings ({count})
     nothing-to-show: This beneficiary has not taken out any borrowings.
     done: Done
-    currently-out: In progress
-    expected-to-be-out-on: Scheduled for {date}
+    currently-mobilized: In progress
+    mobilized-starting-from: Scheduled for {date}

@@ -2,9 +2,12 @@
 declare(strict_types=1);
 
 use Cake\Database\Expression\QueryExpression;
+use Cake\Database\Query;
+use Cake\Database\Query\SelectQuery;
+use Cake\Database\Query\UpdateQuery;
 use Illuminate\Support\Carbon;
-use Phinx\Migration\AbstractMigration;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class ChangeReturnQuantityColumnOfEventMaterials extends AbstractMigration
 {
@@ -32,19 +35,23 @@ final class ChangeReturnQuantityColumnOfEventMaterials extends AbstractMigration
 
         $prefix = Config::get('db.prefix');
 
-        $this->getQueryBuilder()
+        /** @var UpdateQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+        $qb
             ->update(sprintf('%sevent_materials', $prefix))
             ->set([
                 'quantity_returned' => null,
                 'quantity_returned_broken' => null,
             ])
             ->where(function (QueryExpression $expression) use ($prefix) {
-                $eventsIds = $this->getQueryBuilder()
+                /** @var SelectQuery $qb */
+                $qb = $this->getQueryBuilder(Query::TYPE_SELECT);
+                $eventsIds = $qb
                     ->select('id')
                     ->from(sprintf('%sevents', $prefix))
-                    ->where(function (QueryExpression $subExpression) {
-                        return $subExpression->gt('start_date', Carbon::today());
-                    });
+                    ->where(static fn (QueryExpression $subExpression) => (
+                        $subExpression->gt('start_date', Carbon::today())
+                    ));
                 return $expression->in('event_id', $eventsIds);
             })
             ->where(['quantity_returned' => 0])
@@ -55,13 +62,17 @@ final class ChangeReturnQuantityColumnOfEventMaterials extends AbstractMigration
     {
         $prefix = Config::get('db.prefix');
 
-        $this->getQueryBuilder()
+        /** @var UpdateQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+        $qb
             ->update(sprintf('%sevent_materials', $prefix))
             ->set(['quantity_returned' => '0'])
             ->where(['quantity_returned IS' => null])
             ->execute();
 
-        $this->getQueryBuilder()
+        /** @var UpdateQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+        $qb
             ->update(sprintf('%sevent_materials', $prefix))
             ->set(['quantity_returned_broken' => '0'])
             ->where(['quantity_returned_broken IS' => null])

@@ -41,6 +41,7 @@ const SearchEvents = defineComponent({
             default: null,
         },
     },
+    emits: ['select'],
     setup: (): InstanceProperties => ({
         handleSearchDebounced: undefined,
     }),

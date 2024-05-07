@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Casts\AsDecimal;
+use Respect\Validation\Validator as V;
 
 /**
  * Matériel dans une facture.
@@ -70,7 +70,7 @@ final class InvoiceMaterial extends BaseModel
             return true;
         }
 
-        $material = Material::find($value);
+        $material = Material::withTrashed()->find($value);
         if (!$material) {
             return false;
         }

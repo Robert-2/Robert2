@@ -1,7 +1,7 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
-import moment from 'moment';
+import DateTime from '@/utils/datetime';
+import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import { ReturnInventoryMode } from '@/stores/api/settings';
@@ -18,7 +18,7 @@ import Footer from './components/Footer';
 import type { ComponentRef } from 'vue';
 import type { Settings } from '@/stores/api/settings';
 import type {
-    Event,
+    EventDetails,
     EventMaterial,
 } from '@/stores/api/events';
 import type {
@@ -34,18 +34,19 @@ type InstanceProperties = {
 
 type Data = (
     & {
-        id: Event['id'],
+        id: EventDetails['id'],
         inventory: InventoryData,
         displayGroup: DisplayGroup,
         criticalError: string | null,
         isSaved: boolean,
         isSaving: boolean,
+        isCancelling: boolean,
         inventoryErrors: InventoryMaterialError[] | null,
-        now: number,
+        now: DateTime,
     }
     & (
         | { isFetched: false, event: null }
-        | { isFetched: true, event: Event }
+        | { isFetched: true, event: EventDetails }
     )
 );
 
@@ -64,9 +65,10 @@ const EventReturn = defineComponent({
             isFetched: false,
             isSaved: false,
             isSaving: false,
+            isCancelling: false,
             criticalError: null,
             inventoryErrors: null,
-            now: Date.now(),
+            now: DateTime.now(),
         };
     },
     computed: {
@@ -87,12 +89,12 @@ const EventReturn = defineComponent({
                 return false;
             }
 
-            // NOTE: C'est la date de début d'événement qui fait foi pour permettre
+            // NOTE: C'est la date de début de réservation qui fait foi pour permettre
             //       le retour, pas la date de début de mobilisation.
-            //       (sans quoi on pourrait faire le retour d'un événement avant même
-            //       qu'il ait réellement commencé, ce qui n'a pas de sens).
-            const startDate = moment(this.event.start_date);
-            return startDate.isSameOrBefore(this.now, 'day');
+            //       (sans quoi on pourrait faire le retour d'une réservation avant même
+            //       qu'il ait réellement commencée, ce qui n'a pas de sens).
+            const { operation_period: operationPeriod } = this.event;
+            return operationPeriod.isBeforeOrDuring(this.now);
         },
 
         hasMaterials(): boolean {
@@ -100,6 +102,12 @@ const EventReturn = defineComponent({
                 return false;
             }
             return this.event.materials.length > 0;
+        },
+
+        hasBroken(): boolean {
+            return this.inventory.some(
+                ({ broken }: InventoryMaterial) => broken > 0,
+            );
         },
 
         hasMaterialShortage(): boolean {
@@ -134,17 +142,9 @@ const EventReturn = defineComponent({
                 return false;
             }
 
-            // FIXME: À re-activer lorsque les inventaires de retour terminés
-            //        rendront disponibles les stocks utilisés dans l'événement
-            //        (en bougeant la date de fin de mobilisation) OU quand la
-            //        gestion horaire aura été implémentée.
-            //        Sans ça, pour les événements qui partent juste après un autre
-            //        dont l'inventaire de retour a été terminé, sur un même jour,
-            //        on est bloqué car le système pense qu'il y a une pénurie.
-            // // - Si l'inventaire est déjà effectué, il est visualisable, sinon
-            // //   l'événement ne doit pas contenir de pénurie.
-            // return this.isDone || !this.hasMaterialShortage;
-            return true;
+            // - Si l'inventaire est déjà effectué, il est visualisable, sinon
+            //   l'événement ne doit pas contenir de pénurie.
+            return this.isDone || !this.hasMaterialShortage;
         },
 
         isEditable(): boolean {
@@ -164,22 +164,41 @@ const EventReturn = defineComponent({
             });
         },
 
-        canTerminate(): boolean {
-            if (!this.event || !this.isEditable) {
+        isCancellable(): boolean {
+            const { event, hasBroken } = this;
+
+            // - Si l'inventaire n'est pas fait, il n'y a rien à annuler.
+            if (!event || !this.isDone) {
                 return false;
             }
 
-            // FIXME: Cette condition devra être supprimée lorsque les dates de
-            //        mobilisation auront été implémentées.
-            const endDate = moment(this.event.end_date);
-            return endDate.isSameOrBefore(this.now, 'day');
+            // - Si l'événement est archivé, on ne permet pas d'annuler l'inventaire.
+            if (event.is_archived) {
+                return false;
+            }
+
+            // - S'il n'y a pas de matériel cassé, on permet l'annulation de
+            //   l'inventaire quelque soit le moment ou il a été terminé.
+            //   Sinon, l'inventaire est annulable pendant 1 semaine après
+            //   l'avoir marqué comme terminé.
+            return (
+                !hasBroken ||
+                (
+                    event.return_inventory_datetime
+                        ?.isAfter(this.now.subWeek()) ?? false
+                )
+            );
+        },
+
+        canTerminate(): boolean {
+            return this.event !== null && this.isEditable;
         },
     },
     mounted() {
         this.fetchData();
 
         // - Actualise le timestamp courant toutes les minutes.
-        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
+        this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 10_000);
     },
     beforeDestroy() {
         if (this.nowTimer) {
@@ -242,6 +261,35 @@ const EventReturn = defineComponent({
             await this.save(true);
         },
 
+        async handleCancel() {
+            if (!this.isCancellable || this.isCancelling) {
+                return;
+            }
+            this.isCancelling = true;
+            const { __, event, hasBroken } = this;
+
+            const isConfirmed = await confirm({
+                type: 'danger',
+                title: __('confirm-rollback-title'),
+                text: hasBroken
+                    ? __('confirm-rollback-with-broken-text')
+                    : __('confirm-rollback-text'),
+            });
+            if (!isConfirmed) {
+                this.isCancelling = false;
+                return;
+            }
+
+            try {
+                const updatedEvent = await apiEvents.cancelReturnInventory(event!.id);
+                this.setEvent(updatedEvent);
+            } catch {
+                this.$toasted.error(__('global.errors.unexpected'));
+            } finally {
+                this.isCancelling = false;
+            }
+        },
+
         // ------------------------------------------------------
         // -
         // -    Méthodes internes
@@ -273,7 +321,7 @@ const EventReturn = defineComponent({
             this.isSaving = true;
             const { __, inventory } = this;
 
-            const doRequest = (): Promise<Event> => (
+            const doRequest = (): Promise<EventDetails> => (
                 finish
                     ? apiEvents.finishReturnInventory(this.id, inventory)
                     : apiEvents.updateReturnInventory(this.id, inventory)
@@ -306,7 +354,7 @@ const EventReturn = defineComponent({
             }
         },
 
-        setEvent(event: Event) {
+        setEvent(event: EventDetails) {
             this.event = event;
 
             const { is_return_inventory_started: isReturnInventoryStarted } = event;
@@ -344,16 +392,17 @@ const EventReturn = defineComponent({
             isFetched,
             criticalError,
             inventoryErrors,
-            // isDone,
+            isDone,
             isSaving,
             isArchived,
             isEditable,
             isViewable,
             canTerminate,
             hasMaterials,
-            // hasMaterialShortage,
+            hasMaterialShortage,
             isInventoryPeriodOpen,
             handleSave,
+            handleCancel,
             handleTerminate,
             handleChangeInventory,
             handleChangeDisplayGroup,
@@ -361,7 +410,7 @@ const EventReturn = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="event-return" title={pageTitle}>
+                <Page name="event-return" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
@@ -392,21 +441,14 @@ const EventReturn = defineComponent({
                     />
                 );
             }
-            // FIXME: À re-activer lorsque les inventaires de retour terminés
-            //        rendront disponibles les stocks utilisés dans l'événement
-            //        (en bougeant la date de fin de mobilisation) OU quand la
-            //        gestion horaire aura été implémentée.
-            //        Sans ça, pour les événements qui partent juste après un autre
-            //        dont l'inventaire de retour a été terminé, sur un même jour,
-            //        on est bloqué car le système pense qu'il y a une pénurie.
-            // if (!isDone && hasMaterialShortage) {
-            //     return (
-            //         <Unavailable
-            //             event={event}
-            //             reason={UnavailabilityReason.MATERIAL_SHORTAGE}
-            //         />
-            //     );
-            // }
+            if (!isDone && hasMaterialShortage) {
+                return (
+                    <Unavailable
+                        event={event}
+                        reason={UnavailabilityReason.MATERIAL_SHORTAGE}
+                    />
+                );
+            }
 
             return (
                 <Inventory
@@ -416,6 +458,7 @@ const EventReturn = defineComponent({
                     displayGroup={displayGroup}
                     canTerminate={canTerminate}
                     onChange={handleChangeInventory}
+                    onRequestCancel={handleCancel}
                 />
             );
         };

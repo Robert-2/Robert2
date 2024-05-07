@@ -16,10 +16,11 @@ const InputImage = defineComponent({
             default: null,
         },
         uploading: {
-            type: [Number, Boolean],
+            type: [Boolean, Number],
             default: false,
         },
     },
+    emits: ['change'],
     computed: {
         isEmpty() {
             return [undefined, null].includes(this.value);
@@ -95,7 +96,6 @@ const InputImage = defineComponent({
     render() {
         const {
             $t: __,
-            url,
             imageSrc,
             uploadProgress,
             isEmpty,
@@ -106,7 +106,7 @@ const InputImage = defineComponent({
         } = this;
 
         const className = ['InputImage', {
-            'InputImage--empty': !url,
+            'InputImage--empty': isEmpty,
         }];
 
         return (
@@ -125,7 +125,7 @@ const InputImage = defineComponent({
                 {!isUploading && (
                     <div class="InputImage__actions">
                         <Button
-                            type="success"
+                            type={isEmpty ? 'success' : 'default'}
                             icon={isEmpty ? 'plus' : 'sync'}
                             onClick={handleSelectFile}
                         >

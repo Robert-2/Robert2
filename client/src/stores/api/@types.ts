@@ -1,3 +1,7 @@
+//
+// - Types liés à la pagination / tri.
+//
+
 /** Sens de tri. */
 export enum Direction {
     /** Direction ascendante. */
@@ -49,6 +53,42 @@ export type ListingParams = (
     & PaginationParams
 );
 
+//
+// - Types liés aux imports.
+//
+
+export type CsvDelimiter = ',' | ';' | ':' | `\t`;
+
+export type CsvMapping = Record<string, string | null>;
+
+export type CsvImport<T extends CsvMapping> = {
+    mapping: T,
+    file: File,
+    delimiter: CsvDelimiter,
+};
+
+export type CsvColumnError<T extends CsvMapping = CsvMapping> = {
+    field: keyof T | string,
+    value: string | null,
+    error: string,
+};
+
+export type CsvImportError<T extends CsvMapping = CsvMapping> = {
+    line: number,
+    message: string,
+    errors: Array<CsvColumnError<T>>,
+};
+
+export type CsvImportResults<T extends CsvMapping = CsvMapping> = {
+    total: number,
+    success: number,
+    errors: Array<CsvImportError<T>>,
+};
+
+//
+// - Enveloppes.
+//
+
 export type PaginatedData<T> = {
     data: T,
     pagination: {
@@ -61,35 +101,7 @@ export type PaginatedData<T> = {
     },
 };
 
-export type WithCount<T> = {
-    count: number,
+export type CountedData<T> = {
     data: T,
-};
-
-// - Types liés aux imports
-
-export type CsvDelimiter = ',' | ';' | ':' | `\t`;
-
-export type CsvImport<Mapping extends Record<string, string | null>> = {
-    mapping: Mapping,
-    delimiter: CsvDelimiter,
-    file: File,
-};
-
-export type CsvColumnError<Mapping extends Record<string, string | null>> = {
-    field: keyof Mapping,
-    value: string,
-    error: string,
-};
-
-export type CsvImportError<Mapping extends Record<string, string | null>> = {
-    line: number,
-    message: string,
-    errors: Array<CsvColumnError<Mapping>>,
-};
-
-export type CsvImportResults<Mapping extends Record<string, string | null>> = {
-    total: number,
-    success: number,
-    errors: Array<CsvImportError<Mapping>>,
+    count: number,
 };

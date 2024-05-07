@@ -2,7 +2,6 @@ import './index.scss';
 import Vue from 'vue';
 import vuexI18n from 'vuex-i18n';
 import vueCompositionApi from '@vue/composition-api';
-import { VueQueryPlugin as vueQueryPlugin } from 'vue-query';
 import VueJsModal from 'vue-js-modal/dist/index.nocss';
 import { VTooltip } from 'v-tooltip';
 import { ClientTable, ServerTable } from 'vue-tables-2-premium';
@@ -10,8 +9,8 @@ import Toasted from 'vue-toasted';
 import Portal from 'portal-vue';
 import config from '@/globals/config';
 import { getDefaultLang, getLang } from '@/globals/lang';
+import { init as initRawDateTime } from '@/globals/rawDatetime';
 import initMoment from '@/globals/init/moment';
-import queryClient from '@/globals/queryClient';
 import requester from '@/globals/requester';
 import store from '@/themes/default/globals/store';
 import router from '@/themes/default/globals/router';
@@ -24,9 +23,6 @@ Vue.config.productionTip = false;
 // - Vue Composition API.
 Vue.use(vueCompositionApi);
 
-// - Vue query.
-Vue.use(vueQueryPlugin, { queryClient });
-
 // - HTTP (Ajax) lib.
 Vue.prototype.$http = requester;
 
@@ -35,7 +31,7 @@ Vue.use(VueJsModal, {
     dialog: true,
     dynamic: true,
     dynamicDefaults: {
-        width: 900,
+        width: 950,
         height: 'auto',
         adaptive: true,
         minHeight: 300,
@@ -67,6 +63,7 @@ Vue.i18n.set((
 ));
 
 initMoment();
+initRawDateTime();
 
 // - Tables (order, pagination)
 const tablesConfig = {
@@ -123,7 +120,7 @@ const boot = async () => {
         await store.dispatch('settings/fetch');
     }
 
-    // eslint-disable-next-line no-new
+    // eslint-disable-next-line no-new, vue/require-name-property
     new Vue({
         el: '#app',
         store,

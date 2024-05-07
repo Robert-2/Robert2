@@ -5,7 +5,7 @@ help: Vous pouvez choisir un parc, une catégorie ou des tags pour filtrer le ma
 action-add: Nouveau matériel
 manage-attributes: Gérer les caractéristiques spéciales
 print-complete-list: Imprimer la liste complète du matériel
-date-to-display-available-quantities: Dates à utiliser pour afficher les quantités disponibles
+period-to-display-available-quantities: Période à utiliser pour afficher les quantités disponibles.
 
 available-qty-total-qty: "Qté dispo.\_/\_Qté totale"
 

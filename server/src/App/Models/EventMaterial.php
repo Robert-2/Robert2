@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
+use Adbar\Dot as DotArray;
 use Brick\Math\BigDecimal as Decimal;
 use Brick\Math\RoundingMode;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
-use Respect\Validation\Validator as V;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Models\Traits\TransientAttributes;
+use Respect\Validation\Validator as V;
 
 /**
  * Matériel utilisé dans un événement.
@@ -41,6 +42,10 @@ final class EventMaterial extends BaseModel implements Serializable
 
     protected $table = 'event_materials';
     public $timestamps = false;
+
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_WITH_QUANTITY_MISSING = 'with-quantity-missing';
 
     protected $attributes = [
         'departure_comment' => null,
@@ -82,7 +87,7 @@ final class EventMaterial extends BaseModel implements Serializable
     {
         V::notEmpty()->numericVal()->check($value);
 
-        $material = Material::find($value);
+        $material = Material::withTrashed()->find($value);
         if (!$material) {
             return false;
         }
@@ -96,7 +101,7 @@ final class EventMaterial extends BaseModel implements Serializable
     {
         $quantityChecker = V::intVal()->min(0);
 
-        $quantity = $this->getAttributeFromArray('quantity');
+        $quantity = $this->getAttributeUnsafeValue('quantity');
         $isValidQuantity = V::intVal()->min(1)->validate($quantity);
         if ($isValidQuantity) {
             $quantityChecker->max($quantity);
@@ -134,8 +139,8 @@ final class EventMaterial extends BaseModel implements Serializable
     public function checkQuantityReturned()
     {
         $quantityChecker = V::intVal()->min(0);
-        if (V::intVal()->min(1)->validate($this->getAttributeFromArray('quantity'))) {
-            $quantityChecker->max($this->getAttributeFromArray('quantity'));
+        if (V::intVal()->min(1)->validate($this->getAttributeUnsafeValue('quantity'))) {
+            $quantityChecker->max($this->getAttributeUnsafeValue('quantity'));
         }
         return V::anyOf(V::nullType(), $quantityChecker);
     }
@@ -143,15 +148,15 @@ final class EventMaterial extends BaseModel implements Serializable
     public function checkQuantityReturnedBroken($value)
     {
         $quantityChecker = V::intVal()->min(0);
-        if (V::intVal()->min(1)->validate($this->getAttributeFromArray('quantity'))) {
-            $quantityChecker->max($this->getAttributeFromArray('quantity'));
+        if (V::intVal()->min(1)->validate($this->getAttributeUnsafeValue('quantity'))) {
+            $quantityChecker->max($this->getAttributeUnsafeValue('quantity'));
         }
 
         $looseQuantityChecker = V::anyOf(V::nullType(), $quantityChecker);
         $looseQuantityChecker->check($value);
 
         // - Le champ `quantity_returned` n'est pas valide, on ne peut pas aller plus loin.
-        $quantityReturned = $this->getAttributeFromArray('quantity_returned');
+        $quantityReturned = $this->getAttributeUnsafeValue('quantity_returned');
         if (!$looseQuantityChecker->validate($quantityReturned)) {
             return true;
         }
@@ -200,7 +205,7 @@ final class EventMaterial extends BaseModel implements Serializable
         if (!$this->material) {
             throw new \LogicException(
                 'The event material\'s related material is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->material->is_discountable;
@@ -221,7 +226,7 @@ final class EventMaterial extends BaseModel implements Serializable
         if (!$this->hasTransientAttribute('quantity_missing')) {
             throw new \LogicException(
                 'The `quantity_missing` attribute should be set ' .
-                'by the parent event before being accessed.'
+                'by the parent event before being accessed.',
             );
         }
         return $this->getTransientAttribute('quantity_missing');
@@ -232,7 +237,7 @@ final class EventMaterial extends BaseModel implements Serializable
         if (!$this->material) {
             throw new \LogicException(
                 'The event material\'s related material is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
 
@@ -264,7 +269,7 @@ final class EventMaterial extends BaseModel implements Serializable
         if (!$this->material) {
             throw new \LogicException(
                 'The event material\'s related material is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
 
@@ -284,15 +289,11 @@ final class EventMaterial extends BaseModel implements Serializable
         if (!$this->material) {
             throw new \LogicException(
                 'The event material\'s related material is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
 
-        if ($this->quantity_departed !== $this->quantity) {
-            return false;
-        }
-
-        return true;
+        return $this->quantity_departed === $this->quantity;
     }
 
     public function getIsReturnInventoryFilledAttribute(): bool
@@ -329,8 +330,17 @@ final class EventMaterial extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function serialize(): array
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        return $this->attributesForSerialization();
+        /** @var EventMaterial $material */
+        $material = tap(clone $this, static function (EventMaterial $eventMaterial) use ($format) {
+            if ($format === self::SERIALIZE_WITH_QUANTITY_MISSING) {
+                $eventMaterial->append(['quantity_missing']);
+            }
+        });
+
+        return (new DotArray($material->attributesForSerialization()))
+            ->delete(['id', 'event_id', 'material_id'])
+            ->all();
     }
 }

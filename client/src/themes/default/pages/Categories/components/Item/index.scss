@@ -29,10 +29,6 @@
         &__actions {
             display: flex;
             gap: globals.$spacing-small;
-
-            > .Button + .Button {
-                margin: 0;
-            }
         }
 
         &__dropdown-action {

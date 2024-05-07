@@ -1,39 +1,62 @@
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
+import { SubCategorySchema } from './subcategories';
 
-import type { Subcategory } from '@/stores/api/subcategories';
+import type { SchemaInfer } from '@/utils/validation';
+
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
+
+export const CategorySchema = z.object({
+    id: z.number(),
+    name: z.string(),
+});
+
+export const CategoryDetailsSchema = CategorySchema.extend({
+    sub_categories: z.lazy(() => SubCategorySchema.array()),
+});
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Category = SchemaInfer<typeof CategorySchema>;
+
+export type CategoryDetails = SchemaInfer<typeof CategoryDetailsSchema>;
 
 //
-// - Types
+// - Edition
 //
-
-export type Category = {
-    id: number,
-    name: string,
-};
-
-export type CategoryDetails = Category & {
-    sub_categories: Subcategory[],
-};
 
 export type CategoryEdit = {
     name: string,
 };
 
-//
-// - Fonctions
-//
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
 
-const all = async (): Promise<CategoryDetails[]> => (
-    (await requester.get('/categories')).data
-);
+const all = async (): Promise<CategoryDetails[]> => {
+    const response = await requester.get('/categories');
+    return CategoryDetailsSchema.array().parse(response.data);
+};
 
-const create = async (data: CategoryEdit): Promise<CategoryDetails> => (
-    (await requester.post('/categories', data)).data
-);
+const create = async (data: CategoryEdit): Promise<CategoryDetails> => {
+    const response = await requester.post('/categories', data);
+    return CategoryDetailsSchema.parse(response.data);
+};
 
-const update = async (id: Category['id'], data: CategoryEdit): Promise<CategoryDetails> => (
-    (await requester.put(`/categories/${id}`, data)).data
-);
+const update = async (id: Category['id'], data: Partial<CategoryEdit>): Promise<CategoryDetails> => {
+    const response = await requester.put(`/categories/${id}`, data);
+    return CategoryDetailsSchema.parse(response.data);
+};
 
 const remove = async (id: Category['id']): Promise<void> => {
     await requester.delete(`/categories/${id}`);

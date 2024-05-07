@@ -52,12 +52,8 @@ class Filesystem
     public function directories(?string $directory = null, bool $recursive = false): array
     {
         return $this->driver->listContents($directory ?? '', $recursive)
-            ->filter(function (StorageAttributes $attributes) {
-                return $attributes->isDir();
-            })
-            ->map(function (StorageAttributes $attributes) {
-                return $attributes->path();
-            })
+            ->filter(static fn (StorageAttributes $attributes) => $attributes->isDir())
+            ->map(static fn (StorageAttributes $attributes) => $attributes->path())
             ->toArray();
     }
 

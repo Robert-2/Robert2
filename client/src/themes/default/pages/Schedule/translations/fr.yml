@@ -1,0 +1,69 @@
+toggle:
+    calendar: Calendrier
+    listing: Liste
+
+#
+# - Sous-pages (vues)
+#
+
+calendar:
+    title: Calendrier
+    help: |-
+        Cliquez-glissez pour déplacer la frise temporelle et utilisez la molette de votre souris pour zoomer / dézoomer.
+        Survolez un événement avec la souris pour en voir les détails.
+        Double-cliquez sur un événement pour en ouvrir l'aperçu, et en modifier les détails.
+        Double-cliquez sur une colonne vide pour créer un événement avec la date de départ pré-remplie.
+
+    calendar: Calendrier
+    listing: Liste
+
+    add-event: Nouvel événement
+    event-saved: L'événement a bien été sauvegardé.
+    loading-event: Chargement de l'événement...
+    center-on-today: Centrer sur aujourd’hui
+    display-all-parks: Tous les parcs
+    display-all-categories: Toutes catégories
+    event-with-missing-material-only: "Événements en manque de matériel uniquement\_?"
+    help-add-event: Créer un nouvel événement
+    help-center-view-on-today: Centrer le calendrier sur aujourd’hui
+    help-timeline-event-operations: |-
+        Cliquez une fois pour sélectionner l'événement, afin de le déplacer, le redimensionner ou le supprimer.
+        Double-cliquez sur l'événement pour en ouvrir l'aperçu, et en modifier les détails.
+
+    caption:
+        title: "Légende\_:"
+        archived: Archivé
+        past-and-ok: Passé, inventaire fait
+        past-material-not-returned: "Matériel non retourné\_!"
+        past-no-inventory: Passé sans inventaire
+        past-not-confirmed: Passé et non confirmé
+        current-confirmed: Actuel et confirmé
+        current-not-confirmed: Actuel non confirmé
+        future-confirmed: Futur et confirmé
+        future-not-confirmed: Futur non confirmé
+
+listing:
+    title: Événements
+    add-event: Nouvel événement
+
+    calendar: Calendrier
+    listing: Liste
+
+    all-periods: Toutes périodes
+    all-states: Tous les états
+    states:
+        ending-today: Se terminant aujourd'hui
+        return-inventory-todo: Inventaire de retour à faire
+        not-confirmed: Non confirmés
+        archived: Archivés
+
+    columns:
+        title: Titre
+        mobilization-period: Période de mobilisation
+        operation-period: Période d'exploitation
+        beneficiaries: Bénéficiaire(s)
+        categories: Catégorie(s)
+        parks: Parc(s)
+
+    same-as-operation: Identique à l'exploitation.
+

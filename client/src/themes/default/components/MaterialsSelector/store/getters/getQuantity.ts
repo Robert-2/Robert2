@@ -1,4 +1,4 @@
-import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
 import type { State } from '../_types';
 
 /**
@@ -9,7 +9,7 @@ import type { State } from '../_types';
  *
  * @returns Une fonction permettant de récupérer la quantité d'un matériel en particulier dans le store.
  */
-/* eslint-disable @typescript-eslint/lines-around-comment */
+/* eslint-disable @stylistic/ts/lines-around-comment */
 const getQuantity = (state: State) => (
     /**
      * Permet de récupérer la quantité sélectionnée pour un matériel en particulier dans le store.
@@ -27,6 +27,6 @@ const getQuantity = (state: State) => (
         return Math.max(materialState.quantity, 0);
     }
 );
-/* eslint-enable @typescript-eslint/lines-around-comment */
+/* eslint-enable @stylistic/ts/lines-around-comment */
 
 export default getQuantity;

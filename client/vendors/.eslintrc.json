@@ -1,7 +1,0 @@
-{
-    "root": true,
-    "extends": "@pulsanova/node",
-    "rules": {
-        "import/no-unresolved": ["off"]
-    }
-}

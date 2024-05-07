@@ -53,6 +53,16 @@
         }
     }
 
+    &__user-pseudo-at {
+        color: globals.$text-soft-color;
+    }
+
+    &__user-group {
+        margin-left: globals.$spacing-thin;
+        color: globals.$text-soft-color;
+        text-transform: lowercase;
+    }
+
     &__company {
         &__name {
             margin: 0;

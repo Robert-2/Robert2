@@ -4,7 +4,7 @@ import HttpCode from 'status-code-enum';
 import { defineComponent } from '@vue/composition-api';
 import Icon from '@/themes/default/components/Icon';
 
-// @vue/component
+/** @deprecated */
 export default defineComponent({
     name: 'ErrorMessage',
     props: {

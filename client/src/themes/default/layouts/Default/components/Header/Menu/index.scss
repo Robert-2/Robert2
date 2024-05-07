@@ -9,10 +9,10 @@
         padding: 0 globals.$spacing-medium;
         border: none;
         border-radius: 0;
-        background-color: globals.$bg-color-main-header;
+        background-color: globals.$bg-color-emphasis;
 
         &:hover {
-            background-color: color.adjust(globals.$bg-color-main-header, $lightness: 8%);
+            background-color: color.adjust(globals.$bg-color-emphasis, $lightness: 8%);
         }
     }
 }

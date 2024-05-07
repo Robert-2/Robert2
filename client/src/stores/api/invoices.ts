@@ -1,29 +1,28 @@
-import Decimal from 'decimal.js';
+import { z } from '@/utils/validation';
 
-//
-// - Types
-//
+import type { SchemaInfer } from '@/utils/validation';
 
-export type RawInvoice<DecimalType extends string | Decimal = string> = {
-    id: number,
-    number: string,
-    date: string,
-    url: string,
-    discount_rate: DecimalType,
-    total_without_taxes: DecimalType,
-    total_with_taxes: DecimalType,
-    currency: string,
-};
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
 
-export type Invoice = RawInvoice<Decimal>;
-
-//
-// - Normalizer
-//
-
-export const normalize = (invoice: RawInvoice): Invoice => ({
-    ...invoice,
-    discount_rate: new Decimal(invoice.discount_rate),
-    total_without_taxes: new Decimal(invoice.total_without_taxes),
-    total_with_taxes: new Decimal(invoice.total_with_taxes),
+export const InvoiceSchema = z.strictObject({
+    id: z.number(),
+    number: z.string(),
+    date: z.datetime(),
+    url: z.string(),
+    discount_rate: z.decimal(),
+    total_without_taxes: z.decimal(),
+    total_with_taxes: z.decimal(),
+    currency: z.string(),
 });
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Invoice = SchemaInfer<typeof InvoiceSchema>;

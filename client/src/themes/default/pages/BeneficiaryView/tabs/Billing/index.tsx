@@ -13,7 +13,7 @@ import type { Estimate as EstimateType } from '@/stores/api/estimates';
 import type { Invoice as InvoiceType } from '@/stores/api/invoices';
 
 type Props = {
-    /* Le bénéficiaire dont on veut afficher les devis et factures. */
+    /** Le bénéficiaire dont on veut afficher les devis et factures. */
     beneficiary: BeneficiaryDetails,
 };
 
@@ -24,7 +24,7 @@ type Data = {
     invoices: InvoiceType[],
 };
 
-/* Contenu de l'onglet "devis & factures" de la page de détails d'un bénéficiaire. */
+/** Contenu de l'onglet "devis & factures" de la page de détails d'un bénéficiaire. */
 const BeneficiaryViewBilling = defineComponent({
     name: 'BeneficiaryViewBilling',
     props: {
@@ -81,7 +81,7 @@ const BeneficiaryViewBilling = defineComponent({
         if (estimates.length === 0 && invoices.length === 0) {
             return (
                 <div class="BeneficiaryViewBilling BeneficiaryViewBilling--empty">
-                    <EmptyMessage message={__('page.beneficiary-view.billing.nothing')} size="small" />
+                    <EmptyMessage message={__('page.beneficiary-view.billing.nothing')} />
                 </div>
             );
         }

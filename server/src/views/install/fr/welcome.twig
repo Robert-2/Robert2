@@ -1,28 +1,41 @@
 <div class="page__content">
     <h2>Bienvenue&nbsp;!</h2>
     <p>
-        Voici l'assistant d'installation de Loxya / Robert2, version <strong>{{version()}}</strong>.<br />
+        Voici l'assistant d'installation de Loxya, version <strong>{{version()}}</strong>.<br />
         Il va vous guider, en 5 petites étapes, pour installer et configurer votre application.
     </p>
     <p>
-        À la toute fin de cet assistant, vous serez en mesure d'utiliser Loxya / Robert2&nbsp;!<br />
-        Mais avant, vérifions si votre serveur dispose du minimum requis pour que tout fonctionne correctement.
+        À la toute fin de cet assistant, vous serez en mesure d'utiliser Loxya&nbsp;!<br />
+        Mais avant, vérifions que votre environnement dispose du minimum requis pour que tout fonctionne correctement.
     </p>
     <div class="install__check">
-        Loxya / Robert2 est compatible avec la version de PHP <strong>8.0.0</strong> et plus.
+        Loxya est compatible avec PHP de la version <strong>{{phpVersionMin}}</strong> à <strong>{{phpVersionMax}}</strong>.
         <div class="install__check-result">
-            {% if phpVersionOK %}
-            <div class="install__check-success">OK, version de PHP utilisée : {{phpVersion}}</div>
+            {% if phpversionIsAboveMax %}
+            <div class="install__check-warning">
+            Attention, votre version de PHP (<strong>{{phpVersion}}</strong>) est supérieure à la version
+            de PHP officiellement supportée par Loxya (<strong>{{phpVersionMax}}</strong>).
+            <br /><br />
+            Il est possible que cela fonctionne sans problème mais si ce n'est pas le cas,
+            il faudra attendre une release officielle.
+            </div>
+            {% elseif phpversionIsAboveMin %}
+            <div class="install__check-success">
+                OK, version de PHP utilisée : <strong>{{phpVersion}}</strong>
+            </div>
             {% else %}
             <div class="install__check-error">
-                Vous devez installer une version plus récente de PHP pour pouvoir utiliser Robert2.<br />
-                Version actuelle utilisée&nbsp;: <strong>{{phpVersion}}</strong>.
+                Votre version de PHP (<strong>{{phpVersion}}</strong>) est inférieure à la version
+                minimum requise pour exécuter Loxya (<strong>{{phpVersionMin}}</strong>).
+                <br /><br />
+                Veuillez installer au minimum PHP <strong>{{phpVersionMin}}</strong> et au
+                maximum PHP <strong>{{phpVersionMax}}</strong>.
             </div>
             {% endif %}
         </div>
     </div>
     <div class="install__check">
-        Quelques extensions PHP doivent aussi être installées sur le serveur.
+        Quelques extensions PHP doivent aussi être installées.
         <div class="install__check-result">
             {% for extension in missingExtensions %}
             <li class="install__check-error">L'extension &laquo;&nbsp;{{extension}}&nbsp;&raquo; est manquante.</li>
@@ -31,10 +44,15 @@
             {% endfor %}
         </div>
     </div>
-    {% if requirementsOK %}
+    {% if phpversionIsAboveMin and missingExtensions is empty %}
     <p>
-        Félicitations, toutes les exigences minimales sont satisfaites.
-        Vous pouvez maintenant installer Robert2.
+        {% if phpversionIsAboveMax %}
+            Mis à part la version de PHP, les autres pré-requis sont satisfaits, vous pouvez
+            donc installer Loxya si vous le souhaitez.
+        {% else %}
+            Félicitations, toutes les exigences minimales sont satisfaites.
+            Vous pouvez maintenant installer Loxya.
+        {% endif %}
     </p>
     <form method="POST" class="form">
         <div class="form__submit">
@@ -43,9 +61,9 @@
     </form>
     {% else %}
     <p>
-        Malheureusement, en l'état, <strong class="install__check-error">vous ne pouvez pas
-        installer Loxya / Robert2</strong> sur ce serveur car il ne dispose pas de la
-        configuration minimale requise. Après avoir corrigé les points soulignés
+        Malheureusement, en l'état, <strong class="install__check-error">il n'est pas possible
+        d'installer Loxya</strong> car votre environnement ne dispose pas de
+        la configuration minimale requise. Après avoir corrigé les points soulignés
         plus haut, revenez ici et réessayez&nbsp;!
     </p>
     {% endif %}

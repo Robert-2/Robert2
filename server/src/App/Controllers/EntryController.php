@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
-class EntryController extends BaseController
+final class EntryController extends BaseController
 {
     private I18n $i18n;
 
@@ -85,10 +85,10 @@ class EntryController extends BaseController
 
         return [
             'baseUrl' => (string) $baseUri,
+            'version' => Config::getVersion(),
             'api' => [
                 'url' => (string) $apiUri,
                 'headers' => $rawConfig['apiHeaders'],
-                'version' => Config::getVersion(),
             ],
             'auth' => [
                 'cookie' => $rawConfig['auth']['cookie'],
@@ -101,9 +101,9 @@ class EntryController extends BaseController
             'currency' => $rawConfig['currency'],
             'billingMode' => $rawConfig['billingMode'],
             'maxFileUploadSize' => $rawConfig['maxFileUploadSize'],
-            'colorSwatches' => $rawConfig['colorSwatches'],
             'authorizedFileTypes' => $rawConfig['authorizedFileTypes'],
             'authorizedImageTypes' => $rawConfig['authorizedImageTypes'],
+            'colorSwatches' => $rawConfig['colorSwatches'],
         ];
     }
 

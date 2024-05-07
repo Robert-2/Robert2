@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
-use Respect\Validation\Validator as V;
-use Loxya\Errors\Exception\ValidationException;
 use Illuminate\Support\Str;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Enums\PublicCalendarPeriodDisplay;
+use Respect\Validation\Validator as V;
 
 /**
  * Configuration de l'application.
@@ -45,7 +46,7 @@ final class Setting extends BaseModel
                     V::equals('categories'),
                     V::equals('sub-categories'),
                     V::equals('parks'),
-                    V::equals('flat')
+                    V::equals('flat'),
                 ),
                 'sensitive' => false,
                 'default' => 'sub-categories',
@@ -67,6 +68,30 @@ final class Setting extends BaseModel
                 'validation' => V::boolVal(),
                 'sensitive' => false,
                 'default' => true,
+            ],
+            'eventSummary.showReplacementPrices' => [
+                'type' => 'boolean',
+                'validation' => V::boolVal(),
+                'sensitive' => false,
+                'default' => true,
+            ],
+            'eventSummary.showDescriptions' => [
+                'type' => 'boolean',
+                'validation' => V::boolVal(),
+                'sensitive' => false,
+                'default' => false,
+            ],
+            'eventSummary.showTags' => [
+                'type' => 'boolean',
+                'validation' => V::boolVal(),
+                'sensitive' => false,
+                'default' => false,
+            ],
+            'eventSummary.showPictures' => [
+                'type' => 'boolean',
+                'validation' => V::boolVal(),
+                'sensitive' => false,
+                'default' => false,
             ],
 
             //
@@ -96,6 +121,16 @@ final class Setting extends BaseModel
                 'validation' => V::Uuid(4),
                 'sensitive' => true,
                 'default' => (string) Str::uuid(),
+            ],
+            'calendar.public.displayedPeriod' => [
+                'type' => 'string',
+                'validation' => V::notEmpty()->anyOf(
+                    V::equals(PublicCalendarPeriodDisplay::MOBILIZATION),
+                    V::equals(PublicCalendarPeriodDisplay::OPERATION),
+                    V::equals(PublicCalendarPeriodDisplay::BOTH),
+                ),
+                'sensitive' => false,
+                'default' => PublicCalendarPeriodDisplay::OPERATION,
             ],
 
             //
@@ -162,7 +197,7 @@ final class Setting extends BaseModel
         $type = $manifest[$this->key]['type'] ?? 'string';
         switch ($type) {
             case 'boolean':
-                return in_array($value, ['1', 'true', true], true);
+                return filter_var($value, \FILTER_VALIDATE_BOOLEAN);
 
             case 'integer':
                 return (int) $value;
@@ -198,7 +233,7 @@ final class Setting extends BaseModel
         $manifest = static::manifest();
         if (!array_key_exists($this->key, $manifest)) {
             throw new \LogicException(
-                sprintf("The configuration of the key `%s` is missing in the manifest.", $this->key)
+                sprintf("The configuration of the key `%s` is missing in the manifest.", $this->key),
             );
         }
 
@@ -213,7 +248,7 @@ final class Setting extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public static function staticEdit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): static
     {
         $errors = [];
 
@@ -229,8 +264,8 @@ final class Setting extends BaseModel
                     $value = is_string($value) ? trim($value) : $value;
                     $model->value = $value === '' ? null : $value;
                     $model->save();
-                } catch (ValidationException $error) {
-                    $errors[$key] = $error->getValidationErrors()['value'];
+                } catch (ValidationException $e) {
+                    $errors[$key] = $e->getValidationErrors()['value'];
                 }
             }
         }
@@ -239,7 +274,7 @@ final class Setting extends BaseModel
             throw new ValidationException($errors);
         }
 
-        return new static;
+        return new static();
     }
 
     // ------------------------------------------------------
@@ -261,7 +296,7 @@ final class Setting extends BaseModel
 
     protected static function allTraversable($withSensitive = true): DotArray
     {
-        $settings = new DotArray;
+        $settings = new DotArray();
 
         foreach (static::all() as $setting) {
             $settings->set($setting->key, $setting->value);

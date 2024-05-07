@@ -1,29 +1,87 @@
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
+import { Group } from './groups';
+import { withPaginationEnvelope } from './@schema';
 
-import type { PaginatedData, ListingParams } from '@/stores/api/@types';
-import type { Group } from '@/stores/api/groups';
+import type { PaginatedData, ListingParams } from './@types';
+import type { SchemaInfer } from '@/utils/validation';
+
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
+
+/**
+ * Modes d'affichage des événements.
+ *
+ * NOTE IMPORTANTE:
+ * En cas de modif., pensez à aussi mettre à jour les constantes du modèle back-end.
+ * {@see {@link /server/src/App/Models/User.php}}
+ */
+export enum BookingsViewMode {
+    /** Vue en calendrier (timeline) */
+    CALENDAR = 'calendar',
+
+    /** Vue en liste. */
+    LISTING = 'listing',
+}
+
+export const UserSchema = z.strictObject({
+    id: z.number(),
+    pseudo: z.string(),
+    first_name: z.string().nullable().transform(
+        // NOTE: Le `?` ci-dessous n'est pas idéal et doit être évité dans la mesure
+        //       du possible, mais étant donné qu'il est possible que la `person` lié
+        //       ait été supprimée, on préfère utiliser `?` en fallback plutôt que de
+        //       planter le retour.  Ceci n'est pas censé arriver mais le cas doit être
+        //       géré, au cas où.
+        (value: string | null) => value ?? '?',
+    ),
+    last_name: z.string().nullable().transform(
+        // NOTE: Le `?` ci-dessous n'est pas idéal et doit être évité dans la mesure
+        //       du possible, mais étant donné qu'il est possible que la `person` lié
+        //       ait été supprimée, on préfère utiliser `?` en fallback plutôt que de
+        //       planter le retour.  Ceci n'est pas censé arriver mais le cas doit être
+        //       géré, au cas où.
+        (value: string | null) => value ?? '?',
+    ),
+    full_name: z.string().nullable().transform(
+        // NOTE: Le `?` ci-dessous n'est pas idéal et doit être évité dans la mesure
+        //       du possible, mais étant donné qu'il est possible que la `person` lié
+        //       ait été supprimée, on préfère utiliser `?` en fallback plutôt que de
+        //       planter le retour.  Ceci n'est pas censé arriver mais le cas doit être
+        //       géré, au cas où.
+        (value: string | null) => value ?? '?',
+    ),
+    phone: z.string().nullable(),
+    // TODO [zod@>3.22.4]: Remettre `email()`.
+    email: z.string(),
+    group: z.nativeEnum(Group),
+});
+
+export const UserDetailsSchema = UserSchema;
+
+export const UserSettingsSchema = z.strictObject({
+    language: z.string(),
+    default_bookings_view: z.nativeEnum(BookingsViewMode),
+});
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type UserSettings = SchemaInfer<typeof UserSettingsSchema>;
+
+export type User = SchemaInfer<typeof UserSchema>;
+
+export type UserDetails = SchemaInfer<typeof UserDetailsSchema>;
 
 //
-// - Types
+// - Edition
 //
-
-type UserSettings = {
-    language: string,
-    notifications_enabled: boolean,
-};
-
-export type User = UserSettings & {
-    id: number,
-    group: Group,
-    pseudo: string,
-    email: string,
-    first_name: string,
-    last_name: string,
-    full_name: string,
-    phone: string | null,
-};
-
-export type UserDetails = User;
 
 export type UserEdit = {
     first_name: string | null,
@@ -35,49 +93,63 @@ export type UserEdit = {
     group: Group,
 };
 
-type UserSettingsEdit = Partial<UserSettings>;
+export type UserEditSelf = Omit<UserEdit, (
+    | 'group'
+)>;
 
-type UserEditSelf = Omit<UserEdit, 'group'>;
+export type UserSettingsEdit = Partial<UserSettings>;
+
+//
+// - Récupération
+//
 
 type GetAllParams = ListingParams & {
     deleted?: boolean,
     group?: Group,
 };
 
-//
-// - Fonctions
-//
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
 
-const all = async (params: GetAllParams): Promise<PaginatedData<User[]>> => (
-    (await requester.get('/users', { params })).data
-);
+const all = async (params: GetAllParams = {}): Promise<PaginatedData<User[]>> => {
+    const response = await requester.get('/users', { params });
+    return withPaginationEnvelope(UserSchema).parse(response.data);
+};
 
-const one = async (id: User['id'] | 'self'): Promise<UserDetails> => (
-    (await requester.get(`/users/${id}`)).data
-);
+const one = async (id: User['id'] | 'self'): Promise<UserDetails> => {
+    const response = await requester.get(`/users/${id}`);
+    return UserDetailsSchema.parse(response.data);
+};
 
-const create = async (data: UserEdit): Promise<UserDetails> => (
-    (await requester.post('/users', data)).data
-);
+const create = async (data: UserEdit): Promise<UserDetails> => {
+    const response = await requester.post('/users', data);
+    return UserDetailsSchema.parse(response.data);
+};
 
 async function update(id: 'self', data: UserEditSelf): Promise<UserDetails>;
 async function update(id: User['id'], data: UserEdit): Promise<UserDetails>;
 async function update(id: User['id'] | 'self', data: UserEdit | UserEditSelf): Promise<UserDetails> {
-    return (await requester.put(`/users/${id}`, data)).data;
+    const response = await requester.put(`/users/${id}`, data);
+    return UserDetailsSchema.parse(response.data);
 }
-/* eslint-enable func-style */
 
-const getSettings = async (id: User['id']): Promise<UserSettings> => (
-    (await requester.get(`/users/${id}/settings`)).data
-);
+const getSettings = async (id: User['id'] | 'self'): Promise<UserSettings> => {
+    const response = await requester.get(`/users/${id}/settings`);
+    return UserSettingsSchema.parse(response.data);
+};
 
-const saveSettings = async (id: User['id'], data: UserSettingsEdit): Promise<UserSettings> => (
-    (await requester.put(`/users/${id}/settings`, data)).data
-);
+const updateSettings = async (id: User['id'] | 'self', data: UserSettingsEdit): Promise<UserSettings> => {
+    const response = await requester.put(`/users/${id}/settings`, data);
+    return UserSettingsSchema.parse(response.data);
+};
 
-const restore = async (id: User['id']): Promise<UserDetails> => (
-    (await requester.put(`/users/restore/${id}`)).data
-);
+const restore = async (id: User['id']): Promise<UserDetails> => {
+    const response = await requester.put(`/users/restore/${id}`);
+    return UserDetailsSchema.parse(response.data);
+};
 
 const remove = async (id: User['id']): Promise<void> => {
     await requester.delete(`/users/${id}`);
@@ -89,7 +161,7 @@ export default {
     create,
     update,
     getSettings,
-    saveSettings,
+    updateSettings,
     restore,
     remove,
 };

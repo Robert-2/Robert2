@@ -2,12 +2,7 @@
 
 .EventDepartureInventory {
     &__summary {
-        margin: 0;
         margin-bottom: globals.$spacing-large;
-        color: #fff;
-        font-size: 1.1rem;
-        font-weight: 600;
-        text-align: center;
 
         &::after {
             content: '';
@@ -16,6 +11,21 @@
             height: 1px;
             margin: globals.$spacing-medium auto;
             background-color: globals.$divider-color;
+        }
+
+        &__message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: globals.$spacing-small;
+
+            &__text {
+                margin: 0;
+                color: #fff;
+                font-size: 1.1rem;
+                font-weight: 600;
+                text-align: center;
+            }
         }
     }
 

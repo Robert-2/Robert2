@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
-class CategoryController extends BaseController
+final class CategoryController extends BaseController
 {
     use Crud\HardDelete;
 
@@ -33,7 +33,7 @@ class CategoryController extends BaseController
             ->with(['subCategories'])
             ->get();
 
-        $categories = $categories->map(fn($category) => static::_formatOne($category));
+        $categories = $categories->map(static fn ($category) => static::_formatOne($category));
         return $response->withJson($categories, StatusCode::STATUS_OK);
     }
 
@@ -55,7 +55,7 @@ class CategoryController extends BaseController
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $category = static::_formatOne($this->_save($id, $postData));
         return $response->withJson($category, StatusCode::STATUS_OK);
     }
@@ -72,7 +72,7 @@ class CategoryController extends BaseController
             throw new \InvalidArgumentException("No data was provided.");
         }
 
-        return dbTransaction(function () use ($id, $postData) {
+        return dbTransaction(static function () use ($id, $postData) {
             $category = null;
             $hasFailed = false;
             $validationErrors = [];
@@ -93,8 +93,8 @@ class CategoryController extends BaseController
         });
     }
 
-    protected static function _formatOne(Category $category): Category
+    protected static function _formatOne(Category $category): array
     {
-        return $category->append('sub_categories');
+        return $category->serialize(Category::SERIALIZE_DETAILS);
     }
 }

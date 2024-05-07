@@ -8,34 +8,20 @@
 
     &__menu {
         position: absolute;
-        z-index: 2;
-        top: 100%;
-        right: 0;
+        z-index: 1000;
+        top: 0;
+        left: 0;
         display: flex;
         flex-direction: column;
         min-width: globals.$dropdown-min-width;
-        margin-top: globals.$spacing-small;
-        background: globals.$bg-color-dropdown;
+        background: globals.$dropdown-background-color;
         box-shadow: 0 4px 9px #1b1b1b;
-        transform-origin: 50% 0%;
-        transform: scaleY(0);
-        transition: transform 150ms ease-in-out;
         white-space: nowrap;
         gap: globals.$spacing-small;
 
         .Button {
             flex: 0 0 auto;
             white-space: nowrap;
-
-            + & {
-                margin-left: 0;
-            }
-        }
-    }
-
-    &--open {
-        #{$block}__menu {
-            transform: none;
         }
     }
 }

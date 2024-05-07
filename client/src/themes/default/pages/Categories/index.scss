@@ -1,25 +1,20 @@
 @use '~@/themes/default/style/globals';
 
-.Page--categories {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    .Categories {
-        flex: 1;
-    }
-}
-
 .Categories {
+    @extend %reset-list;
+
     display: flex;
     flex-direction: column;
-    margin: 0;
-    padding: 0;
+    height: 100%;
+
+    //
+    // - Responsive
+    //
 
     @media (min-width: globals.$screen-mobile) {
         flex-flow: row wrap;
 
-        .CategoriesItem {
+        &__item {
             flex: 1 0 350px;
         }
     }

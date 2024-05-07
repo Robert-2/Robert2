@@ -8,9 +8,9 @@ use Loxya\Models\Company;
 
 final class CompaniesTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(?int $id = null)
     {
-        return static::_dataFactory($id, [
+        return static::dataFactory($id, [
             [
                 'id' => 1,
                 'legal_name' => 'Testing, Inc',

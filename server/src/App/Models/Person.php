@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
+use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
 
 /**
@@ -33,14 +34,14 @@ use Respect\Validation\Validator as V;
  *
  * @property-read Beneficiary $beneficiary
  * @property-read Technician $technician
+ *
+ * @method static Builder|static search(string $term)
  */
 final class Person extends BaseModel implements Serializable
 {
     use Serializer;
 
     protected $table = 'persons';
-
-    protected $orderField = 'full_name';
 
     public function __construct(array $attributes = [])
     {
@@ -118,7 +119,6 @@ final class Person extends BaseModel implements Serializable
     protected $appends = [
         'full_name',
         'full_address',
-        'country',
     ];
 
     protected $casts = [
@@ -135,17 +135,20 @@ final class Person extends BaseModel implements Serializable
         'updated_at' => 'immutable_datetime',
     ];
 
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->last_name}";
+        return implode(' ', [
+            $this->first_name,
+            $this->last_name,
+        ]);
     }
 
-    public function getCountryAttribute()
+    public function getCountryAttribute(): Country|null
     {
         return $this->getRelationValue('country');
     }
 
-    public function getFullAddressAttribute()
+    public function getFullAddressAttribute(): string|null
     {
         $addressParts = [];
 
@@ -189,21 +192,22 @@ final class Person extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
+    protected $orderable = [
+        'full_name',
+    ];
+
     public function scopeSearch(Builder $query, string $term): Builder
     {
-        $term = trim($term);
-        if (strlen($term) < 2) {
-            throw new \InvalidArgumentException("The term must contain more than two characters.");
-        }
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));
-        return $query->where(function (Builder $query) use ($term) {
-            $query
+        return $query->where(static fn (Builder $subQuery) => (
+            $subQuery
                 ->orWhere('last_name', 'LIKE', $term)
                 ->orWhere('first_name', 'LIKE', $term)
                 ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
-                ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term]);
-        });
+                ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term])
+        ));
     }
 
     public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
@@ -233,7 +237,10 @@ final class Person extends BaseModel implements Serializable
      */
     public function deleteIfOrphan(bool $checkUser = true): void
     {
-        $isOrphan = !$this->beneficiary && !$this->technician;
+        $BeneficiaryExists = $this->beneficiary()->withTrashed()->exists();
+        $technicienExists = $this->technician()->withTrashed()->exists();
+        $isOrphan = !$BeneficiaryExists && !$technicienExists;
+
         if ($checkUser) {
             $isOrphan = $isOrphan && $this->user_id === null;
         }
@@ -253,7 +260,12 @@ final class Person extends BaseModel implements Serializable
 
     public function serialize(): array
     {
-        return (new DotArray($this->attributesForSerialization()))
+        /** @var Person $person */
+        $person = tap(clone $this, static function (Person $person) {
+            $person->append(['country']);
+        });
+
+        return (new DotArray($person->attributesForSerialization()))
             ->delete(['created_at', 'updated_at'])
             ->all();
     }

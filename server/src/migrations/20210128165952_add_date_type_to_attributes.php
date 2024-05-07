@@ -24,7 +24,7 @@ final class AddDateTypeToAttributes extends AbstractMigration
         foreach ($attributes as $attribute) {
             $this->execute(sprintf(
                 "DELETE FROM `material_attributes` WHERE `attribute_id` = %d",
-                $attribute['id']
+                $attribute['id'],
             ));
         }
 

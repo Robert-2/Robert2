@@ -25,14 +25,14 @@ trait Prunable
         $isSoftDeletable = in_array(
             SoftDeletes::class,
             class_uses_recursive(static::class),
-            true
+            true,
         );
 
         static::prunable()
-            ->when($isSoftDeletable, function ($query) {
+            ->when($isSoftDeletable, static function ($query) {
                 $query->withTrashed();
             })
-            ->chunkById($chunkSize, function ($models) use (&$total, $isSoftDeletable) {
+            ->chunkById($chunkSize, static function ($models) use (&$total, $isSoftDeletable) {
                 foreach ($models as $model) {
                     if ($isSoftDeletable) {
                         $model->forceDelete();

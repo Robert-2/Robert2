@@ -1,35 +1,24 @@
 @use '~@/themes/default/style/globals';
 
-.Page--users {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    .Users {
-        flex: 1;
-    }
-}
-
 .Users {
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     &__table {
         flex: 1;
     }
 
     &__cell {
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+
         &--group,
         &--email,
         &--phone {
             display: none;
-        }
-
-        &--actions {
-            width: 1%;
-            text-align: right;
-            white-space: nowrap;
         }
 
         //

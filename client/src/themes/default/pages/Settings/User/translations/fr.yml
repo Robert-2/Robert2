@@ -22,3 +22,12 @@ interface:
     title: Interface
 
     language: Langue
+    default-bookings-view: Vue par défaut des événements
+    booking-view-mode:
+        calendar: Frise temporelle
+        listing: Liste
+
+notifications:
+    title: Notifications
+
+    toggle-email: "Activer les notifications par e-mail ?"

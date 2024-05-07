@@ -5,6 +5,7 @@ namespace Loxya\Controllers;
 
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Controllers\Traits\WithCrud;
 use Loxya\Http\Request;
 use Loxya\Models\Document;
@@ -13,12 +14,12 @@ use Loxya\Models\EventTechnician;
 use Loxya\Models\Technician;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
-use Loxya\Support\Period;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
-class TechnicianController extends BaseController
+final class TechnicianController extends BaseController
 {
     use WithCrud;
 
@@ -39,71 +40,59 @@ class TechnicianController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $search = $request->getQueryParam('search', null);
-        $isPreparer = $request->getQueryParam('isPreparer', null);
-        $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool) $request->getQueryParam('ascending', true);
-        $availabilityPeriod = $request->getQueryParam('availabilityPeriod', null);
-        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
+        $search = $request->getStringQueryParam('search');
+        $limit = $request->getIntegerQueryParam('limit');
+        $ascending = $request->getBooleanQueryParam('ascending', true);
+        $availabilityPeriod = $request->getPeriodQueryParam('availabilityPeriod');
+        $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
+        $orderBy = $request->getOrderByQueryParam('orderBy', Technician::class);
 
-        $orderBy = $request->getQueryParam('orderBy', null);
-        if (!in_array($orderBy, ['full_name', 'email', 'nickname'], true)) {
-            $orderBy = null;
-        }
+        $query = Technician::query()
+            ->when(
+                $search !== null && strlen($search) >= 2,
+                static fn (Builder $subQuery) => $subQuery->search($search),
+            )
+            ->when(
+                $availabilityPeriod !== null,
+                static fn (Builder $subQuery) => (
+                    $subQuery->whereDoesntHave('assignments', (
+                        static function (Builder $subSubQuery) use ($availabilityPeriod) {
+                            /** @var Builder|EventTechnician $subSubQuery */
+                            $subSubQuery->inPeriod($availabilityPeriod);
+                        }
+                    ))
+                ),
+            )
+            ->when($onlyDeleted, static fn (Builder $subQuery) => (
+                $subQuery->onlyTrashed()
+            ))
+            ->customOrderBy($orderBy, $ascending ? 'asc' : 'desc');
 
-        // - Disponibilité dans une période donnée.
-        $periodForAvailabilities = null;
-        if ($availabilityPeriod !== null && is_array($availabilityPeriod)) {
-            try {
-                $periodForAvailabilities = Period::fromArray($availabilityPeriod);
-            } catch (\Throwable $e) {
-                $periodForAvailabilities = null;
-            }
-        }
-
-        $builder = (new Technician())
-            ->setOrderBy($orderBy, $ascending)
-            ->setSearch($search)
-            ->getAll($onlyDeleted);
-
-        if ($periodForAvailabilities !== null) {
-            $builder = $builder->whereDoesntHave(
-                'assignments',
-                function ($query) use ($periodForAvailabilities) {
-                    $query->where([
-                        ['end_time', '>', $periodForAvailabilities->getStartDate()],
-                        ['start_time', '<', $periodForAvailabilities->getEndDate()],
-                    ]);
-                }
-            );
-        }
-
-        $paginated = $this->paginate($request, $builder, is_numeric($limit) ? (int) $limit : null);
-        return $response->withJson($paginated, StatusCode::STATUS_OK);
+        $results = $this->paginate($request, $query, $limit);
+        return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
     public function getAllWhileEvent(Request $request, Response $response): ResponseInterface
     {
-        $eventId = (int) $request->getAttribute('eventId');
+        $eventId = $request->getIntegerAttribute('eventId');
         $event = Event::findOrFail($eventId);
 
-        $technicians = (new Technician)
-            ->getAll()
-            ->get()
-            ->map(function ($technician) use ($event) {
+        $technicians = Technician::query()
+            ->customOrderBy('full_name')->get()
+            ->map(static function ($technician) use ($event) {
                 $events = $technician->assignments()
-                    ->whereHas('event', function ($query) use ($event) {
+                    ->whereHas('event', static function (Builder $query) use ($event) {
+                        /** @var Builder|Event $query */
                         $query
+                            ->inPeriod($event)
                             ->where('id', '!=', $event->id)
-                            ->where('deleted_at', null)
-                            ->where([
-                                ['end_date', '>=', $event->start_date],
-                                ['start_date', '<=', $event->end_date],
-                            ]);
+                            ->where('deleted_at', null);
                     })
                     ->get()
-                    ->map(fn($eventTechnician) => (
-                        $eventTechnician->serialize(EventTechnician::SERIALIZE_DETAILS)
+                    ->map(static fn (EventTechnician $eventTechnician) => (
+                        $eventTechnician->serialize(
+                            EventTechnician::SERIALIZE_FOR_TECHNICIAN,
+                        )
                     ))
                     ->all();
 
@@ -118,13 +107,24 @@ class TechnicianController extends BaseController
     {
         $id = $request->getAttribute('id');
         $technician = Technician::findOrFail($id);
-        $assignments = $technician->assignments->each->setAppends(['event']);
-        return $response->withJson($assignments, StatusCode::STATUS_OK);
+
+        $data = $technician->assignments
+            ->whereNull('event.deleted_at')
+            ->values()
+            ->map(
+                static fn (EventTechnician $eventTechnician) => (
+                    $eventTechnician->serialize(
+                        EventTechnician::SERIALIZE_FOR_TECHNICIAN,
+                    )
+                )
+            );
+
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
     public function getDocuments(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $technician = Technician::findOrFail($id);
 
         return $response->withJson($technician->documents, StatusCode::STATUS_OK);
@@ -132,7 +132,7 @@ class TechnicianController extends BaseController
 
     public function attachDocument(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $technician = Technician::findOrFail($id);
 
         /** @var UploadedFileInterface[] $uploadedFiles */

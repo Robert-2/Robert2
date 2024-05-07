@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '@/utils/validation';
 
 import type { Material } from '@/stores/api/materials';
 import type { Category } from '@/stores/api/categories';
@@ -18,6 +18,9 @@ export enum InventoryLock {
  *
  * Ceci doit être un objet `Material` avec en plus les clés suivantes:
  * - `awaitedQuantity`: La quantité attendu pour ce matériel (et non la quantité en stock).
+ * - `awaitedUnits`: Doit contenir les unités attendues (et uniquement celles-ci) sous
+ *                   la forme d'un tableau d'unités {@link AwaitedMaterialUnit}.
+ *                   (si le matériel n'est PAS unitaire, ce doit être un tableau vide)
  * - `comment`: Un commentaire d'un précédent inventaire éventuel au sujet du matériel.
  *              (uniquement si l'inventaire permet d'afficher les commentaires)
  */

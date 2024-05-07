@@ -1,8 +1,7 @@
 import './index.scss';
+import clsx from 'clsx';
 import { defineComponent } from '@vue/composition-api';
-import { APP_NAME } from '@/globals/constants';
 import Loading from '@/themes/default/components/Loading';
-import ErrorMessage from '@/themes/default/components/ErrorMessage';
 
 import type { VNode } from 'vue';
 import type { PropType } from '@vue/composition-api';
@@ -36,7 +35,10 @@ export type Props = {
      * Ceci permettra d'afficher un message de chargement spécifique en haut de la page.
      * (à la place du message d'aide s'il a été spécifié (see {@link Props['help']}))
      */
-    isLoading?: boolean,
+    loading?: boolean,
+
+    /** Permet de centrer le contenu de la page. */
+    centered?: boolean,
 
     /**
      * Les éventuelles actions contextuelles de la page.
@@ -65,8 +67,12 @@ const Page = defineComponent({
             type: Boolean as PropType<Required<Props>['hasValidationError']>,
             default: false,
         },
-        isLoading: {
-            type: Boolean as PropType<Required<Props>['isLoading']>,
+        loading: {
+            type: Boolean as PropType<Required<Props>['loading']>,
+            default: false,
+        },
+        centered: {
+            type: Boolean as PropType<Required<Props>['centered']>,
             default: false,
         },
         actions: {
@@ -88,7 +94,7 @@ const Page = defineComponent({
     methods: {
         updateTitle(newTitle: Props['title']) {
             this.$store.commit('setPageRawTitle', newTitle ?? null);
-            document.title = [newTitle, APP_NAME].filter(Boolean).join(' - ');
+            document.title = [newTitle, 'Loxya'].filter(Boolean).join(' - ');
         },
 
         // ------------------------------------------------------
@@ -107,8 +113,8 @@ const Page = defineComponent({
          *                             propriété CSS `scroll-behavior`.
          */
         scrollToTop(behavior: ScrollBehavior = 'smooth') {
-            const $pageContent = this.$refs.pageContent as HTMLElement | undefined;
-            $pageContent?.scrollTo({ top: 0, left: 0, behavior });
+            const $container = this.$refs.container as HTMLElement | undefined;
+            $container?.scrollTo({ top: 0, left: 0, behavior });
         },
     },
     render() {
@@ -118,26 +124,33 @@ const Page = defineComponent({
             name,
             help,
             actions,
+            centered,
+            loading,
             hasValidationError,
-            isLoading,
         } = this;
 
         const renderHelp = (): JSX.Element | null => {
-            if (!isLoading && !hasValidationError && !help) {
+            if (!loading && !hasValidationError && !help) {
                 return null;
             }
 
-            return (
-                <div class="header-page__help">
-                    {isLoading && <Loading horizontal />}
-                    {!isLoading && hasValidationError && (
-                        <ErrorMessage error={__('errors.validation')} />
-                    )}
-                    {!!(help && !hasValidationError && !isLoading) && (
-                        <div class="header-page__intro">{help}</div>
-                    )}
-                </div>
-            );
+            const renderHelpContent = (): JSX.Element => {
+                if (loading) {
+                    return <Loading horizontal />;
+                }
+
+                return (
+                    <p
+                        class={[
+                            'Page__header__help__message',
+                            { 'Page__header__help__message--error': hasValidationError },
+                        ]}
+                    >
+                        {hasValidationError ? __('errors.validation') : help}
+                    </p>
+                );
+            };
+            return <div class="Page__header__help">{renderHelpContent()}</div>;
         };
 
         const renderHeader = (): JSX.Element | null => {
@@ -148,10 +161,10 @@ const Page = defineComponent({
             }
 
             return (
-                <div class="content__header header-page">
+                <div class="Page__header">
                     {helpElement}
                     {hasActions && (
-                        <nav class="header-page__actions" key="actions">
+                        <nav class="Page__header__actions" key="header-actions">
                             {actions}
                         </nav>
                     )}
@@ -159,13 +172,15 @@ const Page = defineComponent({
             );
         };
 
+        const className = clsx('Page', `Page--${name}`, {
+            'Page--centered': centered,
+        });
+
         return (
-            <div class="content" ref="pageContent">
+            <div class={className} ref="container">
                 {renderHeader()}
-                <div class="content__main-view" key="content">
-                    <div class={['Page', `Page--${name}`]}>
-                        {children}
-                    </div>
+                <div class="Page__body" key="body">
+                    {children}
                 </div>
             </div>
         );

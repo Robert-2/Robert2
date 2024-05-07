@@ -11,9 +11,9 @@ use Loxya\Support\Filesystem\UploadedFile;
 
 final class TechniciansTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(?int $id = null)
     {
-        return static::_dataFactory($id, [
+        return static::dataFactory($id, [
             [
                 'id' => 1,
                 'user_id' => 2,
@@ -21,7 +21,6 @@ final class TechniciansTest extends ApiTestCase
                 'last_name' => 'Rabbit',
                 'full_name' => 'Roger Rabbit',
                 'nickname' => 'Riri',
-                'is_preparer' => false,
                 'email' => 'tester2@robertmanager.net',
                 'phone' => null,
                 'street' => null,
@@ -39,7 +38,6 @@ final class TechniciansTest extends ApiTestCase
                 'last_name' => 'Technicien',
                 'full_name' => 'Jean Technicien',
                 'nickname' => null,
-                'is_preparer' => false,
                 'email' => 'client@technicien.com',
                 'phone' => '+33645698520',
                 'street' => null,
@@ -121,12 +119,16 @@ final class TechniciansTest extends ApiTestCase
         $this->client->get('/api/technicians/while-event/2');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            array_merge(self::data(1), ['events' => [
-                EventTechniciansTest::data(1, EventTechnician::SERIALIZE_DETAILS),
-            ]]),
-            array_merge(self::data(2), ['events' => [
-                EventTechniciansTest::data(2, EventTechnician::SERIALIZE_DETAILS),
-            ]]),
+            array_merge(self::data(1), [
+                'events' => [
+                    EventTechniciansTest::data(1, EventTechnician::SERIALIZE_FOR_TECHNICIAN),
+                ],
+            ]),
+            array_merge(self::data(2), [
+                'events' => [
+                    EventTechniciansTest::data(2, EventTechnician::SERIALIZE_FOR_TECHNICIAN),
+                ],
+            ]),
         ]);
 
         $this->client->get('/api/technicians/while-event/1');
@@ -152,8 +154,11 @@ final class TechniciansTest extends ApiTestCase
                 'id' => 1,
                 'event_id' => 1,
                 'technician_id' => 1,
-                'start_time' => '2018-12-17 09:00:00',
-                'end_time' => '2018-12-18 22:00:00',
+                'period' => [
+                    'start' => '2018-12-17 09:00:00',
+                    'end' => '2018-12-18 22:00:00',
+                    'isFullDays' => false,
+                ],
                 'position' => 'Régisseur',
                 'event' => EventsTest::data(1),
             ],
@@ -166,8 +171,11 @@ final class TechniciansTest extends ApiTestCase
                 'id' => 2,
                 'event_id' => 1,
                 'technician_id' => 2,
-                'start_time' => '2018-12-18 14:00:00',
-                'end_time' => '2018-12-18 18:00:00',
+                'period' => [
+                    'start' => '2018-12-18 14:00:00',
+                    'end' => '2018-12-18 18:00:00',
+                    'isFullDays' => false,
+                ],
                 'position' => 'Technicien plateau',
                 'event' => EventsTest::data(1),
             ],
@@ -175,8 +183,11 @@ final class TechniciansTest extends ApiTestCase
                 'id' => 3,
                 'event_id' => 7,
                 'technician_id' => 2,
-                'start_time' => '2023-05-25 00:00:00',
-                'end_time' => '2023-05-28 23:59:59',
+                'period' => [
+                    'start' => '2023-05-25 00:00:00',
+                    'end' => '2023-05-29 00:00:00',
+                    'isFullDays' => false,
+                ],
                 'position' => 'Ingénieur du son',
                 'event' => EventsTest::data(7),
             ],
@@ -258,7 +269,6 @@ final class TechniciansTest extends ApiTestCase
             'first_name' => 'José',
             'last_name' => 'Gatillon',
             'nickname' => 'Gégé',
-            'is_preparer' => false,
             'email' => 'test@other-tech.net',
             'full_name' => 'José Gatillon',
             'phone' => null,
@@ -334,7 +344,7 @@ final class TechniciansTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
-        $createUploadedFile = function (string $from) {
+        $createUploadedFile = static function (string $from) {
             $tmpFile = tmpfile();
             fwrite($tmpFile, file_get_contents($from));
             return $tmpFile;
@@ -355,7 +365,7 @@ final class TechniciansTest extends ApiTestCase
                 'id' => 1,
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    13269,
+                    13_269,
                     UPLOAD_ERR_OK,
                     "Intervention 8/05/2022.pdf",
                     'application/pdf',
@@ -364,7 +374,7 @@ final class TechniciansTest extends ApiTestCase
                     'id' => 7,
                     'name' => "Intervention 8/05/2022.pdf",
                     'type' => 'application/pdf',
-                    'size' => 13269,
+                    'size' => 13_269,
                     'url' => 'http://loxya.test/documents/7',
                     'created_at' => '2022-10-22 18:42:36',
                 ],
@@ -373,7 +383,7 @@ final class TechniciansTest extends ApiTestCase
                 'id' => 2,
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    13269,
+                    13_269,
                     UPLOAD_ERR_OK,
                     'Contrat saison hiver 2022.pdf',
                     'application/pdf',
@@ -382,7 +392,7 @@ final class TechniciansTest extends ApiTestCase
                     'id' => 8,
                     'name' => 'Contrat saison hiver 2022.pdf',
                     'type' => 'application/pdf',
-                    'size' => 13269,
+                    'size' => 13_269,
                     'url' => 'http://loxya.test/documents/8',
                     'created_at' => '2022-10-22 18:42:36',
                 ],
@@ -420,7 +430,7 @@ final class TechniciansTest extends ApiTestCase
             [
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    262144000,
+                    262_144_000,
                     UPLOAD_ERR_OK,
                     'Un fichier bien trop volumineux.pdf',
                     'application/pdf',
@@ -440,7 +450,7 @@ final class TechniciansTest extends ApiTestCase
             [
                 'file' => new UploadedFile(
                     tmpfile(),
-                    121540,
+                    121_540,
                     UPLOAD_ERR_OK,
                     'app.dmg',
                     'application/octet-stream',

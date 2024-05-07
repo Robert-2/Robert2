@@ -8,12 +8,16 @@
     gap: globals.$spacing-small;
 
     &__item {
+        &--park {
+            min-width: 185px;
+        }
+
         &--category {
-            min-width: 150px;
+            min-width: 165px;
         }
 
         &--sub-category {
-            min-width: 180px;
+            min-width: 195px;
         }
 
         &--tags {

@@ -1,8 +1,9 @@
+import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
 import type { TemplateRenderFunction } from 'vue-tables-2-premium';
 
 export type RenderedColumn = ReturnType<TemplateRenderFunction>;
-export type RenderFunction<T = any> = (h: CreateElement, row: T) => RenderedColumn;
+export type RenderFunction<T = any> = (h: CreateElement, row: T, index: number) => RenderedColumn;
 
 export type Column<Data = any> = {
     /**
@@ -32,7 +33,7 @@ export type Column<Data = any> = {
     sortable?: boolean,
 
     /** Une ou plusieurs classes à ajouter à la colonne. */
-    class?: string,
+    class?: ClassValue,
 
     /**
      * La colonne doit-elle être cachée par défaut ?
@@ -43,11 +44,11 @@ export type Column<Data = any> = {
     hidden?: boolean,
 };
 
-export type Columns<Data> = Array<Column<Data>>;
+export type Columns<Data = any> = Array<Column<Data>>;
 
-export type OrderBy = {
+export type OrderBy<T extends Columns = Columns> = {
     /** La clé de la colonne qui sera utilisée pour le tri. */
-    column: Column['key'],
+    column: T[number]['key'],
 
     /**
      * La colonne doit-elle être triée de façon ascendante (= `true`)

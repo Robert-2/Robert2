@@ -3,11 +3,11 @@ node_modules/
 /dist/
 /tests/coverage
 
-# - Logs
+# - Logs.
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# - Fichiers locaux d'environnement
+# - Fichiers locaux d'environnement.
 .env.local
 .env.*.local

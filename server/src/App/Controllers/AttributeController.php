@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Controllers\Traits\Crud;
 use Loxya\Http\Request;
 use Loxya\Models\Attribute;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
-class AttributeController extends BaseController
+final class AttributeController extends BaseController
 {
     use Crud\GetOne;
     use Crud\Create;
@@ -19,22 +20,25 @@ class AttributeController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $query = Attribute::orderBy('name', 'asc');
-
         $categoryId = $request->getQueryParam('category', null);
-        if (!empty($categoryId)) {
-            $query->whereDoesntHave('categories');
 
-            if ($categoryId !== 'none') {
-                $query->orWhereRelation('categories', 'categories.id', $categoryId);
-            }
-        }
+        $attributes = Attribute::query()
+            ->when(
+                $categoryId !== null,
+                static function (Builder $subQuery) use ($categoryId) {
+                    $subQuery->whereDoesntHave('categories');
 
-        $attributes = $query
-            ->with('categories')->get()
-            ->each->append('categories');
+                    if ($categoryId !== 'none') {
+                        $subQuery->orWhereRelation('categories', 'categories.id', $categoryId);
+                    }
+                },
+            )
+            ->with(['categories'])
+            ->orderBy('name', 'asc')
+            ->get();
 
-        return $response->withJson($attributes, StatusCode::STATUS_OK);
+        $data = $attributes->map(static fn ($attribute) => static::_formatOne($attribute));
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
     // ------------------------------------------------------
@@ -43,8 +47,8 @@ class AttributeController extends BaseController
     // -
     // ------------------------------------------------------
 
-    protected static function _formatOne(Attribute $attribute): Attribute
+    protected static function _formatOne(Attribute $attribute): array
     {
-        return $attribute->append('categories');
+        return $attribute->serialize(Attribute::SERIALIZE_DETAILS);
     }
 }

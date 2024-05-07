@@ -20,14 +20,4 @@ export enum ApiErrorCode {
 
     /** Le payload fourni dans la requête ne doit pas être vide. */
     EMPTY_PAYLOAD = 401,
-
-    //
-    // - Conflits.
-    //
-
-    /**
-     * Un conflit dû au fait qu'une tentative d'assignation d'un
-     * technicien a échoué vu qu'il est déjà mobilisé à ce moment.
-     */
-    TECHNICIAN_ALREADY_BUSY = 201,
 }

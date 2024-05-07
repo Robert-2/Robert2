@@ -1,0 +1,1151 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Beneficiaries Api all() parse the returned data correctly 1`] = `
+{
+  "data": [
+    {
+      "company": {
+        "country": {
+          "code": "FR",
+          "id": 1,
+          "name": "France",
+        },
+        "country_id": 1,
+        "full_address": "1, company st.
+1234 Megacity",
+        "id": 1,
+        "legal_name": "Testing, Inc",
+        "locality": "Megacity",
+        "note": "Just for tests",
+        "phone": "+4123456789",
+        "postal_code": "1234",
+        "street": "1, company st.",
+      },
+      "company_id": 1,
+      "country": {
+        "code": "FR",
+        "id": 1,
+        "name": "France",
+      },
+      "country_id": 1,
+      "email": "tester@robertmanager.net",
+      "first_name": "Jean",
+      "full_address": "1, somewhere av.
+1234 Megacity",
+      "full_name": "Jean Fountain",
+      "id": 1,
+      "last_name": "Fountain",
+      "locality": "Megacity",
+      "note": null,
+      "phone": null,
+      "postal_code": "1234",
+      "reference": "0001",
+      "street": "1, somewhere av.",
+      "user_id": 1,
+    },
+    {
+      "company": null,
+      "company_id": null,
+      "country": null,
+      "country_id": null,
+      "email": "tester2@robertmanager.net",
+      "first_name": "Roger",
+      "full_address": null,
+      "full_name": "Roger Rabbit",
+      "id": 2,
+      "last_name": "Rabbit",
+      "locality": null,
+      "note": null,
+      "phone": null,
+      "postal_code": null,
+      "reference": "0002",
+      "street": null,
+      "user_id": 2,
+    },
+    {
+      "company": null,
+      "company_id": null,
+      "country": null,
+      "country_id": null,
+      "email": "client@beneficiaires.com",
+      "first_name": "Client",
+      "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
+      "full_name": "Client Benef",
+      "id": 3,
+      "last_name": "Benef",
+      "locality": "Wazzaville",
+      "note": null,
+      "phone": "+33123456789",
+      "postal_code": "88080",
+      "reference": "0003",
+      "street": "156 bis, avenue des tests poussés",
+      "user_id": null,
+    },
+    {
+      "company": null,
+      "company_id": null,
+      "country": null,
+      "country_id": null,
+      "email": "alphonse@latour.test",
+      "first_name": "Alphonse",
+      "full_address": null,
+      "full_name": "Alphonse Latour",
+      "id": 4,
+      "last_name": "Latour",
+      "locality": null,
+      "note": null,
+      "phone": null,
+      "postal_code": null,
+      "reference": "0004",
+      "street": null,
+      "user_id": null,
+    },
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "perPage": 4,
+    "total": {
+      "items": 4,
+      "pages": 1,
+    },
+  },
+}
+`;
+
+exports[`Beneficiaries Api bookings() parse the returned data correctly 1`] = `
+{
+  "data": [
+    {
+      "beneficiaries": [
+        {
+          "company": {
+            "country": {
+              "code": "FR",
+              "id": 1,
+              "name": "France",
+            },
+            "country_id": 1,
+            "full_address": "1, company st.
+1234 Megacity",
+            "id": 1,
+            "legal_name": "Testing, Inc",
+            "locality": "Megacity",
+            "note": "Just for tests",
+            "phone": "+4123456789",
+            "postal_code": "1234",
+            "street": "1, company st.",
+          },
+          "company_id": 1,
+          "country": {
+            "code": "FR",
+            "id": 1,
+            "name": "France",
+          },
+          "country_id": 1,
+          "email": "tester@robertmanager.net",
+          "first_name": "Jean",
+          "full_address": "1, somewhere av.
+1234 Megacity",
+          "full_name": "Jean Fountain",
+          "id": 1,
+          "last_name": "Fountain",
+          "locality": "Megacity",
+          "note": null,
+          "phone": null,
+          "postal_code": "1234",
+          "reference": "0001",
+          "street": "1, somewhere av.",
+          "user_id": 1,
+        },
+      ],
+      "categories": [
+        1,
+        2,
+      ],
+      "color": null,
+      "created_at": /* DateTime Instance => */ "2018-12-01 12:50:45",
+      "entity": "event",
+      "has_not_returned_materials": false,
+      "id": 1,
+      "is_archived": false,
+      "is_confirmed": false,
+      "is_departure_inventory_done": true,
+      "is_return_inventory_done": true,
+      "location": "Gap",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2018-12-19 00:00:00",
+        "isFullDays": false,
+        "start": "2018-12-16 15:45:00",
+      },
+      "operation_period": /* Period Instance => */ {
+        "end": "2018-12-18 18:00:00",
+        "isFullDays": false,
+        "start": "2018-12-17 10:00:00",
+      },
+      "parks": [
+        1,
+      ],
+      "technicians": [
+        {
+          "event_id": 1,
+          "id": 1,
+          "period": /* Period Instance => */ {
+            "end": "2018-12-18 22:00:00",
+            "isFullDays": false,
+            "start": "2018-12-17 09:00:00",
+          },
+          "position": "Régisseur",
+          "technician": {
+            "country": null,
+            "country_id": null,
+            "email": "tester2@robertmanager.net",
+            "first_name": "Roger",
+            "full_address": null,
+            "full_name": "Roger Rabbit",
+            "id": 1,
+            "last_name": "Rabbit",
+            "locality": null,
+            "nickname": "Riri",
+            "note": null,
+            "phone": null,
+            "postal_code": null,
+            "street": null,
+            "user_id": 2,
+          },
+          "technician_id": 1,
+        },
+        {
+          "event_id": 1,
+          "id": 2,
+          "period": /* Period Instance => */ {
+            "end": "2018-12-18 18:00:00",
+            "isFullDays": false,
+            "start": "2018-12-18 14:00:00",
+          },
+          "position": "Technicien plateau",
+          "technician": {
+            "country": {
+              "code": "CH",
+              "id": 2,
+              "name": "Suisse",
+            },
+            "country_id": 2,
+            "email": "client@technicien.com",
+            "first_name": "Jean",
+            "full_address": null,
+            "full_name": "Jean Technicien",
+            "id": 2,
+            "last_name": "Technicien",
+            "locality": null,
+            "nickname": null,
+            "note": null,
+            "phone": "+33645698520",
+            "postal_code": null,
+            "street": null,
+            "user_id": null,
+          },
+          "technician_id": 2,
+        },
+      ],
+      "title": "Premier événement",
+    },
+    {
+      "beneficiaries": [
+        {
+          "company": null,
+          "company_id": null,
+          "country": null,
+          "country_id": null,
+          "email": "client@beneficiaires.com",
+          "first_name": "Client",
+          "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
+          "full_name": "Client Benef",
+          "id": 3,
+          "last_name": "Benef",
+          "locality": "Wazzaville",
+          "note": null,
+          "phone": "+33123456789",
+          "postal_code": "88080",
+          "reference": "0003",
+          "street": "156 bis, avenue des tests poussés",
+          "user_id": null,
+        },
+      ],
+      "categories": [
+        1,
+      ],
+      "color": "#ffba49",
+      "created_at": /* DateTime Instance => */ "2018-12-16 12:50:45",
+      "entity": "event",
+      "has_not_returned_materials": true,
+      "id": 2,
+      "is_archived": false,
+      "is_confirmed": false,
+      "is_departure_inventory_done": false,
+      "is_return_inventory_done": true,
+      "location": "Lyon",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2018-12-20 00:00:00",
+        "isFullDays": false,
+        "start": "2018-12-18 00:00:00",
+      },
+      "operation_period": /* Period Instance => */ {
+        "end": "2018-12-19",
+        "isFullDays": true,
+        "start": "2018-12-18",
+      },
+      "parks": [
+        1,
+      ],
+      "technicians": [],
+      "title": "Second événement",
+    },
+    {
+      "beneficiaries": [],
+      "categories": [
+        1,
+        2,
+      ],
+      "color": null,
+      "created_at": /* DateTime Instance => */ "2018-12-14 12:20:00",
+      "entity": "event",
+      "has_not_returned_materials": null,
+      "id": 3,
+      "is_archived": true,
+      "is_confirmed": false,
+      "is_departure_inventory_done": true,
+      "is_return_inventory_done": true,
+      "location": "Brousse",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2018-12-16 15:45:00",
+        "isFullDays": false,
+        "start": "2018-12-15 08:30:00",
+      },
+      "operation_period": /* Period Instance => */ {
+        "end": "2018-12-17 00:00:00",
+        "isFullDays": false,
+        "start": "2018-12-15 09:00:00",
+      },
+      "parks": [
+        1,
+      ],
+      "technicians": [],
+      "title": "Avant-premier événement",
+    },
+    {
+      "beneficiaries": [],
+      "categories": [
+        1,
+        3,
+      ],
+      "color": "#ef5b5b",
+      "created_at": /* DateTime Instance => */ "2019-01-01 20:12:00",
+      "entity": "event",
+      "has_not_returned_materials": null,
+      "id": 4,
+      "is_archived": false,
+      "is_confirmed": false,
+      "is_departure_inventory_done": false,
+      "is_return_inventory_done": false,
+      "location": "Moon",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2019-04-11 00:00:00",
+        "isFullDays": false,
+        "start": "2019-03-01 00:00:00",
+      },
+      "operation_period": /* Period Instance => */ {
+        "end": "2019-04-10",
+        "isFullDays": true,
+        "start": "2019-03-01",
+      },
+      "parks": [
+        1,
+        2,
+      ],
+      "technicians": [],
+      "title": "Concert X",
+    },
+    {
+      "beneficiaries": [
+        {
+          "company": {
+            "country": {
+              "code": "FR",
+              "id": 1,
+              "name": "France",
+            },
+            "country_id": 1,
+            "full_address": "1, company st.
+1234 Megacity",
+            "id": 1,
+            "legal_name": "Testing, Inc",
+            "locality": "Megacity",
+            "note": "Just for tests",
+            "phone": "+4123456789",
+            "postal_code": "1234",
+            "street": "1, company st.",
+          },
+          "company_id": 1,
+          "country": {
+            "code": "FR",
+            "id": 1,
+            "name": "France",
+          },
+          "country_id": 1,
+          "email": "tester@robertmanager.net",
+          "first_name": "Jean",
+          "full_address": "1, somewhere av.
+1234 Megacity",
+          "full_name": "Jean Fountain",
+          "id": 1,
+          "last_name": "Fountain",
+          "locality": "Megacity",
+          "note": null,
+          "phone": null,
+          "postal_code": "1234",
+          "reference": "0001",
+          "street": "1, somewhere av.",
+          "user_id": 1,
+        },
+      ],
+      "categories": [
+        4,
+      ],
+      "color": null,
+      "created_at": /* DateTime Instance => */ "2019-12-25 14:59:40",
+      "entity": "event",
+      "has_not_returned_materials": null,
+      "id": 5,
+      "is_archived": false,
+      "is_confirmed": false,
+      "is_departure_inventory_done": false,
+      "is_return_inventory_done": false,
+      "location": "Saint-Jean-la-Forêt",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2020-01-02 00:00:00",
+        "isFullDays": false,
+        "start": "2020-01-01 00:00:00",
+      },
+      "operation_period": /* Period Instance => */ {
+        "end": "2020-01-01",
+        "isFullDays": true,
+        "start": "2020-01-01",
+      },
+      "parks": [
+        1,
+      ],
+      "technicians": [],
+      "title": "Kermesse de l'école des trois cailloux",
+    },
+    {
+      "beneficiaries": [],
+      "categories": [],
+      "color": "#ef5b5b",
+      "created_at": /* DateTime Instance => */ "2019-02-01 12:00:00",
+      "entity": "event",
+      "has_not_returned_materials": null,
+      "id": 6,
+      "is_archived": false,
+      "is_confirmed": false,
+      "is_departure_inventory_done": false,
+      "is_return_inventory_done": false,
+      "location": "La Clusaz",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2019-04-02 00:00:00",
+        "isFullDays": false,
+        "start": "2019-03-15 00:00:00",
+      },
+      "operation_period": /* Period Instance => */ {
+        "end": "2019-04-01",
+        "isFullDays": true,
+        "start": "2019-03-15",
+      },
+      "parks": [],
+      "technicians": [],
+      "title": "Un événement sans inspiration",
+    },
+    {
+      "beneficiaries": [],
+      "categories": [
+        1,
+        2,
+        3,
+      ],
+      "color": null,
+      "created_at": /* DateTime Instance => */ "2022-05-29 18:00:00",
+      "entity": "event",
+      "has_not_returned_materials": null,
+      "id": 7,
+      "is_archived": false,
+      "is_confirmed": true,
+      "is_departure_inventory_done": false,
+      "is_return_inventory_done": false,
+      "location": "Machin-le-chateau",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2023-05-29 00:00:00",
+        "isFullDays": false,
+        "start": "2023-05-25 00:00:00",
+      },
+      "operation_period": /* Period Instance => */ {
+        "end": "2023-05-28",
+        "isFullDays": true,
+        "start": "2023-05-25",
+      },
+      "parks": [
+        1,
+        2,
+      ],
+      "technicians": [
+        {
+          "event_id": 7,
+          "id": 3,
+          "period": /* Period Instance => */ {
+            "end": "2023-05-29 00:00:00",
+            "isFullDays": false,
+            "start": "2023-05-25 00:00:00",
+          },
+          "position": "Ingénieur du son",
+          "technician": {
+            "country": {
+              "code": "CH",
+              "id": 2,
+              "name": "Suisse",
+            },
+            "country_id": 2,
+            "email": "client@technicien.com",
+            "first_name": "Jean",
+            "full_address": null,
+            "full_name": "Jean Technicien",
+            "id": 2,
+            "last_name": "Technicien",
+            "locality": null,
+            "nickname": null,
+            "note": null,
+            "phone": "+33645698520",
+            "postal_code": null,
+            "street": null,
+            "user_id": null,
+          },
+          "technician_id": 2,
+        },
+      ],
+      "title": "Médiévales de Machin-le-chateau 2023",
+    },
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "perPage": 7,
+    "total": {
+      "items": 7,
+      "pages": 1,
+    },
+  },
+}
+`;
+
+exports[`Beneficiaries Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "company": {
+    "country": {
+      "code": "FR",
+      "id": 1,
+      "name": "France",
+    },
+    "country_id": 1,
+    "full_address": "1, company st.
+1234 Megacity",
+    "id": 1,
+    "legal_name": "Testing, Inc",
+    "locality": "Megacity",
+    "note": "Just for tests",
+    "phone": "+4123456789",
+    "postal_code": "1234",
+    "street": "1, company st.",
+  },
+  "company_id": 1,
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
+  "full_name": "Jean Fountain",
+  "id": 1,
+  "last_name": "Fountain",
+  "locality": "Megacity",
+  "note": null,
+  "phone": null,
+  "postal_code": "1234",
+  "reference": "0001",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": "1, somewhere av.",
+  "user": {
+    "email": "tester@robertmanager.net",
+    "first_name": "Jean",
+    "full_name": "Jean Fountain",
+    "group": "admin",
+    "id": 1,
+    "last_name": "Fountain",
+    "phone": null,
+    "pseudo": "test1",
+  },
+  "user_id": 1,
+}
+`;
+
+exports[`Beneficiaries Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 2,
+  "last_name": "Rabbit",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0002",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "member",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
+  "user_id": 2,
+}
+`;
+
+exports[`Beneficiaries Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "client@beneficiaires.com",
+  "first_name": "Client",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
+  "full_name": "Client Benef",
+  "id": 3,
+  "last_name": "Benef",
+  "locality": "Wazzaville",
+  "note": null,
+  "phone": "+33123456789",
+  "postal_code": "88080",
+  "reference": "0003",
+  "stats": {
+    "borrowings": 1,
+  },
+  "street": "156 bis, avenue des tests poussés",
+  "user": null,
+  "user_id": null,
+}
+`;
+
+exports[`Beneficiaries Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "alphonse@latour.test",
+  "first_name": "Alphonse",
+  "full_address": null,
+  "full_name": "Alphonse Latour",
+  "id": 4,
+  "last_name": "Latour",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0004",
+  "stats": {
+    "borrowings": 0,
+  },
+  "street": null,
+  "user": null,
+  "user_id": null,
+}
+`;
+
+exports[`Beneficiaries Api estimates() parse the returned data correctly 1`] = `
+[
+  {
+    "currency": "EUR",
+    "date": /* DateTime Instance => */ "2021-01-30 14:00:00",
+    "discount_rate": /* Decimal Instance => */ "5",
+    "id": 1,
+    "total_with_taxes": /* Decimal Instance => */ "660.34",
+    "total_without_taxes": /* Decimal Instance => */ "550.28",
+    "url": "http://loxya.test/estimates/1/pdf",
+  },
+]
+`;
+
+exports[`Beneficiaries Api invoices() parse the returned data correctly 1`] = `
+[
+  {
+    "currency": "EUR",
+    "date": /* DateTime Instance => */ "2020-01-30 14:00:00",
+    "discount_rate": /* Decimal Instance => */ "4.4766",
+    "id": 1,
+    "number": "2020-00001",
+    "total_with_taxes": /* Decimal Instance => */ "652.96",
+    "total_without_taxes": /* Decimal Instance => */ "544.13",
+    "url": "http://loxya.test/invoices/1/pdf",
+  },
+]
+`;
+
+exports[`Beneficiaries Api one() parse the returned data correctly (with #1) 1`] = `
+{
+  "company": {
+    "country": {
+      "code": "FR",
+      "id": 1,
+      "name": "France",
+    },
+    "country_id": 1,
+    "full_address": "1, company st.
+1234 Megacity",
+    "id": 1,
+    "legal_name": "Testing, Inc",
+    "locality": "Megacity",
+    "note": "Just for tests",
+    "phone": "+4123456789",
+    "postal_code": "1234",
+    "street": "1, company st.",
+  },
+  "company_id": 1,
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
+  "full_name": "Jean Fountain",
+  "id": 1,
+  "last_name": "Fountain",
+  "locality": "Megacity",
+  "note": null,
+  "phone": null,
+  "postal_code": "1234",
+  "reference": "0001",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": "1, somewhere av.",
+  "user": {
+    "email": "tester@robertmanager.net",
+    "first_name": "Jean",
+    "full_name": "Jean Fountain",
+    "group": "admin",
+    "id": 1,
+    "last_name": "Fountain",
+    "phone": null,
+    "pseudo": "test1",
+  },
+  "user_id": 1,
+}
+`;
+
+exports[`Beneficiaries Api one() parse the returned data correctly (with #2) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 2,
+  "last_name": "Rabbit",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0002",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "member",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
+  "user_id": 2,
+}
+`;
+
+exports[`Beneficiaries Api one() parse the returned data correctly (with #3) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "client@beneficiaires.com",
+  "first_name": "Client",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
+  "full_name": "Client Benef",
+  "id": 3,
+  "last_name": "Benef",
+  "locality": "Wazzaville",
+  "note": null,
+  "phone": "+33123456789",
+  "postal_code": "88080",
+  "reference": "0003",
+  "stats": {
+    "borrowings": 1,
+  },
+  "street": "156 bis, avenue des tests poussés",
+  "user": null,
+  "user_id": null,
+}
+`;
+
+exports[`Beneficiaries Api one() parse the returned data correctly (with #4) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "alphonse@latour.test",
+  "first_name": "Alphonse",
+  "full_address": null,
+  "full_name": "Alphonse Latour",
+  "id": 4,
+  "last_name": "Latour",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0004",
+  "stats": {
+    "borrowings": 0,
+  },
+  "street": null,
+  "user": null,
+  "user_id": null,
+}
+`;
+
+exports[`Beneficiaries Api restore() parse the returned data correctly (with #1) 1`] = `
+{
+  "company": {
+    "country": {
+      "code": "FR",
+      "id": 1,
+      "name": "France",
+    },
+    "country_id": 1,
+    "full_address": "1, company st.
+1234 Megacity",
+    "id": 1,
+    "legal_name": "Testing, Inc",
+    "locality": "Megacity",
+    "note": "Just for tests",
+    "phone": "+4123456789",
+    "postal_code": "1234",
+    "street": "1, company st.",
+  },
+  "company_id": 1,
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
+  "full_name": "Jean Fountain",
+  "id": 1,
+  "last_name": "Fountain",
+  "locality": "Megacity",
+  "note": null,
+  "phone": null,
+  "postal_code": "1234",
+  "reference": "0001",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": "1, somewhere av.",
+  "user": {
+    "email": "tester@robertmanager.net",
+    "first_name": "Jean",
+    "full_name": "Jean Fountain",
+    "group": "admin",
+    "id": 1,
+    "last_name": "Fountain",
+    "phone": null,
+    "pseudo": "test1",
+  },
+  "user_id": 1,
+}
+`;
+
+exports[`Beneficiaries Api restore() parse the returned data correctly (with #2) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 2,
+  "last_name": "Rabbit",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0002",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "member",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
+  "user_id": 2,
+}
+`;
+
+exports[`Beneficiaries Api restore() parse the returned data correctly (with #3) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "client@beneficiaires.com",
+  "first_name": "Client",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
+  "full_name": "Client Benef",
+  "id": 3,
+  "last_name": "Benef",
+  "locality": "Wazzaville",
+  "note": null,
+  "phone": "+33123456789",
+  "postal_code": "88080",
+  "reference": "0003",
+  "stats": {
+    "borrowings": 1,
+  },
+  "street": "156 bis, avenue des tests poussés",
+  "user": null,
+  "user_id": null,
+}
+`;
+
+exports[`Beneficiaries Api restore() parse the returned data correctly (with #4) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "alphonse@latour.test",
+  "first_name": "Alphonse",
+  "full_address": null,
+  "full_name": "Alphonse Latour",
+  "id": 4,
+  "last_name": "Latour",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0004",
+  "stats": {
+    "borrowings": 0,
+  },
+  "street": null,
+  "user": null,
+  "user_id": null,
+}
+`;
+
+exports[`Beneficiaries Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "company": {
+    "country": {
+      "code": "FR",
+      "id": 1,
+      "name": "France",
+    },
+    "country_id": 1,
+    "full_address": "1, company st.
+1234 Megacity",
+    "id": 1,
+    "legal_name": "Testing, Inc",
+    "locality": "Megacity",
+    "note": "Just for tests",
+    "phone": "+4123456789",
+    "postal_code": "1234",
+    "street": "1, company st.",
+  },
+  "company_id": 1,
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
+  "full_name": "Jean Fountain",
+  "id": 1,
+  "last_name": "Fountain",
+  "locality": "Megacity",
+  "note": null,
+  "phone": null,
+  "postal_code": "1234",
+  "reference": "0001",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": "1, somewhere av.",
+  "user": {
+    "email": "tester@robertmanager.net",
+    "first_name": "Jean",
+    "full_name": "Jean Fountain",
+    "group": "admin",
+    "id": 1,
+    "last_name": "Fountain",
+    "phone": null,
+    "pseudo": "test1",
+  },
+  "user_id": 1,
+}
+`;
+
+exports[`Beneficiaries Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 2,
+  "last_name": "Rabbit",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0002",
+  "stats": {
+    "borrowings": 2,
+  },
+  "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "member",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
+  "user_id": 2,
+}
+`;
+
+exports[`Beneficiaries Api update() parse the returned data correctly (with #3) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "client@beneficiaires.com",
+  "first_name": "Client",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
+  "full_name": "Client Benef",
+  "id": 3,
+  "last_name": "Benef",
+  "locality": "Wazzaville",
+  "note": null,
+  "phone": "+33123456789",
+  "postal_code": "88080",
+  "reference": "0003",
+  "stats": {
+    "borrowings": 1,
+  },
+  "street": "156 bis, avenue des tests poussés",
+  "user": null,
+  "user_id": null,
+}
+`;
+
+exports[`Beneficiaries Api update() parse the returned data correctly (with #4) 1`] = `
+{
+  "company": null,
+  "company_id": null,
+  "country": null,
+  "country_id": null,
+  "email": "alphonse@latour.test",
+  "first_name": "Alphonse",
+  "full_address": null,
+  "full_name": "Alphonse Latour",
+  "id": 4,
+  "last_name": "Latour",
+  "locality": null,
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "reference": "0004",
+  "stats": {
+    "borrowings": 0,
+  },
+  "street": null,
+  "user": null,
+  "user_id": null,
+}
+`;

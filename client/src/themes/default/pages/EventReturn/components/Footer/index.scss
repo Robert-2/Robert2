@@ -9,15 +9,12 @@
         display: flex;
         justify-content: center;
         gap: globals.$spacing-medium;
-
-        .Button + .Button {
-            margin-left: 0;
-        }
     }
 
     &__warnings {
         display: flex;
         flex-direction: column;
+        align-items: center;
         margin-top: globals.$spacing-medium;
         color: globals.$text-warning-color;
         font-size: 1.1rem;

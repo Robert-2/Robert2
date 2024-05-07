@@ -123,11 +123,11 @@ final class Pdf
                 ->withHeader('Content-Length', $fileStream->getSize())
                 ->withStatus(StatusCode::STATUS_OK)
                 ->withBody($fileStream);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new \RuntimeException(sprintf(
                 "Cannot send the file \"%s\". Details: %s",
                 $this->getName(),
-                $e->getMessage()
+                $e->getMessage(),
             ));
         }
     }

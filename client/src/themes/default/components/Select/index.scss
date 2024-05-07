@@ -17,6 +17,8 @@
         // stylelint-disable-next-line selector-class-pattern
         .v-select:not(.vs--open) {
             border-color: globals.$input-error-border-color;
+            background-color: globals.$input-error-background-color;
+            color: globals.$input-error-text-color;
         }
     }
 

@@ -4,11 +4,14 @@ declare(strict_types=1);
 namespace Loxya\Services;
 
 use Brick\Math\BigDecimal as Decimal;
-use Psr\Http\Message\ResponseInterface as Response;
 use Loxya\Config\Config;
+use Loxya\Support\Assert;
 use Loxya\Support\BaseUri;
+use Loxya\Support\Period;
+use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Views\Twig;
+use Twig\Environment;
 use Twig\Extension\DebugExtension;
 use Twig\Extra\Html\HtmlExtension;
 use Twig\Extra\Intl\IntlExtension;
@@ -52,6 +55,7 @@ final class View
 
         $this->view->getEnvironment()->addGlobal('env', Config::getEnv());
         $this->view->getEnvironment()->addGlobal('locale', $i18n->getLocale());
+        $this->view->getEnvironment()->addGlobal('lang', $i18n->getLanguage());
 
         //
         // - Extensions
@@ -66,8 +70,8 @@ final class View
         // - Functions
         //
 
-        $translate = new TwigFunction('translate', [$i18n, 'translate']);
-        $plural = new TwigFunction('plural', [$i18n, 'plural']);
+        $translate = new TwigFunction('__', [$i18n, 'translate']);
+        $plural = new TwigFunction('__n', [$i18n, 'plural']);
         $version = new TwigFunction('version', $this->getVersion());
         $this->view->getEnvironment()->addFunction($translate);
         $this->view->getEnvironment()->addFunction($plural);
@@ -82,13 +86,23 @@ final class View
         // - Filters
         //
 
+        $ucfirstFilter = new TwigFilter('ucfirst', $this->ucfirstFilter());
         $formatCurrencyFilter = new TwigFilter('format_currency', $this->formatCurrencyFilter());
         $formatNumberFilter = new TwigFilter('format_number', $this->formatNumberFilter());
         $formatNumberStyleFilter = new TwigFilter('format_*_number', $this->formatNumberStyleFilter());
+        $formatPeriodFilter = new TwigFilter('format_period', $this->formatPeriodFilter(), [
+            'needs_environment' => true,
+        ]);
+        $formatPeriodPartFilter = new TwigFilter('format_period_*', $this->formatPeriodPartFilter(), [
+            'needs_environment' => true,
+        ]);
 
+        $this->view->getEnvironment()->addFilter($ucfirstFilter);
         $this->view->getEnvironment()->addFilter($formatCurrencyFilter);
         $this->view->getEnvironment()->addFilter($formatNumberFilter);
         $this->view->getEnvironment()->addFilter($formatNumberStyleFilter);
+        $this->view->getEnvironment()->addFilter($formatPeriodFilter);
+        $this->view->getEnvironment()->addFilter($formatPeriodPartFilter);
     }
 
     // ------------------------------------------------------
@@ -156,9 +170,7 @@ final class View
 
     private function getVersion(): callable
     {
-        return function (): string {
-            return Config::getVersion();
-        };
+        return static fn (): string => Config::getVersion();
     }
 
     private function getClientAsset(): callable
@@ -168,7 +180,7 @@ final class View
             : Config::getBaseUri()->getPath();
 
         $basePath = (string) (new BaseUri($baseUri))->withPath('/webclient');
-        return fn ($path) => (
+        return static fn ($path) => (
             vsprintf('%s/%s?v=%s', [
                 rtrim($basePath, '/'),
                 ltrim($path, '/'),
@@ -180,7 +192,7 @@ final class View
     private function getAsset(): callable
     {
         $basePath = Config::getBaseUri()->getPath();
-        return fn ($path) => (
+        return static fn ($path) => (
             vsprintf('%s/%s?v=%s', [
                 rtrim($basePath, '/'),
                 ltrim($path, '/'),
@@ -195,9 +207,16 @@ final class View
     // -
     // ------------------------------------------------------
 
+    private function ucfirstFilter(): callable
+    {
+        return static fn (string $string): string => (
+            mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1)
+        );
+    }
+
     private function formatCurrencyFilter(): callable
     {
-        return function ($amount, string $currency, array $attrs = [], ?string $locale = null): string {
+        return static function ($amount, string $currency, array $attrs = [], ?string $locale = null): string {
             $amount = $amount instanceof Decimal ? $amount->toFloat() : $amount;
             return (new IntlExtension())->formatCurrency($amount, $currency, $attrs, $locale);
         };
@@ -206,7 +225,7 @@ final class View
     private function formatNumberFilter(): callable
     {
         // phpcs:ignore Generic.Files.LineLength.TooLong
-        return function ($number, array $attrs = [], string $style = 'decimal', string $type = 'default', ?string $locale = null): string {
+        return static function ($number, array $attrs = [], string $style = 'decimal', string $type = 'default', ?string $locale = null): string {
             $number = $number instanceof Decimal ? $number->toFloat() : $number;
             return (new IntlExtension())->formatNumber($number, $attrs, $style, $type, $locale);
         };
@@ -215,9 +234,132 @@ final class View
     private function formatNumberStyleFilter(): callable
     {
         // phpcs:ignore Generic.Files.LineLength.TooLong
-        return function (string $style, $number, array $attrs = [], string $type = 'default', ?string $locale = null): string {
+        return static function (string $style, $number, array $attrs = [], string $type = 'default', ?string $locale = null): string {
             $number = $number instanceof Decimal ? $number->toFloat() : $number;
             return (new IntlExtension())->formatNumberStyle($style, $number, $attrs, $type, $locale);
+        };
+    }
+
+    private function formatPeriodFilter(): callable
+    {
+        return function (Environment $env, Period $period, string $format = 'short', ?string $locale = null): string {
+            $formatDate = static function (\DateTimeInterface $date, bool $withTime) use ($env, $format, $locale) {
+                $intlExtension = new IntlExtension();
+
+                $dateFormat = match ($format) {
+                    'minimalist' => 'medium',
+                    'sentence' => 'short',
+                    default => $format,
+                };
+                $formattedDate = $intlExtension->formatDate(
+                    $env,
+                    $date,
+                    $dateFormat,
+                    $format === 'minimalist' ? 'd MMM' : '',
+                    null,
+                    'gregorian',
+                    $locale,
+                );
+                if (!$withTime) {
+                    return $formattedDate;
+                }
+
+                $formattedTime = $intlExtension->formatTime(
+                    $env,
+                    $date,
+                    'medium',
+                    'HH:mm',
+                    null,
+                    'gregorian',
+                    $locale,
+                );
+
+                return sprintf('%s - %s', $formattedDate, $formattedTime);
+            };
+
+            if ($period->isFullDays()) {
+                $isOneDayPeriod = $period->asDays() === 1;
+                if ($isOneDayPeriod) {
+                    $formattedDate = $formatDate($period->getStartDate(), false);
+                    return match ($format) {
+                        'minimalist' => $formattedDate,
+                        'sentence' => $this->i18n->translate('date-in-sentence', [$formattedDate]),
+                        default => $this->i18n->translate('on-date', [$formattedDate]),
+                    };
+                }
+
+                $formattedDates = [
+                    $formatDate($period->getStartDate(), false),
+                    $formatDate($period->getEndDate()->subDay(), false),
+                ];
+                return match ($format) {
+                    'minimalist' => vsprintf('%s ⇒ %s', $formattedDates),
+                    'sentence' => $this->i18n->translate('period-in-sentence', $formattedDates),
+                    default => $this->i18n->translate('from-date-to-date', $formattedDates),
+                };
+            }
+
+            $formattedDates = [
+                $formatDate($period->getStartDate(), true),
+                $formatDate($period->getEndDate(), true),
+            ];
+            return match ($format) {
+                'minimalist' => vsprintf('%s ⇒ %s', $formattedDates),
+                'sentence' => $this->i18n->translate('period-in-sentence', $formattedDates),
+                default => $this->i18n->translate('from-date-to-date', $formattedDates),
+            };
+        };
+    }
+
+    private function formatPeriodPartFilter(): callable
+    {
+        return static function (
+            Environment $env,
+            string $part,
+            Period $period,
+            string $format = 'short',
+            ?string $locale = null,
+        ): string {
+            Assert::inArray($part, ['start', 'end'], 'Invalid period part.');
+
+            $formatDate = static function (\DateTimeInterface $date, bool $withTime) use ($env, $format, $locale) {
+                $intlExtension = new IntlExtension();
+
+                $formattedDate = $intlExtension->formatDate(
+                    $env,
+                    $date,
+                    $format,
+                    '',
+                    null,
+                    'gregorian',
+                    $locale,
+                );
+                if (!$withTime) {
+                    return $formattedDate;
+                }
+
+                $formattedTime = $intlExtension->formatTime(
+                    $env,
+                    $date,
+                    'medium',
+                    'HH:mm',
+                    null,
+                    'gregorian',
+                    $locale,
+                );
+
+                return sprintf('%s - %s', $formattedDate, $formattedTime);
+            };
+
+            if ($period->isFullDays()) {
+                return $part === 'start'
+                    ? $formatDate($period->getStartDate(), false)
+                    : $formatDate($period->getEndDate()->subDay(), false);
+            }
+
+            return $part === 'start'
+                ? $formatDate($period->getStartDate(), true)
+                : $formatDate($period->getEndDate(), true);
         };
     }
 }

@@ -1,7 +1,6 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
-import Button from '@/themes/default/components/Button';
 
 /** Page de connexion. */
 const Login = defineComponent({
@@ -14,22 +13,24 @@ const Login = defineComponent({
 
         const { hash } = this.$route;
         switch (hash) {
-            case '#bye':
+            case '#bye': {
                 type = 'success';
                 text = __('page.login.bye');
                 break;
-
-            case '#expired':
+            }
+            case '#expired': {
                 type = 'error';
                 text = __('page.login.error.expired-session');
                 break;
-
-            case '#restricted':
+            }
+            case '#restricted': {
                 type = 'error';
                 text = __('page.login.error.not-allowed');
                 break;
-            default:
+            }
+            default: {
                 break;
+            }
         }
 
         return {
@@ -57,12 +58,13 @@ const Login = defineComponent({
                 switch (status) {
                     // - Si les données transmises sont incomplètes ou les identifiants invalides.
                     case HttpCode.ClientErrorBadRequest:
-                    case HttpCode.ClientErrorUnauthorized:
+                    case HttpCode.ClientErrorUnauthorized: {
                         message = __('page.login.error.bad-infos');
                         break;
-
-                    default:
+                    }
+                    default: {
                         message = __('errors.api-unreachable');
+                    }
                 }
                 this.message = { type: 'error', text: message, isLoading: false };
             }
@@ -90,7 +92,6 @@ const Login = defineComponent({
                 </div>
                 <div class="Login__body">
                     <form class="Login__form" onSubmit={handleSubmit}>
-                        {/* TODO: => Input */}
                         <input
                             type="text"
                             v-model={credentials.identifier}
@@ -105,13 +106,9 @@ const Login = defineComponent({
                             class="Login__form__input"
                             placeholder={__('password')}
                         />
-                        <Button
-                            htmlType="submit"
-                            type="primary"
-                            class="Login__form__submit"
-                        >
+                        <button type="submit" class="Login__form__submit">
                             {__('page.login.connexion')}
-                        </Button>
+                        </button>
                     </form>
                 </div>
             </div>

@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class FixEventsLocationNullability extends AbstractMigration
 {
@@ -16,7 +16,7 @@ final class FixEventsLocationNullability extends AbstractMigration
         $prefix = Config::get('db.prefix');
         $this->execute(sprintf(
             "UPDATE `%sevents` SET `location` = NULL WHERE `location` = ''",
-            $prefix
+            $prefix,
         ));
     }
 
@@ -25,7 +25,7 @@ final class FixEventsLocationNullability extends AbstractMigration
         $prefix = Config::get('db.prefix');
         $this->execute(sprintf(
             "UPDATE `%sevents` SET `location` = '' WHERE `location` IS NULL",
-            $prefix
+            $prefix,
         ));
 
         $table = $this->table('events');

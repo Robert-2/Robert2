@@ -6,34 +6,32 @@ namespace Loxya\Controllers;
 use Carbon\CarbonImmutable;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Psr\Http\Message\UploadedFileInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Config\Config;
-use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Controllers\Traits\Crud;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
 use Loxya\Models\Document;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
 use Loxya\Models\Material;
 use Loxya\Models\Park;
 use Loxya\Models\Tag;
-use Loxya\Models\User;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
 use Loxya\Support\Collections\MaterialsCollection;
 use Loxya\Support\Database\QueryAggregator;
 use Loxya\Support\Pdf;
-use Loxya\Support\Period;
 use Loxya\Support\Str;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\HttpCache\CacheProvider as HttpCacheProvider;
 
-class MaterialController extends BaseController
+final class MaterialController extends BaseController
 {
-    use WithCrud;
+    use Crud\SoftDelete;
 
     private I18n $i18n;
 
@@ -55,51 +53,48 @@ class MaterialController extends BaseController
 
     public function getOne(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $material = Material::findOrFail($id);
 
         $materialData = $this->_getSafeMaterialSerializedData($material);
         return $response->withJson($materialData, StatusCode::STATUS_OK);
     }
 
-    public function getTags(Request $request, Response $response): ResponseInterface
-    {
-        $id = (int) $request->getAttribute('id');
-        $material = Material::findOrFail($id);
-        return $response->withJson($material->tags, StatusCode::STATUS_OK);
-    }
-
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $paginated = (bool) $request->getQueryParam('paginated', true);
-        $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool) $request->getQueryParam('ascending', true);
-        $search = $request->getQueryParam('search', null);
-        $quantitiesPeriod = $request->getQueryParam('quantitiesPeriod', null);
-        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
-
-        $orderBy = $request->getQueryParam('orderBy', null);
-        $allowedOrderFields = ['name', 'reference', 'rental_price', 'stock_quantity', 'out_of_order_quantity'];
-        if (!in_array($orderBy, $allowedOrderFields, true)) {
-            $orderBy = null;
-        }
+        $paginated = $request->getBooleanQueryParam('paginated', true);
+        $limit = $request->getIntegerQueryParam('limit');
+        $ascending = $request->getBooleanQueryParam('ascending', true);
+        $search = $request->getStringQueryParam('search');
+        $quantitiesPeriod = $request->getPeriodQueryParam('quantitiesPeriod');
+        $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
+        $orderBy = $request->getOrderByQueryParam('orderBy', Material::class);
 
         // - Filtres
         $categoryId = $request->getQueryParam('category', null);
-        $subCategoryId = $request->getQueryParam('subCategory', null);
-        $parkId = $request->getQueryParam('park', null);
+        $subCategoryId = $request->getIntegerQueryParam('subCategory');
+        $parkId = $request->getIntegerQueryParam('park');
         $tags = $request->getQueryParam('tags', []);
 
         $isComplexeOrderBy = (
             in_array($orderBy, ['stock_quantity', 'out_of_order_quantity'], true) &&
-            (is_numeric($parkId))
+            ($parkId !== null)
         );
 
-        $model = (new Material)->setSearch($search);
-        if (!$isComplexeOrderBy) {
-            $model->setOrderBy($orderBy, $ascending);
-        }
-        $query = $model->getAll($onlyDeleted);
+        $query = Material::query()
+            ->when(
+                $search !== null && strlen($search) >= 2,
+                static fn (Builder $subQuery) => $subQuery->search($search),
+            )
+            ->when($onlyDeleted, static fn (Builder $subQuery) => (
+                $subQuery->onlyTrashed()
+            ))
+            ->when(
+                !$isComplexeOrderBy,
+                static fn (Builder $subQuery) => (
+                    $subQuery->customOrderBy($orderBy, $ascending ? 'asc' : 'desc')
+                ),
+            );
 
         //
         // - Filtres
@@ -107,22 +102,22 @@ class MaterialController extends BaseController
 
         $query = $query
             // - Catégorie.
-            ->when($categoryId === 'uncategorized' || is_numeric($categoryId), fn ($builder) => (
+            ->when($categoryId === 'uncategorized' || is_numeric($categoryId), static fn ($builder) => (
                 $builder->where('category_id', (
                     $categoryId !== 'uncategorized' ? (int) $categoryId : null
                 ))
             ))
             // - Sous-catégorie.
-            ->when(is_numeric($subCategoryId), fn ($builder) => (
-                $builder->where('sub_category_id', (int) $subCategoryId)
+            ->when($subCategoryId !== null, static fn ($builder) => (
+                $builder->where('sub_category_id', $subCategoryId)
             ))
             // - Parc.
-            ->when(is_numeric($parkId), fn ($builder) => (
-                $builder->inPark((int) $parkId)
+            ->when($parkId !== null, static fn ($builder) => (
+                $builder->inPark($parkId)
             ))
             // - Tags.
-            ->when(!empty($tags) && is_array($tags), fn ($builder) => (
-                $builder->whereHas('tags', function ($query) use ($tags) {
+            ->when(!empty($tags) && is_array($tags), static fn ($builder) => (
+                $builder->whereHas('tags', static function ($query) use ($tags) {
                     $query->whereIn('id', $tags);
                 })
             ));
@@ -135,14 +130,14 @@ class MaterialController extends BaseController
             if ($orderBy === 'stock_quantity') {
                 $query
                     ->reorder(
-                        $query->raw('IF(stock_quantity)'),
+                        $query->raw('stock_quantity'),
                         $ascending ? 'asc' : 'desc',
                     );
             }
             if ($orderBy === 'out_of_order_quantity') {
                 $query
                     ->reorder(
-                        $query->raw('IF(out_of_order_quantity)'),
+                        $query->raw('out_of_order_quantity'),
                         $ascending ? 'asc' : 'desc',
                     );
             }
@@ -153,24 +148,13 @@ class MaterialController extends BaseController
         //
 
         $results = $paginated
-            ? $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null)
+            ? $this->paginate($request, $query, $limit)
             : ['data' => $query->get()];
 
-        // - Filtre des quantités pour une date ou une période donnée
-        $periodForQuantities = null;
-        if ($quantitiesPeriod !== null && is_array($quantitiesPeriod)) {
-            try {
-                $periodForQuantities = Period::fromArray($quantitiesPeriod);
-            } catch (\Throwable $e) {
-                $periodForQuantities = null;
-            }
-        }
-
-        $results['data'] = Material::allWithAvailabilities($results['data'], $periodForQuantities);
-        $results['data'] = $results['data']->map(function ($material) {
-            $material->append('available_quantity');
-            return $material->serialize();
-        });
+        $results['data'] = Material::allWithAvailabilities($results['data'], $quantitiesPeriod);
+        $results['data'] = $results['data']->map(static fn (Material $material) => (
+            $material->serialize(Material::SERIALIZE_WITH_AVAILABILITY)
+        ));
 
         $results = $paginated ? $results : $results['data'];
         return $response->withJson($results, StatusCode::STATUS_OK);
@@ -178,19 +162,15 @@ class MaterialController extends BaseController
 
     public function getAllWhileEvent(Request $request, Response $response): ResponseInterface
     {
-        $eventId = (int) $request->getAttribute('eventId');
-        $currentEvent = Event::findOrFail($eventId);
-        $materials = (new Material)
-            ->setOrderBy('reference', true)
-            ->getAll()
-            ->get();
+        $eventId = $request->getIntegerAttribute('eventId');
 
-        // FIXME: Prendre en compte les parcs restreints (cf. #163).
+        $currentEvent = Event::findOrFail($eventId);
+        $materials = Material::orderBy('reference')->get();
+
         $materials = Material::allWithAvailabilities($materials, $currentEvent);
-        $materials = $materials->map(function ($material) {
-            $material->append('available_quantity');
-            return $material->serialize();
-        });
+        $materials = $materials->map(static fn (Material $material) => (
+            $material->serialize(Material::SERIALIZE_WITH_AVAILABILITY)
+        ));
 
         return $response->withJson($materials, StatusCode::STATUS_OK);
     }
@@ -220,9 +200,7 @@ class MaterialController extends BaseController
             ];
         }
 
-        usort($parksMaterials, function ($a, $b) {
-            return strcmp($a['name'], $b['name'] ?: '');
-        });
+        usort($parksMaterials, static fn ($a, $b) => strcmp($a['name'], $b['name'] ?: ''));
 
         // - Nom du parc (si export pour un seul parc)
         $parkOnlyName = null;
@@ -254,7 +232,7 @@ class MaterialController extends BaseController
 
     public function getDocuments(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $material = Material::findOrFail($id);
 
         return $response->withJson($material->documents, StatusCode::STATUS_OK);
@@ -262,20 +240,21 @@ class MaterialController extends BaseController
 
     public function getBookings(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
-        $material = Material::findOrFail($id);
+        $id = $request->getIntegerAttribute('id');
         $limit = $request->getQueryParam('limit', null);
+
+        $material = Material::findOrFail($id);
 
         $query = (new QueryAggregator())
             // - Événements.
             ->add(Event::class, (
                 $material->events()
                     ->with(['beneficiaries', 'technicians'])
-                    ->with(['materials' => function ($q) {
+                    ->with(['materials' => static function ($q) {
                         $q->reorder('name', 'asc');
                     }])
             ))
-            ->orderBy('start_date', 'desc');
+            ->orderBy('mobilization_start_date', 'desc');
 
         $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : 50);
 
@@ -284,20 +263,16 @@ class MaterialController extends BaseController
 
         $useMultipleParks = Park::count() > 1;
 
-        $results['data'] = $results['data']->map(fn($booking) => array_merge(
+        $results['data'] = $results['data']->map(static fn ($booking) => array_merge(
             $booking->serialize($booking::SERIALIZE_BOOKING_SUMMARY),
             [
-                'entity' => $booking::TYPE,
                 'pivot' => [
                     'quantity' => $booking->pivot->quantity,
                 ],
-                'categories' => $booking->categories,
-                'parks' => (
-                    $useMultipleParks
-                        ? $booking->parks
-                        : null
-                ),
-            ]
+                'parks' => $useMultipleParks
+                    ? array_values($booking->parks)
+                    : [],
+            ],
         ));
 
         return $response->withJson($results, StatusCode::STATUS_OK);
@@ -305,7 +280,7 @@ class MaterialController extends BaseController
 
     public function getPicture(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $material = Material::findOrFail($id);
 
         $picturePath = $material->picture_real_path;
@@ -346,7 +321,7 @@ class MaterialController extends BaseController
 
     public function update(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $material = Material::findOrFail($id);
 
         $postData = (array) $request->getParsedBody();
@@ -362,7 +337,7 @@ class MaterialController extends BaseController
 
     public function attachDocument(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $material = Material::findOrFail($id);
 
         /** @var UploadedFileInterface[] $uploadedFiles */
@@ -381,8 +356,8 @@ class MaterialController extends BaseController
 
     public function restore(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
-        $material = $this->getModelClass()::staticRestore($id);
+        $id = $request->getIntegerAttribute('id');
+        $material = Material::staticRestore($id);
 
         $materialData = $this->_getSafeMaterialSerializedData($material);
         return $response->withJson($materialData, StatusCode::STATUS_OK);
@@ -454,32 +429,6 @@ class MaterialController extends BaseController
                 }
             }
 
-            if (
-                Auth::is(Group::ADMIN) &&
-                array_key_exists('approvers', $postData) &&
-                is_array($postData['approvers'])
-            ) {
-                $approvers = [];
-                foreach ($postData['approvers'] as $approverId) {
-                    if (empty($approverId)) {
-                        continue;
-                    }
-
-                    $relatedUser = is_numeric($approverId) ? User::find($approverId) : null;
-                    if ($relatedUser === null || $relatedUser?->group !== Group::MEMBER) {
-                        $hasFailed = true;
-                        $validationErrors['approvers'] = [$this->i18n->translate('field-contains-invalid-values')];
-                        break;
-                    }
-
-                    $approvers[] = $relatedUser->id;
-                }
-
-                if (!$hasFailed) {
-                    $material->approvers()->sync($approvers);
-                }
-            }
-
             if (array_key_exists('attributes', $postData) && is_array($postData['attributes'])) {
                 $attributes = [];
                 foreach ($postData['attributes'] as $attribute) {
@@ -507,8 +456,6 @@ class MaterialController extends BaseController
 
     protected function _getSafeMaterialSerializedData(Material $material): array
     {
-        $materialData = $material->serialize(Material::SERIALIZE_DETAILS);
-
-        return $materialData;
+        return $material->serialize(Material::SERIALIZE_DETAILS);
     }
 }

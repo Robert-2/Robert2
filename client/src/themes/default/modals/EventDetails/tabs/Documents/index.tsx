@@ -10,11 +10,11 @@ import type { ComponentRef } from 'vue';
 import type { ProgressCallback } from 'axios';
 import type { PropType } from '@vue/composition-api';
 import type { Document } from '@/stores/api/documents';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 
 type Props = {
     /** L'événement dont on souhaite gérer les documents. */
-    event: Event,
+    event: EventDetails,
 };
 
 type Data = {

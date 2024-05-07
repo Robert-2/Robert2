@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Controllers\Traits\Crud;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Controllers\Traits\WithModel;
 use Loxya\Http\Request;
 use Psr\Http\Message\ResponseInterface;
@@ -15,26 +16,26 @@ trait GetAll
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $paginated = (bool) $request->getQueryParam('paginated', true);
-        $search = $request->getQueryParam('search', null);
-        $orderBy = $request->getQueryParam('orderBy', null);
-        $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool) $request->getQueryParam('ascending', true);
+        $search = $request->getStringQueryParam('search');
+        $limit = $request->getIntegerQueryParam('limit');
+        $ascending = $request->getBooleanQueryParam('ascending', true);
+        $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
+        $orderBy = $request->getOrderByQueryParam('orderBy', $this->getModelClass());
 
-        // TODO: Uniquement si soft deletable.
-        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
+        // @phpstan-ignore-next-line
+        $query = $this->getModelClass()::query()
+            ->when(
+                $search !== null && strlen($search) >= 2,
+                static fn (Builder $subQuery) => $subQuery->search($search),
+            )
+            ->when($onlyDeleted, static fn (Builder $subQuery) => (
+                $subQuery->onlyTrashed()
+            ))
+            ->when($orderBy !== null, static fn (Builder $subQuery) => (
+                $subQuery->customOrderBy($orderBy, $ascending ? 'asc' : 'desc')
+            ));
 
-        $query = $this->getModel()
-            ->setOrderBy($orderBy, $ascending)
-            ->setSearch($search)
-            ->getAll($onlyDeleted);
-
-        if ($paginated) {
-            $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null);
-        } else {
-            $results = $query->get();
-        }
-
+        $results = $this->paginate($request, $query, $limit);
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
@@ -44,5 +45,5 @@ trait GetAll
     // -
     // ------------------------------------------------------
 
-    abstract protected function paginate(Request $request, $query, ?int $limit = null): array;
+    abstract protected function paginate(Request $request, $query, int|null $limit = null): array;
 }

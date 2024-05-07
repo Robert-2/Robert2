@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use Loxya\Config\Config;
-use Monolog\Logger;
+use Monolog\Level as LogLevel;
 use Phinx\Migration\AbstractMigration;
 
 final class ImproveEventMaterials extends AbstractMigration
@@ -17,7 +17,7 @@ final class ImproveEventMaterials extends AbstractMigration
             'SELECT em.*, m.is_unitary
              FROM `%1$sevent_materials` as em
              INNER JOIN `%1$smaterials` as m ON em.material_id = m.id',
-            $prefix
+            $prefix,
         ));
         $groupedData = [];
         foreach ($data as $eventMaterial) {
@@ -41,16 +41,16 @@ final class ImproveEventMaterials extends AbstractMigration
         //   - Si les unités sélectionnées sont identiques entre chaque doublon.
         //   => Si non, ne peut pas être résolu automatiquement.
         //   => Si oui, on garde le doublon le plus récent et on supprime les autres.
-        $duplicates = array_filter($groupedData, fn ($data) => count($data['values']) > 1);
+        $duplicates = array_filter($groupedData, static fn ($data) => count($data['values']) > 1);
         foreach ($duplicates as &$duplicate) {
             if ($duplicate['is_unitary']) {
                 foreach ($duplicate['values'] as &$value) {
                     $value['units'] = array_column(
                         $this->fetchAll(vsprintf(
                             'SELECT material_unit_id FROM `%1$sevent_material_units` WHERE `event_material_id` = %2$d',
-                            [$prefix, $value['id']]
+                            [$prefix, $value['id']],
                         )),
-                        'material_unit_id'
+                        'material_unit_id',
                     );
                 }
             }
@@ -83,7 +83,7 @@ final class ImproveEventMaterials extends AbstractMigration
 
                 $this->execute(vsprintf(
                     'DELETE FROM `%1$sevent_materials` WHERE `id` = %2$d',
-                    [$prefix, $idToDelete]
+                    [$prefix, $idToDelete],
                 ));
             }
         }
@@ -91,15 +91,15 @@ final class ImproveEventMaterials extends AbstractMigration
         // - Dans le cas ou on a des doublons que l'on ne peut pas corriger automatiquement,
         //   on lève une exception et on log le détail des doublons problématique pour simplifier
         //   la correction.
-        $unfixableDuplicates = array_filter($duplicates, fn ($data) => !$data['fixable']);
+        $unfixableDuplicates = array_filter($duplicates, static fn ($data) => !$data['fixable']);
         if (count($unfixableDuplicates) > 0) {
-            container('logger')->log(Logger::ERROR, sprintf(
+            container('logger')->log(LogLevel::Error, sprintf(
                 "Unfixable `event_materials` duplicate:\n%s",
-                var_export($unfixableDuplicates, true)
+                var_export($unfixableDuplicates, true),
             ));
             throw new \Exception(
                 "The `event_materials` table contains some duplicate (event_id / material_id) " .
-                "that are not fixable automatically. Please see the app logs for details."
+                "that are not fixable automatically. Please see the app logs for details.",
             );
         }
 

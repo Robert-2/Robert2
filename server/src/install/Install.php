@@ -5,14 +5,15 @@ namespace Loxya\Install;
 
 use Loxya\Config\Config;
 use Loxya\Console\App as CliApp;
+use Loxya\Support\Arr;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
-class Install
+final class Install
 {
     protected const INSTALL_FILE = __DIR__ . '/progress.json';
 
-    // - See in `SetupController` for steps execution.
+    // - Voir dans `SetupController` pour les étapes d'exécution.
     public const INSTALL_STEPS = [
         'welcome',
         'coreSettings',
@@ -24,6 +25,9 @@ class Install
         'categories',
         'end',
     ];
+
+    public const MIN_PHP_VERSION = '8.1';
+    public const MAX_PHP_VERSION = '8.3';
 
     public const REQUIRED_EXTENSIONS = [
         'bcmath',
@@ -67,7 +71,7 @@ class Install
 
         if ($stepData === null) {
             $installData['step'] = $step;
-            $installData["config_$step"] = [];
+            $installData['data'][$step] = [];
 
             return static::_saveInstallData($installData);
         }
@@ -76,7 +80,7 @@ class Install
         $nextStep = self::INSTALL_STEPS[$stepIndex + 1] ?? 'end';
 
         foreach ($stepData as $key => $value) {
-            $keyType = self::VALUE_TYPES[$key] ??  null;
+            $keyType = self::VALUE_TYPES[$key] ?? null;
             if ($keyType === 'boolean') {
                 $stepData[$key] = (bool) $value;
             }
@@ -88,8 +92,8 @@ class Install
             }
         }
 
-        $installData["config_$step"] = $stepData;
         $installData['step'] = $nextStep;
+        $installData['data'][$step] = $stepData;
 
         return static::_saveInstallData($installData);
     }
@@ -99,11 +103,11 @@ class Install
         $installData = static::_getInstallData();
 
         $settings = array_merge(
-            $installData['config_coreSettings'],
-            $installData['config_settings']
+            $installData['data']['coreSettings'],
+            $installData['data']['settings'],
         );
-        $settings['db'] = $installData['config_database'];
-        $settings['companyData'] = $installData['config_company'];
+        $settings['db'] = $installData['data']['database'];
+        $settings['companyData'] = $installData['data']['company'];
 
         return $settings;
     }
@@ -132,13 +136,33 @@ class Install
 
     protected static function _getInstallData(): array
     {
+        $defaultInstallData = ['step' => null, 'data' => []];
+
         if (!file_exists(self::INSTALL_FILE)) {
-            return [];
+            return $defaultInstallData;
         }
 
-        $installData = json_decode(@file_get_contents(self::INSTALL_FILE), true);
-        if (!is_array($installData)) {
-            return [];
+        $rawInstallData = json_decode(@file_get_contents(self::INSTALL_FILE), true);
+        if (!is_array($rawInstallData)) {
+            return $defaultInstallData;
+        }
+
+        $installData = Arr::defaults(
+            Arr::only($rawInstallData, ['step', 'data']),
+            $defaultInstallData,
+        );
+
+        // - Rétro-compatibilité.
+        foreach (static::INSTALL_STEPS as $step) {
+            if (array_key_exists($step, $installData['data'])) {
+                continue;
+            }
+
+            $stepLegacyKey = sprintf('config_%s', $step);
+            if (!array_key_exists($stepLegacyKey, $rawInstallData)) {
+                continue;
+            }
+            $installData['data'][$step] = $rawInstallData[$stepLegacyKey];
         }
 
         return $installData;
@@ -149,7 +173,7 @@ class Install
         $installDataAsJson = json_encode($installData, Config::JSON_OPTIONS);
         if (!file_put_contents(self::INSTALL_FILE, $installDataAsJson)) {
             throw new \RuntimeException(
-                "Unable to write JSON install data file. Check write access to `install` folder."
+                "Unable to write JSON install data file. Check write access to `install` folder.",
             );
         }
         return $installData;
@@ -158,16 +182,16 @@ class Install
     protected static function _executePhinxCommand(string $command): array
     {
         if (!in_array($command, ['status', 'migrate', 'rollback'], true)) {
-            throw new \InvalidArgumentException("Commande de migration inconnue.", 2);
+            throw new \InvalidArgumentException("Unknown migration command.", 2);
         }
 
-        // - Allow very long time execution for migrations
+        // - Permet l’exécution des longues migrations.
         set_time_limit(3600);
 
         $stream = fopen('php://temp', 'w+');
-        $exitCode = (new CliApp)->doRun(
+        $exitCode = (new CliApp())->doRun(
             new ArrayInput([sprintf('migrations:%s', $command)]),
-            new StreamOutput($stream)
+            new StreamOutput($stream),
         );
         $output = stream_get_contents($stream, -1, 0);
         fclose($stream);
@@ -189,10 +213,7 @@ class Install
             if ($line === '') {
                 continue;
             }
-            $infos = explode("  ", trim($line));
-            $infos = array_filter($infos, function ($info) {
-                return trim($info) !== '';
-            });
+            $infos = array_filter(array_map('trim', explode('  ', trim($line))));
 
             $status[] = [
                 'table' => end($infos),

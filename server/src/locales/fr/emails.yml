@@ -1,0 +1,8 @@
+not-returned-materials-notification: "Notification de matériel non retourné"
+not-returned-materials-summary: "Récapitulatif du matériel non retourné"
+new-reservation-request: "Nouvelle demande de réservation"
+your-reservation-request: "Votre demande de réservation"
+request-approved: "Votre demande de réservation a été approuvée\_!"
+request-rejected: "Votre demande de réservation a été rejetée"
+materials-list: "Liste de matériel"
+event-summary: "Fiche de sortie pour «\_%s\_»"

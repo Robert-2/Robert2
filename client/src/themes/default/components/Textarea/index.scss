@@ -8,6 +8,8 @@
     &--invalid {
         &:not(:focus) {
             border-color: globals.$input-error-border-color;
+            background-color: globals.$input-error-background-color;
+            color: globals.$input-error-text-color;
         }
     }
 }

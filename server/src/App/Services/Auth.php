@@ -5,7 +5,6 @@ namespace Loxya\Services;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Loxya\Config\Acl;
 use Loxya\Config\Config;
 use Loxya\Http\Request;
@@ -13,6 +12,7 @@ use Loxya\Models\User;
 use Loxya\Services\Auth\Contracts\AuthenticatorInterface;
 use Loxya\Services\Auth\Contracts\RemoteAuthenticatorInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Psr7\Response;
 
@@ -89,7 +89,7 @@ final class Auth
         //       distants en même temps et que Loxya en ait conscience).
         /** @var ?RemoteAuthenticatorInterface $remoteAuthenticator */
         $remoteAuthenticator = $isFullLogout
-            ? $this->authenticators->first(fn (AuthenticatorInterface $authenticator) => (
+            ? $this->authenticators->first(static fn (AuthenticatorInterface $authenticator) => (
                 $authenticator->isEnabled() &&
                 $authenticator instanceof RemoteAuthenticatorInterface &&
                 $authenticator->isAuthenticated()
@@ -179,14 +179,8 @@ final class Auth
             return false;
         }
 
-        // - Routes publiques
-        $isAllowedRoute = $request->match(Acl::PUBLIC_ROUTES);
-        if ($isAllowedRoute) {
-            return false;
-        }
-
-        // - Toutes les autres routes sont protégées.
-        return true;
+        // - Si ce n'est pas une route publique, c'est une route protégée.
+        return !$request->match(Acl::PUBLIC_ROUTES);
     }
 
     protected function retrieveUser(Request $request): bool

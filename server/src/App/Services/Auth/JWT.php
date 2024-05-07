@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Services\Auth;
 
+use Carbon\CarbonImmutable;
 use Firebase\JWT\JWT as JWTCore;
 use Firebase\JWT\Key as JWTKey;
 use Illuminate\Support\Str;
@@ -23,7 +24,7 @@ final class JWT implements AuthenticatorInterface
         try {
             $token = $this->fetchToken($request);
             $decoded = $this->decodeToken($token);
-        } catch (\RuntimeException | \DomainException $exception) {
+        } catch (\RuntimeException | \DomainException) {
             return null;
         }
 
@@ -37,7 +38,7 @@ final class JWT implements AuthenticatorInterface
     public function clearPersistentData(): void
     {
         $cookieName = Config::get('auth.cookie');
-        setcookie($cookieName, '', time() - 42000, '/');
+        setcookie($cookieName, '', time() - 42_000, '/');
     }
 
     // ------------------------------------------------------
@@ -74,13 +75,9 @@ final class JWT implements AuthenticatorInterface
 
     private function decodeToken(string $token): array
     {
-        try {
-            $key = new JWTKey(Config::get('JWTSecret'), 'HS256');
-            $decoded = JWTCore::decode($token, $key);
-            return (array) $decoded;
-        } catch (\Exception $exception) {
-            throw $exception;
-        }
+        $key = new JWTKey(Config::get('JWTSecret'), 'HS256');
+        $decoded = JWTCore::decode($token, $key);
+        return (array) $decoded;
     }
 
     // ------------------------------------------------------
@@ -91,11 +88,11 @@ final class JWT implements AuthenticatorInterface
 
     public static function generateToken(User $user): string
     {
-        $duration = Config::get('sessionExpireHours');
-        $expires = new \DateTime(sprintf('now +%d hours', $duration));
+        $now = CarbonImmutable::now();
+        $expires = $now->addHours(Config::get('sessionExpireHours'));
 
         $payload = [
-            'iat' => (new \DateTime())->getTimeStamp(),
+            'iat' => $now->getTimeStamp(),
             'exp' => $expires->getTimeStamp(),
             'user' => $user->toArray(),
         ];

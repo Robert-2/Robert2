@@ -99,11 +99,9 @@ final class EventMaterialObserver
         /** @var \Loxya\Models\Event[] $events */
         $events = $material->events()
             ->where($event->qualifyColumn('id'), '<>', $event->id)
-            ->where(function (Builder $query) use ($event) {
-                $query->where([
-                    ['end_date', '>=', $event->start_date],
-                    ['start_date', '<=', $event->end_date],
-                ]);
+            ->where(static function (Builder $eventQuery) use ($event) {
+                /** @var Builder|\Loxya\Models\Event $eventQuery */
+                $eventQuery->inPeriod($event);
             })
             ->get();
 

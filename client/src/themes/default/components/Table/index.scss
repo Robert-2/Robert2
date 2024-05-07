@@ -1,0 +1,18 @@
+@use '~@/themes/default/style/globals';
+
+.Table {
+    &__cell {
+        $sub-block: &;
+
+        &--actions {
+            width: 1%;
+            text-align: right;
+            white-space: nowrap;
+
+            #{$sub-block}__actions {
+                display: flex;
+                gap: globals.$spacing-thin;
+            }
+        }
+    }
+}

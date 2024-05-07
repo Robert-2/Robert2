@@ -15,8 +15,9 @@ trait GetOne
 
     public function getOne(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
 
+        // @phpstan-ignore-next-line
         $model = $this->getModelClass()::findOrFail($id);
         if (method_exists(static::class, '_formatOne')) {
             $model = static::_formatOne($model);

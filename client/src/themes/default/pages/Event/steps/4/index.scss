@@ -20,11 +20,7 @@
         margin: 0;
         padding: 1rem 1rem 1.5rem;
         background: globals.$bg-color-body;
-        gap: 5px;
-
-        .button + .button {
-            margin-left: 0;
-        }
+        gap: globals.$spacing-small;
     }
 
     //
@@ -40,14 +36,13 @@
     @media (min-width: globals.$screen-tablet) {
         &__actions {
             left: 256px;
-            justify-content: normal;
-            text-align: left;
         }
     }
 
     @media (min-width: globals.$screen-desktop) {
         &__actions {
             left: 376px;
+            gap: globals.$spacing-medium;
         }
     }
 }

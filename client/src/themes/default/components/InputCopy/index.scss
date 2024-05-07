@@ -15,17 +15,19 @@
 
         &:focus + #{$block}__button-wrapper {
             border-color: globals.$input-focus-border-color;
+            background-color: globals.$input-focus-background-color;
+            color: globals.$input-focus-text-color;
         }
     }
 
     &__button-wrapper {
         display: inline-block;
         min-width: 2.7rem;
-        border: globals.$input-border-size solid globals.$bg-color-input-normal;
+        border: globals.$input-border-width solid globals.$input-border-color;
         border-left: 0;
         border-radius: 0 globals.$input-border-radius globals.$input-border-radius 0;
-        background-color: globals.$bg-color-input-normal;
-        color: globals.$color-input;
+        background-color: globals.$input-background-color;
+        color: globals.$input-text-color;
 
         // stylelint-disable-next-line order/properties-order
         padding:

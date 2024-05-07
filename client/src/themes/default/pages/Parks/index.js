@@ -9,6 +9,7 @@ import CriticalError from '@/themes/default/components/CriticalError';
 import { ServerTable } from '@/themes/default/components/Table';
 import Dropdown from '@/themes/default/components/Dropdown';
 import Button from '@/themes/default/components/Button';
+import Link from '@/themes/default/components/Link';
 import formatAddress from '@/utils/formatAddress';
 import ItemsCount from './components/ItemsCount';
 import TotalAmount from './components/TotalAmount';
@@ -45,14 +46,26 @@ const Parks = defineComponent({
                     key: 'address',
                     title: __('address'),
                     class: 'Parks__cell Parks__cell--address',
-                    render: (h, park) => (
-                        formatAddress(park.street, park.postal_code, park.locality)
-                    ),
+                    render: (h, park) => {
+                        const address = formatAddress(park.street, park.postal_code, park.locality);
+                        return address ?? (
+                            <div class="Parks__cell__empty">
+                                {__('not-specified')}
+                            </div>
+                        );
+                    },
                 },
                 !isTrashDisplayed && {
                     key: 'opening_hours',
                     title: __('opening-hours'),
                     class: 'Parks__cell Parks__cell--opening-hours',
+                    render: (h, { opening_hours: openingHours }) => (
+                        openingHours ?? (
+                            <span class="Parks__cell__empty">
+                                {__('not-specified')}
+                            </span>
+                        )
+                    ),
                 },
                 !isTrashDisplayed && {
                     key: 'totalItems',
@@ -86,9 +99,9 @@ const Parks = defineComponent({
                         }
 
                         return (
-                            <router-link to={{ name: 'calendar', query: { park: id } }}>
+                            <Link to={{ name: 'schedule', query: { park: id } }}>
                                 {__('page.parks.display-events-for-park')}
-                            </router-link>
+                            </Link>
                         );
                     },
                 },
@@ -122,15 +135,21 @@ const Parks = defineComponent({
                                     disabled={!hasItems}
                                     external
                                 />
-                                <Button
-                                    type="edit"
-                                    to={{ name: 'edit-park', params: { id } }}
-                                />
-                                <Button
-                                    type="trash"
-                                    onClick={() => { handleDeleteItem(id); }}
-                                    disabled={hasItems}
-                                />
+                                <Dropdown>
+                                    <Button
+                                        type="edit"
+                                        to={{ name: 'edit-park', params: { id } }}
+                                    >
+                                        {__('action-edit')}
+                                    </Button>
+                                    <Button
+                                        type="trash"
+                                        onClick={() => { handleDeleteItem(id); }}
+                                        disabled={hasItems}
+                                    >
+                                        {__('action-delete')}
+                                    </Button>
+                                </Dropdown>
                             </Fragment>
                         );
                     },
@@ -251,7 +270,7 @@ const Parks = defineComponent({
 
         if (hasCriticalError) {
             return (
-                <Page name="parks" title={__('page.parks.title')}>
+                <Page name="parks" title={__('page.parks.title')} centered>
                     <CriticalError />
                 </Page>
             );
@@ -270,7 +289,7 @@ const Parks = defineComponent({
         // - Actions de la page.
         const actions = !isTrashDisplayed
             ? [
-                <Button type="add" to={{ name: 'add-park' }}>
+                <Button type="add" to={{ name: 'add-park' }} collapsible>
                     {__('page.parks.action-add')}
                 </Button>,
                 <Dropdown>
@@ -290,7 +309,7 @@ const Parks = defineComponent({
                 name="parks"
                 title={title}
                 help={help}
-                isLoading={isLoading}
+                loading={isLoading}
                 actions={actions}
             >
                 <div class="Parks">

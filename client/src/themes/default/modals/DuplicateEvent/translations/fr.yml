@@ -1,11 +1,13 @@
 title: "Dupliquer l'événement «\_{title}\_»"
 
-dates-of-duplicated-event: Dates du nouvel événement
+operation-period: Dates du nouvel événement
+mobilization-period: Période de mobilisation du matériel
+mobilization-period-help: "Période pendant laquelle le matériel est mobilisé pour le nouvel événement."
+sync-mobilization-period: Utiliser une période de mobilisation du matériel identique aux dates de l'événement ?
+
 please-choose-dates: Veuillez choisir les dates du nouvel événement.
 new-event-saved: Le nouvel événement a été sauvegardé.
 
-technician-already-busy-force: |
-    Certains des techniciens de l'événement d'origine sont occupés pendant la période du nouvel événement.
-
-    Si vous continuez, le nouvel événement sera créé sans ceux-ci.
-force-duplicate: Dupliquer quand même
+technician-transfer-warning: |
+    Attention, les techniciens de l'événement d'origine ne seront pas transférés au nouvel événement.
+    Pensez à les assigner vous-même dans l'édition de l'événement après la duplication.

@@ -7,8 +7,4 @@
     background-color: globals.$bg-color-body;
     text-align: center;
     gap: globals.$spacing-medium;
-
-    .Button + .Button {
-        margin-left: 0;
-    }
 }

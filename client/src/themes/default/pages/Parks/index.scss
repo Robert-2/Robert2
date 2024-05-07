@@ -1,23 +1,20 @@
 @use '~@/themes/default/style/globals';
 
-.Page--parks {
-    display: flex;
-    flex-direction: column;
-
-    .Parks {
-        flex: 1;
-    }
-}
-
 .Parks {
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     &__table {
         flex: 1;
     }
 
     &__cell {
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+
         &--address,
         &--opening-hours,
         &--note,
@@ -47,12 +44,6 @@
             // - Important pour surcharger la définition du <th> de `.VueTables`.
             // stylelint-disable-next-line declaration-no-important
             text-align: center !important;
-        }
-
-        &--actions {
-            width: 1%;
-            text-align: right;
-            white-space: nowrap;
         }
 
         //

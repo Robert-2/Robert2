@@ -1,4 +1,93 @@
+@use '~@/themes/default/style/globals';
+
 .Page {
-    width: 100%;
+    $block: &;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: auto;
     height: 100%;
+    padding: globals.$spacing-small globals.$spacing-medium globals.$spacing-medium;
+    gap: globals.$spacing-medium;
+
+    &__header {
+        flex: 0 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: globals.$spacing-small globals.$spacing-medium;
+
+        &__help {
+            flex: 1;
+            min-width: 250px;
+
+            &__message {
+                @extend %reset-p;
+
+                @include globals.line-clamp(3);
+
+                display: inline-flex;
+                align-items: center;
+                color: globals.$help-text-color;
+                white-space: pre-line;
+
+                @include globals.icon('info-circle') {
+                    margin-right: globals.$spacing-small;
+                    font-size: 1.2rem;
+                }
+
+                //
+                // - Variantes
+                //
+
+                &--error {
+                    @include globals.icon('exclamation-triangle');
+
+                    color: globals.$text-danger-color;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        &__actions {
+            flex-shrink: 0;
+            display: flex;
+            margin-left: auto;
+            gap: globals.$spacing-small;
+        }
+    }
+
+    &__body {
+        flex: 1;
+        width: 100%;
+    }
+
+    //
+    // - Modifiers
+    //
+
+    &--centered {
+        #{$block}__body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        padding: globals.$spacing-medium;
+        gap: globals.$spacing-medium;
+
+        &__header {
+            flex-direction: row;
+        }
+    }
 }

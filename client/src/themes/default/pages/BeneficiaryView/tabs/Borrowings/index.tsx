@@ -1,52 +1,68 @@
 import './index.scss';
+import Day from '@/utils/day';
+import Period from '@/utils/period';
+import DateTime from '@/utils/datetime';
+import parseInteger from '@/utils/parseInteger';
 import { defineComponent } from '@vue/composition-api';
-import moment from 'moment';
-import { Group } from '@/stores/api/groups';
-import { BookingEntity } from '@/stores/api/bookings';
-import formatTimelineBooking from '@/utils/formatTimelineBooking';
+import apiBookings, { BookingEntity } from '@/stores/api/bookings';
+import bookingFormatterFactory from '@/utils/formatTimelineBooking';
 import showModal from '@/utils/showModal';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
-import apiEvents from '@/stores/api/events';
 import Queue from 'p-queue';
 import EventDetails from '@/themes/default/modals/EventDetails';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
-
+import Timeline from '@/themes/default/components/Timeline';
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import config from '@/globals/config';
 import Item from '../../components/BookingsItem';
 
-import Timeline from '@/themes/default/components/Timeline';
-
 import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { BeneficiaryDetails } from '@/stores/api/beneficiaries';
-import type { BookingSummary } from '@/stores/api/bookings';
+import type { TimelineClickEvent, TimelineItem } from '@/themes/default/components/Timeline';
+import type { BookingExcerpt, BookingSummary } from '@/stores/api/bookings';
+import type { LazyBooking } from '../../_types';
 
 type Props = {
-    /* Le bénéficiaire dont on veut afficher les emprunts. */
+    /** Le bénéficiaire dont on veut afficher les emprunts. */
     beneficiary: BeneficiaryDetails,
 };
 
 type InstanceProperties = {
-    cancelOngoingFetch: (() => void) | undefined,
     nowTimer: ReturnType<typeof setInterval> | undefined,
     fetchMissingMaterialsQueue: Queue | undefined,
+    cancelOngoingFetch: (() => void) | undefined,
 };
 
 type Data = {
-    bookings: BookingSummary[],
+    bookings: LazyBooking[],
+    defaultShownPeriod: Period,
     hasCriticalError: boolean,
     isPartiallyFetched: boolean,
     isFullyFetched: boolean,
-    isModalOpened: boolean,
-    now: number,
+    now: DateTime,
 };
 
-/** Nombre de millisecondes pour faire un jour entier. */
-const ONE_DAY = 1000 * 3600 * 24;
+/**
+ * Interval de temps minimum affiché dans la timeline.
+ * (Il ne sera pas possible d'augmenter le zoom au delà de cette limite)
+ */
+const MIN_ZOOM = DateTime.duration(1, 'hour');
 
-/* Contenu de l'onglet "emprunts" de la page de détails d'un bénéficiaire. */
+/**
+ * Interval de temps maximum affiché dans la timeline.
+ * (Il ne sera pas possible de dé-zoomer au delà de cette limite)
+ */
+const MAX_ZOOM = DateTime.duration(60, 'days');
+
+/**
+ * Nombre de requêtes maximum pour la récupération du matériel
+ * manquant envoyées par seconde.
+ */
+export const MAX_FETCHES_PER_SECOND: number = 10;
+
+/** Contenu de l'onglet "emprunts" de la page de détails d'un bénéficiaire. */
 const BeneficiaryViewBorrowings = defineComponent({
     name: 'BeneficiaryViewBorrowings',
     props: {
@@ -56,67 +72,57 @@ const BeneficiaryViewBorrowings = defineComponent({
         },
     },
     setup: (): InstanceProperties => ({
-        cancelOngoingFetch: undefined,
         nowTimer: undefined,
+        cancelOngoingFetch: undefined,
         fetchMissingMaterialsQueue: undefined,
     }),
     data: (): Data => ({
         bookings: [],
+        defaultShownPeriod: new Period(
+            Day.today().subDay(7),
+            Day.today().addDay(7),
+            true,
+        ),
         hasCriticalError: false,
         isPartiallyFetched: false,
         isFullyFetched: false,
-        isModalOpened: false,
-        now: Date.now(),
+        now: DateTime.now(),
     }),
     computed: {
-        isTeamMember(): boolean {
-            return this.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN]);
-        },
-
-        timelineOptions(): Record<string, any> {
-            const { isTeamMember } = this;
-
-            return {
-                start: moment().subtract(7, 'days').startOf('day'),
-                end: moment().add(7, 'days').endOf('day'),
-                editable: false,
-                selectable: isTeamMember,
-                height: '100%',
-                orientation: 'top',
-                zoomMin: ONE_DAY * 7,
-                zoomMax: ONE_DAY * 60,
-            };
-        },
-
-        // FIXME: Typer la fonction `formatTimelineBooking` pour typer le retour de ce computed.
-        timelineBookings() {
+        timelineBookings(): TimelineItem[] {
             const { $t: __, now, bookings } = this;
             const calendarSettings = this.$store.state.settings.calendar ?? {};
 
-            const formatOptions = {
-                showLocation: calendarSettings.event?.showLocation ?? true,
-                showBorrower: calendarSettings.event?.showBorrower ?? false,
-            };
+            const formatter = bookingFormatterFactory(__, now, {
+                showEventLocation: calendarSettings.event?.showLocation ?? true,
+                showEventBorrower: calendarSettings.event?.showBorrower ?? false,
+            });
 
-            return bookings.map((booking: BookingSummary) => ({
-                ...formatTimelineBooking(booking, __, now, formatOptions),
-                editable: false,
-            }));
+            return bookings.map((lazy: LazyBooking): TimelineItem => {
+                const formattedBooking = (
+                    lazy.isComplete
+                        ? formatter(lazy.booking, false)
+                        : formatter(lazy.booking, true)
+                );
+                return { ...formattedBooking, editable: false };
+            });
         },
     },
     created() {
-        this.fetchMissingMaterialsQueue = new Queue({ concurrency: config.maxConcurrentFetches });
+        this.fetchMissingMaterialsQueue = new Queue({
+            interval: DateTime.duration(1, 'second').asMilliseconds(),
+            concurrency: config.maxConcurrentFetches,
+            intervalCap: MAX_FETCHES_PER_SECOND,
+        });
     },
     mounted() {
         this.fetchData();
 
         // - Actualise le timestamp courant toutes les minutes.
-        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
+        this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 60_000);
     },
     beforeDestroy() {
         this.cancelOngoingFetch?.();
-
-        // - Vide la file d'attente des requêtes.
         this.fetchMissingMaterialsQueue?.clear();
 
         if (this.nowTimer) {
@@ -130,81 +136,53 @@ const BeneficiaryViewBorrowings = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleClickItem(booking: BookingSummary) {
-            const date = moment(booking.start_date);
-
-            const $timeline = this.$refs.timeline as ComponentRef<typeof Timeline>;
-            $timeline?.moveTo(date);
-        },
-
-        async handleOpen(booking: BookingSummary) {
-            // - On évite le double-call à cause d'un bug qui trigger l'event en double.
-            //   @see https://github.com/visjs/vis-timeline/issues/301
-            if (this.isModalOpened) {
+        handleClickItem(entity: BookingEntity, id: BookingExcerpt['id']) {
+            // - Récupération du booking lié.
+            const lazyBooking = this.bookings.find((lazy: LazyBooking) => (
+                lazy.booking.entity === entity && lazy.booking.id === id
+            ));
+            if (lazyBooking === undefined) {
                 return;
             }
+            const { booking } = lazyBooking;
 
-            const modalComponents = {
-                [BookingEntity.EVENT]: EventDetails,
-            };
-            if (!(booking.entity in modalComponents)) {
-                throw new Error('Unsupported booking type.');
-            }
-
-            this.isModalOpened = true;
-
-            let shouldRefetch = false;
-            const modalComponent = modalComponents[booking.entity];
-            await showModal(this.$modal, modalComponent, {
-                id: booking.id,
-                onUpdated: () => {
-                    shouldRefetch = true;
-                },
-                onDuplicated() {
-                    shouldRefetch = true;
-                },
-                onDeleted: () => {
-                    shouldRefetch = true;
-                },
-            });
-
-            this.isModalOpened = false;
-
-            if (shouldRefetch) {
-                this.fetchData();
-            }
+            const $timeline = this.$refs.timeline as ComponentRef<typeof Timeline>;
+            $timeline?.moveTo(booking.mobilization_period.start);
         },
 
-        handleDoubleClickTimeline(e: { item: string }) {
+        handleClickOpenItem(entity: BookingEntity, id: BookingExcerpt['id']) {
+            this.showModal(entity, id);
+        },
+
+        handleDoubleClickTimelineItem(payload: TimelineClickEvent) {
             // - Si c'est un double-clic sur une partie vide (= sans booking) du calendrier...
             //   => On ne pas va plus loin.
-            const identifier = e.item;
-            if (!identifier) {
+            const identifier = payload.item?.id ?? null;
+            if (identifier === null) {
                 return;
             }
 
             // - Parsing de l'identifier du booking du calendrier.
-            const identifierParts = identifier.split('-');
+            const identifierParts = (identifier as string).split('-');
             if (identifierParts.length !== 2) {
                 return;
             }
             const entity = identifierParts[0];
-            const id = parseInt(identifierParts[1], 10);
-
-            // - Récupération du booking lié.
-            const booking = this.bookings.find((_booking: BookingSummary) => (
-                _booking.entity === entity && _booking.id === id
-            ));
-            if (booking === undefined) {
+            if (!Object.values(BookingEntity).includes(entity as any)) {
                 return;
             }
 
-            this.handleOpen(booking);
+            const id = parseInteger(identifierParts[1]);
+            if (id === null) {
+                return;
+            }
+
+            this.showModal(entity as BookingEntity, id);
         },
 
-        handleClickTimeline(e: { item: string }) {
-            const identifier = e.item;
-            if (!identifier) {
+        handleClickTimelineItem(payload: TimelineClickEvent) {
+            const identifier = payload.item?.id ?? null;
+            if (identifier === null) {
                 return;
             }
 
@@ -218,7 +196,7 @@ const BeneficiaryViewBorrowings = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async fetchData() {
+        async fetchData(forceRefresh: boolean = false) {
             const { beneficiary } = this;
 
             // - Vide la file d'attente des requêtes avant de la re-peupler.
@@ -233,38 +211,62 @@ const BeneficiaryViewBorrowings = defineComponent({
             };
 
             try {
+                // - On garde en mémoire les données des bookings précédemment récupérés complètement
+                //   pour éviter de renvoyer les requêtes de récupération inutilement pour ceux-ci.
+                const prevCompleteBookings = new Map<BookingEntity, Map<number, BookingSummary>>([
+                    [BookingEntity.EVENT, new Map()],
+                ]);
+                if (!forceRefresh) {
+                    this.bookings.forEach(({ isComplete, booking }: LazyBooking) => {
+                        if (isComplete) {
+                            prevCompleteBookings
+                                .get(booking.entity)!
+                                .set(booking.id, booking);
+                        }
+                    });
+                }
+
                 const fetchPageRecursive = async (page: number): Promise<void> => {
                     const { data, pagination } = await apiBeneficiaries.bookings(beneficiary.id, { page });
                     if (isCancelled) {
                         return;
                     }
 
+                    const lazyBookings: LazyBooking[] = data.map(
+                        (booking: BookingExcerpt) => {
+                            const prevEntityBookings = prevCompleteBookings.get(booking.entity);
+                            return prevEntityBookings?.has(booking.id)
+                                ? { isComplete: true, booking: prevEntityBookings.get(booking.id)! }
+                                : { isComplete: false, booking };
+                        },
+                    );
+
                     if (page === 1) {
-                        this.bookings = data;
+                        this.bookings = lazyBookings;
                     } else {
-                        this.bookings.push(...data);
+                        this.bookings.push(...lazyBookings);
                     }
 
-                    const promises = data
-                        .filter((booking: BookingSummary) => (
-                            moment(booking.start_date).isAfter(this.now, 'day')
+                    const promises = lazyBookings
+                        .filter((lazy: LazyBooking): lazy is LazyBooking<false> => (
+                            !lazy.isComplete &&
+                            lazy.booking.mobilization_period.start.isAfter(this.now)
                         ))
-                        .map((booking: BookingSummary) => async () => {
-                            const missingMaterials = await apiEvents.missingMaterials(booking.id);
+                        .map(({ booking }: LazyBooking<false>) => async () => {
+                            const finalBooking = await apiBookings.oneSummary(booking.entity, booking.id);
 
                             const originalBookingIndex = this.bookings.findIndex(
-                                ({ entity, id }: BookingSummary) => (
-                                    entity === booking.entity && id === booking.id
+                                ({ booking: _booking }: LazyBooking) => (
+                                    _booking.entity === booking.entity &&
+                                    _booking.id === booking.id
                                 ),
                             );
                             if (originalBookingIndex === -1) {
                                 return;
                             }
 
-                            this.$set(this.bookings, originalBookingIndex, {
-                                ...booking,
-                                has_missing_materials: missingMaterials.length > 0,
-                            });
+                            const lazyBooking = { isComplete: true, booking: finalBooking };
+                            this.$set(this.bookings, originalBookingIndex, lazyBooking);
                         });
 
                     await this.fetchMissingMaterialsQueue?.addAll(promises);
@@ -286,20 +288,48 @@ const BeneficiaryViewBorrowings = defineComponent({
                 this.hasCriticalError = true;
             }
         },
+
+        async showModal(entity: BookingEntity, id: BookingExcerpt['id']) {
+            const modalComponents = {
+                [BookingEntity.EVENT]: EventDetails,
+            };
+            if (!(entity in modalComponents)) {
+                throw new Error('Unsupported booking type.');
+            }
+
+            let shouldRefetch = false;
+            const modalComponent = modalComponents[entity];
+            await showModal(this.$modal, modalComponent, {
+                id,
+                onUpdated: () => {
+                    shouldRefetch = true;
+                },
+                onDuplicated() {
+                    shouldRefetch = true;
+                },
+                onDeleted: () => {
+                    shouldRefetch = true;
+                },
+            });
+
+            if (shouldRefetch) {
+                this.fetchData(true);
+            }
+        },
     },
     render() {
         const {
             $t: __,
             bookings,
+            defaultShownPeriod,
             hasCriticalError,
             isPartiallyFetched,
             isFullyFetched,
-            timelineOptions,
             timelineBookings,
             handleClickItem,
-            handleOpen,
-            handleDoubleClickTimeline,
-            handleClickTimeline,
+            handleClickOpenItem,
+            handleClickTimelineItem,
+            handleDoubleClickTimelineItem,
         } = this;
 
         if (hasCriticalError || (!isPartiallyFetched && !isFullyFetched)) {
@@ -323,24 +353,28 @@ const BeneficiaryViewBorrowings = defineComponent({
         return (
             <div class="BeneficiaryViewBorrowings">
                 <ul class="BeneficiaryViewBorrowings__listing">
-                    {bookings.map((booking: BookingSummary) => (
+                    {bookings.map((lazy: LazyBooking) => (
                         <Item
-                            ref={`items[${booking.entity}-${booking.id}]`}
-                            key={`${booking.entity}-${booking.id}`}
-                            booking={booking}
+                            ref={`items[${lazy.booking.entity}-${lazy.booking.id}]`}
+                            key={`${lazy.booking.entity}-${lazy.booking.id}`}
+                            lazyBooking={lazy}
                             onClick={handleClickItem}
-                            onOpen={handleOpen}
+                            onOpenClick={handleClickOpenItem}
                         />
                     ))}
                 </ul>
-                <Timeline
-                    ref="timeline"
-                    class="BeneficiaryViewBorrowings__timeline"
-                    items={timelineBookings}
-                    options={timelineOptions}
-                    onDoubleClick={handleDoubleClickTimeline}
-                    onClick={handleClickTimeline}
-                />
+                <div class="BeneficiaryViewBorrowings__timeline">
+                    <Timeline
+                        ref="timeline"
+                        class="BeneficiaryViewBorrowings__timeline__element"
+                        defaultPeriod={defaultShownPeriod}
+                        zoomMin={MIN_ZOOM}
+                        zoomMax={MAX_ZOOM}
+                        items={timelineBookings}
+                        onClick={handleClickTimelineItem}
+                        onDoubleClick={handleDoubleClickTimelineItem}
+                    />
+                </div>
             </div>
         );
     },

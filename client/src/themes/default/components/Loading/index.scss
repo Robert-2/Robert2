@@ -3,7 +3,7 @@
 .Loading {
     $block: &;
 
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -28,8 +28,13 @@
         font-style: italic;
     }
 
+    //
+    // - Variantes
+    //
+
     &--horizontal {
         flex-direction: row;
+        justify-content: initial;
         color: globals.$text-soft-color;
         font-size: 1.1rem;
 

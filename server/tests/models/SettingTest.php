@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Loxya\Tests;
 
-use Loxya\Models\Setting;
 use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Setting;
 
 final class SettingTest extends TestCase
 {
@@ -19,7 +19,11 @@ final class SettingTest extends TestCase
                     'content' => "Un petit contrat de test.",
                 ],
                 'materialDisplayMode' => 'categories',
+                'showDescriptions' => false,
                 'showLegalNumbers' => true,
+                'showReplacementPrices' => true,
+                'showTags' => false,
+                'showPictures' => false,
             ],
             'calendar' => [
                 'event' => [
@@ -29,13 +33,14 @@ final class SettingTest extends TestCase
                 'public' => [
                     'enabled' => true,
                     'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
+                    'displayedPeriod' => 'operation',
                 ],
             ],
             'returnInventory' => [
                 'mode' => 'start-empty',
             ],
         ];
-        $this->assertEquals($expected, $result);
+        $this->assertSameCanonicalize($expected, $result);
 
         // - Si `withSensitive = false`, les données sensibles ne sont pas retournées.
         $result = Setting::getList(false);
@@ -46,7 +51,11 @@ final class SettingTest extends TestCase
                     'content' => "Un petit contrat de test.",
                 ],
                 'materialDisplayMode' => 'categories',
+                'showDescriptions' => false,
                 'showLegalNumbers' => true,
+                'showReplacementPrices' => true,
+                'showTags' => false,
+                'showPictures' => false,
             ],
             'calendar' => [
                 'event' => [
@@ -55,13 +64,14 @@ final class SettingTest extends TestCase
                 ],
                 'public' => [
                     'enabled' => true,
+                    'displayedPeriod' => 'operation',
                 ],
             ],
             'returnInventory' => [
                 'mode' => 'start-empty',
             ],
         ];
-        $this->assertEquals($expected, $result);
+        $this->assertSameCanonicalize($expected, $result);
     }
 
     public function testGetAll(): void
@@ -75,6 +85,10 @@ final class SettingTest extends TestCase
             [
                 'key' => 'calendar.event.showLocation',
                 'value' => true,
+            ],
+            [
+                'key' => 'calendar.public.displayedPeriod',
+                'value' => 'operation',
             ],
             [
                 'key' => 'calendar.public.enabled',
@@ -97,15 +111,31 @@ final class SettingTest extends TestCase
                 'value' => 'categories',
             ],
             [
+                'key' => 'eventSummary.showDescriptions',
+                'value' => false,
+            ],
+            [
                 'key' => 'eventSummary.showLegalNumbers',
                 'value' => true,
+            ],
+            [
+                'key' => 'eventSummary.showPictures',
+                'value' => false,
+            ],
+            [
+                'key' => 'eventSummary.showReplacementPrices',
+                'value' => true,
+            ],
+            [
+                'key' => 'eventSummary.showTags',
+                'value' => false,
             ],
             [
                 'key' => 'returnInventory.mode',
                 'value' => 'start-empty',
             ],
         ];
-        $this->assertEquals($expected, $result);
+        $this->assertSame($expected, $result);
     }
 
     public function testGetWithKey(): void
@@ -128,6 +158,10 @@ final class SettingTest extends TestCase
             ],
             'materialDisplayMode' => 'categories',
             'showLegalNumbers' => true,
+            'showReplacementPrices' => true,
+            'showDescriptions' => false,
+            'showTags' => false,
+            'showPictures' => false,
         ];
         $this->assertEquals($expected, $result);
 
@@ -154,8 +188,13 @@ final class SettingTest extends TestCase
             'eventSummary.customText.title' => 'test',
             'eventSummary.customText.content' => null,
             'eventSummary.showLegalNumbers' => false,
+            'eventSummary.showReplacementPrices' => false,
+            'eventSummary.showDescriptions' => true,
+            'eventSummary.showTags' => true,
+            'eventSummary.showPictures' => true,
             'calendar.event.showLocation' => false,
             'calendar.event.showBorrower' => true,
+            'calendar.public.displayedPeriod' => 'both',
         ]);
         $expected = [
             'eventSummary' => [
@@ -165,6 +204,10 @@ final class SettingTest extends TestCase
                 ],
                 'materialDisplayMode' => 'flat',
                 'showLegalNumbers' => false,
+                'showReplacementPrices' => false,
+                'showDescriptions' => true,
+                'showTags' => true,
+                'showPictures' => true,
             ],
             'calendar' => [
                 'event' => [
@@ -174,6 +217,7 @@ final class SettingTest extends TestCase
                 'public' => [
                     'enabled' => true,
                     'uuid' => 'dfe7cd82-52b9-4c9b-aaed-033df210f23b',
+                    'displayedPeriod' => 'both',
                 ],
             ],
             'returnInventory' => [

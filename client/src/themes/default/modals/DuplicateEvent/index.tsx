@@ -1,38 +1,37 @@
 import './index.scss';
 import axios from 'axios';
-import moment from 'moment';
-import { confirm } from '@/utils/alert';
 import apiEvents from '@/stores/api/events';
-import { DATE_DB_FORMAT } from '@/globals/constants';
 import FormField from '@/themes/default/components/FormField';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
+import Alert from '@/themes/default/components/Alert';
 import EventBeneficiaries from '@/themes/default/components/EventBeneficiaries';
-import EventTechnicians from '@/themes/default/components/EventTechnicians';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import { defineComponent } from '@vue/composition-api';
-import computeFullDurations from '@/utils/computeFullDurations';
 
+import type Period from '@/utils/period';
 import type { PropType } from '@vue/composition-api';
-import type { Duration } from '@/utils/computeFullDurations';
-import type { Event, EventMaterial } from '@/stores/api/events';
+import type { EventDetails, EventMaterial } from '@/stores/api/events';
 
 type Props = {
     /** L'événement à dupliquer. */
-    event: Event,
+    event: EventDetails,
 };
 
 type Data = {
     isSaving: boolean,
-    dates: [start: string | null, end: string | null],
-    validationErrors: Record<string, string[]> | undefined,
+    operationPeriod: Period | null,
+    operationPeriodIsFullDays: boolean,
+    shouldSyncPeriods: boolean,
+    mobilizationPeriod: Period | null,
+    validationErrors: Record<string, string[]> | null,
 };
 
 /** Modale de duplication d'un événement. */
 const DuplicateEvent = defineComponent({
     name: 'DuplicateEvent',
     modal: {
-        width: 600,
+        width: 700,
         draggable: true,
         clickToClose: false,
     },
@@ -45,17 +44,18 @@ const DuplicateEvent = defineComponent({
             required: true,
         },
     },
+    emits: ['close'],
     data: (): Data => ({
-        dates: [null, null],
         isSaving: false,
-        validationErrors: undefined,
+        operationPeriod: null,
+        operationPeriodIsFullDays: true,
+        shouldSyncPeriods: true,
+        mobilizationPeriod: null,
+        validationErrors: null,
     }),
     computed: {
-        duration(): Duration | null {
-            const [start, end] = this.dates;
-            return start && end
-                ? computeFullDurations(start, end)
-                : null;
+        duration(): number | null {
+            return this.operationPeriod?.asDays() ?? null;
         },
 
         itemsCount(): number {
@@ -80,6 +80,23 @@ const DuplicateEvent = defineComponent({
         // -
         // ------------------------------------------------------
 
+        handleOperationPeriodChange(operationPeriod: Period | null, isFullDays: boolean) {
+            this.operationPeriodIsFullDays = isFullDays;
+
+            if (this.shouldSyncPeriods) {
+                this.mobilizationPeriod = operationPeriod?.setFullDays(false) ?? null;
+            }
+        },
+
+        handleSyncPeriodsChange(shouldSync: boolean) {
+            this.shouldSyncPeriods = shouldSync;
+
+            if (shouldSync) {
+                this.mobilizationPeriod = this.operationPeriod
+                    ?.setFullDays(false) ?? null;
+            }
+        },
+
         handleSubmit(e: SubmitEvent) {
             e?.preventDefault();
 
@@ -96,16 +113,21 @@ const DuplicateEvent = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async save(force: boolean = false) {
+        async save() {
             if (this.isSaving) {
                 return;
             }
 
-            const { __, dates } = this;
-            const [startDate, endDate] = dates;
-            if (!startDate || !endDate) {
+            const { __, mobilizationPeriod, operationPeriod } = this;
+            if (!operationPeriod) {
                 this.validationErrors = {
-                    start_date: [__('please-choose-dates')],
+                    operation_period: [__('please-choose-dates')],
+                };
+                return;
+            }
+            if (!mobilizationPeriod) {
+                this.validationErrors = {
+                    mobilization_period: [__('please-choose-dates')],
                 };
                 return;
             }
@@ -114,14 +136,13 @@ const DuplicateEvent = defineComponent({
             const { event: { id } } = this;
 
             try {
-                const period = {
-                    start_date: moment(startDate).startOf('day').format(DATE_DB_FORMAT),
-                    end_date: moment(endDate).endOf('day').format(DATE_DB_FORMAT),
-                };
-                const newEvent = await apiEvents.duplicate(id, period, force);
+                const newEvent = await apiEvents.duplicate(id, {
+                    operation_period: operationPeriod,
+                    mobilization_period: mobilizationPeriod,
+                });
 
                 this.$toasted.success(__('new-event-saved'));
-                this.validationErrors = undefined;
+                this.validationErrors = null;
                 this.$emit('close', newEvent);
             } catch (error) {
                 this.isSaving = false;
@@ -130,17 +151,6 @@ const DuplicateEvent = defineComponent({
                     const { code, details } = error.response?.data?.error || { code: ApiErrorCode.UNKNOWN, details: {} };
                     if (code === ApiErrorCode.VALIDATION_FAILED) {
                         this.validationErrors = { ...details };
-                        return;
-                    }
-                    if (code === ApiErrorCode.TECHNICIAN_ALREADY_BUSY) {
-                        const shouldForceDuplicate = await confirm({
-                            type: 'warning',
-                            text: __('technician-already-busy-force'),
-                            confirmButtonText: __('force-duplicate'),
-                        });
-                        if (shouldForceDuplicate) {
-                            this.save(true);
-                        }
                         return;
                     }
                 }
@@ -163,10 +173,14 @@ const DuplicateEvent = defineComponent({
             duration,
             itemsCount,
             hasBeneficiary,
-            isSaving,
             validationErrors,
+            isSaving,
+            shouldSyncPeriods,
+            operationPeriodIsFullDays,
             handleClose,
             handleSubmit,
+            handleSyncPeriodsChange,
+            handleOperationPeriodChange,
         } = this;
 
         return (
@@ -182,62 +196,92 @@ const DuplicateEvent = defineComponent({
                     />
                 </div>
                 <div class="DuplicateEvent__body">
-                    <h4 class="DuplicateEvent__help">{__('dates-of-duplicated-event')}</h4>
-                    <form class="DuplicateEvent__dates" onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <FormField
-                            type="date"
-                            v-model={this.dates}
-                            errors={validationErrors?.start_date || validationErrors?.end_date}
-                            placeholder="start-end-dates"
+                            type={(
+                                (this.operationPeriod?.isFullDays ?? operationPeriodIsFullDays)
+                                    ? 'date' : 'datetime'
+                            )}
+                            label={__('operation-period')}
+                            v-model={this.operationPeriod}
+                            errors={validationErrors?.operation_period}
+                            onChange={handleOperationPeriodChange}
+                            withFullDaysToggle
+                            withoutMinutes
                             minDate="now"
                             required
                             range
                         />
+                        <FormField
+                            type="switch"
+                            label={__('sync-mobilization-period')}
+                            value={shouldSyncPeriods}
+                            onChange={handleSyncPeriodsChange}
+                            required
+                        />
+                        {!shouldSyncPeriods && (
+                            <FormField
+                                label={__('mobilization-period')}
+                                help={__('mobilization-period-help')}
+                                type="datetime"
+                                v-model={this.mobilizationPeriod}
+                                errors={validationErrors?.mobilization_period}
+                                required
+                                range
+                            />
+                        )}
                     </form>
-                    <div class="DuplicateEvent__infos">
-                        <div class="DuplicateEvent__infos__item">
-                            <Icon name="clock" class="DuplicateEvent__infos__item__icon" />
-                            <span class="DuplicateEvent__infos__item__content">
-                                {(
-                                    duration !== null
-                                        ? __('global.duration-days', { duration: duration.days }, duration.days)
-                                        : `${__('global.duration')} ?`
-                                )}
-                            </span>
-                        </div>
-                        {location && (
+                    <div class="DuplicateEvent__data">
+                        {(technicians.length > 0) && (
+                            <Alert
+                                type="warning"
+                                class={[
+                                    'DuplicateEvent__warning',
+                                    'DuplicateEvent__warning--technician-transfer',
+                                ]}
+                            >
+                                {__('technician-transfer-warning')}
+                            </Alert>
+                        )}
+                        <div class="DuplicateEvent__infos">
                             <div class="DuplicateEvent__infos__item">
-                                <Icon name="map-marker-alt" class="DuplicateEvent__infos__item__icon" />
+                                <Icon name="clock" class="DuplicateEvent__infos__item__icon" />
                                 <span class="DuplicateEvent__infos__item__content">
-                                    {__('global.in', { location })}
+                                    {(
+                                        duration !== null
+                                            ? __('global.duration-days', { duration }, duration)
+                                            : `${__('global.duration')} ?`
+                                    )}
                                 </span>
                             </div>
-                        )}
-                        {!hasBeneficiary && (
-                            <div class="DuplicateEvent__infos__item DuplicateEvent__infos__item--empty">
-                                <Icon name="address-book" class="DuplicateEvent__infos__item__icon" />
+                            {location && (
+                                <div class="DuplicateEvent__infos__item">
+                                    <Icon name="map-marker-alt" class="DuplicateEvent__infos__item__icon" />
+                                    <span class="DuplicateEvent__infos__item__content">
+                                        {__('global.in', { location })}
+                                    </span>
+                                </div>
+                            )}
+                            {!hasBeneficiary && (
+                                <div class="DuplicateEvent__infos__item DuplicateEvent__infos__item--empty">
+                                    <Icon name="address-book" class="DuplicateEvent__infos__item__icon" />
+                                    <span class="DuplicateEvent__infos__item__content">
+                                        {__('global.@event.warning-no-beneficiary')}
+                                    </span>
+                                </div>
+                            )}
+                            {hasBeneficiary && (
+                                <EventBeneficiaries
+                                    class="DuplicateEvent__infos__item"
+                                    beneficiaries={beneficiaries}
+                                />
+                            )}
+                            <div class="DuplicateEvent__infos__item">
+                                <Icon name="box" class="DuplicateEvent__infos__item__icon" />
                                 <span class="DuplicateEvent__infos__item__content">
-                                    {__('global.@event.warning-no-beneficiary')}
+                                    {__('global.items-count', { count: itemsCount }, itemsCount)}
                                 </span>
                             </div>
-                        )}
-                        {hasBeneficiary && (
-                            <EventBeneficiaries
-                                class="DuplicateEvent__infos__item"
-                                beneficiaries={beneficiaries}
-                            />
-                        )}
-                        {technicians.length > 0 && (
-                            <EventTechnicians
-                                class="DuplicateEvent__infos__item"
-                                eventTechnicians={technicians}
-                            />
-                        )}
-                        <div class="DuplicateEvent__infos__item">
-                            <Icon name="box" class="DuplicateEvent__infos__item__icon" />
-                            <span class="DuplicateEvent__infos__item__content">
-                                {__('global.items-count', { count: itemsCount }, itemsCount)}
-                            </span>
                         </div>
                     </div>
                 </div>

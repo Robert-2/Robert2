@@ -13,7 +13,7 @@ done
 
 VERSION="${VERSION_NUMBER}"
 
-releaseName="Robert2-${VERSION}"
+releaseName="Loxya-${VERSION}"
 distFolder="./dist/${releaseName}"
 
 # - Header message

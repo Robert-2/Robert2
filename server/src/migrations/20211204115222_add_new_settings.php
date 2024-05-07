@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Cake\Database\Query;
+use Cake\Database\Query\DeleteQuery;
 use Loxya\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
@@ -24,15 +26,17 @@ final class AddNewSettings extends AbstractMigration
     public function down(): void
     {
         $prefix = Config::get('db.prefix');
-        $builder = $this->getQueryBuilder();
-        $builder
+
+        /** @var DeleteQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_DELETE);
+        $qb
             ->delete(sprintf('%ssettings', $prefix))
-            ->where(function ($exp) {
-                return $exp->in('key', [
+            ->where(static fn ($exp) => (
+                $exp->in('key', [
                     'calendar.event.showBorrower',
                     'calendar.event.showLocation',
-                ]);
-            })
+                ])
+            ))
             ->execute();
     }
 }

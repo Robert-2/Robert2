@@ -1,32 +1,28 @@
-{% extends "pdf/base.twig" %}
+{% extends 'pdf/base.twig' %}
 
-{% block title %}{{ translate("release-sheet") }}{% endblock %}
+{% block title %}{{ __('release-sheet') }}{% endblock %}
 
 {% block content %}
 <table class="layout-table">
     <tr>
         <td class="half">
-            {{- include('blocks/company-address.twig', {
-                company: company,
-                showLegalNumbers: showLegalNumbers,
-                showLogo: true,
-            }) -}}
+            {{-
+                include('blocks/company-address.twig', {
+                    company,
+                    showLegalNumbers,
+                    showLogo: true,
+                })
+            -}}
         </td>
         <td class="half">
-            <h1 class="box center spaceBottom5">{{ translate('release-sheet') }}</h1>
+            <h1 class="box center spaceBottom5">{{ __('release-sheet') }}</h1>
             <h2>{{ event.title }}</h2>
-            <h3>
-                {{- translate(
-                    'from-to-dates',
-                    [event.start_date|format_date('short', locale=locale),
-                    event.end_date|format_date('short', locale=locale)]
-                ) -}}
-            </h3>
+            <h3>{{ event.operation_period|format_period('short', locale=locale)|ucfirst }}</h3>
             {% if beneficiaries is not empty -%}
             <table class="layout-table">
                 <tr>
                     <td class="third">
-                        <h3>{{ translate('beneficiary') }}</h3>
+                        <h3>{{ __('beneficiary') }}</h3>
                     </td>
                     <td>
                         <p class="size12 spaceBottom5">
@@ -44,25 +40,27 @@
     <tr>
         <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }} size11">
             {%- if event.location -%}
-                <h3>{{ translate('location', [event.location]) }}</h3>
+                <h3>{{ __('location', event.location) }}</h3>
             {%- endif -%}
             {%- if event.is_confirmed -%}
-                <p class="lighter">{{ translate('this-event-is-confirmed') }}</p>
+                <p class="lighter">{{ __('this-event-is-confirmed') }}</p>
             {% endif %}
             {%- if replacementAmount -%}
                 <p class="lighter">
-                    {{- translate('total-replacement-amount', [
-                        replacementAmount|format_currency(currency, locale=locale)
-                    ]) -}}
+                    {{-
+                        __('total-replacement-amount', [
+                            replacementAmount|format_currency(currency, locale=locale),
+                        ])
+                    -}}
                 </p>
             {%- endif -%}
             <p class="lighter">
-                {{- translate('printed-on-date', [date|format_date('long', locale=locale)]) -}}
+                {{- __('printed-on-date', [date|format_date('long', locale=locale)]) -}}
             </p>
         </td>
         <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }}">
             {%- if technicians is not empty -%}
-                <h3>{{ translate('technicians') }}</h3>
+                <h3>{{ __('technicians') }}</h3>
                 <ul class="spaceBottom5">
                     {% for technician in technicians -%}
                     <li class="spaceBottom2">
@@ -70,15 +68,13 @@
                         {%- if technician['phone'] is not empty -%}
                             <span class="lighter"> - {{ technician['phone'] }}</span>
                         {%- endif -%}
-                        {%- for period in technician['periods'] -%}
-                            <br>
+                        {%- for assignment in technician['assignments'] -%}
+                            <br />
                             <span class="lighter size8">
-                                {{- period['from']|format_datetime(pattern='dd MMM HH:mm', locale=locale) -}}
-                                &#32;>&#32;
-                                {{- period['to']|format_datetime(pattern='dd MMM HH:mm', locale=locale) -}}
+                                {{- assignment.period|format_period('minimalist', locale=locale)|ucfirst -}}
                             </span>
-                            {%- if period['position'] is not empty -%}
-                                <span class="lighter size8">&#32;-&#32;{{ period['position'] }}</span>
+                            {%- if assignment.position is not empty -%}
+                                <span class="lighter size8">&#32;-&#32;{{ assignment.position }}</span>
                             {%- endif -%}
                         {%- endfor -%}
                     </li>
@@ -88,7 +84,7 @@
         </td>
         {%- if beneficiaries|length > 1 -%}
         <td class="third">
-            <h3>{{ translate('other-beneficiaries') }}</h3>
+            <h3>{{ __('other-beneficiaries') }}</h3>
             <ul class="spaceBottom5">
                 {%- for otherBeneficiary in beneficiaries|slice(1) -%}
                 <li class="spaceBottom2">
@@ -101,9 +97,9 @@
     </tr>
 </table>
 
-{% if event['description'] is not empty %}
-<h2>{{ translate('description-notes') }}</h2>
-<p>{{ event['description']|nl2br }}</p>
+{% if event.description is not empty %}
+<h2>{{ __('description-notes') }}</h2>
+<p>{{ event.description|nl2br }}</p>
 {% endif %}
 
 {% if sortedBy == 'lists' %}
@@ -113,7 +109,7 @@
 {% endif %}
 
 {% if totalisableAttributes is not empty %}
-<h2>{{ translate('material-attributes-totals') }}</h2>
+<h2>{{ __('material-attributes-totals') }}</h2>
 <table class="half spaceBottom5 size8">
     <tbody>
         {% for attribute in totalisableAttributes -%}
@@ -126,32 +122,26 @@
 </table>
 {% endif %}
 
-{% if customText and customText['content'] is not empty %}
+{% if customText and customText.content is not empty %}
 <div class="vspace2 spaceBottom5">
-    {% if customText['title'] is not empty -%}
-    <h2>{{ customText['title'] }}</h2>
+    {% if customText.title is not empty -%}
+    <h2>{{ customText.title }}</h2>
     {% endif -%}
-    <p>{{ customText['content']|nl2br }}</p>
+    <p>{{ customText.content|nl2br }}</p>
 </div>
 {% endif %}
 
 <table class="layout-table">
     <tr>
         <td class="half inset">
-            <h3 class="center">{{ translate('output') }}</h3>
-            <p class="strong">
-                {{- translate('output-scheduled-for', [event['start_date']|format_date('long', locale=locale)]) -}}
-            </p>
-            <p>{{ translate('effective-date') }}</p>
-            <p class="strong vspace5 spaceBottom5">{{ translate('signature') }}</p>
+            <h3 class="center">{{ __('output') }}</h3>
+            <p>{{ __('date-dots') }}</p>
+            <p class="strong vspace5 spaceBottom5">{{ __('signature') }}</p>
         </td>
         <td class="inset">
-            <h3 class="center">{{ translate('return') }}</h3>
-            <p class="strong">
-                {{- translate('return-scheduled-for-date', [event['end_date']|format_date('long', locale=locale)]) -}}
-            </p>
-            <p>{{ translate('effective-date') }}</p>
-            <p class="strong vspace5 spaceBottom5">{{ translate('signature') }}</p>
+            <h3 class="center">{{ __('return') }}</h3>
+            <p>{{ __('date-dots') }}</p>
+            <p class="strong vspace5 spaceBottom5">{{ __('signature') }}</p>
         </td>
     </tr>
 </table>

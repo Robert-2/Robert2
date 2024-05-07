@@ -6,7 +6,7 @@
         "company_id": 1,
         "note": null,
         "can_make_reservation": true,
-        "created_at": "2022-01-01 00:00:00",
+        "created_at": "2018-01-01 00:00:00",
         "updated_at": "2022-01-01 00:00:00",
         "deleted_at": null
     },
@@ -17,7 +17,7 @@
         "company_id": null,
         "note": null,
         "can_make_reservation": true,
-        "created_at": "2022-01-01 00:01:00",
+        "created_at": "2018-01-01 00:01:00",
         "updated_at": "2022-01-01 00:01:00",
         "deleted_at": null
     },
@@ -28,7 +28,7 @@
         "company_id": null,
         "note": null,
         "can_make_reservation": false,
-        "created_at": "2022-01-01 00:02:00",
+        "created_at": "2018-01-01 00:02:00",
         "updated_at": "2022-01-01 00:02:00",
         "deleted_at": null
     },

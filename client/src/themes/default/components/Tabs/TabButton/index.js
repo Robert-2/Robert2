@@ -13,6 +13,7 @@ const TabButton = defineComponent({
         counter: { type: Number, default: null },
         active: { type: Boolean, default: false },
     },
+    emits: ['click'],
     computed: {
         _icon() {
             if (!this.icon) {

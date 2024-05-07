@@ -12,7 +12,7 @@
     padding: $padding-y $padding-x;
     border: $border-width solid;
     border-radius: $border-radius;
-    font-size: 1rem;
+    font-size: 1.05rem;
     line-height: 1;
     text-decoration: none;
     white-space: nowrap;
@@ -21,36 +21,10 @@
     transition: all 300ms;
     gap: $internal-spacing;
 
-    & + & {
-        margin-left: globals.$spacing-small;
-    }
-
     &:hover,
     &:focus {
         outline: 0;
     }
-
-    //
-    // - Disabled
-    //
-
-    &--disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-    }
-
-    //
-    // - Loading
-    //
-
-    &--loading {
-        cursor: wait;
-        opacity: 0.75;
-    }
-
-    //
-    // - Icône
-    //
 
     &::before,
     &__icon {
@@ -59,10 +33,36 @@
         justify-content: center;
         width: 1.1em;
         height: 1.1em;
-        font-size: 1.1em;
+        font-size: 1.05em;
         line-height: 1.15;
         text-align: center;
         vertical-align: -0.05rem;
+    }
+
+    //
+    // - Modifiers
+    //
+
+    &--collapsible {
+        &#{$block}--with-icon {
+            #{$block}__content {
+                display: none;
+            }
+        }
+    }
+
+    //
+    // - État
+    //
+
+    &--disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    &--loading {
+        cursor: wait;
+        opacity: 0.75;
     }
 
     //
@@ -123,6 +123,20 @@
                     border-color: map.get($variant, border-color);
                     background-color: map.get($variant, background);
                     color: map.get($variant, color);
+                }
+            }
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &--collapsible {
+            &#{$block}--with-icon {
+                #{$block}__content {
+                    display: block;
                 }
             }
         }

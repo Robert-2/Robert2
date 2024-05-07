@@ -5,7 +5,7 @@
         display: flex;
         align-items: center;
         padding: 0.7rem 1rem;
-        background-color: globals.$bg-color-main-header;
+        background-color: globals.$bg-color-emphasis;
         gap: globals.$spacing-medium;
 
         &__title {
@@ -31,6 +31,7 @@
         justify-content: center;
         padding: 1.5rem globals.$spacing-medium;
         background-color: rgba(0, 0, 0, 0.1);
+        gap: globals.$spacing-small;
     }
 
     //

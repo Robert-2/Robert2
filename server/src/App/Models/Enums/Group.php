@@ -6,10 +6,9 @@ namespace Loxya\Models\Enums;
 /**
  * Groupes des utilisateurs de l'application.
  *
- * TODO: En PHP 8.1, migrer vers une énumération.
- *       Voir https://www.php.net/manual/fr/language.enumerations.php
+ * #TODO: Migrer vers un `enum`.
  */
-class Group
+final class Group
 {
     /** Représente le groupe des administrateurs. */
     public const ADMIN = 'admin';
@@ -20,9 +19,6 @@ class Group
     /** Représente le groupe des visiteurs. */
     public const VISITOR = 'visitor';
 
-    /** Représente le groupe des externes (= Pas d'accès à l'administration). */
-    public const EXTERNAL = 'external';
-
     // ------------------------------------------------------
     // -
     // -    Méthodes publiques
@@ -32,7 +28,6 @@ class Group
     public static function all(): array
     {
         return [
-            Group::EXTERNAL,
             Group::VISITOR,
             Group::MEMBER,
             Group::ADMIN,

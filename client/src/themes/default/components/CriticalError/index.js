@@ -45,8 +45,8 @@ export default defineComponent({
         const renderButton = () => {
             if (type === ERROR.NOT_FOUND) {
                 return (
-                    <Button to={{ name: 'calendar' }} type="primary" class="CriticalError__back-to-calendar">
-                        {__('back-to-calendar')}
+                    <Button to={{ name: 'home' }} type="primary" class="CriticalError__back-to-home">
+                        {__('back-to-home')}
                     </Button>
                 );
             }

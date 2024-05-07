@@ -26,6 +26,7 @@ const Input = defineComponent({
         disabled: { type: Boolean, default: undefined },
         invalid: { type: Boolean, default: undefined },
     },
+    emits: ['change', 'input', 'keyup'],
     data: () => ({
         focused: false,
     }),
@@ -120,6 +121,7 @@ const Input = defineComponent({
         } = this;
 
         const className = ['Input', {
+            'Input--disabled': disabled,
             'Input--focused': focused,
             'Input--invalid': invalid,
             'Input--with-addon': !!addon,

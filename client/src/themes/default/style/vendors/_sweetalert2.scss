@@ -3,11 +3,11 @@
 @import 'sweetalert2/src/sweetalert2';
 
 .swal2-container {
-    font-family: $text-base-font-family;
+    font-family: $base-font-family;
 }
 
 .swal2-popup {
-    background: $bg-color-side-nav;
+    background: $bg-color-emphasis;
     box-shadow: 1px 1px 20px hsla(0deg, 0%, 0%, 0.5);
 }
 
@@ -28,16 +28,38 @@
     min-height: $input-min-height;
     padding: $input-padding-vertical $input-padding-horizontal;
     outline: 0;
-    border: $input-border-size solid $bg-color-input-normal;
+    border: $input-border-width solid $input-border-color;
     border-radius: $input-border-radius;
-    background-color: $bg-color-input-normal;
-    color: $color-input;
-    font-family: $text-base-font-family;
+    background-color: $input-background-color;
+    color: $input-text-color;
+    font-family: $base-font-family;
     font-size: $input-font-size;
+    line-height: $input-line-height;
+    box-shadow: none;
+
+    &::placeholder {
+        color: $input-placeholder-color;
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+        -webkit-text-fill-color: $input-autofill-text-color;
+        box-shadow: 0 0 0 1000px $input-autofill-background-color inset;
+        transition: background-color 50000ms ease-in-out 0;
+    }
 
     &:focus {
-        border-color: $bg-color-button-info;
+        border-color: $input-focus-border-color;
+        background-color: $input-focus-background-color;
+        color: $input-focus-text-color;
         box-shadow: none;
+    }
+
+    &:disabled {
+        border-color: $input-border-color;
+        background-color: $input-disabled-background-color;
+        color: $input-disabled-text-color;
     }
 }
 
@@ -55,17 +77,16 @@
 }
 
 .swal2-confirm {
-    background-color: $bg-color-button-info !important;
+    background-color: $bg-color-button-success !important;
 
     &:hover,
     &:focus {
-        background-color: adjust-color($bg-color-button-info, $lightness: 8%) !important;
+        background-color: adjust-color($bg-color-button-success, $lightness: 8%) !important;
         box-shadow: none !important;
     }
 
     &:active {
-        background-color: adjust-color($bg-color-button-info, $lightness: -8%) !important;
-        color: $color-active-button;
+        background-color: adjust-color($bg-color-button-success, $lightness: -8%) !important;
     }
 
     &--warning {
@@ -78,7 +99,6 @@
 
         &:active {
             background-color: adjust-color($bg-color-button-warning, $lightness: -8%) !important;
-            color: $color-active-button;
         }
     }
 
@@ -92,7 +112,6 @@
 
         &:active {
             background-color: adjust-color($bg-color-button-danger, $lightness: -8%) !important;
-            color: $color-active-button;
         }
     }
 
@@ -106,7 +125,6 @@
 
         &:active {
             background-color: adjust-color($bg-color-button-success, $lightness: -8%) !important;
-            color: $color-active-button;
         }
     }
 }
@@ -122,6 +140,5 @@
 
     &:active {
         background-color: adjust-color($bg-color-button-default, $lightness: -8%) !important;
-        color: $color-active-button;
     }
 }
