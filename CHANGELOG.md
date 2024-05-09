@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.24.0 (UNRELEASED)
+## 0.24.0 (2024-05-09)
 
 - __[CHANGEMENT CRITIQUE]__ Loxya requiert maintenant au minimum PHP 8.1 pour fonctionner.
 - L'application utilise maintenant le nom "Loxya" partout (plutôt que "Loxya (Robert2)").
