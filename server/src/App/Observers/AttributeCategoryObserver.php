@@ -19,7 +19,7 @@ final class AttributeCategoryObserver
         debug(
             "[Event] La caractéristique #%d est maintenant limitée aux catégories [%s].",
             $attribute->id,
-            implode(', ', $attributeCategoriesIds)
+            implode(', ', $attributeCategoriesIds),
         );
 
         //
@@ -28,7 +28,7 @@ final class AttributeCategoryObserver
         //
 
         $categoryMaterials = Material::whereNotIn('category_id', $attributeCategoriesIds)
-            ->whereHas('attributes', function ($query) use ($attribute) {
+            ->whereHas('attributes', static function ($query) use ($attribute) {
                 $query->where('attribute_id', $attribute->id);
             })
             ->get();
@@ -38,7 +38,7 @@ final class AttributeCategoryObserver
             debug(
                 "-> Caractéristique supprimée pour le matériel \"%s\" (catégorie \"%s\").",
                 $material->name,
-                $material->category->name
+                $material->category->name,
             );
         }
     }
@@ -56,7 +56,7 @@ final class AttributeCategoryObserver
         //
 
         $categoryMaterials = Material::where('category_id', $categoryId)
-            ->whereHas('attributes', function ($query) use ($attributeId) {
+            ->whereHas('attributes', static function ($query) use ($attributeId) {
                 $query->where('attribute_id', $attributeId);
             })
             ->get();

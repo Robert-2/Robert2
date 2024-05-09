@@ -275,13 +275,11 @@ const InventoryItemMaterial = defineComponent({
                 return;
             }
 
-            const { strict } = this;
-
             if (actual < 0) {
                 actual = 0;
             }
 
-            if (strict && actual > this.awaitedQuantity) {
+            if (this.strict && actual > this.awaitedQuantity) {
                 actual = this.awaitedQuantity;
             }
 
@@ -302,13 +300,11 @@ const InventoryItemMaterial = defineComponent({
                 return;
             }
 
-            const { strict } = this;
-
             if (broken < 0) {
                 broken = 0;
             }
 
-            if (strict && broken > this.awaitedQuantity) {
+            if (this.strict && broken > this.awaitedQuantity) {
                 broken = this.awaitedQuantity;
             }
 

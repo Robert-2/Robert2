@@ -30,6 +30,7 @@ const ParkEdit = defineComponent({
         isNew() {
             return this.id === null;
         },
+
         pageTitle() {
             const { $t: __, isNew, isFetched, park } = this;
 

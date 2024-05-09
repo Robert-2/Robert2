@@ -5,7 +5,7 @@ namespace Loxya\Controllers;
 
 use Loxya\Controllers\Traits\Crud;
 
-class SubCategoryController extends BaseController
+final class SubCategoryController extends BaseController
 {
     use Crud\Create;
     use Crud\Update;

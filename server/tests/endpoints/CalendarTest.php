@@ -5,6 +5,7 @@ namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
+use Loxya\Models\Enums\PublicCalendarPeriodDisplay;
 use Loxya\Models\Setting;
 
 final class CalendarTest extends ApiTestCase
@@ -24,10 +25,29 @@ final class CalendarTest extends ApiTestCase
         // - Doit renvoyer le calendrier.
         //
 
+        // - Avec présentation par périodes d'opération.
         $responseStream = $this->client->get('/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
-        $this->assertMatchesTextSnapshot($responseStream->getContents());
+        $this->assertMatchesTextSnapshot((string) $responseStream);
+
+        // - Avec présentation par périodes de mobilisation.
+        Setting::findOrFail('calendar.public.displayedPeriod')->update([
+            'value' => PublicCalendarPeriodDisplay::MOBILIZATION,
+        ]);
+        $responseStream = $this->client->get('/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesTextSnapshot((string) $responseStream);
+
+        // - Avec présentation par périodes de mobilisation ET opérations.
+        Setting::findOrFail('calendar.public.displayedPeriod')->update([
+            'value' => PublicCalendarPeriodDisplay::BOTH,
+        ]);
+        $responseStream = $this->client->get('/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesTextSnapshot((string) $responseStream);
 
         //
         // - Doit renvoyer une 404 si le calendrier public est désactivé.

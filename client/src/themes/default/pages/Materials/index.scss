@@ -1,23 +1,12 @@
 @use '~@/themes/default/style/globals';
-@use 'sass:math';
 @use 'sass:color';
-
-.Page--materials {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    .Materials {
-        flex: 1;
-    }
-}
 
 .Materials {
     $block: &;
 
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     &__filters {
         display: flex;
@@ -34,7 +23,7 @@
         flex: 1 0 auto;
 
         &__input {
-            width: 280px;
+            width: 310px;
         }
 
         &__clear-button {
@@ -45,12 +34,12 @@
     &__link {
         padding: 10px 0;
 
-        // "important", pour surcharger la définition globale du <a>
+        // - `!important`, pour surcharger la définition globale du `<a>`.
         // stylelint-disable-next-line declaration-no-important
         color: globals.$text-base-color !important;
 
         &:hover {
-            // "important", pour surcharger la définition globale du <a>
+            // - `!important`, pour surcharger la définition globale du `<a>`.
             // stylelint-disable-next-line declaration-no-important
             color: globals.$link-hover-color !important;
         }
@@ -67,6 +56,11 @@
     }
 
     &__cell {
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+
         &--ref,
         &--park,
         &--category,
@@ -86,11 +80,6 @@
             white-space: nowrap;
         }
 
-        &--not-categorized {
-            color: globals.$text-light-color;
-            font-style: italic;
-        }
-
         &--rental-price,
         &--replacement-price {
             // - Important pour surcharger la définition du <th> de `.VueTables`.
@@ -104,12 +93,11 @@
             // stylelint-disable-next-line declaration-no-important
             text-align: center !important;
         }
+    }
 
-        &--actions {
-            width: 1%;
-            text-align: right;
-            white-space: nowrap;
-        }
+    &__park-location {
+        margin-top: 3px;
+        color: globals.$text-soft-color;
     }
 
     &__sub-category {
@@ -138,7 +126,6 @@
     &__add-tags {
         flex: 1;
         margin-bottom: 0.35rem;
-        padding: 0.4rem 0.55rem;
         font-size: 0.85rem;
     }
 

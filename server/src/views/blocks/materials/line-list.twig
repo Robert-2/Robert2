@@ -5,12 +5,12 @@
         {% if material.attributes is not empty %}
             <br />
             {% for attribute in material.attributes %}
-                {{ include('blocks/materials/attribute.twig', { attribute: attribute }) }}
+                {{ include('blocks/materials/attribute.twig', { attribute }) }}
             {% endfor %}
         {% endif %}
     </td>
     <td class="right lighter">
-        {{ material.replacement_price|format_currency(currency, locale=locale) }}
+        {{ (material.replacement_price ?? 0)|format_currency(currency, locale=locale) }}
     </td>
     <td class="center">
         {{ material.stock_quantity }}

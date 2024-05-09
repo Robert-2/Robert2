@@ -9,7 +9,7 @@ import Button from '@/themes/default/components/Button';
 import type { PropType } from '@vue/composition-api';
 import type { Tag } from '@/stores/api/tags';
 import type { Park } from '@/stores/api/parks';
-import type { Subcategory } from '@/stores/api/subcategories';
+import type { SubCategory } from '@/stores/api/subcategories';
 import type { Filters as AllFilters } from '@/stores/api/materials';
 import type { Category, CategoryDetails } from '@/stores/api/categories';
 
@@ -123,7 +123,7 @@ const MaterialsFilters = defineComponent({
             this.$emit('change', newFilters);
         },
 
-        handleSubCategoryChange(rawSubCategory: Subcategory['id'] | '') {
+        handleSubCategoryChange(rawSubCategory: SubCategory['id'] | '') {
             const subCategory = rawSubCategory !== '' ? rawSubCategory : null;
             if (subCategory === (this.values.subCategory ?? null)) {
                 return;

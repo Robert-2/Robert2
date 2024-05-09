@@ -10,14 +10,8 @@ use Loxya\Config\Config;
 
 class UploadedFile extends CoreUploadedFile
 {
-    /**
-     * @inheritDoc
-     */
     private $file;
 
-    /**
-     * @inheritDoc
-     */
     private $moved = false;
 
     /**
@@ -28,14 +22,14 @@ class UploadedFile extends CoreUploadedFile
         ?int $size,
         int $errorStatus,
         ?string $clientFilename = null,
-        ?string $clientMediaType = null
+        ?string $clientMediaType = null,
     ) {
         parent::__construct(
             $streamOrFile,
             $size,
             $errorStatus,
             $clientFilename,
-            $clientMediaType
+            $clientMediaType,
         );
 
         if ($this->getError() === UPLOAD_ERR_OK && is_string($streamOrFile)) {
@@ -58,7 +52,7 @@ class UploadedFile extends CoreUploadedFile
 
         if (!is_string($targetPath) || empty($targetPath)) {
             throw new \InvalidArgumentException(
-                "Invalid path provided for move operation; must be a non-empty string"
+                "Invalid path provided for move operation; must be a non-empty string",
             );
         }
 
@@ -72,7 +66,7 @@ class UploadedFile extends CoreUploadedFile
         } else {
             FileUtils::copyToStream(
                 $this->getStream(),
-                new LazyOpenStream($targetPath, 'w')
+                new LazyOpenStream($targetPath, 'w'),
             );
 
             $this->moved = true;
@@ -80,7 +74,7 @@ class UploadedFile extends CoreUploadedFile
 
         if ($this->moved === false) {
             throw new \RuntimeException(
-                sprintf('Uploaded file could not be moved to %s', $targetPath)
+                sprintf('Uploaded file could not be moved to %s', $targetPath),
             );
         }
     }

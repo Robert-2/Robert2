@@ -9,6 +9,7 @@ export default defineComponent({
         value: { type: Number, required: true },
         limit: { type: [Number, Object], default: null },
     },
+    emits: ['change'],
     computed: {
         min() {
             if (typeof this.limit !== 'object') {

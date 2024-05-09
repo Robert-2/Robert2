@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Loxya\Services;
 
+use Loxya\Support\Str;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler;
+use Monolog\Level;
 use Psr\Log\LoggerTrait;
-use Loxya\Support\Str;
 
 final class Logger
 {
@@ -17,7 +18,7 @@ final class Logger
     private $settings = [
         'timezone' => null,
         'max_files' => 5,
-        'level' => \Monolog\Logger::NOTICE,
+        'level' => Level::Notice,
     ];
 
     /**
@@ -35,11 +36,11 @@ final class Logger
             }
         }
 
-        if (!is_numeric($this->settings['level'])) {
-            $levels = array_keys(\Monolog\Logger::getLevels());
-            if (!in_array(strtoupper($this->settings['level']), $levels, true)) {
-                $this->settings['level'] = \Monolog\Logger::NOTICE;
-            }
+        if (
+            is_string($this->settings['level']) &&
+            !in_array(strtoupper($this->settings['level']), Level::NAMES, true)
+        ) {
+            $this->settings['level'] = Level::Notice;
         }
 
         $this->globalLogger = $this->createLogger('app');
@@ -72,7 +73,7 @@ final class Logger
         $handler = new Handler\RotatingFileHandler(
             $path,
             $this->settings['max_files'],
-            $this->settings['level']
+            $this->settings['level'],
         );
         $handler->setFormatter(new LineFormatter(null, null, true, true));
         $logger->pushHandler($handler);

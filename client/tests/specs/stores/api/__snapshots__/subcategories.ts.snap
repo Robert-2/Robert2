@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SubCategories Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "category_id": 1,
+  "id": 1,
+  "name": "Mixeurs",
+}
+`;
+
+exports[`SubCategories Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "category_id": 1,
+  "id": 2,
+  "name": "Processeurs",
+}
+`;
+
+exports[`SubCategories Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "category_id": 2,
+  "id": 3,
+  "name": "Projecteurs",
+}
+`;
+
+exports[`SubCategories Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "category_id": 2,
+  "id": 4,
+  "name": "Gradateurs",
+}
+`;
+
+exports[`SubCategories Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "category_id": 1,
+  "id": 1,
+  "name": "Mixeurs",
+}
+`;
+
+exports[`SubCategories Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "category_id": 1,
+  "id": 2,
+  "name": "Processeurs",
+}
+`;
+
+exports[`SubCategories Api update() parse the returned data correctly (with #3) 1`] = `
+{
+  "category_id": 2,
+  "id": 3,
+  "name": "Projecteurs",
+}
+`;
+
+exports[`SubCategories Api update() parse the returned data correctly (with #4) 1`] = `
+{
+  "category_id": 2,
+  "id": 4,
+  "name": "Gradateurs",
+}
+`;

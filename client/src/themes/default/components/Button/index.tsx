@@ -1,12 +1,12 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import Icon, { VARIANTS as ICON_VARIANTS } from '@/themes/default/components/Icon';
+import Icon, { Variant as IconVariant } from '@/themes/default/components/Icon';
 import Fragment from '@/components/Fragment';
 
 import type { Location } from 'vue-router';
 import type { TooltipOptions } from 'v-tooltip';
 import type { PropType } from '@vue/composition-api';
-import type { Props as IconProps, Variant } from '@/themes/default/components/Icon';
+import type { Props as IconProps } from '@/themes/default/components/Icon';
 
 export const TYPES = [
     'default', 'success', 'warning', 'danger',
@@ -21,7 +21,7 @@ const PREDEFINED_TYPES = {
         icon: 'plus',
     },
     edit: {
-        type: 'success',
+        type: 'default',
         icon: 'edit',
     },
     trash: {
@@ -45,7 +45,7 @@ const PREDEFINED_TYPES = {
 export type PredefinedType = keyof typeof PREDEFINED_TYPES;
 export type Type = (typeof TYPES)[number];
 
-type IconName = string | `${string}:${Variant}`;
+type IconName = string | `${string}:${IconVariant}`;
 type IconPosition = 'before' | 'after';
 type IconOptions = { name: IconName, position?: IconPosition };
 export type IconLoose = IconName | IconOptions;
@@ -154,6 +154,17 @@ type Props = {
     loading?: boolean,
 
     /**
+     * Le bouton peut-il être affiché de manière minimaliste
+     * (= uniquement l'icône) pour les petits écrans ?
+     *
+     * Quand cette prop. vaut `true`, pour les écrans plus petit que le format
+     * tablette, si le bouton comporte une icône, seule celle-ci sera affichée.
+     *
+     * @default false
+     */
+    collapsible?: boolean,
+
+    /**
      * Le bouton est-il désactivé ?
      *
      * Si `true` et qu'il est cliqué, le bouton ne réagira pas.
@@ -212,6 +223,10 @@ const Button = defineComponent({
             type: Boolean as PropType<Required<Props>['external']>,
             default: false,
         },
+        collapsible: {
+            type: Boolean as PropType<Required<Props>['collapsible']>,
+            default: false,
+        },
         disabled: {
             type: Boolean as PropType<Required<Props>['disabled']>,
             default: false,
@@ -250,8 +265,8 @@ const Button = defineComponent({
             }
 
             const [iconType, variant] = icon.split(':');
-            return ICON_VARIANTS.includes(variant)
-                ? { name: iconType, variant: variant as Variant }
+            return Object.values(IconVariant).includes(variant as any)
+                ? { name: iconType, variant: variant as IconVariant }
                 : { name: iconType };
         },
 
@@ -288,6 +303,7 @@ const Button = defineComponent({
             size,
             loading,
             disabled,
+            collapsible,
             external,
             htmlType,
             iconPosition,
@@ -302,6 +318,8 @@ const Button = defineComponent({
             `Button--${type}`,
             `Button--${size}`,
             {
+                'Button--collapsible': collapsible,
+                'Button--with-icon': icon !== undefined,
                 'Button--disabled': disabled || loading,
                 'Button--loading': loading,
             },

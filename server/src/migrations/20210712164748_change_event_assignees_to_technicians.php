@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class ChangeEventAssigneesToTechnicians extends AbstractMigration
 {
@@ -31,7 +31,7 @@ final class ChangeEventAssigneesToTechnicians extends AbstractMigration
         $prefix = Config::get('db.prefix');
 
         $allEvents = $this->fetchAll(
-            sprintf("SELECT `id`, `start_date`, `end_date` FROM `%sevents`", $prefix)
+            sprintf("SELECT `id`, `start_date`, `end_date` FROM `%sevents`", $prefix),
         );
         foreach ($allEvents as $event) {
             $this->execute(sprintf(
@@ -39,7 +39,7 @@ final class ChangeEventAssigneesToTechnicians extends AbstractMigration
                 $prefix,
                 $event['start_date'],
                 $event['end_date'],
-                $event['id']
+                $event['id'],
             ));
         }
 
@@ -55,8 +55,8 @@ final class ChangeEventAssigneesToTechnicians extends AbstractMigration
     {
         $table = $this->table('event_technicians');
         $table
-            ->removeColumn('start_time', 'datetime')
-            ->removeColumn('end_time', 'datetime')
+            ->removeColumn('start_time')
+            ->removeColumn('end_time')
             ->renameColumn('technician_id', 'person_id')
             ->save();
 

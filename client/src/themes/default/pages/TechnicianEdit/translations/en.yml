@@ -2,4 +2,6 @@ title-create: New technician
 title-edit-simple: Modify technician
 title-edit: 'Modify technician "{name}"'
 
+can-prepare-orders: "Can prepare orders?"
+
 saved: Technician saved.

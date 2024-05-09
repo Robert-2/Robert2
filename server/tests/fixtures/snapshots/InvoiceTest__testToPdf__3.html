@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Facture n&deg;2022-00001</title>
+    <title>Invoice n&deg;2022-00001</title>
     <style type="text/css">
         html {
             margin: 9mm 8mm;
@@ -111,6 +111,7 @@
         .half { width: 50%; }
         .third { width: 33.33%; }
         .two-third { width: 66.66%; }
+        .max50mm { max-width: 50mm; }
         .left { text-align: left; }
         .center { text-align: center; }
         .right { text-align: right; }
@@ -137,6 +138,8 @@
         .lighter { color: #666; }
         .lightest { color: #aaa; }
         .changePage { page-break-before: always; }
+        .picture-cell { width: 20mm; text-align: center; }
+        .material-picture { max-width: 18mm; max-height: 12mm; }
 
             </style>
 </head>
@@ -144,39 +147,44 @@
     <table class="layout-table">
     <tr>
         <td class="half">
-            <p class="size12 strong">Testing corp.<br>5 rue des tests<br>05555 Testville<br>France</p>
+<p class="size12 strong">
+    Testing corp.<br>
+    5 rue des tests<br>
+    05555 Testville<br>
+    France
+</p>
 <p>SIRET: 543 210 080 20145<br>APE: 947A<br></p>
-<p>T&eacute;l.&nbsp;: +33123456789<br>E-mail&nbsp;: jean@testing-corp.dev</p>
-<p>N&deg; TVA Intracom.&nbsp;: FR11223344556600</p>
-        </td>
+<p>Phone: +33123456789<br>E-mail: jean@testing-corp.dev</p>
+<p>VAT number: FR11223344556600</p>
+</td>
         <td class="half">
-            <h2 class="box center">Facture en Euro, N&deg; 2022-00001</h2>
+            <h2 class="box center">Invoice in Euro, N&deg;&nbsp;2022-00001</h2>
             <table class="layout-table">
                 <tr>
-                    <td class="size12">Le 22/10/2022</td>
+                    <td class="size12">On 22/10/2022</td>
                     <td class="size12 right">Page 1</td>
                 </tr>
             </table>
-            <p>
-                B&eacute;n&eacute;ficiaire
-            </p>
+            <p>Beneficiary</p>
             <h2 class="vspace10 indent5">
-                Roger Rabbit<br><small>(R&eacute;f. 0002)</small><br><small>E-mail&nbsp;: tester2@robertmanager.net</small><br>
+                <strong>Testing, Inc</strong><br>Contact: Jean Fountain<br>1, company st.<br>
+1234 Megacity<br><small>(Ref. 0001)</small><br><small>Phone: +4123456789</small><br><small>E-mail: tester@robertmanager.net</small><br>
             </h2>
         </td>
     </tr>
 </table>
 
 <div class="vspace5">
+    <p>Event: Premier &eacute;v&eacute;nement</p>
     <p class="strong">
-                Du mercredi 12 d&eacute;cembre 2018 au samedi 15 d&eacute;cembre 2018,
-                    </p>
+        From Monday 17 December 2018 - 10:00 to Tuesday 18 December 2018 - 18:00, In Gap
+    </p>
     <table>
         <thead>
             <tr>
-                <th class="left">Cat&eacute;gorie</th>
-                <th>Quantit&eacute;</th>
-                <th>Total H.T.&nbsp;/&nbsp;jour</th>
+                <th class="left">Category</th>
+                <th>Quantity</th>
+                <th>Total excl. VAT&nbsp;/&nbsp;day</th>
             </tr>
         </thead>
         <tbody>
@@ -184,95 +192,86 @@
                 <td>
                                         Lumi&egrave;re
                                     </td>
-                <td class="center">4 articles</td>
+                <td class="center">1 item</td>
                 <td class="right">
-                    26,45&nbsp;&euro;
+                    &euro;15.95
                 </td>
             </tr>
                         <tr>
                 <td>
                                         Son
                                     </td>
-                <td class="center">2 articles</td>
+                <td class="center">2 items</td>
                 <td class="right">
-                    600,00&nbsp;&euro;
-                </td>
-            </tr>
-                        <tr>
-                <td>
-                                        Transport
-                                    </td>
-                <td class="center">1 article</td>
-                <td class="right">
-                    300,00&nbsp;&euro;
+                    &euro;325.50
                 </td>
             </tr>
                     </tbody>
     </table>
-    <p class="size8 lighter">Remarque&nbsp;: vous trouverez le d&eacute;tail du mat&eacute;riel aux pages suivantes.</p>
+    <p class="size8 lighter">Note: you'll find the detail of materials in next pages.</p>
 </div>
 
 <div class="vspace5 size8">
     <table class="totals-table">
         <thead>
             <tr>
-                <th>Total&nbsp;/&nbsp;jour</th>
-                <th>Coef. d&eacute;gressif</th>
-                <th colspan="2">Totaux</th>
+                <th>Total&nbsp;/&nbsp;day</th>
+                <th>Degressive rate</th>
+                <th colspan="2">Totals</th>
             </tr>
         </thead>
         <tbody>
             <tr class="center">
                 <td>
                     <div class="vspace2">
-                        926,45&nbsp;&euro;
+                        &euro;341.45
                     </div>
                 </td>
                 <td>
                     <div class="vspace2">
-                        &times;&nbsp;<strong>3,8</strong>
-                        <span class="lighter">(4 jours)</span>
+                        &times;&nbsp;<strong>1.75</strong>
+                        <span class="lighter">(2 days)</span>
                     </div>
                 </td>
                 <td rowspan="1">
                     <div class="vspace2 center">
-                        Total H.T.
+                        Total excl. VAT
                         </div>
                 </td>
                 <td rowspan="1">
                     <div class="vspace2 right">
-                        3&#8239;520,51&nbsp;&euro;
+                        &euro;597.54
                     </div>
                 </td>
             </tr>
             <tr class="center">
                 <td rowspan="2" colspan="2">
                     <div class="vspace5 strong">
-                        = 3&#8239;520,51&nbsp;&euro;
+                        = &euro;597.54
                     </div>
                 </td>
                 <td>
                     <div class="vspace2 center">
-                        T.V.A.
-                        (20&nbsp;%)
+                        V.A.T.
+                        (20%)
                     </div>
                 </td>
                 <td>
                     <div class="vspace2 right">
-                        704,10&nbsp;&euro;
+                        &euro;119.51
                     </div>
                 </td>
                 </tr>
             <tr>
                 <td>
                     <div class="vspace2 strong center">
-                        Total T.T.C.<br>
-                        Montant net &agrave; payer
+                        Total incl. VAT<br>
+                        Amount due
                     </div>
                 </td>
                 <td>
                     <div class="vspace2 right strong">
-                        4&#8239;224,61&nbsp;&euro;
+                        &euro;717.05
                     </div>
                 </td>
             </tr>
@@ -283,14 +282,19 @@
     <table class="layout-table">
         <tr>
             <td class="half">
-                <p class="size12 strong">Testing corp.<br>5 rue des tests<br>05555 Testville<br>France</p>
-<p>T&eacute;l.&nbsp;: +33123456789<br>E-mail&nbsp;: jean@testing-corp.dev</p>
-            </td>
+<p class="size12 strong">
+    Testing corp.<br>
+    5 rue des tests<br>
+    05555 Testville<br>
+    France
+</p>
+<p>Phone: +33123456789<br>E-mail: jean@testing-corp.dev</p>
+</td>
             <td class="half">
-                <h2 class="box center">D&eacute;tails de la facture N&deg; 2022-00001</h2>
+                <h2 class="box center">Details of invoice N&deg; 2022-00001</h2>
                 <table class="layout-table">
                     <tr>
-                        <td class="size12">Le 22/10/2022</td>
+                        <td class="size12">On 22/10/2022</td>
                         <td class="size12 right">Page 2</td>
                     </tr>
                 </table>
@@ -302,12 +306,12 @@
 <table class="listing-table">
     <thead>
         <tr>
-            <th>R&eacute;f.</th>
-            <th>D&eacute;signation</th>
-            <th>Qt&eacute;</th>
-            <th>P.U. H.T.</th>
-            <th>Val. Remp.</th>
-            <th>Total H.T.</th>
+            <th>Ref.</th>
+            <th>Designation</th>
+            <th>Qty</th>
+            <th>Unit Price (excl. VAT)</th>
+            <th>Repl. Val.</th>
+            <th>Total excl. VAT</th>
         </tr>
     </thead>
     <tbody>
@@ -321,32 +325,13 @@
                 <td>Showtec SDS-6</td>
                 <td class="center">1</td>
                 <td class="right">
-                    15,95&nbsp;&euro;
+                    &euro;15.95
                 </td>
                 <td class="right">
-                    59,00&nbsp;&euro;
+                    &euro;59.00
                 </td>
                 <td class="right">
-                    15,95&nbsp;&euro;
-                </td>
-            </tr>
-                                <tr>
-                <td class="section-title" colspan="6">
-                                            Lumi&egrave;re - Projecteurs
-                                    </td>
-            </tr>
-                        <tr>
-                <td>PAR64LED</td>
-                <td>PAR64 LED</td>
-                <td class="center">3</td>
-                <td class="right">
-                    3,50&nbsp;&euro;
-                </td>
-                <td class="right">
-                    89,00&nbsp;&euro;
-                </td>
-                <td class="right">
-                    10,50&nbsp;&euro;
+                    &euro;15.95
                 </td>
             </tr>
                                 <tr>
@@ -357,34 +342,34 @@
                         <tr>
                 <td>CL3</td>
                 <td>Console Yamaha CL3</td>
-                <td class="center">2</td>
+                <td class="center">1</td>
                 <td class="right">
-                    300,00&nbsp;&euro;
+                    &euro;300.00
                 </td>
                 <td class="right">
-                    19&#8239;400,00&nbsp;&euro;
+                    &euro;19,400.00
                 </td>
                 <td class="right">
-                    600,00&nbsp;&euro;
+                    &euro;300.00
                 </td>
             </tr>
                                 <tr>
                 <td class="section-title" colspan="6">
-                                            Transport - Autre mat&eacute;riel
+                                            Son - Processeurs
                                     </td>
             </tr>
                         <tr>
-                <td>Transporter</td>
-                <td>Volkswagen Transporter</td>
+                <td>DBXPA2</td>
+                <td>Processeur DBX PA2</td>
                 <td class="center">1</td>
                 <td class="right">
-                    300,00&nbsp;&euro;
+                    &euro;25.50
                 </td>
                 <td class="right">
-                    32&#8239;000,00&nbsp;&euro;
+                    &euro;349.90
                 </td>
                 <td class="right">
-                    300,00&nbsp;&euro;
+                    &euro;25.50
                 </td>
             </tr>
                         </tbody>

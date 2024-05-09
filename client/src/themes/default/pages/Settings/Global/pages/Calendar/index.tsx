@@ -10,7 +10,7 @@ import FormField from '@/themes/default/components/FormField';
 import Button from '@/themes/default/components/Button';
 import SubPage from '../../components/SubPage';
 
-import type { Settings } from '@/stores/api/settings';
+import type { Settings, SettingsEdit } from '@/stores/api/settings';
 
 type Data = {
     isSaving: boolean,
@@ -66,7 +66,7 @@ const CalendarGlobalSettings = defineComponent({
             const { $t: __, values } = this;
 
             try {
-                await apiSettings.update({ calendar: values });
+                await apiSettings.update({ calendar: values } as SettingsEdit);
 
                 this.validationErrors = null;
 
@@ -136,6 +136,10 @@ const CalendarGlobalSettings = defineComponent({
                         value={__('page.settings.calendar.save-to-get-calendar-url')}
                     />
                 );
+            }
+
+            if (!persistedData.public.url) {
+                return null;
             }
 
             return (
@@ -208,12 +212,7 @@ const CalendarGlobalSettings = defineComponent({
                         {renderPublicCalendarUrl()}
                     </Fieldset>
                     <section class="CalendarGlobalSettings__actions">
-                        <Button
-                            icon="save"
-                            htmlType="submit"
-                            type="success"
-                            loading={isSaving}
-                        >
+                        <Button icon="save" htmlType="submit" type="primary" loading={isSaving}>
                             {isSaving ? __('saving') : __('save')}
                         </Button>
                     </section>

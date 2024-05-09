@@ -11,6 +11,8 @@ use Loxya\Models\Material;
 
 class MaterialsCollection extends Collection
 {
+    public const GLOBAL_LIST = '__global__';
+
     /**
      * Trie une collection de matériel par catégorie.
      *
@@ -67,7 +69,7 @@ class MaterialsCollection extends Collection
      */
     public function byParks(): Collection
     {
-        $byParks = new Collection;
+        $byParks = new Collection();
         foreach ($this->items as $entity) {
             $this->_checkItemInstance($entity);
 
@@ -76,13 +78,15 @@ class MaterialsCollection extends Collection
                 ? $entity->material
                 : $entity;
 
-            $parkName = $material?->park?->name ?? '?';
+            $parkName = $material?->park?->name;
 
             if (!$byParks->has($parkName)) {
-                $byParks->put($parkName, new MaterialsCollection);
+                $byParks->put($parkName, new MaterialsCollection());
             }
 
-            $byParks->get($parkName)->push($entity);
+            /** @var MaterialsCollection $parkMaterials */
+            $parkMaterials = $byParks->get($parkName);
+            $parkMaterials->push($entity);
         }
 
         return (new Collection($byParks))->sortKeys();
@@ -103,7 +107,7 @@ class MaterialsCollection extends Collection
             !$material instanceof EstimateMaterial
         ) {
             throw new \RuntimeException(sprintf(
-                "Material instance of '%s' not supported.",
+                "Material instance of `%s` not supported.",
                 $material::class,
             ));
         }

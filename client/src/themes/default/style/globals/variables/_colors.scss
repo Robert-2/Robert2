@@ -1,15 +1,11 @@
-$primary-color: #c35022;
+@use 'sass:color';
 
-// -----------------------------------------
-// -
-// - Backgrounds colors
-// -
-// -----------------------------------------
+$primary-color: #0077b6;
 
-$bg-color-body: #242424;
-$bg-color-main-header: #333;
-$bg-color-side-nav: #333;
-$bg-color-emphasis: #171717;
+$bg-color-body: #2a282a;
+$bg-color-emphasis: #252325;
+$bg-color-emphasis-light: #2e2d2e;
+$bg-color-emphasis-danger: #552d2e;
 
 $bg-color-table-th: #2e2e2e;
 $bg-color-table-td: #363636;
@@ -17,95 +13,49 @@ $bg-color-table-td: #363636;
 $bg-color-side-menu-item-hover: #262626;
 $bg-color-side-menu-item-active: #242424;
 
-$bg-color-tooltip: rgba(#121212, 0.8);
-
-$bg-color-input-normal: #454545;
-$bg-color-input-disabled: #242424;
+$bg-color-tooltip: rgba($bg-color-emphasis, 0.9);
 
 $bg-color-button-default: #616161;
-$bg-color-button-info: #116f49;
-$bg-color-button-success: #477000;
+$bg-color-button-success: #2c7d43;
 $bg-color-button-warning: #b4320e;
 $bg-color-button-danger: #911d0a;
 
-$bg-color-dropdown: #262626;
-$bg-color-dropdown-item-hover: #333;
-$bg-color-dropdown-item-active: #333;
-
-// -----------------------------------------
-// -
-// - Text colors
-// -
-// -----------------------------------------
+//
+// - Couleur des textes.
+//
 
 $text-base-color: #e3e3e3;
 $text-soft-color: #a3a3a3;
 $text-light-color: #8a8a8a;
 $text-muted-color: #636363;
 $text-success-color: #5ebd00;
-$text-info-color: #1db97b;
 $text-danger-color: #fd423f;
-$text-warning-color: #fd935e;
+$text-warning-color: #ff9729;
 
 $help-text-color: #757575;
 
-$link-base-color: #fb6418;
-$link-hover-color: #fc864a;
+$link-base-color: #fff;
+$link-hover-color: color.adjust($primary-color, $lightness: 10%);
 $link-active-color: #fff;
-
-$color-input: #ededed;
-$color-input-disabled: #999;
 
 $color-base-button: #e0e0e0;
 $color-hover-button: #fff;
-$color-active-button: #e04406;
 
-// -----------------------------------------
-// -
-// - Borders colors
-// -
-// -----------------------------------------
+// - Couleurs utilisées avec une couleur de fond `$bg-color-emphasis-danger`.
+$color-emphasis-danger-base: #f7eded;
+$color-emphasis-danger-soft: #dfb8b8;
+$color-emphasis-danger-emphasis: #ff644d;
+
+//
+// - Couleurs des bordures.
+//
 
 $divider-color: #454545;
 
 $list-left-border-color: #383838;
-$input-focus-border-color: #943b0e;
-$input-error-border-color: #ad0101;
 
-// -----------------------------------------
-// -
-// - Calendar specific colors
-// -
-// -----------------------------------------
+/// Diviseur utilisé avec une couleur de fond `$bg-color-emphasis`.
+$divider-emphasis: #423e42;
 
-$calendar-main-background-color: #363636;
-$calendar-current-date-background-color: rgba(91, 56, 42, 0.5);
-
-$calendar-cells-border-color: #545454;
-$calendar-time-cursor-color: #bb481b;
-
-//
-// - Items.
-//
-
-$calendar-event-text-color-light: #fff;
-$calendar-event-text-color-dark: #000;
-
-// - Archivé.
-$calendar-event-archived-color: #2b2b2b;
-$calendar-event-archived-text-color: #a3a3a3;
-
-// - Passés.
-$calendar-event-past-color: #565656;
-$calendar-event-past-text-color: $calendar-event-text-color-light;
-
-// - Inventaire de retour non effectué.
-$calendar-event-no-return-inventory-color: #65260e;
-$calendar-event-no-return-inventory-text-color: $calendar-event-text-color-light;
-
-// - "Normal".
-$calendar-event-normal-color: #b13f13;
-$calendar-event-normal-text-color: $calendar-event-text-color-light;
-
-// - Non confirmé.
-$calendar-event-not-confirmed-opacity: 0.58;
+/// Diviseur utilisé avec une couleur de fond `$bg-color-emphasis-danger`.
+$divider-emphasis-danger: #753e3f;

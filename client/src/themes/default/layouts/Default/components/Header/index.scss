@@ -6,7 +6,7 @@
     flex-flow: row nowrap;
     align-items: center;
     max-height: globals.$main-header-height;
-    background-color: globals.$bg-color-main-header;
+    background-color: globals.$bg-color-emphasis;
 
     &__logo {
         flex: 0 0 globals.$sidebar-width;
@@ -14,9 +14,8 @@
         padding: 0.2rem 0.2rem 0;
         text-align: center;
 
-        // stylelint-disable-next-line selector-max-type
-        img {
-            height: 3rem;
+        .Logo {
+            height: globals.$main-header-height * 0.6;
         }
     }
 
@@ -71,6 +70,10 @@
     @media (min-width: globals.$screen-tablet) {
         &__title {
             font-size: 1.6rem;
+
+            .Logo {
+                height: globals.$main-header-height * 0.6;
+            }
         }
     }
 

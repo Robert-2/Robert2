@@ -96,6 +96,7 @@ const Radio = defineComponent({
             default: undefined,
         },
     },
+    emits: ['input', 'change'],
     setup: (): InstanceProperties => ({
         uniqueId: undefined,
     }),

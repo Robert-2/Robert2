@@ -20,7 +20,7 @@ export default {
             const { id } = this.park;
             this.loading = true;
             try {
-                this.amount = await apiParks.totalAmount(id);
+                this.amount = await apiParks.oneTotalAmount(id);
             } catch {
                 const { $t: __ } = this;
                 this.$toasted.error(__('errors.unexpected-while-calculating'));

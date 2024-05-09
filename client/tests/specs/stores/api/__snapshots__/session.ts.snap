@@ -1,0 +1,156 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Session Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_name": "Jean Fountain",
+  "group": "admin",
+  "id": 1,
+  "language": "en",
+  "last_name": "Fountain",
+  "phone": null,
+  "pseudo": "test1",
+  "token": "__FAKE-TOKEN__",
+}
+`;
+
+exports[`Session Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_name": "Roger Rabbit",
+  "group": "member",
+  "id": 2,
+  "language": "fr",
+  "last_name": "Rabbit",
+  "phone": null,
+  "pseudo": "test2",
+  "token": "__FAKE-TOKEN__",
+}
+`;
+
+exports[`Session Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "default_bookings_view": "listing",
+  "email": "nobody@robertmanager.net",
+  "first_name": "?",
+  "full_name": "?",
+  "group": "member",
+  "id": 3,
+  "language": "fr",
+  "last_name": "?",
+  "phone": null,
+  "pseudo": "nobody",
+  "token": "__FAKE-TOKEN__",
+}
+`;
+
+exports[`Session Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "visitor@robertmanager.net",
+  "first_name": "Henry",
+  "full_name": "Henry Berluc",
+  "group": "visitor",
+  "id": 4,
+  "language": "fr",
+  "last_name": "Berluc",
+  "phone": "+33724000000",
+  "pseudo": "TheVisitor",
+  "token": "__FAKE-TOKEN__",
+}
+`;
+
+exports[`Session Api create() parse the returned data correctly (with #5) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "external@robertmanager.net",
+  "first_name": "Caroline",
+  "full_name": "Caroline Farol",
+  "group": "visitor",
+  "id": 5,
+  "language": "en",
+  "last_name": "Farol",
+  "phone": "+33786325500",
+  "pseudo": "caroline",
+  "token": "__FAKE-TOKEN__",
+}
+`;
+
+exports[`Session Api get() parse the returned data correctly (with #1) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_name": "Jean Fountain",
+  "group": "admin",
+  "id": 1,
+  "language": "en",
+  "last_name": "Fountain",
+  "phone": null,
+  "pseudo": "test1",
+}
+`;
+
+exports[`Session Api get() parse the returned data correctly (with #2) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_name": "Roger Rabbit",
+  "group": "member",
+  "id": 2,
+  "language": "fr",
+  "last_name": "Rabbit",
+  "phone": null,
+  "pseudo": "test2",
+}
+`;
+
+exports[`Session Api get() parse the returned data correctly (with #3) 1`] = `
+{
+  "default_bookings_view": "listing",
+  "email": "nobody@robertmanager.net",
+  "first_name": "?",
+  "full_name": "?",
+  "group": "member",
+  "id": 3,
+  "language": "fr",
+  "last_name": "?",
+  "phone": null,
+  "pseudo": "nobody",
+}
+`;
+
+exports[`Session Api get() parse the returned data correctly (with #4) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "visitor@robertmanager.net",
+  "first_name": "Henry",
+  "full_name": "Henry Berluc",
+  "group": "visitor",
+  "id": 4,
+  "language": "fr",
+  "last_name": "Berluc",
+  "phone": "+33724000000",
+  "pseudo": "TheVisitor",
+}
+`;
+
+exports[`Session Api get() parse the returned data correctly (with #5) 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "email": "external@robertmanager.net",
+  "first_name": "Caroline",
+  "full_name": "Caroline Farol",
+  "group": "visitor",
+  "id": 5,
+  "language": "en",
+  "last_name": "Farol",
+  "phone": "+33786325500",
+  "pseudo": "caroline",
+}
+`;

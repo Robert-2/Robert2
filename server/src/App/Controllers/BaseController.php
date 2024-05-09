@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace Loxya\Controllers;
 
 use DI\Container;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Loxya\Config\Config;
 use Loxya\Errors\Exception\HttpRangeNotSatisfiableException;
 use Loxya\Http\Request;
+use Loxya\Support\Paginator\LengthAwarePaginator;
 
 abstract class BaseController
 {
@@ -19,26 +18,16 @@ abstract class BaseController
         $this->container = $container;
     }
 
-    /**
-     * @param Request  $request
-     * @param Builder  $query
-     * @param int|null $limit
-     *
-     * @return array
-     */
-    protected function paginate(Request $request, $query, ?int $limit = null): array
+    protected function paginate(Request $request, $query, int|null $limit = null): array
     {
         $maxItemsPerPage = Config::get('maxItemsPerPage', 100);
         $limit = min($limit ? (int) $limit : $maxItemsPerPage, $maxItemsPerPage);
 
-        /** @var LengthAwarePaginator $paginated */
-        $paginated = $query->paginate($limit);
-        $basePath = $request->getUri()->getPath();
-        $params = $request->getQueryParams();
-
-        $result = $paginated
-            ->withPath($basePath)
-            ->appends($params);
+        /** @var LengthAwarePaginator $result */
+        $result = $query
+            ->paginate($limit)
+            ->withPath($request->getUri()->getPath())
+            ->appends($request->getQueryParams());
 
         if ($result->currentPage() > $result->lastPage()) {
             throw new HttpRangeNotSatisfiableException(

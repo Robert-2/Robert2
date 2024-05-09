@@ -41,6 +41,7 @@ const ModalInventoryCommentEdition = defineComponent({
             default: undefined,
         },
     },
+    emits: ['close'],
     data(): Data {
         return {
             value: this.defaultValue ?? '',

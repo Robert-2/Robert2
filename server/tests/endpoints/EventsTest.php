@@ -6,10 +6,13 @@ namespace Loxya\Tests;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Loxya\Errors\Enums\ApiErrorCode;
 use Loxya\Models\Event;
+use Loxya\Models\Material;
+use Loxya\Models\Setting;
+use Loxya\Models\User;
 use Loxya\Support\Arr;
 use Loxya\Support\Filesystem\UploadedFile;
+use Loxya\Support\Period;
 
 final class EventsTest extends ApiTestCase
 {
@@ -22,12 +25,16 @@ final class EventsTest extends ApiTestCase
                 'title' => "Premier événement",
                 'description' => null,
                 'location' => "Gap",
-                'start_date' => "2018-12-17 00:00:00",
-                'end_date' => "2018-12-18 23:59:59",
                 'color' => null,
-                'duration' => [
-                    'days' => 2,
-                    'hours' => 48,
+                'mobilization_period' => [
+                    'start' => '2018-12-16 15:45:00',
+                    'end' => '2018-12-19 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2018-12-17 10:00:00',
+                    'end' => '2018-12-18 18:00:00',
+                    'isFullDays' => false,
                 ],
                 'degressive_rate' => '1.75',
                 'discount_rate' => '0',
@@ -60,8 +67,11 @@ final class EventsTest extends ApiTestCase
                         'id' => 1,
                         'event_id' => 1,
                         'technician_id' => 1,
-                        'start_time' => '2018-12-17 09:00:00',
-                        'end_time' => '2018-12-18 22:00:00',
+                        'period' => [
+                            'start' => '2018-12-17 09:00:00',
+                            'end' => '2018-12-18 22:00:00',
+                            'isFullDays' => false,
+                        ],
                         'position' => 'Régisseur',
                         'technician' => TechniciansTest::data(1),
                     ],
@@ -69,8 +79,11 @@ final class EventsTest extends ApiTestCase
                         'id' => 2,
                         'event_id' => 1,
                         'technician_id' => 2,
-                        'start_time' => '2018-12-18 14:00:00',
-                        'end_time' => '2018-12-18 18:00:00',
+                        'period' => [
+                            'start' => '2018-12-18 14:00:00',
+                            'end' => '2018-12-18 18:00:00',
+                            'isFullDays' => false,
+                        ],
                         'position' => 'Technicien plateau',
                         'technician' => TechniciansTest::data(2),
                     ],
@@ -124,12 +137,16 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Second événement',
                 'description' => null,
                 'location' => 'Lyon',
-                'start_date' => '2018-12-18 00:00:00',
-                'end_date' => '2018-12-19 23:59:59',
                 'color' => '#ffba49',
-                'duration' => [
-                    'days' => 2,
-                    'hours' => 48,
+                'mobilization_period' => [
+                    'start' => '2018-12-18 00:00:00',
+                    'end' => '2018-12-20 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2018-12-18',
+                    'end' => '2018-12-19',
+                    'isFullDays' => true,
                 ],
                 'degressive_rate' => '1.75',
                 'discount_rate' => '0',
@@ -194,12 +211,16 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Avant-premier événement',
                 'description' => null,
                 'location' => 'Brousse',
-                'start_date' => '2018-12-15 00:00:00',
-                'end_date' => '2018-12-16 23:59:59',
                 'color' => null,
-                'duration' => [
-                    'days' => 2,
-                    'hours' => 48,
+                'mobilization_period' => [
+                    'start' => '2018-12-15 08:30:00',
+                    'end' => '2018-12-16 15:45:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2018-12-15 09:00:00',
+                    'end' => '2018-12-17 00:00:00',
+                    'isFullDays' => false,
                 ],
                 'currency' => 'EUR',
                 'total_replacement' => '1353.90',
@@ -209,11 +230,11 @@ final class EventsTest extends ApiTestCase
                 'is_billable' => false,
                 'is_confirmed' => false,
                 'is_departure_inventory_done' => true,
-                'departure_inventory_datetime' => '2018-12-15 01:00:00',
+                'departure_inventory_datetime' => '2018-12-15 08:17:00',
                 'departure_inventory_author' => UsersTest::data(1),
                 'is_return_inventory_started' => true,
                 'is_return_inventory_done' => true,
-                'return_inventory_datetime' => '2018-12-16 23:59:59',
+                'return_inventory_datetime' => '2018-12-16 15:42:00',
                 'return_inventory_author' => UsersTest::data(1),
                 'categories' => [1, 2],
                 'parks' => [1],
@@ -259,12 +280,16 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Concert X',
                 'description' => null,
                 'location' => 'Moon',
-                'start_date' => '2019-03-01 00:00:00',
-                'end_date' => '2019-04-10 23:59:59',
                 'color' => '#ef5b5b',
-                'duration' => [
-                    'days' => 41,
-                    'hours' => 984,
+                'mobilization_period' => [
+                    'start' => '2019-03-01 00:00:00',
+                    'end' => '2019-04-11 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2019-03-01',
+                    'end' => '2019-04-10',
+                    'isFullDays' => true,
                 ],
                 'currency' => 'EUR',
                 'total_replacement' => '116238.00',
@@ -324,12 +349,16 @@ final class EventsTest extends ApiTestCase
                 'title' => "Kermesse de l'école des trois cailloux",
                 'description' => null,
                 'location' => 'Saint-Jean-la-Forêt',
-                'start_date' => '2020-01-01 00:00:00',
-                'end_date' => '2020-01-01 23:59:59',
                 'color' => null,
-                'duration' => [
-                    'days' => 1,
-                    'hours' => 24,
+                'mobilization_period' => [
+                    'start' => '2020-01-01 00:00:00',
+                    'end' => '2020-01-02 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2020-01-01',
+                    'end' => '2020-01-01',
+                    'isFullDays' => true,
                 ],
                 'currency' => 'EUR',
                 'total_replacement' => '17000.00',
@@ -373,12 +402,16 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Un événement sans inspiration',
                 'description' => null,
                 'location' => 'La Clusaz',
-                'start_date' => '2019-03-15 00:00:00',
-                'end_date' => '2019-04-01 23:59:59',
                 'color' => '#ef5b5b',
-                'duration' => [
-                    'days' => 18,
-                    'hours' => 432,
+                'mobilization_period' => [
+                    'start' => '2019-03-15 00:00:00',
+                    'end' => '2019-04-02 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2019-03-15',
+                    'end' => '2019-04-01',
+                    'isFullDays' => true,
                 ],
                 'currency' => 'EUR',
                 'total_replacement' => '0.00',
@@ -410,12 +443,16 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Médiévales de Machin-le-chateau 2023',
                 'description' => null,
                 'location' => 'Machin-le-chateau',
-                'start_date' => '2023-05-25 00:00:00',
-                'end_date' => '2023-05-28 23:59:59',
                 'color' => null,
-                'duration' => [
-                    'days' => 4,
-                    'hours' => 96,
+                'mobilization_period' => [
+                    'start' => '2023-05-25 00:00:00',
+                    'end' => '2023-05-29 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2023-05-25',
+                    'end' => '2023-05-28',
+                    'isFullDays' => true,
                 ],
                 'degressive_rate' => '3.25',
                 'discount_rate' => '0',
@@ -487,9 +524,12 @@ final class EventsTest extends ApiTestCase
                         'id' => 3,
                         'event_id' => 7,
                         'technician_id' => 2,
-                        'start_time' => '2023-05-25 00:00:00',
-                        'end_time' => '2023-05-28 23:59:59',
                         'position' => 'Ingénieur du son',
+                        'period' => [
+                            'start' => '2023-05-25 00:00:00',
+                            'end' => '2023-05-29 00:00:00',
+                            'isFullDays' => false,
+                        ],
                         'technician' => TechniciansTest::data(2),
                     ],
                 ],
@@ -503,16 +543,16 @@ final class EventsTest extends ApiTestCase
         ]);
 
         $events = match ($format) {
-            Event::SERIALIZE_DEFAULT => $events->map(fn($event) => (
+            Event::SERIALIZE_DEFAULT => $events->map(static fn ($event) => (
                 Arr::only($event, [
                     'id',
                     'title',
                     'reference',
                     'description',
-                    'start_date',
-                    'end_date',
-                    'color',
                     'location',
+                    'color',
+                    'mobilization_period',
+                    'operation_period',
                     'is_confirmed',
                     'is_billable',
                     'is_archived',
@@ -523,50 +563,78 @@ final class EventsTest extends ApiTestCase
                     'updated_at',
                 ])
             )),
-            Event::SERIALIZE_DETAILS => $events->map(fn($event) => (
+            Event::SERIALIZE_DETAILS => $events->map(static fn ($event) => (
                 Arr::except($event, ['parks', 'categories'])
             )),
-            Event::SERIALIZE_SUMMARY => $events->map(fn($event) => (
+            Event::SERIALIZE_SUMMARY => $events->map(static fn ($event) => (
                 Arr::only($event, [
                     'id',
                     'title',
-                    'start_date',
-                    'end_date',
+                    'mobilization_period',
+                    'operation_period',
                     'location',
                 ])
             )),
-            Event::SERIALIZE_BOOKING_DEFAULT => $events->map(fn($event) => (
-                Arr::except($event, ['parks', 'categories'])
+            Event::SERIALIZE_BOOKING_DEFAULT => $events->map(static fn ($event) => (
+                array_replace(
+                    Arr::except($event, ['parks', 'categories']),
+                    ['entity' => Event::TYPE],
+                )
             )),
-            Event::SERIALIZE_BOOKING_SUMMARY => $events->map(fn ($event) => (
-                Arr::only($event, [
-                    'id',
-                    'title',
-                    'reference',
-                    'description',
-                    'start_date',
-                    'end_date',
-                    'duration',
-                    'color',
-                    'location',
-                    'beneficiaries',
-                    'technicians',
-                    'is_confirmed',
-                    'is_billable',
-                    'is_archived',
-                    'is_departure_inventory_done',
-                    'is_return_inventory_done',
-                    'has_not_returned_materials',
-                    'parks',
-                    'categories',
-                    'created_at',
-                    'updated_at',
-                ])
+            Event::SERIALIZE_BOOKING_SUMMARY => $events->map(static fn ($event) => (
+                array_replace(
+                    Arr::only($event, [
+                        'id',
+                        'title',
+                        'reference',
+                        'description',
+                        'location',
+                        'color',
+                        'mobilization_period',
+                        'operation_period',
+                        'beneficiaries',
+                        'technicians',
+                        'is_confirmed',
+                        'is_billable',
+                        'is_archived',
+                        'is_departure_inventory_done',
+                        'is_return_inventory_done',
+                        'has_not_returned_materials',
+                        'has_missing_materials',
+                        'categories',
+                        'parks',
+                        'created_at',
+                    ]),
+                    ['entity' => Event::TYPE],
+                )
+            )),
+            Event::SERIALIZE_BOOKING_EXCERPT => $events->map(static fn ($event) => (
+                array_replace(
+                    Arr::only($event, [
+                        'id',
+                        'title',
+                        'location',
+                        'color',
+                        'mobilization_period',
+                        'operation_period',
+                        'beneficiaries',
+                        'technicians',
+                        'is_confirmed',
+                        'is_archived',
+                        'is_departure_inventory_done',
+                        'is_return_inventory_done',
+                        'has_not_returned_materials',
+                        'categories',
+                        'parks',
+                        'created_at',
+                    ]),
+                    ['entity' => Event::TYPE],
+                )
             )),
             default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
         };
 
-        return static::_dataFactory($id, $events->all());
+        return static::dataFactory($id, $events->all());
     }
 
     public function testGetEventNotFound(): void
@@ -593,8 +661,16 @@ final class EventsTest extends ApiTestCase
         $data = [
             'title' => "Un nouvel événement",
             'description' => null,
-            'start_date' => '2019-09-01 00:00:00',
-            'end_date' => '2019-09-03 23:59:59',
+            'mobilization_period' => [
+                'start' => '2019-08-15 10:15:00',
+                'end' => '2019-09-15 14:30:00',
+                'isFullDays' => false,
+            ],
+            'operation_period' => [
+                'start' => '2019-09-01',
+                'end' => '2019-09-03',
+                'isFullDays' => true,
+            ],
             'is_confirmed' => true,
             'location' => 'Avignon',
         ];
@@ -604,12 +680,16 @@ final class EventsTest extends ApiTestCase
             'title' => "Un nouvel événement",
             'description' => null,
             'location' => "Avignon",
-            'start_date' => '2019-09-01 00:00:00',
-            'end_date' => '2019-09-03 23:59:59',
             'color' => null,
-            'duration' => [
-                'days' => 3,
-                'hours' => 72,
+            'mobilization_period' => [
+                'start' => '2019-08-15 10:15:00',
+                'end' => '2019-09-15 14:30:00',
+                'isFullDays' => false,
+            ],
+            'operation_period' => [
+                'start' => '2019-09-01',
+                'end' => '2019-09-03',
+                'isFullDays' => true,
             ],
             'degressive_rate' => '2.50',
             'discount_rate' => '0',
@@ -656,15 +736,21 @@ final class EventsTest extends ApiTestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'start_time' => '2019-09-01 10:00:00',
-                    'end_time' => '2019-09-03 20:00:00',
                     'position' => 'Régie générale',
+                    'period' => [
+                        'start' => '2019-09-01 10:00:00',
+                        'end' => '2019-09-03 20:00:00',
+                        'isFullDays' => false,
+                    ],
                 ],
                 [
                     'id' => 2,
-                    'start_time' => '2019-09-01 08:00:00',
-                    'end_time' => '2019-09-03 22:00:00',
                     'position' => null,
+                    'period' => [
+                        'start' => '2019-09-01 08:00:00',
+                        'end' => '2019-09-03 22:00:00',
+                        'isFullDays' => false,
+                    ],
                 ],
             ],
             'materials' => [
@@ -693,8 +779,11 @@ final class EventsTest extends ApiTestCase
                     'id' => 5,
                     'event_id' => 9,
                     'technician_id' => 2,
-                    'start_time' => '2019-09-01 08:00:00',
-                    'end_time' => '2019-09-03 22:00:00',
+                    'period' => [
+                        'start' => '2019-09-01 08:00:00',
+                        'end' => '2019-09-03 22:00:00',
+                        'isFullDays' => false,
+                    ],
                     'position' => null,
                     'technician' => TechniciansTest::data(2),
                 ],
@@ -702,8 +791,11 @@ final class EventsTest extends ApiTestCase
                     'id' => 4,
                     'event_id' => 9,
                     'technician_id' => 1,
-                    'start_time' => '2019-09-01 10:00:00',
-                    'end_time' => '2019-09-03 20:00:00',
+                    'period' => [
+                        'start' => '2019-09-01 10:00:00',
+                        'end' => '2019-09-03 20:00:00',
+                        'isFullDays' => false,
+                    ],
                     'position' => 'Régie générale',
                     'technician' => TechniciansTest::data(1),
                 ],
@@ -762,8 +854,11 @@ final class EventsTest extends ApiTestCase
             'id' => 4,
             'title' => "Premier événement modifié",
             'description' => null,
-            'start_date' => '2019-03-01 00:00:00',
-            'end_date' => '2019-04-10 23:59:59',
+            'operation_period' => [
+                'start' => '2019-03-01',
+                'end' => '2019-04-10',
+                'isFullDays' => true,
+            ],
             'is_billable' => true,
             'is_confirmed' => true,
             'location' => 'Gap et Briançon',
@@ -774,10 +869,6 @@ final class EventsTest extends ApiTestCase
             self::data(4, Event::SERIALIZE_DETAILS),
             $data,
             [
-                'duration' => [
-                    'days' => 41,
-                    'hours' => 984,
-                ],
                 'has_missing_materials' => true,
                 'daily_total' => '1299.98',
                 'total_without_discount' => '40299.38',
@@ -802,15 +893,21 @@ final class EventsTest extends ApiTestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'start_time' => '2019-03-17 10:30:00',
-                    'end_time' => '2019-03-18 23:30:00',
                     'position' => 'Régisseur général',
+                    'period' => [
+                        'start' => '2019-03-17 10:30:00',
+                        'end' => '2019-03-18 23:30:00',
+                        'isFullDays' => false,
+                    ],
                 ],
                 [
                     'id' => 2,
-                    'start_time' => '2019-03-18 13:30:00',
-                    'end_time' => '2019-03-18 23:30:00',
                     'position' => 'Technicien polyvalent',
+                    'period' => [
+                        'start' => '2019-03-18 13:30:00',
+                        'end' => '2019-03-18 23:30:00',
+                        'isFullDays' => false,
+                    ],
                 ],
             ],
             'materials' => [
@@ -825,10 +922,6 @@ final class EventsTest extends ApiTestCase
             self::data(4, Event::SERIALIZE_DETAILS),
             $data,
             [
-                'duration' => [
-                    'days' => 41,
-                    'hours' => 984,
-                ],
                 'has_missing_materials' => true,
                 'daily_total' => '749.85',
                 'total_without_discount' => '23245.35',
@@ -880,8 +973,11 @@ final class EventsTest extends ApiTestCase
                         'id' => 4,
                         'event_id' => 4,
                         'technician_id' => 1,
-                        'start_time' => '2019-03-17 10:30:00',
-                        'end_time' => '2019-03-18 23:30:00',
+                        'period' => [
+                            'start' => '2019-03-17 10:30:00',
+                            'end' => '2019-03-18 23:30:00',
+                            'isFullDays' => false,
+                        ],
                         'position' => 'Régisseur général',
                         'technician' => TechniciansTest::data(1),
                     ],
@@ -889,14 +985,17 @@ final class EventsTest extends ApiTestCase
                         'id' => 5,
                         'event_id' => 4,
                         'technician_id' => 2,
-                        'start_time' => '2019-03-18 13:30:00',
-                        'end_time' => '2019-03-18 23:30:00',
+                        'period' => [
+                            'start' => '2019-03-18 13:30:00',
+                            'end' => '2019-03-18 23:30:00',
+                            'isFullDays' => false,
+                        ],
                         'position' => 'Technicien polyvalent',
                         'technician' => TechniciansTest::data(2),
                     ],
                 ],
                 'updated_at' => '2019-03-15 18:42:36',
-            ]
+            ],
         ));
     }
 
@@ -909,11 +1008,11 @@ final class EventsTest extends ApiTestCase
     public function testDuplicateEventBadData(): void
     {
         $this->client->post('/api/events/1/duplicate', [
-            'start_date' => 'invalid-date',
+            'operation_period' => 'invalid-date',
         ]);
         $this->assertApiValidationError([
-            'start_date' => ['This date is invalid.'],
-            'end_date' => ['This date is invalid.'],
+            'mobilization_period' => ['This field is invalid.'],
+            'operation_period' => ['This field is invalid.'],
         ]);
     }
 
@@ -923,19 +1022,31 @@ final class EventsTest extends ApiTestCase
 
         // - Duplication de l'événement n°1
         $this->client->post('/api/events/1/duplicate', [
-            'start_date' => '2021-07-01 00:00:00',
-            'end_date' => '2021-07-03 23:59:59',
+            'operation_period' => [
+                'start' => '2021-07-01',
+                'end' => '2021-07-03',
+                'isFullDays' => true,
+            ],
+            'mobilization_period' => [
+                'start' => '2021-07-01 00:00:00',
+                'end' => '2021-07-05 14:45:00',
+                'isFullDays' => false,
+            ],
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData(array_replace(
             self::data(1, Event::SERIALIZE_DETAILS),
             [
                 'id' => 8,
-                'start_date' => '2021-07-01 00:00:00',
-                'end_date' => '2021-07-03 23:59:59',
-                'duration' => [
-                    'days' => 3,
-                    'hours' => 72,
+                'mobilization_period' => [
+                    'start' => '2021-07-01 00:00:00',
+                    'end' => '2021-07-05 14:45:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2021-07-01',
+                    'end' => '2021-07-03',
+                    'isFullDays' => true,
                 ],
                 'degressive_rate' => '2.50',
                 'total_without_discount' => '853.63',
@@ -984,45 +1095,41 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                 ),
-                'technicians' => array_replace_recursive(
-                    self::data(1, Event::SERIALIZE_DETAILS)['technicians'],
-                    [
-                        [
-                            'id' => 4,
-                            'event_id' => 8,
-                            'start_time' => '2021-07-01 09:00:00',
-                            'end_time' => '2021-07-02 22:00:00',
-                        ],
-                        [
-                            'id' => 5,
-                            'event_id' => 8,
-                            'start_time' => '2021-07-02 14:00:00',
-                            'end_time' => '2021-07-02 18:00:00',
-                        ],
-                    ],
-                ),
+                'technicians' => [],
                 'invoices' => [],
                 'estimates' => [],
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
-            ]
+            ],
         ));
 
         // - Duplication de l'événement n°3
         $this->client->post('/api/events/3/duplicate', [
-            'start_date' => '2021-07-04 00:00:00',
-            'end_date' => '2021-07-04 23:59:59',
+            'operation_period' => [
+                'start' => '2021-07-04',
+                'end' => '2021-07-04',
+                'isFullDays' => true,
+            ],
+            'mobilization_period' => [
+                'start' => '2021-07-04 00:00:00',
+                'end' => '2021-07-05 00:00:00',
+                'isFullDays' => false,
+            ],
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData(array_replace(
             self::data(3, Event::SERIALIZE_DETAILS),
             [
                 'id' => 9,
-                'start_date' => '2021-07-04 00:00:00',
-                'end_date' => '2021-07-04 23:59:59',
-                'duration' => [
-                    'days' => 1,
-                    'hours' => 24,
+                'mobilization_period' => [
+                    'start' => '2021-07-04 00:00:00',
+                    'end' => '2021-07-05 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2021-07-04',
+                    'end' => '2021-07-04',
+                    'isFullDays' => true,
                 ],
                 'is_archived' => false,
                 'has_missing_materials' => false,
@@ -1064,25 +1171,37 @@ final class EventsTest extends ApiTestCase
                 ),
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
-            ]
+            ],
         ));
 
-        // - Duplication de l'événement n°4 (avec unités)
+        // - Duplication de l'événement n°4
         $this->client->post('/api/events/4/duplicate', [
-            'start_date' => '2021-07-04 00:00:00',
-            'end_date' => '2021-07-04 23:59:59',
+            'operation_period' => [
+                'start' => '2021-07-04',
+                'end' => '2021-07-04',
+                'isFullDays' => true,
+            ],
+            'mobilization_period' => [
+                'start' => '2021-07-03 14:30:00',
+                'end' => '2021-07-05 12:00:00',
+                'isFullDays' => false,
+            ],
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData(array_replace(
             self::data(4, Event::SERIALIZE_DETAILS),
             [
                 'id' => 10,
-                'start_date' => '2021-07-04 00:00:00',
-                'end_date' => '2021-07-04 23:59:59',
                 'color' => '#ef5b5b',
-                'duration' => [
-                    'days' => 1,
-                    'hours' => 24,
+                'mobilization_period' => [
+                    'start' => '2021-07-03 14:30:00',
+                    'end' => '2021-07-05 12:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2021-07-04',
+                    'end' => '2021-07-04',
+                    'isFullDays' => true,
                 ],
                 'has_missing_materials' => true,
                 'is_return_inventory_started' => false,
@@ -1118,98 +1237,37 @@ final class EventsTest extends ApiTestCase
                 'note' => "Penser à contacter Cap Canaveral fin janvier pour booker le pas de tir.",
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
-            ]
+            ],
         ));
 
-        // - Duplication de l'événement 7 (avec multi-listes + unités)
+        // - Duplication de l'événement 7.
         $this->client->post('/api/events/7/duplicate', [
-            'start_date' => '2024-02-01 00:00:00',
-            'end_date' => '2024-02-04 23:59:59',
-        ]);
-        $this->assertStatusCode(StatusCode::STATUS_CREATED);
-        $this->assertResponseData(array_replace_recursive(
-            self::data(7, Event::SERIALIZE_DETAILS),
-            [
-                'id' => 11,
-                'start_date' => '2024-02-01 00:00:00',
-                'end_date' => '2024-02-04 23:59:59',
-                'has_missing_materials' => false,
-                'is_departure_inventory_done' => false,
-                'departure_inventory_datetime' => null,
-                'departure_inventory_author' => null,
-                'is_return_inventory_started' => false,
-                'is_return_inventory_done' => false,
-                'return_inventory_datetime' => null,
-                'return_inventory_author' => null,
-                'is_confirmed' => false,
-                'materials' => array_replace_recursive(
-                    self::data(7, Event::SERIALIZE_DETAILS)['materials'],
-                    [
-                        [
-                            'pivot' => [
-                                'departure_comment' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                            ],
-                        ],
-                        [
-                            'pivot' => [
-                                'departure_comment' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                            ],
-                        ],
-                        [
-                            'pivot' => [
-                                'departure_comment' => null,
-                            ],
-                        ],
-                        [
-                            'pivot' => [
-                                'departure_comment' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                            ],
-                        ],
-                    ],
-                ),
-                'technicians' => array_replace_recursive(
-                    self::data(7, Event::SERIALIZE_DETAILS)['technicians'],
-                    [
-                        [
-                            'id' => 6,
-                            'event_id' => 11,
-                            'start_time' => '2024-02-01 00:00:00',
-                            'end_time' => '2024-02-05 00:00:00',
-                        ],
-                    ],
-                ),
-                'created_at' => '2021-06-22 12:11:02',
-                'updated_at' => '2021-06-22 12:11:02',
-            ]
-        ));
-
-        // - Duplication de l'événement 7 au même moment: Conflit de technicien.
-        $this->client->post('/api/events/7/duplicate', [
-            'start_date' => '2023-05-26 00:00:00',
-            'end_date' => '2023-05-29 23:59:59',
-        ]);
-        $this->assertStatusCode(StatusCode::STATUS_CONFLICT);
-        $this->assertApiErrorMessage("Some technicians are already busy during this period.");
-        $this->assertApiErrorCode(ApiErrorCode::TECHNICIAN_ALREADY_BUSY);
-
-        // - Idem mais en forçant, techniciens supprimés.
-        $this->client->post('/api/events/7/duplicate?force=1', [
-            'start_date' => '2023-05-26 00:00:00',
-            'end_date' => '2023-05-29 23:59:59',
+            'operation_period' => [
+                'start' => '2023-05-26',
+                'end' => '2023-05-29',
+                'isFullDays' => true,
+            ],
+            'mobilization_period' => [
+                'start' => '2023-05-26',
+                'end' => '2023-05-29',
+                'isFullDays' => true,
+            ],
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData(array_replace(
             self::data(7, Event::SERIALIZE_DETAILS),
             [
-                'id' => 13,
-                'start_date' => '2023-05-26 00:00:00',
-                'end_date' => '2023-05-29 23:59:59',
+                'id' => 11,
+                'mobilization_period' => [
+                    'start' => '2023-05-26 00:00:00',
+                    'end' => '2023-05-30 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2023-05-26',
+                    'end' => '2023-05-29',
+                    'isFullDays' => true,
+                ],
                 'has_missing_materials' => true,
                 'is_departure_inventory_done' => false,
                 'departure_inventory_datetime' => null,
@@ -1272,7 +1330,7 @@ final class EventsTest extends ApiTestCase
                 'technicians' => [],
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
-            ]
+            ],
         ));
     }
 
@@ -1282,7 +1340,11 @@ final class EventsTest extends ApiTestCase
 
         // - On crée une pénurie dans l'événement #3 en modifiant l'événement #1.
         $event1 = Event::findOrFail(1);
-        $event1->start_date = '2018-12-14 00:00:00';
+        $event1->operation_start_date = '2018-12-14 00:00:00';
+        $event1->mobilization_start_date = '2018-12-14 00:00:00';
+        $event1->departure_inventory_author_id = null;
+        $event1->departure_inventory_datetime = null;
+        $event1->is_departure_inventory_done = false;
         $event1->return_inventory_author_id = null;
         $event1->return_inventory_datetime = null;
         $event1->is_return_inventory_done = false;
@@ -1375,23 +1437,17 @@ final class EventsTest extends ApiTestCase
         // - On met la date courante à la date de début de l'événement.
         Carbon::setTestNow(Carbon::create(2018, 12, 15, 10, 00, 00));
 
-        // FIXME: À re-activer lorsque les inventaires de retour terminés
-        //        rendront disponibles les stocks utilisés dans l'événement
-        //        (en bougeant la date de fin de mobilisation) OU quand la
-        //        gestion horaire aura été implémentée.
-        //        Sans ça, pour les événements qui partent juste après un autre
-        //        dont l'inventaire de retour a été terminé, sur un même jour,
-        //        on est bloqué car le système pense qu'il y a une pénurie.
-        // // - Avec un événement qui contient des pénuries.
-        // $this->client->put('/api/events/3/departure', $validInventories[3]);
-        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        // $this->assertApiErrorMessage(
-        //     "This event contains shortage that should be fixed " .
-        //     "before proceeding with the departure inventory."
-        // );
+        // - Avec un événement qui contient des pénuries.
+        $this->client->put('/api/events/3/departure', $validInventories[3]);
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage(
+            "This event contains shortage that should be fixed " .
+            "before proceeding with the departure inventory.",
+        );
 
         // - On corrige la pénurie en déplaçant l'événement #1.
-        $event1->start_date = '2018-12-17 00:00:00';
+        $event1->operation_start_date = '2018-12-17 00:00:00';
+        $event1->mobilization_start_date = '2018-12-17 00:00:00';
         $event1->save();
 
         // - Avec un payload vide.
@@ -1419,21 +1475,6 @@ final class EventsTest extends ApiTestCase
         // - On met la date courante à la date de début de l'événement #5.
         Carbon::setTestNow(Carbon::create(2020, 1, 1, 10, 00, 00));
 
-        // FIXME: À re-activer lorsque les inventaires de retour terminés
-        //        rendront disponibles les stocks utilisés dans l'événement
-        //        (en bougeant la date de fin de mobilisation) OU quand la
-        //        gestion horaire aura été implémentée.
-        //        Sans ça, pour les événements qui partent juste après un autre
-        //        dont l'inventaire de retour a été terminé, sur un même jour,
-        //        on est bloqué car le système pense qu'il y a une pénurie.
-        // // - Avec un événement contenant des unités en pénurie.
-        // $this->client->put('/api/events/5/departure', []);
-        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        // $this->assertApiErrorMessage(
-        //     "This event contains shortage that should be fixed " .
-        //     "before proceeding with the departure inventory."
-        // );
-
         // - On met la date courante à la date de début de l'événement #3.
         Carbon::setTestNow(Carbon::create(2018, 12, 15, 10, 00, 00));
 
@@ -1449,7 +1490,7 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_author' => null,
                 'return_inventory_datetime' => null,
                 'updated_at' => '2018-12-18 10:00:00',
-            ]
+            ],
         );
 
         // - Avec des données valides simples...
@@ -1478,7 +1519,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         ));
 
         // - On met la date courante à la date de début de l'événement #7.
@@ -1516,7 +1557,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         ));
     }
 
@@ -1526,7 +1567,11 @@ final class EventsTest extends ApiTestCase
 
         // - On crée une pénurie dans l'événement #3 en modifiant l'événement #1.
         $event1 = Event::findOrFail(1);
-        $event1->start_date = '2018-12-14 00:00:00';
+        $event1->operation_start_date = '2018-12-14 00:00:00';
+        $event1->mobilization_start_date = '2018-12-14 00:00:00';
+        $event1->departure_inventory_author_id = null;
+        $event1->departure_inventory_datetime = null;
+        $event1->is_departure_inventory_done = false;
         $event1->return_inventory_author_id = null;
         $event1->return_inventory_datetime = null;
         $event1->is_return_inventory_done = false;
@@ -1619,23 +1664,17 @@ final class EventsTest extends ApiTestCase
         // - On met la date courante à la date de début de l'événement.
         Carbon::setTestNow(Carbon::create(2018, 12, 15, 10, 00, 00));
 
-        // FIXME: À re-activer lorsque les inventaires de retour terminés
-        //        rendront disponibles les stocks utilisés dans l'événement
-        //        (en bougeant la date de fin de mobilisation) OU quand la
-        //        gestion horaire aura été implémentée.
-        //        Sans ça, pour les événements qui partent juste après un autre
-        //        dont l'inventaire de retour a été terminé, sur un même jour,
-        //        on est bloqué car le système pense qu'il y a une pénurie.
-        // // - Avec un événement qui contient des pénuries.
-        // $this->client->put('/api/events/3/departure/finish', $validInventories[3]);
-        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        // $this->assertApiErrorMessage(
-        //     "This event contains shortage that should be fixed " .
-        //     "before proceeding with the departure inventory."
-        // );
+        // - Avec un événement qui contient des pénuries.
+        $this->client->put('/api/events/3/departure/finish', $validInventories[3]);
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage(
+            "This event contains shortage that should be fixed " .
+            "before proceeding with the departure inventory.",
+        );
 
         // - On corrige la pénurie en déplaçant l'événement #1.
-        $event1->start_date = '2018-12-17 00:00:00';
+        $event1->operation_start_date = '2018-12-17 00:00:00';
+        $event1->mobilization_start_date = '2018-12-17 00:00:00';
         $event1->save();
 
         // - Avec un payload invalide.
@@ -1658,21 +1697,6 @@ final class EventsTest extends ApiTestCase
         // - On met la date courante à la date de début de l'événement #5.
         Carbon::setTestNow(Carbon::create(2020, 1, 1, 10, 00, 00));
 
-        // FIXME: À re-activer lorsque les inventaires de retour terminés
-        //        rendront disponibles les stocks utilisés dans l'événement
-        //        (en bougeant la date de fin de mobilisation) OU quand la
-        //        gestion horaire aura été implémentée.
-        //        Sans ça, pour les événements qui partent juste après un autre
-        //        dont l'inventaire de retour a été terminé, sur un même jour,
-        //        on est bloqué car le système pense qu'il y a une pénurie.
-        // // - Avec un événement contenant des unités en pénurie.
-        // $this->client->put('/api/events/5/departure/finish', []);
-        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        // $this->assertApiErrorMessage(
-        //     "This event contains shortage that should be fixed " .
-        //     "before proceeding with the departure inventory."
-        // );
-
         // - On met la date courante à la date de début de l'événement #3.
         Carbon::setTestNow(Carbon::create(2018, 12, 15, 10, 00, 00));
 
@@ -1688,7 +1712,7 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_author' => null,
                 'return_inventory_datetime' => null,
                 'updated_at' => '2018-12-18 10:00:00',
-            ]
+            ],
         );
 
         // - Avec un inventaire incomplet.
@@ -1735,7 +1759,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         ));
 
         // - On met la date courante à la date de début de l'événement #7.
@@ -1799,8 +1823,73 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         ));
+    }
+
+    public function testCancelDepartureInventory(): void
+    {
+        Carbon::setTestNow(Carbon::create(2018, 12, 15, 11, 0, 0));
+
+        // - Impossible d'annuler un inventaire de départ non effectué.
+        $this->client->delete('/api/events/2/departure');
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("This event's departure inventory is not done.");
+
+        // - Impossible d'annuler l'inventaire de départ d'un événement archivé.
+        $this->client->delete('/api/events/3/departure');
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage("This event is archived.");
+
+        $event3 = Event::findOrFail(3);
+        $event3->is_archived = false;
+        $event3->save();
+
+        // - Impossible d'annuler l'inventaire de départ d'un événement dont
+        //   l'inventaire de retour a déjà été effectué.
+        $this->client->delete('/api/events/3/departure');
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage("This event's return inventory is already done, the departure inventory can no longer be cancelled.");
+
+        $event3->is_return_inventory_done = false;
+        $event3->return_inventory_datetime = null;
+        $event3->return_inventory_author_id = null;
+        $event3->save();
+
+        // - Impossible d'annuler l'inventaire de départ d'un événement
+        //   après que celui-ci ai commencé.
+        $this->client->delete('/api/events/3/departure');
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage(
+            "This event has already started, the departure inventory can no " .
+            "longer be cancelled.",
+        );
+
+        Carbon::setTestNow(Carbon::create(2018, 12, 15, 8, 20, 0));
+
+        $initialData = array_replace(
+            self::data(3, Event::SERIALIZE_DETAILS),
+            [
+                'is_archived' => false,
+                'has_missing_materials' => false,
+                'is_return_inventory_started' => false,
+                'is_return_inventory_done' => false,
+                'return_inventory_author' => null,
+                'return_inventory_datetime' => null,
+                'updated_at' => '2018-12-15 11:00:00',
+            ],
+        );
+
+        // - Impossible d'annuler l'inventaire de départ d'un événement
+        //   après que celui-ci ai commencé.
+        $this->client->delete('/api/events/3/departure');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(array_replace($initialData, [
+            'is_departure_inventory_done' => false,
+            'departure_inventory_author' => null,
+            'departure_inventory_datetime' => null,
+            'updated_at' => '2018-12-15 08:20:00',
+        ]));
     }
 
     public function testUpdateReturnInventory(): void
@@ -1852,39 +1941,40 @@ final class EventsTest extends ApiTestCase
         $event->is_return_inventory_done = false;
         $event->save();
 
-        // FIXME: À re-activer lorsque les inventaires de retour terminés
-        //        rendront disponibles les stocks utilisés dans l'événement
-        //        (en bougeant la date de fin de mobilisation) OU quand la
-        //        gestion horaire aura été implémentée.
-        //        Sans ça, pour les événements qui partent juste après un autre
-        //        dont l'inventaire de retour a été terminé, sur un même jour,
-        //        on est bloqué car le système pense qu'il y a une pénurie.
-        // // - Avec un événement qui contient des pénuries.
-        // $this->client->put('/api/events/2/return', $validInventories[2]);
-        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        // $this->assertApiErrorMessage(
-        //     "This event contains shortage that should be fixed " .
-        //     "before proceeding with the return inventory."
-        // );
+        // - Avec un événement qui contient des pénuries.
+        $this->client->put('/api/events/2/return', $validInventories[2]);
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage(
+            "This event contains shortage that should be fixed " .
+            "before proceeding with the return inventory.",
+        );
 
         // - On modifie les dates de l'événement pour qu'il n'y ait plus de pénurie.
         $event = Event::findOrFail(2);
-        $event->start_date = '2022-12-18 00:00:00';
-        $event->end_date = '2022-12-19 23:59:59';
+        $event->mobilization_period = new Period('2022-12-18', '2022-12-19', true);
+        $event->operation_period = new Period('2022-12-18', '2022-12-19', true);
         $event->save();
 
         $initialData = array_replace(
             self::data(2, Event::SERIALIZE_DETAILS),
             [
-                'start_date' => '2022-12-18 00:00:00',
-                'end_date' => '2022-12-19 23:59:59',
+                'mobilization_period' => [
+                    'start' => '2022-12-18 00:00:00',
+                    'end' => '2022-12-20 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2022-12-18',
+                    'end' => '2022-12-19',
+                    'isFullDays' => true,
+                ],
                 'has_missing_materials' => false,
                 'has_not_returned_materials' => null,
                 'is_return_inventory_done' => false,
                 'return_inventory_author' => null,
                 'return_inventory_datetime' => null,
                 'updated_at' => '2023-02-01 10:00:00',
-            ]
+            ],
         );
 
         // - Avec un payload vide.
@@ -1917,21 +2007,6 @@ final class EventsTest extends ApiTestCase
             ['id' => 2, 'message' => "Please specify the returned quantity."],
         ]);
 
-        // FIXME: À re-activer lorsque les inventaires de retour terminés
-        //        rendront disponibles les stocks utilisés dans l'événement
-        //        (en bougeant la date de fin de mobilisation) OU quand la
-        //        gestion horaire aura été implémentée.
-        //        Sans ça, pour les événements qui partent juste après un autre
-        //        dont l'inventaire de retour a été terminé, sur un même jour,
-        //        on est bloqué car le système pense qu'il y a une pénurie.
-        // // - Avec un événement contenant des unités en pénurie.
-        // $this->client->put('/api/events/5/return', []);
-        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        // $this->assertApiErrorMessage(
-        //     "This event contains shortage that should be fixed " .
-        //     "before proceeding with the return inventory."
-        // );
-
         Carbon::setTestNow(Carbon::create(2023, 6, 2, 12, 30, 00));
 
         // - Avec des données valides simples...
@@ -1956,7 +2031,7 @@ final class EventsTest extends ApiTestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         ));
     }
 
@@ -1976,25 +2051,18 @@ final class EventsTest extends ApiTestCase
         $event->is_return_inventory_done = false;
         $event->save();
 
-        // FIXME: À re-activer lorsque les inventaires de retour terminés
-        //        rendront disponibles les stocks utilisés dans l'événement
-        //        (en bougeant la date de fin de mobilisation) OU quand la
-        //        gestion horaire aura été implémentée.
-        //        Sans ça, pour les événements qui partent juste après un autre
-        //        dont l'inventaire de retour a été terminé, sur un même jour,
-        //        on est bloqué car le système pense qu'il y a une pénurie.
-        // // - Avec un événement qui contient des pénuries.
-        // $this->client->put('/api/events/2/return/finish');
-        // $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
-        // $this->assertApiErrorMessage(
-        //     "This event contains shortage that should be fixed " .
-        //     "before proceeding with the return inventory."
-        // );
+        // - Avec un événement qui contient des pénuries.
+        $this->client->put('/api/events/2/return/finish');
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage(
+            "This event contains shortage that should be fixed " .
+            "before proceeding with the return inventory.",
+        );
 
         // - On modifie les dates de l'événement pour qu'il n'y ait plus de pénurie.
         $event = Event::findOrFail(2);
-        $event->start_date = '2022-12-18 00:00:00';
-        $event->end_date = '2022-12-19 23:59:59';
+        $event->mobilization_period = new Period('2022-12-18', '2022-12-19', true);
+        $event->operation_period = new Period('2022-12-18', '2022-12-19', true);
         $event->save();
 
         // - Avec un payload invalide.
@@ -2013,8 +2081,16 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace_recursive(
             self::data(2, Event::SERIALIZE_DETAILS),
             [
-                'start_date' => '2022-12-18 00:00:00',
-                'end_date' => '2022-12-19 23:59:59',
+                'mobilization_period' => [
+                    'start' => '2022-12-18 00:00:00',
+                    'end' => '2022-12-20 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2022-12-18',
+                    'end' => '2022-12-19',
+                    'isFullDays' => true,
+                ],
                 'is_confirmed' => true,
                 'is_return_inventory_done' => true,
                 'return_inventory_author' => UsersTest::data(1),
@@ -2035,20 +2111,129 @@ final class EventsTest extends ApiTestCase
                     ],
                 ],
                 'updated_at' => '2023-02-01 10:00:00',
-            ]
+            ],
         ));
+    }
+
+    public function testCancelReturnInventory(): void
+    {
+        // - Impossible d'annuler un inventaire de retour non effectué.
+        $this->client->delete('/api/events/4/return');
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("This event's return inventory is not done.");
+
+        // - Impossible d'annuler l'inventaire de retour d'un événement archivé.
+        $this->client->delete('/api/events/3/return');
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage("This event is archived.");
+
+        Carbon::setTestNow(Carbon::create(2024, 5, 5, 23, 43, 15));
+
+        $event7 = Event::findOrFail(7);
+        $event7->updateReturnInventory([
+            ['id' => 1, 'actual' => 2, 'broken' => 1],
+            [
+                'id' => 6,
+                'actual' => 1,
+                'broken' => 1,
+            ],
+            [
+                'id' => 7,
+                'actual' => 1,
+                'broken' => 0,
+            ],
+            [
+                'id' => 4,
+                'actual' => 2,
+                'broken' => 1,
+            ],
+        ]);
+        $event7->finishReturnInventory(User::findOrFail(1));
+        $this->assertSame(Material::findOrFail(1)->out_of_order_quantity, 2);
+
+        $initialData = array_replace_recursive(
+            self::data(7, Event::SERIALIZE_DETAILS),
+            [
+                'has_missing_materials' => null,
+                'is_return_inventory_started' => true,
+                'is_return_inventory_done' => true,
+                'return_inventory_author' => 1,
+                'return_inventory_datetime' => '2024-05-05 23:43:15',
+                'updated_at' => '2024-05-05 23:43:15',
+                'materials' => [
+                    0 => [
+                        'pivot' => [
+                            'quantity_returned' => 2,
+                            'quantity_returned_broken' => 1,
+                        ],
+                        'updated_at' => '2024-05-05 23:43:15',
+                    ],
+                    1 => [
+                        'pivot' => [
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 1,
+                        ],
+                    ],
+                    2 => [
+                        'pivot' => [
+                            'quantity_returned' => 1,
+                            'quantity_returned_broken' => 0,
+                        ],
+                    ],
+                    3 => [
+                        'pivot' => [
+                            'quantity_returned' => 2,
+                            'quantity_returned_broken' => 1,
+                        ],
+                        'updated_at' => '2024-05-05 23:43:15',
+                    ],
+                ],
+            ],
+        );
+
+        Carbon::setTestNow(Carbon::create(2024, 5, 15, 12, 12, 34));
+
+        // - Impossible d'annuler l'inventaire de retour d'un événement
+        //   avec du matériel retourné cassé passé 1 semaine après
+        //   l'inventaire de retour initial.
+        $this->client->delete('/api/events/7/return');
+        $this->assertStatusCode(StatusCode::STATUS_UNPROCESSABLE_ENTITY);
+        $this->assertApiErrorMessage("This event's return inventory can no longer been cancelled.");
+
+        Carbon::setTestNow(Carbon::create(2024, 5, 10, 12, 12, 34));
+
+        // - Test valide.
+        $this->client->delete('/api/events/7/return');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(array_replace_recursive($initialData, [
+            'has_missing_materials' => false,
+            'is_return_inventory_done' => false,
+            'return_inventory_author' => null,
+            'return_inventory_datetime' => null,
+            'updated_at' => '2024-05-10 12:12:34',
+            'materials' => [
+                0 => [
+                    'updated_at' => '2024-05-10 12:12:34',
+                ],
+                1 => [
+                    'updated_at' => '2024-05-10 12:12:34',
+                ],
+                3 => [
+                    'updated_at' => '2024-05-10 12:12:34',
+                ],
+            ],
+        ]));
+        $this->assertSame(Material::findOrFail(1)->out_of_order_quantity, 1);
     }
 
     public function testArchiveEvent(): void
     {
-        // - Archivage de l'événement #1
-        //   possible, car inventaire de retour terminé
+        // - Archivage de l'événement #1 possible, car inventaire de retour terminé.
         $this->client->put('/api/events/1/archive');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyEquals('is_archived', true);
 
-        // - Archivage de l'événement #4
-        //   impossible car inventaire de retour pas encore fait
+        // - Archivage de l'événement #4 impossible car inventaire de retour pas encore fait.
         $this->client->put('/api/events/4/archive');
         $this->assertApiValidationError([
             'is_archived' => [
@@ -2129,9 +2314,6 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData([
             array_replace(MaterialsTest::data(2), [
                 'pivot' => [
-                    'id' => 2,
-                    'event_id' => 1,
-                    'material_id' => 2,
                     'quantity' => 1,
                     'quantity_departed' => 1,
                     'quantity_returned' => 1,
@@ -2148,9 +2330,6 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData([
             array_replace(MaterialsTest::data(7), [
                 'pivot' => [
-                    'id' => 11,
-                    'event_id' => 4,
-                    'material_id' => 7,
                     'quantity' => 3,
                     'quantity_departed' => null,
                     'quantity_returned' => 0,
@@ -2178,25 +2357,38 @@ final class EventsTest extends ApiTestCase
         $responseStream = $this->client->get('/events/1/pdf');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
-        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
 
         // - Téléchargement du fichier PDF de l'événement n°2
         $responseStream = $this->client->get('/events/2/pdf');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
-        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
 
         // - Téléchargement du fichier PDF de l'événement n°7 (classé par listes)
         $responseStream = $this->client->get('/events/7/pdf');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
-        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
 
         // - Téléchargement du fichier PDF de l'événement n°7 (classé par parcs)
         $responseStream = $this->client->get('/events/7/pdf?sortedBy=parks');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
-        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
+
+        // - Téléchargement du fichier PDF de l'événement n°1 avec un paramétrage
+        //   différent des colonnes à afficher.
+        Setting::staticEdit(null, [
+            'eventSummary.showReplacementPrices' => false,
+            'eventSummary.showDescriptions' => true,
+            'eventSummary.showTags' => true,
+            'eventSummary.showPictures' => true,
+        ]);
+        $responseStream = $this->client->get('/events/1/pdf');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
     }
 
     public function testSearch(): void
@@ -2319,7 +2511,7 @@ final class EventsTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
-        $createUploadedFile = function (string $from) {
+        $createUploadedFile = static function (string $from) {
             $tmpFile = tmpfile();
             fwrite($tmpFile, file_get_contents($from));
             return $tmpFile;
@@ -2338,7 +2530,7 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events/3/documents', null, (
             new UploadedFile(
                 $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                13269,
+                13_269,
                 UPLOAD_ERR_OK,
                 "Rapport d'audit 2022.pdf",
                 'application/pdf',
@@ -2349,7 +2541,7 @@ final class EventsTest extends ApiTestCase
             'id' => 7,
             'name' => "Rapport d'audit 2022.pdf",
             'type' => 'application/pdf',
-            'size' => 13269,
+            'size' => 13_269,
             'url' => 'http://loxya.test/documents/7',
             'created_at' => '2022-10-22 18:42:36',
         ]);
@@ -2360,7 +2552,7 @@ final class EventsTest extends ApiTestCase
             [
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    262144000,
+                    262_144_000,
                     UPLOAD_ERR_OK,
                     'Un fichier bien trop volumineux.pdf',
                     'application/pdf',
@@ -2380,7 +2572,7 @@ final class EventsTest extends ApiTestCase
             [
                 'file' => new UploadedFile(
                     tmpfile(),
-                    121540,
+                    121_540,
                     UPLOAD_ERR_OK,
                     'app.dmg',
                     'application/octet-stream',

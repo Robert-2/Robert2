@@ -62,7 +62,7 @@ type Data = {
     pickerPosition: Position,
 };
 
-// @vue/component
+/** Un champ de formulaire permettant de choisir une couleur. */
 const InputColor = defineComponent({
     name: 'InputColor',
     directives: { ClickOutside },

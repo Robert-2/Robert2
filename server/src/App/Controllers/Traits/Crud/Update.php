@@ -23,11 +23,12 @@ trait Update
         }
 
         if (method_exists($this->getModelClass(), 'unserialize')) {
+            // @phpstan-ignore-next-line
             $postData = $this->getModelClass()::unserialize($postData);
         }
 
         try {
-            $id = (int) $request->getAttribute('id');
+            $id = $request->getIntegerAttribute('id');
             $model = $this->getModelClass()::staticEdit($id, $postData);
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
@@ -35,6 +36,7 @@ trait Update
                 throw $e;
             }
 
+            // @phpstan-ignore-next-line
             $errors = $this->getModelClass()::serializeValidation($errors);
             throw new ValidationException($errors);
         }

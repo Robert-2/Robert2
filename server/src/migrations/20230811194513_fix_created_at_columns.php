@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
@@ -109,7 +111,8 @@ final class FixCreatedAtColumns extends AbstractMigration
             // - On tente d'assigner dans un premier temps la valeur du
             //   champ `updated_at` (s'il existe) à `created_at` si spécifiée.
             if ($tableInfos['hasUpdatedAt']) {
-                $qb = $this->getQueryBuilder();
+                /** @var UpdateQuery $qb */
+                $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
                 $qb
                     ->update($prefix . $tableName)
                     ->set('created_at', $qb->newExpr('updated_at'))
@@ -118,7 +121,8 @@ final class FixCreatedAtColumns extends AbstractMigration
             }
 
             // - Sinon, on met la date courante.
-            $qb = $this->getQueryBuilder();
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
             $qb
                 ->update($prefix . $tableName)
                 ->set('created_at', $qb->newExpr('CURRENT_TIMESTAMP'))

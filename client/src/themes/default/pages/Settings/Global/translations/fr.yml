@@ -12,6 +12,11 @@ event-summary:
     display-legal-numbers: "Afficher les numéros légaux\_?"
     material-list: Liste du matériel
     display-mode: Mode de présentation
+    display-replacement-prices: "Afficher les valeurs de remplacement\_?"
+    display-descriptions: "Afficher les descriptions\_?"
+    display-tags: "Afficher les tags\_?"
+    display-units-serial-numbers: "Afficher les numéros de série des unités\_?"
+    display-pictures: "Afficher les photos (miniatures)\_?"
     list-display-mode-categories: Triée par catégories
     list-display-mode-sub-categories: Triée par sous-catégories
     list-display-mode-parks: Triée par parcs

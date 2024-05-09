@@ -7,7 +7,7 @@ departure-comment-label: "Commentaire lors du départ\_:"
 
 modals:
     #
-    # - Édition d'un commentaire de matériel / d'unité.
+    # - Édition d'un commentaire de matériel.
     #
 
     comment-edition:

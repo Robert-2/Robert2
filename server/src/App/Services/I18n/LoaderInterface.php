@@ -68,7 +68,7 @@ interface LoaderInterface extends ContainerInterface
      * @throws ContainerException
      * @throws NotFoundException
      */
-    public function get(string $key): string | array;
+    public function get(string $key): string|array;
 
     /**
      * Permet de savoir si un message de traduction est disponible pour une clé donnée.

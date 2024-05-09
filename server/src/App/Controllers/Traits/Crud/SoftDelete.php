@@ -15,7 +15,9 @@ trait SoftDelete
 
     public function delete(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
+
+        // @phpstan-ignore-next-line
         $entity = $this->getModelClass()::withTrashed()->findOrFail($id);
 
         $isDeleted = $entity->trashed()
@@ -31,7 +33,9 @@ trait SoftDelete
 
     public function restore(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
+
+        // @phpstan-ignore-next-line
         $model = $this->getModelClass()::staticRestore($id);
 
         if (method_exists(static::class, '_formatOne')) {

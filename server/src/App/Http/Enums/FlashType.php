@@ -3,21 +3,16 @@ declare(strict_types=1);
 
 namespace Loxya\Http\Enums;
 
-/**
- * Types de messages flash.
- *
- * TODO: En PHP 8.1, migrer vers une énumération.
- *       Voir https://www.php.net/manual/fr/language.enumerations.php
- */
-class FlashType
+/** Types de messages flash. */
+enum FlashType: string
 {
     /**
      * Message flash de type "succès".
      */
-    public const SUCCESS = 'success';
+    case SUCCESS = 'success';
 
     /**
      * Message flash de type "erreur".
      */
-    public const ERROR = 'error';
+    case ERROR = 'error';
 }

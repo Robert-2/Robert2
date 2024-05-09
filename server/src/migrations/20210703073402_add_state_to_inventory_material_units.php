@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class AddStateToInventoryMaterialUnits extends AbstractMigration
 {
@@ -40,7 +40,7 @@ final class AddStateToInventoryMaterialUnits extends AbstractMigration
             'SELECT imu.`id`, mu.`state`
             FROM `%1$sinventory_material_units` AS imu
             LEFT JOIN `%1$smaterial_units` AS mu ON imu.`material_unit_id` = mu.`id`',
-            $prefix
+            $prefix,
         ));
         foreach ($units as $unit) {
             $this->execute(sprintf(
@@ -48,7 +48,7 @@ final class AddStateToInventoryMaterialUnits extends AbstractMigration
                 SET `state_previous` = "%3$s", `state_current` = "%3$s" WHERE `id` = %2$d',
                 $prefix,
                 $unit['id'],
-                $unit['state']
+                $unit['state'],
             ));
         }
 

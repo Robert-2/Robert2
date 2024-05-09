@@ -1,5 +1,6 @@
 menu:
-    calendar: Calendrier
+    schedule-calendar: Planning
+    schedule-listing: Planning
     materials: Matériel
     technicians: Techniciens
     beneficiaries: Bénéficiaires
@@ -8,3 +9,4 @@ menu:
     parks: Parcs de matériel
     users: Utilisateurs
     settings: Paramètres
+    online-booking: Réservation en ligne

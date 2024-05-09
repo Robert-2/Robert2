@@ -23,7 +23,9 @@
     }
 
     &__actions {
-        text-align: center;
+        display: flex;
+        justify-content: center;
+        gap: globals.$spacing-thin;
     }
 
     &__error {

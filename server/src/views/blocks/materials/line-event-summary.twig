@@ -1,26 +1,49 @@
 <tr>
+    {% if showPictures -%}
+    <td class="picture-cell">
+        <img
+            src="{{ material.picture ?: baseUrl ~ '/img/material-picture-placeholder.png' }}"
+            class="material-picture"
+        />
+    </td>
+    {% endif -%}
     <td>{{ material.reference }}</td>
     <td>
         {{- material.name }}
         {%- set showPark = withoutPark == false and material.park.name is not empty -%}
         {%- if showPark -%}
-            &#32;<em class="lighter">({{ material.park.name }})</em>
+            {{- ' ' -}}
+            <em class="lighter">({{ material.park.name }})</em>
         {%- endif -%}
         {%- if material.attributes is not empty -%}
             <br />
             {%- for attribute in material.attributes -%}
-                {{- include('blocks/materials/attribute.twig', { attribute: attribute }) -}}
+                {{ include('blocks/materials/attribute.twig', { attribute }) -}}
             {%- endfor -%}
         {%- endif -%}
     </td>
+    {% if showDescriptions -%}
+    <td class="max50mm">
+        {{- material.description|nl2br -}}
+    </td>
+    {% endif -%}
+    {% if showTags -%}
+    <td class="center">
+        {%- for tag in material.tags -%}
+        {{ tag.name }}<br />
+        {%- endfor -%}
+    </td>
+    {% endif -%}
+    {% if showReplacementPrices -%}
+    <td class="right lighter">
+        {{- (material.replacement_price ?? 0)|format_currency(currency, locale=locale) -}}
+    </td>
+    <td class="right lighter">
+        {{- ((material.replacement_price ?? 0) * material.pivot.quantity)|format_currency(currency, locale=locale) -}}
+    </td>
+    {% endif -%}
     <td class="center">
         {{- material.pivot.quantity -}}
-    </td>
-    <td class="right lighter">
-        {{- material.replacement_price|format_currency(currency, locale=locale) -}}
-    </td>
-    <td class="right lighter">
-        {{- (material.replacement_price * material.pivot.quantity)|format_currency(currency, locale=locale) -}}
     </td>
     <td></td>
 </tr>

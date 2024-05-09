@@ -7,7 +7,6 @@ import apiMaterials from '@/stores/api/materials';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Button from '@/themes/default/components/Button';
-import Dropdown from '@/themes/default/components/Dropdown';
 import Filters from './components/Filters';
 import List from './components/List';
 import store from './store';
@@ -17,8 +16,8 @@ import ReuseEventMaterials from './modals/ReuseEventMaterials';
 
 import type { PropType } from '@vue/composition-api';
 import type { Booking } from '@/stores/api/bookings';
-import type { Event, EventMaterial } from '@/stores/api/events';
-import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { EventDetails, EventMaterial } from '@/stores/api/events';
+import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
 import type { SelectedMaterial, Filters as FiltersType } from './_types';
 
 type Props = {
@@ -31,8 +30,16 @@ type Props = {
      */
     defaultValues?: SelectedMaterial[],
 
-    /** Le booking (événement, réservation ou demande de réservation). */
+    /** Le booking (événement). */
     booking?: Booking,
+
+    /**
+     * Permet de choisir si on veut afficher les montants de location ou non.
+     *
+     * Si non spécifié et qu'un `booking` est passé, c'est la valeur de son champ
+     * `is_billable` qui sera utilisée, sinon `false`.
+     */
+    withRentalPrices?: boolean,
 };
 
 type Data = {
@@ -76,6 +83,10 @@ const MaterialsSelector = defineComponent({
             type: Array as PropType<Required<Props>['defaultValues']>,
             default: () => [],
         },
+        withRentalPrices: {
+            type: Boolean as PropType<Props['withRentalPrices']>,
+            default: undefined,
+        },
     },
     emits: [
         'ready',
@@ -95,6 +106,13 @@ const MaterialsSelector = defineComponent({
         };
     },
     computed: {
+        withRentalPricesFinal(): boolean {
+            if (this.withRentalPrices !== undefined) {
+                return this.withRentalPrices;
+            }
+            return this.booking?.is_billable ?? false;
+        },
+
         hasSelectedMaterials(): boolean {
             return !store.getters.isEmpty;
         },
@@ -118,9 +136,7 @@ const MaterialsSelector = defineComponent({
         this.init();
     },
     beforeDestroy() {
-        if (this.unsubscribeStore) {
-            this.unsubscribeStore();
-        }
+        this.unsubscribeStore?.();
 
         if (this.fetchInterval) {
             clearInterval(this.fetchInterval);
@@ -145,11 +161,14 @@ const MaterialsSelector = defineComponent({
         },
 
         async handleEventImport() {
-            const withRentalPrices = !!this.booking?.is_billable;
-            const event: Event | undefined = await showModal(
+            const withRentalPrices = this.withRentalPricesFinal;
+            const event: EventDetails | undefined = await showModal(
                 this.$modal,
                 ReuseEventMaterials,
-                { withRentalPrices },
+                {
+                    booking: this.booking,
+                    withRentalPrices,
+                },
             );
             if (event) {
                 this.importFromEvent(event);
@@ -213,7 +232,7 @@ const MaterialsSelector = defineComponent({
             }
         },
 
-        async importFromEvent(event: Event) {
+        async importFromEvent(event: EventDetails) {
             // - On reset les filtres sans quoi l'utilisateur ne pourra
             //   potentiellement pas voir ce qu'il vient d'importer.
             this.filters = getEmptyFilters(true);
@@ -224,7 +243,26 @@ const MaterialsSelector = defineComponent({
                     return;
                 }
 
-                store.commit('setQuantity', { material, quantity });
+                //
+                // - Liste globale.
+                //
+
+                const globalQuantity = Math.max(0, quantity);
+
+                //
+                // - Ajustement des quantités (liste globale + autres listes).
+                //
+                //   NOTE: On fait ça après coup pour éviter de "prendre" les unités "au hasard"
+                //         alors que d'autres listes peuvent les vouloir explicitement.
+                //
+
+                // - Ajuste la quantité de la liste globale.
+                if (quantity > 0) {
+                    const currentGlobalQuantity = store.getters.getQuantity(material.id);
+                    if (currentGlobalQuantity < globalQuantity) {
+                        store.commit('setQuantity', { material, quantity: globalQuantity });
+                    }
+                }
             });
         },
 
@@ -245,6 +283,7 @@ const MaterialsSelector = defineComponent({
             materials,
             criticalError,
             hasSelectedMaterials,
+            withRentalPricesFinal: withRentalPrices,
             handleFiltersChanges,
             handleEventImport,
             handleShowAllMaterials,
@@ -267,15 +306,13 @@ const MaterialsSelector = defineComponent({
         }
 
         const renderImportActions = (): JSX.Element => (
-            <Dropdown label={__('add-materials-from.dropdown.title')}>
-                <Button
-                    type="add"
-                    class="Dropdown__item"
-                    onClick={handleEventImport}
-                >
-                    {__('add-materials-from.dropdown.choices.an-event')}
-                </Button>
-            </Dropdown>
+            <Button
+                type="add"
+                class="Dropdown__item"
+                onClick={handleEventImport}
+            >
+                {__('add-materials-from.an-event')}
+            </Button>
         );
 
         return (
@@ -298,6 +335,7 @@ const MaterialsSelector = defineComponent({
                         ref="list"
                         filters={filters}
                         materials={materials}
+                        withRentalPrices={withRentalPrices}
                         onRequestShowAllMaterials={handleShowAllMaterials}
                     />
                 </div>

@@ -5,7 +5,7 @@ help: 'You can choose a park, a category or some tags to filter materials.'
 action-add: New material
 manage-attributes: Manage special attributes
 print-complete-list: Print the complete materials list
-date-to-display-available-quantities: Dates to be used to display available quantities
+period-to-display-available-quantities: Period to use to display available quantities
 
 available-qty-total-qty: "Avail. qty\_/\_Total qty"
 

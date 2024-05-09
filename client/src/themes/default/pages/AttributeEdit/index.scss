@@ -1,16 +1,5 @@
-.Page--attribute-edit {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    .AttributeEdit {
-        flex: 1;
-        align-self: center;
-    }
-}
-
 .AttributeEdit {
-    width: 600px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }

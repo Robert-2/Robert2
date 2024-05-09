@@ -1,10 +1,11 @@
 @use '~@/themes/default/style/globals';
 @use 'sass:color';
+@use 'sass:map';
 
 .Login {
     &__message {
         padding: 20px;
-        background-color: globals.$bg-color-emphasis;
+        background-color: #262426;
         font-size: 1.2rem;
         text-align: center;
 
@@ -22,27 +23,98 @@
     }
 
     &__body {
+        max-width: 600px;
+        margin: 0 auto;
         padding: 30px 20px;
     }
 
     &__form {
-        $element-vertical-padding: 10px;
-
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
         justify-content: space-around;
 
         &__input {
-            width: 200px;
+            $input-background: hsl(253deg, 4%, 23%);
+
+            width: 215px;
             margin-right: 10px;
             margin-bottom: 1rem;
-            padding: $element-vertical-padding 15px;
+            padding: 11px 15px;
+            outline: 0;
+            border: globals.$input-border-width solid globals.$input-border-color;
+            border-radius: globals.$input-border-radius;
+            background-color: globals.$input-background-color;
+            color: globals.$input-text-color;
+            transition: background-color 300ms;
+
+            &::placeholder {
+                color: globals.$input-placeholder-color;
+            }
+
+            &:-webkit-autofill,
+            &:-webkit-autofill:hover,
+            &:-webkit-autofill:focus {
+                -webkit-text-fill-color: globals.$input-autofill-text-color;
+                box-shadow: 0 0 0 1000px globals.$input-autofill-background-color inset;
+                transition: background-color 50000ms ease-in-out 0;
+            }
+
+            &:focus {
+                border-color: globals.$input-focus-border-color;
+                background-color: globals.$input-focus-background-color;
+                color: globals.$input-focus-text-color;
+            }
         }
 
         &__submit {
-            // stylelint-disable-next-line declaration-no-important -- Overwrite the .Button definition.
-            padding: $element-vertical-padding 14px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 18px;
+            border: 0;
+            border-radius: globals.$border-radius-normal;
+            color: #fff;
+            font-size: 1rem;
+            line-height: 1;
+            text-decoration: none;
+            white-space: nowrap;
+            user-select: none;
+            cursor: pointer;
+            transition: all 500ms;
+
+            // NOTE: Dans le dégradé ci-dessous, la partie au delà de `100%` est la partie affichée
+            //       lors du survol, pour permettre d'animer le background via `background-size`.
+            //       (CSS ne permettant pas d'animer les dégradés dans `background-image`)
+            /* stylelint-disable declaration-colon-newline-after, order/properties-order */
+            background-position: left center;
+            background-size: 100% auto;
+            background-image: linear-gradient(
+                45deg,
+                hsl(201deg, 100%, 50%) 0%,
+                hsl(204deg, 100%, 48%) 20%,
+                hsl(205deg, 100%, 44%) 40%,
+                hsl(205deg, 100%, 40%) 60%,
+                hsl(206deg, 100%, 36%) 80%,
+                hsl(206deg, 100%, 32%) 100%,
+                hsl(201deg, 100%, 45%) 120%,
+                hsl(204deg, 100%, 43%) 140%,
+                hsl(205deg, 100%, 39%) 160%,
+                hsl(205deg, 100%, 35%) 180%,
+                hsl(206deg, 100%, 31%) 200%,
+                hsl(206deg, 100%, 27%) 220%
+            );
+            /* stylelint-enable declaration-colon-newline-after, order/properties-order */
+
+            &:hover,
+            &:focus {
+                outline: 0;
+            }
+
+            &:hover {
+                background-position: right center;
+                background-size: 200% auto;
+            }
         }
 
         @media (min-width: 600px) {

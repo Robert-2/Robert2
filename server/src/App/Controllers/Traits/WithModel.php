@@ -18,7 +18,7 @@ trait WithModel
     protected function getModel(): BaseModel
     {
         $modelClass = $this->getModelClass();
-        return new $modelClass;
+        return new $modelClass();
     }
 
     protected function getModelClass(): string
@@ -36,7 +36,7 @@ trait WithModel
         $modelFullName = sprintf('\\Loxya\\Models\\%s', $modelName);
         if (!class_exists($modelFullName, true) || !is_subclass_of($modelFullName, BaseModel::class)) {
             throw new \RuntimeException(
-                sprintf("Unable to retrieves the associated model class for controller `%s`.", $controllerName)
+                sprintf("Unable to retrieves the associated model class for controller `%s`.", $controllerName),
             );
         }
 

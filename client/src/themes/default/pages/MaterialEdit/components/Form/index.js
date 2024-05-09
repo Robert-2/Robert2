@@ -8,18 +8,19 @@ import formatOptions from '@/utils/formatOptions';
 import Fieldset from '@/themes/default/components/Fieldset';
 import FormField from '@/themes/default/components/FormField';
 import Button from '@/themes/default/components/Button';
+import Fragment from '@/components/Fragment';
 
 const DEFAULT_VALUES = Object.freeze({
     name: '',
     reference: '',
     park_id: '',
     category_id: '',
-    rental_price: '',
+    rental_price: null,
+    replacement_price: null,
     stock_quantity: '1',
+    out_of_order_quantity: '0',
     description: '',
     sub_category_id: '',
-    replacement_price: '',
-    out_of_order_quantity: '0',
     note: '',
     is_hidden_on_bill: false,
     is_discountable: true,
@@ -43,11 +44,12 @@ const MaterialEditForm = {
         const data = {
             ...DEFAULT_VALUES,
             ...pick(this.savedData ?? {}, Object.keys(DEFAULT_VALUES)),
+            rental_price: this.savedData?.rental_price?.toNumber() ?? null,
+            replacement_price: this.savedData?.replacement_price?.toNumber() ?? null,
             attributes: (this.savedData?.attributes ?? []).reduce(
                 (acc, { id, value }) => ({ ...acc, [id]: value }),
                 {},
             ),
-            approvers: (this.savedData?.approvers ?? []).map(({ id }) => id),
         };
 
         return {
@@ -107,10 +109,6 @@ const MaterialEditForm = {
         categoriesOptions() {
             return this.$store.getters['categories/options'];
         },
-
-        isReservationsEnabled() {
-            return this.$store.state.settings.reservation.enabled;
-        },
     },
     watch: {
         criticalError(error) {
@@ -152,10 +150,6 @@ const MaterialEditForm = {
             data.attributes = Object.entries(data.attributes).map(
                 ([id, value]) => ({ id: parseInt(id, 10), value }),
             );
-
-            if (!this.isAdmin) {
-                delete data.approvers;
-            }
 
             this.$emit('submit', data);
         },
@@ -213,25 +207,32 @@ const MaterialEditForm = {
         getAttributeInputType(attributeType) {
             switch (attributeType) {
                 case 'integer':
-                case 'float':
+                case 'float': {
                     return 'number';
-                case 'boolean':
+                }
+                case 'boolean': {
                     return 'switch';
-                case 'date':
+                }
+                case 'date': {
                     return 'date';
-                default:
+                }
+                default: {
                     return 'text';
+                }
             }
         },
 
         getAttributeInputStep(attributeType) {
             switch (attributeType) {
-                case 'integer':
+                case 'integer': {
                     return 1;
-                case 'float':
+                }
+                case 'float': {
                     return 0.001;
-                default:
+                }
+                default: {
                     return undefined;
+                }
             }
         },
     },
@@ -241,7 +242,6 @@ const MaterialEditForm = {
             data,
             errors,
             isSaving,
-            isReservationsEnabled,
             criticalError,
             parksOptions,
             categoriesOptions,
@@ -318,39 +318,41 @@ const MaterialEditForm = {
                 <Fieldset
                     title={__('stock-infos')}
                 >
-                    <div class="MaterialEditForm__park">
-                        {showParksSelector && (
+                    <Fragment>
+                        <div class="MaterialEditForm__park">
+                            {showParksSelector && (
+                                <FormField
+                                    label="park"
+                                    type="select"
+                                    class="MaterialEditForm__park-selector"
+                                    options={parksOptions}
+                                    v-model={data.park_id}
+                                    errors={errors?.park_id}
+                                    placeholder
+                                    required
+                                />
+                            )}
+                        </div>
+                        <div class="MaterialEditForm__quantities">
                             <FormField
-                                label="park"
-                                type="select"
-                                class="MaterialEditForm__park-selector"
-                                options={parksOptions}
-                                v-model={data.park_id}
-                                errors={errors?.park_id}
-                                placeholder
+                                label="stock-quantity"
+                                type="number"
+                                step={1}
+                                class="MaterialEditForm__stock-quantity"
+                                v-model={data.stock_quantity}
+                                errors={errors?.stock_quantity}
                                 required
                             />
-                        )}
-                    </div>
-                    <div class="MaterialEditForm__quantities">
-                        <FormField
-                            label="stock-quantity"
-                            type="number"
-                            step={1}
-                            class="MaterialEditForm__stock-quantity"
-                            v-model={data.stock_quantity}
-                            errors={errors?.stock_quantity}
-                            required
-                        />
-                        <FormField
-                            label="out-of-order-quantity"
-                            type="number"
-                            step={1}
-                            class="MaterialEditForm__out-of-order-quantity"
-                            v-model={data.out_of_order_quantity}
-                            errors={errors?.out_of_order_quantity}
-                        />
-                    </div>
+                            <FormField
+                                label="out-of-order-quantity"
+                                type="number"
+                                step={1}
+                                class="MaterialEditForm__out-of-order-quantity"
+                                v-model={data.out_of_order_quantity}
+                                errors={errors?.out_of_order_quantity}
+                            />
+                        </div>
+                    </Fragment>
                 </Fieldset>
                 {showBilling && (
                     <Fieldset title={__('billing-infos')}>
@@ -378,16 +380,6 @@ const MaterialEditForm = {
                             v-model={data.is_hidden_on_bill}
                             errors={errors?.is_hidden_on_bill}
                             disabled={data.rental_price > 0 ? __('price-must-be-zero') : false}
-                        />
-                    </Fieldset>
-                )}
-                {isReservationsEnabled && (
-                    <Fieldset title={__('online-reservations')}>
-                        <FormField
-                            type="switch"
-                            label={__('page.material-edit.allow-online-reservations')}
-                            v-model={data.is_reservable}
-                            errors={errors?.is_reservable}
                         />
                     </Fieldset>
                 )}

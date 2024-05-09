@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class ImproveBillsTable extends AbstractMigration
 {
@@ -24,7 +26,7 @@ final class ImproveBillsTable extends AbstractMigration
              FROM `%1$sbills` as `bill`
              INNER JOIN `%1$sevents` as `event`
                 ON `bill`.`event_id` = `event`.`id`',
-            $prefix
+            $prefix,
         ));
         foreach ($rawInvoicesData as $rawInvoice) {
             $rawMaterials = $this->fetchAll(vsprintf(
@@ -62,16 +64,16 @@ final class ImproveBillsTable extends AbstractMigration
 
             $dailyTotalWithoutDiscount = array_reduce(
                 $invoiceMaterials,
-                fn ($total, $invoiceMaterial) => (
+                static fn ($total, $invoiceMaterial) => (
                     $total + $invoiceMaterial['total_price']
                 ),
-                0
+                0,
             );
 
             // - Remise.
             $dailyTotalDiscountable = array_reduce(
                 $invoiceMaterials,
-                function ($total, $invoiceMaterial) {
+                static function ($total, $invoiceMaterial) {
                     if ((bool) $invoiceMaterial['is_discountable']) {
                         return $total + $invoiceMaterial['total_price'];
                     }
@@ -97,7 +99,7 @@ final class ImproveBillsTable extends AbstractMigration
 
             $totalReplacement = array_reduce(
                 $invoiceMaterials,
-                function ($total, $invoiceMaterial) {
+                static function ($total, $invoiceMaterial) {
                     $replacementPrice = (
                         ((float) $invoiceMaterial['replacement_price'])
                         *
@@ -288,7 +290,9 @@ final class ImproveBillsTable extends AbstractMigration
             unset($invoiceData['materials']);
 
             // - Factures.
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sinvoices', $prefix))
                 ->set($invoiceData)
                 ->where(['id' => $invoiceId])
@@ -375,7 +379,7 @@ final class ImproveBillsTable extends AbstractMigration
              FROM `%1$sestimates` as `estimate`
              INNER JOIN `%1$sevents` as `event`
                 ON `estimate`.`event_id` = `event`.`id`',
-            $prefix
+            $prefix,
         ));
         foreach ($rawEstimatesData as $rawEstimate) {
             $rawMaterials = $this->fetchAll(vsprintf(
@@ -413,16 +417,16 @@ final class ImproveBillsTable extends AbstractMigration
 
             $dailyTotalWithoutDiscount = array_reduce(
                 $estimateMaterials,
-                fn ($total, $estimateMaterial) => (
+                static fn ($total, $estimateMaterial) => (
                     $total + $estimateMaterial['total_price']
                 ),
-                0
+                0,
             );
 
             // - Remise.
             $dailyTotalDiscountable = array_reduce(
                 $estimateMaterials,
-                function ($total, $estimateMaterial) {
+                static function ($total, $estimateMaterial) {
                     if ((bool) $estimateMaterial['is_discountable']) {
                         return $total + $estimateMaterial['total_price'];
                     }
@@ -448,7 +452,7 @@ final class ImproveBillsTable extends AbstractMigration
 
             $totalReplacement = array_reduce(
                 $estimateMaterials,
-                function ($total, $estimateMaterial) {
+                static function ($total, $estimateMaterial) {
                     $replacementPrice = (
                         ((float) $estimateMaterial['replacement_price'])
                         *
@@ -637,7 +641,9 @@ final class ImproveBillsTable extends AbstractMigration
             unset($estimateData['materials']);
 
             // - Devis.
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sestimates', $prefix))
                 ->set($estimateData)
                 ->where(['id' => $estimateId])
@@ -716,15 +722,15 @@ final class ImproveBillsTable extends AbstractMigration
         $prefix = Config::get('db.prefix');
 
         $incompatibleInvoices = $this->fetchAll(
-            sprintf("SELECT * FROM `%sinvoices` WHERE `booking_type` <> 'event'", $prefix)
+            sprintf("SELECT * FROM `%sinvoices` WHERE `booking_type` <> 'event'", $prefix),
         );
         $incompatibleEstimates = $this->fetchAll(
-            sprintf("SELECT * FROM `%sestimates` WHERE `booking_type` <> 'event'", $prefix)
+            sprintf("SELECT * FROM `%sestimates` WHERE `booking_type` <> 'event'", $prefix),
         );
         if (count($incompatibleInvoices) > 0 || count($incompatibleEstimates) > 0) {
             throw new \RuntimeException(
                 "Unable to rollback the migration, this would cause the " .
-                "loss of all reservation's invoices / estimates."
+                "loss of all reservation's invoices / estimates.",
             );
         }
 
@@ -749,7 +755,7 @@ final class ImproveBillsTable extends AbstractMigration
             ));
 
             $billsMaterialsData[$rawInvoice['id']] = json_encode(array_map(
-                fn ($rawInvoiceMaterial) => [
+                static fn ($rawInvoiceMaterial) => [
                     'id' => $rawInvoiceMaterial['material_id'],
                     'name' => $rawInvoiceMaterial['name'],
                     'reference' => $rawInvoiceMaterial['reference'],
@@ -823,7 +829,9 @@ final class ImproveBillsTable extends AbstractMigration
             ->update();
 
         foreach ($billsMaterialsData as $billId => $materialsData) {
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sbills', $prefix))
                 ->set('materials', $materialsData)
                 ->where(['id' => $billId])
@@ -855,7 +863,7 @@ final class ImproveBillsTable extends AbstractMigration
             ));
 
             $estimatesMaterialsData[$rawEstimate['id']] = json_encode(array_map(
-                fn ($rawEstimateMaterial) => [
+                static fn ($rawEstimateMaterial) => [
                     'id' => $rawEstimateMaterial['material_id'],
                     'name' => $rawEstimateMaterial['name'],
                     'reference' => $rawEstimateMaterial['reference'],
@@ -927,7 +935,9 @@ final class ImproveBillsTable extends AbstractMigration
             ->update();
 
         foreach ($estimatesMaterialsData as $estimateId => $materialsData) {
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sestimates', $prefix))
                 ->set('materials', $materialsData)
                 ->where(['id' => $estimateId])

@@ -24,6 +24,12 @@ module.exports = {
         '^@/(.*)$': '<rootDir>/src/$1',
         '^@fixtures/(.*)$': '<rootDir>/tests/fixtures/$1',
     },
+    snapshotSerializers: [
+        '<rootDir>/tests/serializers/day.ts',
+        '<rootDir>/tests/serializers/datetime.ts',
+        '<rootDir>/tests/serializers/decimal.ts',
+        '<rootDir>/tests/serializers/period.ts',
+    ],
     transform: {
         '^.+\\.(js|mjs|cjs|jsx|ts|mts|cts|tsx)$': 'babel-jest',
         '^(?!.*\\.(js|mjs|cjs|ts|mts|cts|tsx|json)$)': 'jest-transform-stub',

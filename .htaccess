@@ -1,17 +1,11 @@
-## Prohibit autoindex
+# - Interdit l'`autoindex`.
 Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
-    ## Restrict access to `.git/`, `var/`, `vendors/` folders & `composer` files
-    RewriteRule ^\.git / [F,L]
-    RewriteRule ^server/src/var/(.*)?$ / [F,L]
-    RewriteRule ^server/vendors/(.*)?$ / [F,L]
-    RewriteRule ^server/composer\.(lock|json)$ / [F,L]
-
-    ## Redirect all requests to `src/public/` folder
+    # - Redirige toutes les requêtes vers le dossier `server/src/public/`.
     RewriteRule ^$ server/src/public/ [QSA,NC,L]
     RewriteRule ^(.*)$ server/src/public/$1 [QSA,NC,L]
 </IfModule>

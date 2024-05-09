@@ -1,19 +1,37 @@
 {% for parkName, parkMaterials in materialsSorted %}
-<h2{{ not loop.first ? ' class="changePage"' : '' }}>{{ translate('materials-park-name', [parkName]) }}</h2>
+<h2 class="{{ not loop.first ? 'changePage' : '' }}">
+    {{ __('materials-park-name', parkName) }}
+</h2>
 <table class="listing-table">
     <thead>
         <tr>
-            <th>{{ translate('ref') }}</th>
-            <th>{{ translate('designation') }}</th>
-            <th>{{ translate('qty') }}</th>
-            <th>{{ translate('replacement-value') }}</th>
-            <th>{{ translate('total-replacement-value') }}</th>
-            <th>{{ translate('qty-returned') }}</th>
+            {% if showPictures -%}
+            <th>{{ __('picture') }}</th>
+            {% endif -%}
+            <th>{{ __('ref') }}</th>
+            <th>{{ __('designation') }}</th>
+            {% if showDescriptions -%}
+            <th>{{ __('description') }}</th>
+            {% endif -%}
+            {% if showTags -%}
+            <th>{{ __('tags') }}</th>
+            {% endif -%}
+            {% if showReplacementPrices -%}
+            <th>{{ __('replacement-value') }}</th>
+            <th>{{ __('total-replacement-value') }}</th>
+            {% endif -%}
+            <th>{{ __('qty') }}</th>
+            <th>{{ __('qty-returned') }}</th>
         </tr>
     </thead>
     <tbody>
         {% for material in parkMaterials %}
-            {{- include('blocks/materials/line-event-summary.twig', { material: material, withoutPark: true }) -}}
+            {{-
+                include('blocks/materials/line-event-summary.twig', {
+                    withoutPark: true,
+                    material,
+                })
+            -}}
         {% endfor %}
     </tbody>
 </table>

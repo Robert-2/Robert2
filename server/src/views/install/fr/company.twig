@@ -17,7 +17,7 @@
                 value="{{stepData['name']}}"
             />
             {% if validationErrors['name'] %}
-            <div class="form__field-error">{{ translate(validationErrors['name']) }}</div>
+            <div class="form__field-error">{{ __(validationErrors['name']) }}</div>
             {% endif %}
         </section>
         <section class="form__field">
@@ -33,7 +33,7 @@
                 value="{{stepData['street']}}"
             />
             {% if validationErrors['street'] %}
-            <div class="form__field-error">{{ translate(validationErrors['street']) }}</div>
+            <div class="form__field-error">{{ __(validationErrors['street']) }}</div>
             {% endif %}
             <div class="form__sub-fields">
                 <div class="form__sub-fields__item">
@@ -45,7 +45,7 @@
                         value="{{stepData['zipCode']}}"
                     />
                     {% if validationErrors['zipCode'] %}
-                    <div class="form__field-error">{{ translate(validationErrors['zipCode']) }}</div>
+                    <div class="form__field-error">{{ __(validationErrors['zipCode']) }}</div>
                     {% endif %}
                 </div>
                 <div class="form__sub-fields__item">
@@ -57,7 +57,7 @@
                         value="{{stepData['locality']}}"
                     />
                     {% if validationErrors['locality'] %}
-                    <div class="form__field-error">{{ translate(validationErrors['locality']) }}</div>
+                    <div class="form__field-error">{{ __(validationErrors['locality']) }}</div>
                     {% endif %}
                 </div>
             </div>

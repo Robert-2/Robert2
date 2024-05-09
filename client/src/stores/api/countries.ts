@@ -1,21 +1,37 @@
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
 
-//
-// - Types
-//
+import type { SchemaInfer } from '@/utils/validation';
 
-export type Country = {
-    id: number,
-    name: string,
-    code: string,
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
+
+export const CountrySchema = z.strictObject({
+    id: z.number(),
+    name: z.string(),
+    code: z.string(),
+});
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Country = SchemaInfer<typeof CountrySchema>;
+
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
+
+const all = async (): Promise<Country[]> => {
+    const response = await requester.get('/countries');
+    return CountrySchema.array().parse(response.data);
 };
-
-//
-// - Fonctions
-//
-
-const all = async (): Promise<Country[]> => (
-    (await requester.get('/countries')).data
-);
 
 export default { all };

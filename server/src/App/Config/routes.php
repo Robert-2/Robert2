@@ -12,7 +12,7 @@ return [
 
         '/users[/]' => 'UserController:getAll',
         '/users/{id:(?:[0-9]+|self)}[/]' => 'UserController:getOne',
-        '/users/{id:[0-9]+}/settings[/]' => 'UserController:getSettings',
+        '/users/{id:(?:[0-9]+|self)}/settings[/]' => 'UserController:getSettings',
 
         '/tags[/]' => 'TagController:getAll',
 
@@ -46,7 +46,6 @@ return [
 
         '/materials[/]' => 'MaterialController:getAll',
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:getOne',
-        '/materials/{id:[0-9]+}/tags[/]' => 'MaterialController:getTags',
         '/materials/{id:[0-9]+}/documents[/]' => 'MaterialController:getDocuments',
         '/materials/{id:[0-9]+}/bookings[/]' => 'MaterialController:getBookings',
         '/materials/while-event/{eventId:[0-9]+}[/]' => 'MaterialController:getAllWhileEvent',
@@ -61,6 +60,10 @@ return [
         '/settings[/]' => 'SettingController:getAll',
 
         '/bookings[/]' => 'BookingController:getAll',
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/summary[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
+        ) => 'BookingController:getOneSummary',
     ],
     'post' => [
         '/session[/]' => 'AuthController:loginWithForm',
@@ -93,17 +96,12 @@ return [
         '/events/{id:[0-9]+}/estimates[/]' => 'EventController:createEstimate',
         '/events/{id:[0-9]+}/documents[/]' => 'EventController:attachDocument',
 
-        sprintf(
-            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/lists[/]',
-            implode('|', array_keys(BookingController::BOOKING_TYPES))
-        ) => 'BookingController:createList',
-
         '/event-technicians[/]' => 'EventTechnicianController:create',
     ],
     'put' => [
         '/users/{id:(?:[0-9]+|self)}[/]' => 'UserController:update',
         '/users/restore/{id:[0-9]+}[/]' => 'UserController:restore',
-        '/users/{id:[0-9]+}/settings[/]' => 'UserController:updateSettings',
+        '/users/{id:(?:[0-9]+|self)}/settings[/]' => 'UserController:updateSettings',
 
         '/categories/{id:[0-9]+}[/]' => 'CategoryController:update',
         '/categories/restore/{id:[0-9]+}[/]' => 'CategoryController:restore',
@@ -133,10 +131,10 @@ return [
 
         '/events/{id:[0-9]+}[/]' => 'EventController:update',
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
-        '/events/{id:[0-9]+}/return[/]' => 'EventController:updateReturnInventory',
-        '/events/{id:[0-9]+}/return/finish[/]' => 'EventController:finishReturnInventory',
         '/events/{id:[0-9]+}/departure[/]' => 'EventController:updateDepartureInventory',
         '/events/{id:[0-9]+}/departure/finish[/]' => 'EventController:finishDepartureInventory',
+        '/events/{id:[0-9]+}/return[/]' => 'EventController:updateReturnInventory',
+        '/events/{id:[0-9]+}/return/finish[/]' => 'EventController:finishReturnInventory',
         '/events/{id:[0-9]+}/archive[/]' => 'EventController:archive',
         '/events/{id:[0-9]+}/unarchive[/]' => 'EventController:unarchive',
 
@@ -146,7 +144,7 @@ return [
 
         sprintf(
             '/bookings/{entity:(?:%s)}/{id:[0-9]+}/materials[/]',
-            implode('|', array_keys(BookingController::BOOKING_TYPES))
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
         ) => 'BookingController:updateMaterials',
     ],
     'delete' => [
@@ -160,10 +158,13 @@ return [
         '/parks/{id:[0-9]+}[/]' => 'ParkController:delete',
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:delete',
         '/attributes/{id:[0-9]+}[/]' => 'AttributeController:delete',
-        '/events/{id:[0-9]+}[/]' => 'EventController:delete',
         '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:delete',
         '/documents/{id:[0-9]+}[/]' => 'DocumentController:delete',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:delete',
         '/settings/{key:[a-zA-Z0-9-.]+}[/]' => 'SettingController:reset',
+
+        '/events/{id:[0-9]+}[/]' => 'EventController:delete',
+        '/events/{id:[0-9]+}/departure[/]' => 'EventController:cancelDepartureInventory',
+        '/events/{id:[0-9]+}/return[/]' => 'EventController:cancelReturnInventory',
     ],
 ];

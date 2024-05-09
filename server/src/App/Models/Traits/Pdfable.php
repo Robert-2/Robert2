@@ -18,7 +18,7 @@ trait Pdfable
             static::PDF_TEMPLATE,
             $i18n,
             $this->getPdfName($i18n),
-            $this->getPdfData()
+            $this->getPdfData(),
         );
     }
 

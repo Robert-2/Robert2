@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace Loxya\Tests;
 
-use Illuminate\Support\Carbon;
 use Adbar\Dot as DotArray;
+use Illuminate\Support\Carbon;
 use Loxya\Config\Config;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Tests\Fixtures\Fixtures;
 use PHPUnit\Framework\TestCase as CoreTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class TestCase extends CoreTestCase
+abstract class TestCase extends CoreTestCase
 {
     use MatchesSnapshots;
 
@@ -23,7 +23,7 @@ class TestCase extends CoreTestCase
 
         try {
             Fixtures::resetDataWithDump();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->fail(sprintf("Unable to reset fixtures: %s", $e->getMessage()));
         }
     }
@@ -86,6 +86,9 @@ class TestCase extends CoreTestCase
                     ['name' => 'APE', 'value' => '947A'],
                 ],
             ],
+            'email' => [
+                'from' => 'testing@loxya.com',
+            ],
             'maxFileUploadSize' => 25 * 1024 * 1024,
         ]);
 
@@ -137,7 +140,7 @@ class TestCase extends CoreTestCase
 
     public function assertSameCanonicalize($expected, $actual, string $message = ''): void
     {
-        $canonicalize = function (&$value) use (&$canonicalize): void {
+        $canonicalize = static function (&$value) use (&$canonicalize): void {
             if (is_array($value)) {
                 ksort($value);
                 foreach ($value as &$subValue) {
@@ -153,7 +156,7 @@ class TestCase extends CoreTestCase
 
     public function assertNotSameCanonicalize($expected, $actual, string $message = ''): void
     {
-        $canonicalize = function (&$value) use (&$canonicalize): void {
+        $canonicalize = static function (&$value) use (&$canonicalize): void {
             if (is_array($value)) {
                 ksort($value);
                 foreach ($value as &$subValue) {

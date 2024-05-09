@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class AddIsTotalisableToAttributes extends AbstractMigration
 {
@@ -19,7 +21,9 @@ final class AddIsTotalisableToAttributes extends AbstractMigration
 
         $prefix = Config::get('db.prefix');
 
-        $this->getQueryBuilder()
+        /** @var UpdateQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+        $qb
             ->update(sprintf('%sattributes', $prefix))
             ->set(['is_totalisable' => '0'])
             ->where(['type IN' => ['integer', 'float']])

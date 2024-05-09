@@ -1,8 +1,4 @@
-import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
-
-export type MaterialStateList = {
-    quantity: number,
-};
+import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
 
 export type MaterialState = {
     quantity: number,

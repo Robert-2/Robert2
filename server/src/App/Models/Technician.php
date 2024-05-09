@@ -11,8 +11,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Support\Assert;
+use Respect\Validation\Validator as V;
 
 /**
  * Technicien.
@@ -39,8 +40,10 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
- * @property-read Collection|EventTechnician[] $assignments
- * @property-read Collection|Document[] $documents
+ * @property-read Collection<array-key, EventTechnician> $assignments
+ * @property-read Collection<array-key, Document> $documents
+ *
+ * @method static Builder|static search(string $term)
  */
 final class Technician extends BaseModel implements Serializable
 {
@@ -51,8 +54,6 @@ final class Technician extends BaseModel implements Serializable
     public const TYPE = 'technician';
 
     protected $table = 'technicians';
-
-    protected $orderField = 'full_name';
 
     public function __construct(array $attributes = [])
     {
@@ -95,7 +96,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->hasMany(EventTechnician::class, 'technician_id')
             ->with('event')
             ->has('event')
-            ->orderBy('start_time');
+            ->orderBy('start_date');
     }
 
     public function documents()
@@ -120,14 +121,12 @@ final class Technician extends BaseModel implements Serializable
         'postal_code',
         'locality',
         'full_address',
-        'country',
         'country_id',
         'user_id',
     ];
 
     protected $casts = [
         'nickname' => 'string',
-        'is_preparer' => 'boolean',
         'person_id' => 'integer',
         'note' => 'string',
         'created_at' => 'immutable_datetime',
@@ -140,7 +139,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->first_name;
@@ -151,7 +150,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->last_name;
@@ -162,7 +161,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->full_name;
@@ -173,7 +172,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->email;
@@ -184,7 +183,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->phone;
@@ -195,7 +194,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->street;
@@ -206,7 +205,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->postal_code;
@@ -217,7 +216,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->locality;
@@ -228,7 +227,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->country_id;
@@ -239,7 +238,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->country;
@@ -250,7 +249,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->full_address;
@@ -261,7 +260,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->user_id;
@@ -272,7 +271,7 @@ final class Technician extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The technician\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->user;
@@ -296,35 +295,36 @@ final class Technician extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
+    protected $orderable = [
+        'full_name',
+        'email',
+        'nickname',
+    ];
+
     public function scopeSearch(Builder $query, string $term): Builder
     {
-        $term = trim($term);
-        if (strlen($term) < 2) {
-            throw new \InvalidArgumentException("The term must contain more than two characters.");
-        }
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));
-        return $query->where(function (Builder $query) use ($term) {
-            $query
-                ->where(function (Builder $subQuery) use ($term) {
-                    $subQuery->where('nickname', 'LIKE', $term);
-                })
-                ->orWhereHas('person', function (Builder $subQuery) use ($term) {
-                    $subQuery
+        return $query->where(static fn (Builder $subQuery) => (
+            $subQuery
+                ->where(static fn (Builder $subSubQuery) => (
+                    $subSubQuery->where('nickname', 'LIKE', $term)
+                ))
+                ->orWhereHas('person', static fn (Builder $subSubQuery) => (
+                    $subSubQuery
                         ->where('first_name', 'LIKE', $term)
                         ->orWhere('last_name', 'LIKE', $term)
                         ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
                         ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term])
-                        ->orWhere('email', 'LIKE', $term);
-                });
-        });
+                        ->orWhere('email', 'LIKE', $term)
+                ))
+        ));
     }
 
     public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
     {
-        if (!in_array($column, ['full_name', 'email', 'nickname'], true)) {
-            throw new \InvalidArgumentException("Invalid order field.");
-        }
+        Assert::inArray($column, ['full_name', 'email', 'nickname'], "Invalid order field.");
 
         if (!in_array($column, ['full_name', 'email'], true)) {
             return $query->orderBy($column, $direction);
@@ -346,12 +346,12 @@ final class Technician extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public static function staticEdit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): static
     {
         $personId = null;
         if ($id) {
             if (!static::staticExists($id)) {
-                throw (new ModelNotFoundException)
+                throw (new ModelNotFoundException())
                     ->setModel(self::class, $id);
             }
             $personId = static::find($id)->person_id;
@@ -365,11 +365,11 @@ final class Technician extends BaseModel implements Serializable
         if (!$technician->isValid() || !$person->isValid()) {
             throw new ValidationException(array_merge(
                 $technician->validationErrors(),
-                ['person' => $person->validationErrors()]
+                ['person' => $person->validationErrors()],
             ));
         }
 
-        return dbTransaction(function () use ($person, $technician) {
+        return dbTransaction(static function () use ($person, $technician) {
             if (!$person->save()) {
                 throw new \RuntimeException("Unable to save the technician's related person.");
             }
@@ -391,16 +391,20 @@ final class Technician extends BaseModel implements Serializable
 
     public function serialize(): array
     {
-        $data = $this->attributesForSerialization();
+        /** @var Technician $technician */
+        $technician = tap(clone $this, static function (Technician $technician) {
+            $technician->append(['country']);
+        });
 
-        unset(
-            $data['person_id'],
-            $data['created_at'],
-            $data['updated_at'],
-            $data['deleted_at'],
-        );
-
-        return $data;
+        return (new DotArray($technician->attributesForSerialization()))
+            ->delete([
+                'is_preparer',
+                'person_id',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ])
+            ->all();
     }
 
     public static function serializeValidation(array $data): array

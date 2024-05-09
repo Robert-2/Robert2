@@ -4,6 +4,8 @@ import isPlainObject from 'lodash/isPlainObject';
 import flattenObject from '@/utils/flattenObject';
 import config from '@/globals/config';
 import cookies from '@/utils/cookies';
+import DateTime from '@/utils/datetime';
+import Day from '@/utils/day';
 
 const requester = axios.create({
     baseURL: config.api.url,
@@ -68,6 +70,9 @@ requester.interceptors.request.use(
                 }
                 if (params[name] === false) {
                     params[name] = '0';
+                }
+                if (params[name] instanceof DateTime || params[name] instanceof Day) {
+                    params[name] = params[name].toString();
                 }
             });
             request.params = params;

@@ -1,18 +1,21 @@
 import './index.scss';
+import DateTime from '@/utils/datetime';
+import upperFirst from 'lodash/upperFirst';
 import { defineComponent } from '@vue/composition-api';
-import moment from 'moment';
 import { BookingEntity } from '@/stores/api/bookings';
 import getBookingIcon from '@/utils/getBookingIcon';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 
-import type { Moment } from 'moment';
 import type { PropType } from '@vue/composition-api';
-import type { BookingSummary } from '@/stores/api/bookings';
+import type { LazyBooking } from '../../_types';
 
 type Props = {
-    /* L'emprunt (booking) à afficher. */
-    booking: BookingSummary,
+    /**
+     * L'emprunt (booking) à afficher dans un format hybride permettant
+     * de savoir si on a affaire à un extrait ou à un résumé de l'emprunt.
+     */
+    lazyBooking: LazyBooking,
 };
 
 type InstanceProperties = {
@@ -20,95 +23,131 @@ type InstanceProperties = {
 };
 
 type Data = {
-    now: number,
+    now: DateTime,
 };
 
-/* Affiche un emprunt (booking). */
+/** Un emprunt (booking) sous forme d'une cellule "inline". */
 const BeneficiaryViewBookingsItem = defineComponent({
     name: 'BeneficiaryViewBookingsItem',
     props: {
-        booking: {
-            type: Object as PropType<Props['booking']>,
+        lazyBooking: {
+            type: Object as PropType<Props['lazyBooking']>,
             required: true,
         },
     },
-    emits: ['click', 'open'],
+    emits: ['click', 'openClick'],
     setup: (): InstanceProperties => ({
         nowTimer: undefined,
     }),
     data: (): Data => ({
-        now: Date.now(),
+        now: DateTime.now(),
     }),
     computed: {
-        icon(): string {
-            return getBookingIcon(this.booking, this.now);
+        icon(): string | null {
+            const { isComplete, booking } = this.lazyBooking;
+            return getBookingIcon(booking, !isComplete, this.now);
         },
 
-        title(): string | undefined {
-            const { booking } = this;
+        title(): string {
+            const { lazyBooking: { booking } } = this;
 
             switch (booking.entity) {
                 case BookingEntity.EVENT: {
                     const { title, location } = booking;
                     return !location ? title : `${title} (${location})`;
                 }
-                default:
-                    throw new Error(`Unsupported entity ${booking.entity}`);
+                default: {
+                    throw new Error(`Unsupported entity ${(booking as any).entity}`);
+                }
             }
         },
 
-        start(): Moment {
-            return moment(this.booking.start_date);
+        arePeriodsUnified(): boolean {
+            const { booking } = this.lazyBooking;
+            const {
+                operation_period: operationPeriod,
+                mobilization_period: mobilizationPeriod,
+            } = booking;
+
+            return operationPeriod
+                .setFullDays(false)
+                .isSame(mobilizationPeriod);
         },
 
-        end(): Moment {
-            return moment(this.booking.end_date);
+        duration(): number {
+            const { booking } = this.lazyBooking;
+            return booking.operation_period.asDays();
         },
 
         isOneDay(): boolean {
-            return this.start.isSame(this.end, 'day');
+            return this.duration === 1;
         },
 
         isPast(): boolean {
-            return this.end.isBefore(this.now, 'day');
+            const { booking } = this.lazyBooking;
+            return booking.mobilization_period.isBefore(this.now);
+        },
+
+        isFuture(): boolean {
+            const { booking } = this.lazyBooking;
+            return !booking.mobilization_period.isBeforeOrDuring(this.now);
         },
 
         isOngoing(): boolean {
-            return moment(this.now).isBetween(this.start, this.end, 'day', '[]');
+            const { booking } = this.lazyBooking;
+            return this.now.isBetween(booking.mobilization_period);
         },
 
         isConfirmed(): boolean {
-            const { booking } = this;
+            const { booking } = this.lazyBooking;
 
             switch (booking.entity) {
-                case BookingEntity.EVENT:
+                case BookingEntity.EVENT: {
                     return booking.is_confirmed;
-
-                default:
-                    throw new Error(`Unsupported entity ${booking.entity}`);
+                }
+                default: {
+                    throw new Error(`Unsupported entity ${(booking as any).entity}`);
+                }
             }
         },
 
+        hasWarnings(): boolean {
+            const { isPast, isFuture, lazyBooking } = this;
+            const {
+                is_archived: isArchived,
+                has_not_returned_materials: hasNotReturnedMaterials,
+            } = lazyBooking.booking;
+
+            return (
+                // - Si le booking est en cours ou à venir et qu'il manque du matériel.
+                (isFuture && lazyBooking.isComplete && lazyBooking.booking.has_missing_materials === true) ||
+
+                // - Si le booking est passé et qu'il a du matériel non retourné.
+                (isPast && !isArchived && hasNotReturnedMaterials === true)
+            );
+        },
+
         readableState(): string {
-            const { $t: __, isOngoing, isPast, start } = this;
+            const { $t: __, isOngoing, isPast, lazyBooking: { booking } } = this;
+            const { mobilization_period: mobilizationPeriod } = booking;
 
             if (isPast) {
                 return __('page.beneficiary-view.borrowings.done');
             }
 
             if (isOngoing) {
-                return __('page.beneficiary-view.borrowings.currently-out');
+                return __('page.beneficiary-view.borrowings.currently-mobilized');
             }
 
             return __(
-                'page.beneficiary-view.borrowings.expected-to-be-out-on',
-                { date: start.format('L') },
+                'page.beneficiary-view.borrowings.mobilized-starting-from',
+                { date: mobilizationPeriod.start.toReadable() },
             );
         },
     },
     mounted() {
         // - Actualise le timestamp courant toutes les minutes.
-        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
+        this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 60_000);
     },
     beforeDestroy() {
         if (this.nowTimer) {
@@ -123,13 +162,15 @@ const BeneficiaryViewBookingsItem = defineComponent({
         // ------------------------------------------------------
 
         handleClick() {
-            this.$emit('click', this.booking);
+            const { booking } = this.lazyBooking;
+            this.$emit('click', booking.entity, booking.id);
         },
 
-        handleOpen(e: MouseEvent) {
+        handleOpenClick(e: MouseEvent) {
             e.stopPropagation();
 
-            this.$emit('open', this.booking);
+            const { booking } = this.lazyBooking;
+            this.$emit('openClick', booking.entity, booking.id);
         },
 
         // ------------------------------------------------------
@@ -152,50 +193,62 @@ const BeneficiaryViewBookingsItem = defineComponent({
         },
     },
     render() {
-        const { duration, has_missing_materials: hasMissingMaterials } = this.booking;
+        const { booking } = this.lazyBooking;
         const {
             $t: __,
             icon,
             title,
-            isOngoing,
-            isPast,
+            duration,
+            isFuture,
             isOneDay,
+            isOngoing,
             isConfirmed,
+            hasWarnings,
+            arePeriodsUnified,
             readableState,
-            start,
-            end,
             handleClick,
-            handleOpen,
+            handleOpenClick,
         } = this;
 
         const className = ['BeneficiaryViewBookingsItem', {
-            'BeneficiaryViewBookingsItem--future': !isPast,
+            'BeneficiaryViewBookingsItem--future': isFuture,
             'BeneficiaryViewBookingsItem--current': isOngoing,
             'BeneficiaryViewBookingsItem--confirmed': isConfirmed,
-            'BeneficiaryViewBookingsItem--warning': hasMissingMaterials,
+            'BeneficiaryViewBookingsItem--warning': hasWarnings,
         }];
 
         return (
-            <li
-                class={className}
-                onClick={handleClick}
-                role="button"
-            >
+            <li class={className} onClick={handleClick} role="button">
                 <div class="BeneficiaryViewBookingsItem__booking">
                     <div class="BeneficiaryViewBookingsItem__booking__icon">
-                        <Icon name={icon} />
+                        <Icon name={icon ?? 'circle-notch'} spin={icon === null} />
                     </div>
                     <div class="BeneficiaryViewBookingsItem__booking__infos">
                         <h3 class="BeneficiaryViewBookingsItem__booking__title">
                             {title}
                         </h3>
-                        <div class="BeneficiaryViewBookingsItem__booking__dates">
-                            {!isOneDay
-                                ? __('from-date-to-date', { from: start.format('L'), to: end.format('L') })
-                                : __('on-date', { date: start.format('L') })}
-                            {!isOneDay && (
-                                <span class="BeneficiaryViewBookingsItem__booking__duration">
-                                    ({__('days-count', { duration: duration.days }, duration.days)})
+                        <div class="BeneficiaryViewBookingsItem__booking__periods">
+                            <span
+                                class={[
+                                    'BeneficiaryViewBookingsItem__booking__periods__item',
+                                    'BeneficiaryViewBookingsItem__booking__periods__item--operation',
+                                ]}
+                            >
+                                {upperFirst(booking.operation_period.toReadable(__))}
+                                {!isOneDay && (
+                                    <span class="BeneficiaryViewBookingsItem__booking__periods__item__duration">
+                                        ({__('days-count', { duration }, duration)})
+                                    </span>
+                                )}
+                            </span>
+                            {!arePeriodsUnified && (
+                                <span
+                                    class={[
+                                        'BeneficiaryViewBookingsItem__booking__periods__item',
+                                        'BeneficiaryViewBookingsItem__booking__periods__item--mobilization',
+                                    ]}
+                                >
+                                    {upperFirst(booking.mobilization_period.toReadable(__))}
                                 </span>
                             )}
                         </div>
@@ -205,7 +258,7 @@ const BeneficiaryViewBookingsItem = defineComponent({
                     {readableState}
                 </div>
                 <div class="BeneficiaryViewBookingsItem__actions">
-                    <Button type="primary" icon="eye" onClick={handleOpen} />
+                    <Button icon="eye" onClick={handleOpenClick} />
                 </div>
             </li>
         );

@@ -1,42 +1,46 @@
 import { groupByCategories } from '../_utils';
-import materials from '@fixtures/materials';
+import categories from '@fixtures/parsed/categories';
+import materials from '@fixtures/parsed/materials';
 
 describe('Inventory Utils', () => {
     describe('groupByCategories()', () => {
-        const categories = [
-            { id: 1, name: 'Category C' },
-            { id: 2, name: 'Category A' },
-            { id: 3, name: 'Category B' },
-        ];
-
         test('Returns an empty array with empty values', () => {
-            expect(groupByCategories([], categories)).toEqual([]);
+            expect(groupByCategories([], categories.default())).toEqual([]);
         });
 
         test('Dispatch a list of event materials by categories', () => {
-            const result = groupByCategories(materials, categories);
-            expect(result).toEqual([
+            const result = groupByCategories(materials.default(), categories.default());
+            expect(result).toStrictEqual([
                 {
-                    id: 2,
-                    name: 'Category A',
+                    id: 4,
+                    name: 'Décors',
                     materials: [
-                        materials[2],
-                        materials[4],
+                        materials.default(8),
                     ],
                 },
                 {
-                    id: 3,
-                    name: 'Category B',
+                    id: 2,
+                    name: 'Lumière',
                     materials: [
-                        materials[3],
+                        materials.default(3),
+                        materials.default(4),
                     ],
                 },
                 {
                     id: 1,
-                    name: 'Category C',
+                    name: 'Son',
                     materials: [
-                        materials[1],
-                        materials[0],
+                        materials.default(6),
+                        materials.default(5),
+                        materials.default(1),
+                        materials.default(2),
+                    ],
+                },
+                {
+                    id: 3,
+                    name: 'Transport',
+                    materials: [
+                        materials.default(7),
                     ],
                 },
             ]);
@@ -63,7 +67,13 @@ describe('Inventory Utils', () => {
     //                     { ...materials[1] },
     //                     { ...materials[0] },
     //                     { ...materials[2] },
-    //                     { ...materials[4] },
+    //                     {
+    //                         ...materials[4],
+    //                         units: [
+    //                             { ...materials[4].units[0] },
+    //                             { ...materials[4].units[2] },
+    //                         ],
+    //                     },
     //                 ],
     //             },
     //             {
@@ -71,7 +81,12 @@ describe('Inventory Utils', () => {
     //                 name: 'Park B',
     //                 materials: [
     //                     { ...materials[3] },
-    //                     { ...materials[4] },
+    //                     {
+    //                         ...materials[4],
+    //                         units: [
+    //                             { ...materials[4].units[1] },
+    //                         ],
+    //                     },
     //                 ],
     //             },
     //         ]);

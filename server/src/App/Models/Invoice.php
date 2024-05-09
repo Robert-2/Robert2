@@ -5,10 +5,9 @@ namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
 use Brick\Math\RoundingMode;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Respect\Validation\Validator as V;
 use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Casts\AsDecimal;
@@ -17,10 +16,11 @@ use Loxya\Models\Traits\Serializer;
 use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
+use Loxya\Support\Assert;
 use Loxya\Support\Collections\MaterialsCollection;
-use Loxya\Support\FullDuration;
 use Loxya\Support\Period;
 use Loxya\Support\Str;
+use Respect\Validation\Validator as V;
 
 /**
  * Facture.
@@ -33,9 +33,10 @@ use Loxya\Support\Str;
  * @property int $booking_id
  * @property-read Event $booking
  * @property string|null $booking_title
- * @property-read FullDuration $booking_duration
  * @property CarbonImmutable $booking_start_date
  * @property CarbonImmutable $booking_end_date
+ * @property bool $booking_is_full_days
+ * @property Period $booking_period
  * @property-read string|null $booking_location
  * @property int $beneficiary_id
  * @property-read Beneficiary $beneficiary
@@ -57,7 +58,7 @@ use Loxya\Support\Str;
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
- * @property-read Collection|InvoiceMaterial[] $materials
+ * @property-read Collection<array-key, InvoiceMaterial> $materials
  */
 final class Invoice extends BaseModel implements Serializable
 {
@@ -65,7 +66,7 @@ final class Invoice extends BaseModel implements Serializable
     use Serializer;
     use SoftDeletable;
 
-    public const PDF_TEMPLATE = 'invoice-default';
+    protected const PDF_TEMPLATE = 'invoice-default';
 
     public function __construct(array $attributes = [])
     {
@@ -79,8 +80,9 @@ final class Invoice extends BaseModel implements Serializable
             ),
             'booking_id' => V::custom([$this, 'checkBookingId']),
             'booking_title' => V::optional(V::length(2, 191)),
-            'booking_start_date' => V::dateTime(),
+            'booking_start_date' => V::custom([$this, 'checkBookingStartDate']),
             'booking_end_date' => V::custom([$this, 'checkBookingEndDate']),
+            'booking_is_full_days' => V::boolType(),
             'beneficiary_id' => V::custom([$this, 'checkBeneficiaryId']),
             'degressive_rate' => V::custom([$this, 'checkDegressiveRate']),
             'discount_rate' => V::custom([$this, 'checkDiscountRate']),
@@ -114,21 +116,43 @@ final class Invoice extends BaseModel implements Serializable
         };
     }
 
-    public function checkBookingEndDate($value)
+    public function checkBookingStartDate($value)
     {
-        $dateChecker = V::notEmpty()->dateTime();
-        if (!$dateChecker->validate($value)) {
-            return 'invalid-date';
-        }
+        V::notEmpty()->dateTime()->check($value);
+        $startDate = new CarbonImmutable($value);
 
-        if (!$dateChecker->validate($this->getAttributeFromArray('booking_start_date'))) {
+        $bookingIsFullDays = $this->getAttributeUnsafeValue('booking_is_full_days');
+        if (!V::boolType()->validate($bookingIsFullDays)) {
             return true;
         }
 
-        $startDate = new Carbon($this->getAttributeFromArray('booking_start_date'));
-        $endDate = new Carbon($this->getAttributeFromArray('booking_end_date'));
+        return $bookingIsFullDays
+            ? $startDate->format('H:i:s') === '00:00:00'
+            : $startDate->format('i:s') === '00:00';
+    }
 
-        return $startDate <= $endDate ?: 'end-date-must-be-later';
+    public function checkBookingEndDate($value)
+    {
+        $dateChecker = V::notEmpty()->dateTime();
+        $dateChecker->check($value);
+        $endDate = new CarbonImmutable($value);
+
+        $bookingIsFullDays = $this->getAttributeUnsafeValue('booking_is_full_days');
+        if (V::boolType()->validate($bookingIsFullDays)) {
+            $hasValidTimeFormat = $bookingIsFullDays
+                ? $endDate->format('H:i:s') === '00:00:00'
+                : $endDate->format('i:s') === '00:00';
+
+            if (!$hasValidTimeFormat) {
+                return false;
+            }
+        }
+
+        $startDateRaw = $this->getAttributeUnsafeValue('booking_start_date');
+        if (!$dateChecker->validate($startDateRaw)) {
+            return true;
+        }
+        return $endDate->isAfter($startDateRaw) ?: 'end-date-must-be-after-start-date';
     }
 
     public function checkNumber($value)
@@ -137,23 +161,22 @@ final class Invoice extends BaseModel implements Serializable
             ->length(4, 20)
             ->check($value);
 
-        $query = static::where('number', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('number', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        if ($query->withTrashed()->exists()) {
-            return 'invoice-number-already-in-use';
-        }
-
-        return true;
+        return !$alreadyExists ?: 'invoice-number-already-in-use';
     }
 
     public function checkBeneficiaryId($value)
     {
         V::notEmpty()->numericVal()->check($value);
 
-        $beneficiary = Beneficiary::find($value);
+        $beneficiary = Beneficiary::withTrashed()->find($value);
         if (!$beneficiary) {
             return false;
         }
@@ -180,7 +203,7 @@ final class Invoice extends BaseModel implements Serializable
         V::floatVal()->check($value);
         $value = Decimal::of($value);
 
-        $totalWithoutDiscountRaw = $this->getAttributeFromArray('total_without_discount');
+        $totalWithoutDiscountRaw = $this->getAttributeUnsafeValue('total_without_discount');
         if (!$this->validation['total_without_discount']->validate($totalWithoutDiscountRaw)) {
             return true;
         }
@@ -191,7 +214,7 @@ final class Invoice extends BaseModel implements Serializable
             return $value->isZero();
         }
 
-        $totalDiscountableRaw = $this->getAttributeFromArray('total_discountable');
+        $totalDiscountableRaw = $this->getAttributeUnsafeValue('total_discountable');
         if ($totalDiscountableRaw === null) {
             return $value->isLessThan(100) ?: 'discount-rate-exceeds-maximum';
         }
@@ -245,7 +268,7 @@ final class Invoice extends BaseModel implements Serializable
             return true;
         }
 
-        $author = User::find($value);
+        $author = User::withTrashed()->find($value);
         if (!$author) {
             return false;
         }
@@ -302,6 +325,7 @@ final class Invoice extends BaseModel implements Serializable
         'booking_title' => 'string',
         'booking_start_date' => 'immutable_datetime',
         'booking_end_date' => 'immutable_datetime',
+        'booking_is_full_days' => 'boolean',
         'beneficiary_id' => 'integer',
         'degressive_rate' => AsDecimal::class,
         'discount_rate' => AsDecimal::class,
@@ -331,13 +355,13 @@ final class Invoice extends BaseModel implements Serializable
             ->withPath(sprintf('/invoices/%s/pdf', $this->id));
     }
 
-    public function getBookingDurationAttribute(): FullDuration
+    public function getBookingPeriodAttribute(): Period
     {
-        $period = new Period(
+        return new Period(
             $this->booking_start_date,
             $this->booking_end_date,
+            $this->booking_is_full_days,
         );
-        return new FullDuration($period);
     }
 
     public function getBookingLocationAttribute(): ?string
@@ -362,7 +386,7 @@ final class Invoice extends BaseModel implements Serializable
     {
         $company = Config::get('companyData');
         return Str::slugify(implode('-', [
-            $i18n->translate('Invoice'),
+            $i18n->translate('invoice'),
             $company['name'],
             $this->number,
             $this->beneficiary->full_name,
@@ -397,7 +421,7 @@ final class Invoice extends BaseModel implements Serializable
             );
         }
         $categoriesTotals = (new Collection($categoriesTotals))
-            ->sort(function ($a, $b) {
+            ->sort(static function ($a, $b) {
                 if ($a['name'] === null) {
                     return 1;
                 }
@@ -417,9 +441,7 @@ final class Invoice extends BaseModel implements Serializable
             'currency' => $this->currency,
             'booking' => [
                 'title' => $this->booking_title,
-                'duration' => $this->booking_duration,
-                'start_date' => $this->booking_start_date,
-                'end_date' => $this->booking_end_date,
+                'period' => $this->booking_period,
                 'location' => $this->booking_location,
             ],
             'hasVat' => !$this->vat_rate->isZero(),
@@ -454,6 +476,8 @@ final class Invoice extends BaseModel implements Serializable
         'booking_title',
         'booking_start_date',
         'booking_end_date',
+        'booking_is_full_days',
+        'booking_period',
         'degressive_rate',
         'discount_rate',
         'vat_rate',
@@ -468,6 +492,15 @@ final class Invoice extends BaseModel implements Serializable
         'currency',
     ];
 
+    public function setBookingPeriodAttribute(mixed $rawPeriod): void
+    {
+        $period = Period::tryFrom($rawPeriod);
+
+        $this->booking_start_date = $period?->getStartDate();
+        $this->booking_end_date = $period?->getEndDate();
+        $this->booking_is_full_days = $period?->isFullDays() ?? false;
+    }
+
     // ------------------------------------------------------
     // -
     // -    Méthodes de "repository"
@@ -476,39 +509,30 @@ final class Invoice extends BaseModel implements Serializable
 
     public static function createFromBooking(Event $booking, User $creator): Invoice
     {
-        if (!$booking->is_billable) {
-            throw new \InvalidArgumentException("Booking is not billable.");
-        }
+        Assert::true($booking->is_billable, "Booking is not billable.");
 
         $beneficiary = $booking instanceof Event
             ? $booking->beneficiaries->first()
             : $booking->borrower;
 
-        if ($beneficiary === null) {
-            throw new \InvalidArgumentException(
-                "A beneficiary must be defined in the booking to be able to generate an invoice."
-            );
-        }
+        Assert::notNull($beneficiary, (
+            "A beneficiary must be defined in the booking to be able to generate an invoice."
+        ));
 
-        /** @var Collection|EventMaterial[] $materials */
-        $materials = $booking instanceof Event
-            ? $booking->materials->pluck('pivot')
-            : $booking->materials;
+        /** @var Collection<array-key, EventMaterial> $materials */
+        $materials = $booking->materials->pluck('pivot');
 
-        if ($materials->isEmpty()) {
-            throw new \InvalidArgumentException(
-                "The booking must contain at least one material for an invoice to be generated."
-            );
-        }
+        Assert::notEmpty($materials, (
+            "The booking must contain at least one material for an invoice to be generated."
+        ));
 
-        return dbTransaction(function () use ($booking, $beneficiary, $materials, $creator) {
+        return dbTransaction(static function () use ($booking, $beneficiary, $materials, $creator) {
             $invoice = new static([
                 'number' => static::getNextNumber(),
                 'date' => CarbonImmutable::now(),
 
-                'booking_title' => $booking instanceof Event ? $booking->title : null,
-                'booking_start_date' => $booking->getStartDate(),
-                'booking_end_date' => $booking->getEndDate(),
+                'booking_title' => $booking->title,
+                'booking_period' => $booking->operation_period,
 
                 'degressive_rate' => $booking->degressive_rate,
                 'discount_rate' => $booking->discount_rate,
@@ -561,7 +585,7 @@ final class Invoice extends BaseModel implements Serializable
 
     public static function getLastNumber(?int $year = null): ?string
     {
-        $year = (int) ($year ?? Carbon::now()->format('Y'));
+        $year = (int) ($year ?? CarbonImmutable::now()->format('Y'));
 
         $invoices = static::selectRaw('number')
             ->whereRaw(sprintf('YEAR(date) = %s', $year))
@@ -581,7 +605,7 @@ final class Invoice extends BaseModel implements Serializable
 
     public static function getNextNumber(?int $year = null): string
     {
-        $year = (int) ($year ?? Carbon::now()->format('Y'));
+        $year = (int) ($year ?? CarbonImmutable::now()->format('Y'));
 
         $lastNumber = static::getLastNumber($year);
         if ($lastNumber !== null) {

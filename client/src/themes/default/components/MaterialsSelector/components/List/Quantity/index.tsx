@@ -1,11 +1,11 @@
 import { defineComponent } from '@vue/composition-api';
 import debounce from 'lodash/debounce';
-import { DEBOUNCE_WAIT } from '@/globals/constants';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
 import QuantityInput from '@/themes/default/components/QuantityInput';
 
 import type { DebouncedMethod } from 'lodash';
 import type { PropType } from '@vue/composition-api';
-import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
 
 type Props = {
     /** Le matériel dont on veut définir les quantités. */
@@ -54,7 +54,10 @@ const MaterialsSelectorListQuantity = defineComponent({
         },
     },
     created() {
-        this.updateQuantityDebounced = debounce(this.updateQuantity.bind(this), DEBOUNCE_WAIT);
+        this.updateQuantityDebounced = debounce(
+            this.updateQuantity.bind(this),
+            DEBOUNCE_WAIT_DURATION.asMilliseconds(),
+        );
     },
     beforeDestroy() {
         this.updateQuantityDebounced?.cancel();

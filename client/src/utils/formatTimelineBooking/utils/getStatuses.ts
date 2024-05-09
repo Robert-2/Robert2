@@ -1,35 +1,39 @@
-import moment from 'moment';
 import { BookingEntity } from '@/stores/api/bookings';
 
+import type DateTime from '@/utils/datetime';
+import type { BookingContext } from '../_types';
 import type { I18nTranslate } from 'vuex-i18n';
-import type { BookingSummary } from '@/stores/api/bookings';
 
-type Status = { icon: string, label: string };
+export type BookingTimelineStatus = { icon: string, label: string };
 
-const getTimelineBookingStatuses = (booking: BookingSummary, __: I18nTranslate, now: number = Date.now()): Status[] => {
+const getTimelineBookingStatuses = (
+    context: BookingContext,
+    __: I18nTranslate,
+    now: DateTime,
+): BookingTimelineStatus[] => {
+    const { isExcerpt, booking } = context;
+    const isOngoing = now.isBetween(booking.mobilization_period);
+    const isPast = booking.mobilization_period.isBefore(now);
+    const isFuture = !booking.mobilization_period.isBeforeOrDuring(now);
     const {
-        start_date: startDate,
-        end_date: endDate,
         is_archived: isArchived,
-        has_missing_materials: hasMissingMaterials,
         is_return_inventory_done: isReturnInventoryDone,
         has_not_returned_materials: hasNotReturnedMaterials,
     } = booking;
-    const isOngoing = moment(now).isBetween(startDate, endDate, 'day', '[]');
-    const isPast = moment(endDate).isBefore(now, 'day');
 
-    // - Si c'est une réservation, elle est automatiquement confirmée.
+    // - Si ce n'est pas un événement, c'est automatiquement confirmé.
     const isConfirmed = booking.entity === BookingEntity.EVENT
         ? booking.is_confirmed
         : true;
 
     const getStatusText = (status: string): string => {
         switch (booking.entity) {
-            case BookingEntity.EVENT:
+            case BookingEntity.EVENT: {
                 return __(`@event.statuses.${status}`);
-
-            default:
+            }
+            default: {
                 throw new Error(`Unsupported entity ${(booking as any).entity}`);
+            }
         }
     };
 
@@ -80,7 +84,7 @@ const getTimelineBookingStatuses = (booking: BookingSummary, __: I18nTranslate, 
         });
     }
 
-    if (!isPast && hasMissingMaterials) {
+    if (isFuture && !isExcerpt && booking.has_missing_materials) {
         statuses.push({
             icon: 'exclamation-triangle',
             label: getStatusText('has-missing-materials'),

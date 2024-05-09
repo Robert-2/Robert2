@@ -1,11 +1,11 @@
-# - Prohibit autoindex.
+# - Interdit l'`autoindex`.
 Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
-    # - Redirect all requests to `public/` folder.
+    # - Redirige toutes les requêtes vers le dossier `src/public/`.
     RewriteRule ^$ src/public/ [QSA,NC,L]
     RewriteRule ^(.*)$ src/public/$1 [QSA,NC,L]
 </IfModule>

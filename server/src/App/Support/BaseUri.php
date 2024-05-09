@@ -36,7 +36,7 @@ class BaseUri implements UriInterface
     {
         $parts = parse_url($uri);
         if ($parts === false) {
-            throw new \InvalidArgumentException("L'URI semble invalide, elle ne peut pas être parsée.");
+            throw new \InvalidArgumentException("The URI appears to be invalid and cannot be parsed.");
         }
 
         $scheme = $parts['scheme'] ?? '';
@@ -49,99 +49,61 @@ class BaseUri implements UriInterface
         $this->uri = new Uri($scheme, $host, $port, $path, $user, $pass);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getScheme(): string
     {
         return $this->uri->getScheme();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAuthority(): string
     {
         return $this->uri->getAuthority();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getUserInfo(): string
     {
         return $this->uri->getUserInfo();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHost(): string
     {
         return $this->uri->getHost();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPort(): ?int
     {
         return $this->uri->getPort();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPath(): string
     {
         return $this->uri->getPath();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getQuery(): string
     {
-        // TODO: \LogicException ?
         return $this->uri->getQuery();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFragment(): string
     {
-        // TODO: \LogicException ?
         return $this->uri->getFragment();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withScheme(string $scheme): UriInterface
     {
         return $this->uri->withScheme($scheme);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withUserInfo(string $user, ?string $password = null): UriInterface
     {
         return $this->uri->withUserInfo($user, $password);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withHost(string $host): UriInterface
     {
         return $this->uri->withHost($host);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withPort(?int $port): UriInterface
     {
         return $this->uri->withPort($port);
@@ -164,17 +126,11 @@ class BaseUri implements UriInterface
         return $this->uri->withPath($path);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withQuery(string $query): UriInterface
     {
         return $this->uri->withQuery($query);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withFragment(string $fragment): UriInterface
     {
         return $this->uri->withFragment($fragment);

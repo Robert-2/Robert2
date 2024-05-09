@@ -1,10 +1,14 @@
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
+import { UserDetailsSchema, UserSettingsSchema } from './users';
 
-import type { UserDetails } from '@/stores/api/users';
+import type { SchemaInfer } from '@/utils/validation';
 
-//
-// - Constants
-//
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
 
 /** Contextes de l'application (Où se trouve l'utilisateur ?). */
 export enum AppContext {
@@ -15,17 +19,25 @@ export enum AppContext {
     INTERNAL = 'internal',
 }
 
-//
-// - Types
-//
+const SessionSchema = UserDetailsSchema.merge(UserSettingsSchema);
 
-export type Session = UserDetails & {
-    language: string,
-};
+const NewSessionSchema = SessionSchema.extend({
+    token: z.string(),
+});
 
-type NewSession = Session & {
-    token: string,
-};
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Session = SchemaInfer<typeof SessionSchema>;
+
+type NewSession = SchemaInfer<typeof NewSessionSchema>;
+
+//
+// - Edition
+//
 
 export type Credentials = {
     identifier: string,
@@ -33,16 +45,20 @@ export type Credentials = {
     context?: AppContext,
 };
 
-//
-// - Fonctions
-//
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
 
-const get = async (): Promise<Session> => (
-    (await requester.get('/session')).data
-);
+const get = async (): Promise<Session> => {
+    const response = await requester.get('/session');
+    return SessionSchema.parse(response.data);
+};
 
-const create = async (credentials: Credentials): Promise<NewSession> => (
-    (await requester.post('/session', credentials)).data
-);
+const create = async (credentials: Credentials): Promise<NewSession> => {
+    const response = await requester.post('/session', credentials);
+    return NewSessionSchema.parse(response.data);
+};
 
 export default { get, create };

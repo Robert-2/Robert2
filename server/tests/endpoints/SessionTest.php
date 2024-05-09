@@ -14,10 +14,7 @@ final class SessionTest extends ApiTestCase
         // - Test auth with e-mail address
         $this->client->get('/api/session');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(array_merge(
-            UsersTest::data(1, User::SERIALIZE_DETAILS),
-            ['language' => 'en']
-        ));
+        $this->assertResponseData(UsersTest::data(1, User::SERIALIZE_SESSION));
     }
 
     public function testLoginBadData(): void
@@ -69,11 +66,8 @@ final class SessionTest extends ApiTestCase
             ]);
             $this->assertStatusCode(StatusCode::STATUS_OK);
             $this->assertResponseData(array_merge(
-                UsersTest::data(1, User::SERIALIZE_DETAILS),
-                [
-                    'language' => 'en',
-                    'token' => '__FAKE-TOKEN__',
-                ]
+                UsersTest::data(1, User::SERIALIZE_SESSION),
+                ['token' => '__FAKE-TOKEN__'],
             ));
         }
 
@@ -81,15 +75,12 @@ final class SessionTest extends ApiTestCase
         $this->client->post('/api/session', [
             'identifier' => 'test2',
             'password' => 'testing-pw',
-            'context' => AppContext::INTERNAL,
+            'context' => AppContext::INTERNAL->value,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(array_merge(
-            UsersTest::data(2, User::SERIALIZE_DETAILS),
-            [
-                'language' => 'fr',
-                'token' => '__FAKE-TOKEN__',
-            ]
+            UsersTest::data(2, User::SERIALIZE_SESSION),
+            ['token' => '__FAKE-TOKEN__'],
         ));
     }
 }

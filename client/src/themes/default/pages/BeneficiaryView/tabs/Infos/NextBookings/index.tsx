@@ -1,12 +1,11 @@
 import './index.scss';
-import moment from 'moment';
+import config from '@/globals/config';
+import DateTime from '@/utils/datetime';
 import { Direction } from '@/stores/api/@types';
 import { defineComponent } from '@vue/composition-api';
 import showModal from '@/utils/showModal';
-import { BookingEntity } from '@/stores/api/bookings';
-import config from '@/globals/config';
+import apiBookings, { BookingEntity } from '@/stores/api/bookings';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
-import apiEvents from '@/stores/api/events';
 import Queue from 'p-queue';
 import Loading from '@/themes/default/components/Loading';
 import EventDetails from '@/themes/default/modals/EventDetails';
@@ -14,10 +13,11 @@ import Item from '../../../components/BookingsItem';
 
 import type { PropType } from '@vue/composition-api';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
-import type { BookingSummary } from '@/stores/api/bookings';
+import type { BookingExcerpt, BookingSummary } from '@/stores/api/bookings';
+import type { LazyBooking } from '../../../_types';
 
 type Props = {
-    /* Identifiant du bénéficiaire. */
+    /** Identifiant du bénéficiaire. */
     id: Beneficiary['id'],
 };
 
@@ -27,13 +27,19 @@ type InstanceProperties = {
 };
 
 type Data = {
-    bookings: BookingSummary[],
+    bookings: LazyBooking[],
     hasCriticalError: boolean,
     isPartiallyFetched: boolean,
     isFullyFetched: boolean,
 };
 
-/* Liste des emprunts en cours ou futurs d'un bénéficiaire. */
+/**
+ * Nombre de requêtes maximum pour la récupération du matériel
+ * manquant envoyées par seconde.
+ */
+export const MAX_FETCHES_PER_SECOND: number = 10;
+
+/** Liste des emprunts en cours ou futurs d'un bénéficiaire. */
 const BeneficiaryViewNextBookings = defineComponent({
     name: 'BeneficiaryViewNextBookings',
     props: {
@@ -53,14 +59,17 @@ const BeneficiaryViewNextBookings = defineComponent({
         isFullyFetched: false,
     }),
     created() {
-        this.fetchMissingMaterialsQueue = new Queue({ concurrency: config.maxConcurrentFetches });
-
+        this.fetchMissingMaterialsQueue = new Queue({
+            interval: DateTime.duration(1, 'second').asMilliseconds(),
+            concurrency: config.maxConcurrentFetches,
+            intervalCap: MAX_FETCHES_PER_SECOND,
+        });
+    },
+    mounted() {
         this.fetchData();
     },
     beforeDestroy() {
         this.cancelOngoingFetch?.();
-
-        // - Vide la file d'attente des requêtes.
         this.fetchMissingMaterialsQueue?.clear();
     },
     methods: {
@@ -70,32 +79,12 @@ const BeneficiaryViewNextBookings = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async handleOpen(booking: BookingSummary) {
-            const modalComponents = {
-                [BookingEntity.EVENT]: EventDetails,
-            };
-            if (!(booking.entity in modalComponents)) {
-                throw new Error('Unsupported booking type.');
-            }
+        handleClickItem(entity: BookingEntity, id: BookingExcerpt['id']) {
+            this.showModal(entity, id);
+        },
 
-            let shouldRefetch = false;
-            const modalComponent = modalComponents[booking.entity];
-            await showModal(this.$modal, modalComponent, {
-                id: booking.id,
-                onUpdated: () => {
-                    shouldRefetch = true;
-                },
-                onDuplicated() {
-                    shouldRefetch = true;
-                },
-                onDeleted: () => {
-                    shouldRefetch = true;
-                },
-            });
-
-            if (shouldRefetch) {
-                this.fetchData();
-            }
+        handleClickOpenItem(entity: BookingEntity, id: BookingExcerpt['id']) {
+            this.showModal(entity, id);
         },
 
         // ------------------------------------------------------
@@ -104,9 +93,9 @@ const BeneficiaryViewNextBookings = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async fetchData() {
+        async fetchData(forceRefresh: boolean = false) {
             const { id } = this;
-            const now = moment();
+            const now = DateTime.now();
 
             // - Vide la file d'attente des requêtes avant de la re-peupler.
             this.fetchMissingMaterialsQueue?.clear();
@@ -120,6 +109,21 @@ const BeneficiaryViewNextBookings = defineComponent({
             };
 
             try {
+                // - On garde en mémoire les données des bookings précédemment récupérés complètement
+                //   pour éviter de renvoyer les requêtes de récupération inutilement pour ceux-ci.
+                const prevCompleteBookings = new Map<BookingEntity, Map<number, BookingSummary>>([
+                    [BookingEntity.EVENT, new Map()],
+                ]);
+                if (!forceRefresh) {
+                    this.bookings.forEach(({ isComplete, booking }: LazyBooking) => {
+                        if (isComplete) {
+                            prevCompleteBookings
+                                .get(booking.entity)!
+                                .set(booking.id, booking);
+                        }
+                    });
+                }
+
                 const fetchPageRecursive = async (page: number): Promise<void> => {
                     const params = { page, direction: Direction.ASC, after: now };
                     const { data, pagination } = await apiBeneficiaries.bookings(id, params);
@@ -127,29 +131,39 @@ const BeneficiaryViewNextBookings = defineComponent({
                         return;
                     }
 
+                    const lazyBookings: LazyBooking[] = data.map(
+                        (booking: BookingExcerpt) => {
+                            const prevEntityBookings = prevCompleteBookings.get(booking.entity);
+                            return prevEntityBookings?.has(booking.id)
+                                ? { isComplete: true, booking: prevEntityBookings.get(booking.id)! }
+                                : { isComplete: false, booking };
+                        },
+                    );
+
                     if (page === 1) {
-                        this.bookings = data;
+                        this.bookings = lazyBookings;
                     } else {
-                        this.bookings.push(...data);
+                        this.bookings.push(...lazyBookings);
                     }
 
-                    const promises = data.map((booking: BookingSummary) => async () => {
-                        const missingMaterials = await apiEvents.missingMaterials(booking.id);
+                    const promises = lazyBookings
+                        .filter((lazy: LazyBooking): lazy is LazyBooking<false> => !lazy.isComplete)
+                        .map(({ booking }: LazyBooking<false>) => async () => {
+                            const finalBooking = await apiBookings.oneSummary(booking.entity, booking.id);
 
-                        const originalBookingIndex = this.bookings.findIndex(
-                            ({ entity, id: searchId }: BookingSummary) => (
-                                entity === booking.entity && searchId === booking.id
-                            ),
-                        );
-                        if (originalBookingIndex === -1) {
-                            return;
-                        }
+                            const originalBookingIndex = this.bookings.findIndex(
+                                ({ booking: _booking }: LazyBooking) => (
+                                    _booking.entity === booking.entity &&
+                                    _booking.id === booking.id
+                                ),
+                            );
+                            if (originalBookingIndex === -1) {
+                                return;
+                            }
 
-                        this.$set(this.bookings, originalBookingIndex, {
-                            ...booking,
-                            has_missing_materials: missingMaterials.length > 0,
+                            const lazyBooking = { isComplete: true, booking: finalBooking };
+                            this.$set(this.bookings, originalBookingIndex, lazyBooking);
                         });
-                    });
 
                     await this.fetchMissingMaterialsQueue?.addAll(promises);
 
@@ -170,6 +184,34 @@ const BeneficiaryViewNextBookings = defineComponent({
                 this.hasCriticalError = true;
             }
         },
+
+        async showModal(entity: BookingEntity, id: BookingExcerpt['id']) {
+            const modalComponents = {
+                [BookingEntity.EVENT]: EventDetails,
+            };
+            if (!(entity in modalComponents)) {
+                throw new Error('Unsupported booking type.');
+            }
+
+            let shouldRefetch = false;
+            const modalComponent = modalComponents[entity];
+            await showModal(this.$modal, modalComponent, {
+                id,
+                onUpdated: () => {
+                    shouldRefetch = true;
+                },
+                onDuplicated() {
+                    shouldRefetch = true;
+                },
+                onDeleted: () => {
+                    shouldRefetch = true;
+                },
+            });
+
+            if (shouldRefetch) {
+                this.fetchData(true);
+            }
+        },
     },
     render() {
         const {
@@ -178,7 +220,8 @@ const BeneficiaryViewNextBookings = defineComponent({
             hasCriticalError,
             isPartiallyFetched,
             isFullyFetched,
-            handleOpen,
+            handleClickItem,
+            handleClickOpenItem,
         } = this;
 
         if (hasCriticalError) {
@@ -200,12 +243,12 @@ const BeneficiaryViewNextBookings = defineComponent({
 
             return (
                 <ul class="BeneficiaryViewNextBookings__list">
-                    {bookings.map((booking: BookingSummary) => (
+                    {bookings.map((lazy: LazyBooking) => (
                         <Item
-                            key={`${booking.entity}-${booking.id}`}
-                            booking={booking}
-                            onClick={() => { handleOpen(booking); }}
-                            onOpen={handleOpen}
+                            key={`${lazy.booking.entity}-${lazy.booking.id}`}
+                            lazyBooking={lazy}
+                            onClick={handleClickItem}
+                            onOpenClick={handleClickOpenItem}
                         />
                     ))}
                 </ul>

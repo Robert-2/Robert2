@@ -10,7 +10,7 @@ use Loxya\Models\Country;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
-class CountryController extends BaseController
+final class CountryController extends BaseController
 {
     use Crud\GetOne;
 

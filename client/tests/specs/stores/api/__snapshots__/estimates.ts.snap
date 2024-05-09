@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Estimates Api Schema 1`] = `
+{
+  "currency": "EUR",
+  "date": /* DateTime Instance => */ "2021-01-30 14:00:00",
+  "discount_rate": /* Decimal Instance => */ "5",
+  "id": 1,
+  "total_with_taxes": /* Decimal Instance => */ "660.34",
+  "total_without_taxes": /* Decimal Instance => */ "550.28",
+  "url": "http://loxya.test/estimates/1/pdf",
+}
+`;

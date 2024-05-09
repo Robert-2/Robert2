@@ -1,25 +1,26 @@
 /dist
 
 #
-# - Fichiers spécifiques à certains systèmes.
+# - Fichiers spécifiques aux systèmes.
 #
 
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# - Miniatures
 ._*
-
-# - Fichiers qui peuvent apparaître à la racine de volumes.
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 .DocumentRevisions-V100
 .fseventsd
-.Spotlight-V100
 .TemporaryItems
-.Trashes
 .VolumeIcon.icns
 
-# - IDE
+#
+# - Fichiers spécifiques aux éditeurs.
+#
+
 .idea
 .vscode
 *.suo
@@ -27,3 +28,7 @@
 *.njsproj
 *.sln
 *.sw?
+*.sublime-*
+*.stTheme.cache
+*.tmlanguage.cache
+*.tmPreferences.cache

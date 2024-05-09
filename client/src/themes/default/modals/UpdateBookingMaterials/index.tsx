@@ -1,8 +1,8 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
+import { defineComponent } from '@vue/composition-api';
 import { debounce } from 'lodash';
-import { DEBOUNCE_WAIT } from '@/globals/constants';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
 import MaterialsSelector, {
@@ -15,13 +15,13 @@ import type { PropType } from '@vue/composition-api';
 import type { Booking, MaterialQuantity } from '@/stores/api/bookings';
 import type { SelectedMaterial } from '@/themes/default/components/MaterialsSelector';
 
-type InstanceProperties = {
-    debouncedSave: DebouncedMethod<typeof UpdateBookingMaterialsModal, 'save'> | undefined,
+type Props = {
+    /** Le booking (événement) dont on veut modifier le matériel. */
+    booking: Booking,
 };
 
-type Props = {
-    /** Le booking (événement ou réservation) dont on veut modifier le matériel. */
-    booking: Booking,
+type InstanceProperties = {
+    debouncedSave: DebouncedMethod<typeof UpdateBookingMaterialsModal, 'save'> | undefined,
 };
 
 type Data = {
@@ -81,7 +81,10 @@ const UpdateBookingMaterialsModal = defineComponent({
         },
     },
     created() {
-        this.debouncedSave = debounce(this.save.bind(this), DEBOUNCE_WAIT);
+        this.debouncedSave = debounce(
+            this.save.bind(this),
+            DEBOUNCE_WAIT_DURATION.asMilliseconds(),
+        );
     },
     beforeDestroy() {
         this.debouncedSave?.cancel();
@@ -172,8 +175,8 @@ const UpdateBookingMaterialsModal = defineComponent({
                 </header>
                 <div class="UpdateBookingMaterialsModal__body">
                     <MaterialsSelector
-                        defaultValues={selectedMaterials}
                         booking={booking}
+                        defaultValues={selectedMaterials}
                         onReady={handleReady}
                         onChange={handleChange}
                     />
@@ -181,7 +184,7 @@ const UpdateBookingMaterialsModal = defineComponent({
                 {isReady && (
                     <footer class="UpdateBookingMaterialsModal__footer">
                         <Button
-                            type="success"
+                            type="primary"
                             icon="save"
                             onClick={handleSave}
                             loading={isSaving}

@@ -1,0 +1,63 @@
+@use '~@/themes/default/style/globals';
+
+.ScheduleCalendar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: globals.$spacing-medium;
+
+    &__timeline {
+        flex: 1;
+    }
+
+    &__footer {
+        flex: 0 0 50px;
+        display: none;
+        flex-wrap: wrap;
+        align-items: center;
+
+        &__help {
+            flex: 1;
+            display: none;
+            align-items: baseline;
+            min-width: 300px;
+            margin: 0;
+            padding: 0 globals.$spacing-small;
+            font-style: italic;
+            white-space: pre-line;
+
+            @include globals.icon('question-circle') {
+                margin-right: globals.$spacing-small;
+                font-size: 1.1rem;
+            }
+        }
+
+        .ScheduleCalendarCaption {
+            flex: 0 0 auto;
+            max-width: 100%;
+            margin-left: auto;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__footer {
+            display: flex;
+        }
+    }
+
+    @media (min-width: globals.$screen-big-desktop) {
+        &__footer__help {
+            display: flex;
+        }
+    }
+
+    @media (max-height: 700px) {
+        &__footer {
+            display: none;
+        }
+    }
+}

@@ -41,8 +41,6 @@ final class I18n
     /**
      * Un tableau regroupant les langues prises en charge avec la
      * région par défaut utilisée pour chacune d'elles.
-     *
-     * @var array<string, string>
      */
     public const AVAILABLE_LANGUAGES = [
         'en' => 'GB',
@@ -81,7 +79,7 @@ final class I18n
     /**
      * Constructeur.
      *
-     * @param null|string $lang Permet de forcer une langue. Si elle n'est pas explicitement
+     * @param string|null $lang Permet de forcer une langue. Si elle n'est pas explicitement
      *                          passée, le système la détectera automatiquement.
      */
     public function __construct(?string $lang = null)
@@ -127,7 +125,7 @@ final class I18n
         $string = $this->loader->has($key) ? $this->loader->get($key) : $key;
         $choices = is_array($string) ? $string : explode('|', $string);
 
-        $args = $args ?? [$count];
+        $args ??= [$count];
         if (!is_array($args)) {
             $args = array_slice(func_get_args(), 2);
         }
@@ -194,12 +192,12 @@ final class I18n
         if (!empty($rawAcceptLanguages)) {
             $acceptLanguages = array_reduce(
                 array_map('trim', explode(',', $rawAcceptLanguages)),
-                function (array $result, string $tag) {
+                static function (array $result, string $tag) {
                     [$locale, $priority] = array_merge(array_map('trim', explode(';q=', $tag, 2)), [1]);
                     $result[$locale] ??= (float) $priority;
                     return $result;
                 },
-                []
+                [],
             );
             arsort($acceptLanguages);
 

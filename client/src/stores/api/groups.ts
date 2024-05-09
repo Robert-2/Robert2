@@ -1,8 +1,10 @@
 import Vue from 'vue';
 
-//
-// - Enums
-//
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
 
 export enum Group {
     /** Représente le groupe des administrateurs. */
@@ -15,18 +17,22 @@ export enum Group {
     VISITOR = 'visitor',
 }
 
-//
-// - Types
-//
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
 
 export type GroupDetails = {
     id: Group,
     name: string,
 };
 
-//
-// - Fonctions
-//
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
 
 const all = (): GroupDetails[] => {
     const { translate: __ } = (Vue as any).i18n;
@@ -38,9 +44,8 @@ const all = (): GroupDetails[] => {
     ];
 };
 
-const one = (group: Group): GroupDetails | undefined => {
-    const allGroups = all();
-    return allGroups.find(({ id }: GroupDetails) => id === group);
-};
+const one = (group: Group): GroupDetails | undefined => (
+    all().find(({ id }: GroupDetails) => id === group)
+);
 
 export default { all, one };

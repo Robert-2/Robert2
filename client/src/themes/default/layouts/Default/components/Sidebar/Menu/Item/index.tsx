@@ -26,6 +26,7 @@ type Props = {
 };
 
 const DefaultLayoutSidebarMenuItem = defineComponent({
+    name: 'DefaultLayoutSidebarMenuItem',
     props: {
         ident: {
             type: String as PropType<Required<Props>['ident']>,

@@ -52,11 +52,11 @@ trait Cache
 
         return $cache->get(
             $cacheKey,
-            function (CacheItemInterface $item) use ($callback, $entityCacheKey, $cacheKey) {
+            static function (CacheItemInterface $item) use ($callback, $entityCacheKey, $cacheKey) {
                 debug('Creation of the `%s` model cache entry.', $cacheKey);
                 $item->tag([static::getModelCacheKey(), $entityCacheKey]);
                 return $callback($item);
-            }
+            },
         );
     }
 
@@ -77,9 +77,7 @@ trait Cache
         }
 
         $cacheKeys = array_map(
-            function ($scope) use ($entityCacheKey) {
-                return sprintf('%s.%s', $entityCacheKey, $scope);
-            },
+            static fn ($scope) => sprintf('%s.%s', $entityCacheKey, $scope),
             is_array($scopes) ? $scopes : [$scopes],
         );
         debug('Invalidate `%s` model cache entry(s).', implode('`,`', $cacheKeys));

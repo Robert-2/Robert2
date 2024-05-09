@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 //
-// -- Tests specifics paths
+// - Chemins spécifiques aux tests.
 //
 
 define('TESTS_FOLDER', dirname(__FILE__));
@@ -14,7 +14,7 @@ define('TESTS_FILES_FOLDER', TESTS_FIXTURES_FOLDER . DS . 'files');
 define('TESTS_SNAPSHOTS_FOLDER', TESTS_FIXTURES_FOLDER . DS . 'snapshots');
 
 //
-// - Core Paths
+// - Chemins core.
 //
 
 define('ROOT_FOLDER', dirname(dirname(__FILE__)));

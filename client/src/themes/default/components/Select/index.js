@@ -56,6 +56,7 @@ const Select = defineComponent({
             },
         },
     },
+    emits: ['input', 'change'],
     computed: {
         formattedPlaceholder() {
             const { $t: __, placeholder } = this;

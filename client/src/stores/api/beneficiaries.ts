@@ -1,15 +1,20 @@
-import moment from 'moment';
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
-import { normalize as normalizeEstimate } from '@/stores/api/estimates';
-import { normalize as normalizeInvoice } from '@/stores/api/invoices';
+import { UserSchema } from './users';
+import { CompanySchema } from './companies';
+import { CountrySchema } from './countries';
+import { EstimateSchema } from './estimates';
+import { InvoiceSchema } from './invoices';
+import { BookingExcerptSchema } from './bookings';
+import {
+    withPaginationEnvelope,
+} from './@schema';
 
-import type { MomentInput } from 'moment';
-import type { Company } from '@/stores/api/companies';
-import type { Country } from '@/stores/api/countries';
-import type { User } from '@/stores/api/users';
-import type { RawEstimate, Estimate } from '@/stores/api/estimates';
-import type { RawInvoice, Invoice } from '@/stores/api/invoices';
-import type { BookingSummary } from '@/stores/api/bookings';
+import type { SchemaInfer } from '@/utils/validation';
+import type DateTime from '@/utils/datetime';
+import type { Estimate } from './estimates';
+import type { Invoice } from './invoices';
+import type { BookingExcerpt } from './bookings';
 import type {
     Direction,
     ListingParams,
@@ -17,39 +22,53 @@ import type {
     PaginationParams,
 } from './@types';
 
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
+
+export const BeneficiarySchema = z.strictObject({
+    id: z.number(),
+    user_id: z.number().nullable(),
+    first_name: z.string(),
+    last_name: z.string(),
+    full_name: z.string(),
+    reference: z.string().nullable(),
+    // TODO [zod@>3.22.4]: Remettre `email()`.
+    email: z.string().nullable(),
+    phone: z.string().nullable(),
+    company_id: z.number().nullable(),
+    company: z.lazy(() => CompanySchema).nullable(),
+    street: z.string().nullable(),
+    postal_code: z.string().nullable(),
+    locality: z.string().nullable(),
+    country_id: z.number().nullable(),
+    country: z.lazy(() => CountrySchema).nullable(),
+    full_address: z.string().nullable(),
+    note: z.string().nullable(),
+});
+
+export const BeneficiaryDetailsSchema = BeneficiarySchema.extend({
+    user: z.lazy(() => UserSchema).nullable(),
+    stats: z.strictObject({
+        borrowings: z.number().nonnegative(),
+    }),
+});
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Beneficiary = SchemaInfer<typeof BeneficiarySchema>;
+
+export type BeneficiaryDetails = SchemaInfer<typeof BeneficiaryDetailsSchema>;
+
 //
-// - Types
+// - Edition
 //
-
-export type BeneficiaryStats = {
-    borrowings: number,
-};
-
-export type Beneficiary = {
-    id: number,
-    first_name: string,
-    full_name: string,
-    last_name: string,
-    reference: string | null,
-    email: string | null,
-    phone: string | null,
-    company_id: number | null,
-    company: Company | null,
-    street: string | null,
-    postal_code: string | null,
-    locality: string | null,
-    country_id: number | null,
-    country: Country | null,
-    full_address: string | null,
-    note: string | null,
-    user_id: number | null,
-    can_make_reservation: boolean,
-    stats: BeneficiaryStats,
-};
-
-export type BeneficiaryDetails = Beneficiary & {
-    user: User | null,
-};
 
 export type BeneficiaryEdit = {
     first_name: string,
@@ -62,8 +81,14 @@ export type BeneficiaryEdit = {
     postal_code: string | null,
     locality: string | null,
     country_id: number | null,
+    pseudo?: string,
+    password?: string,
     note: string | null,
 };
+
+//
+// - Récupération
+//
 
 type GetAllParams = ListingParams & {
     /**
@@ -81,7 +106,7 @@ type GetBookingsParams = PaginationParams & {
      *
      * @default undefined
      */
-    after?: MomentInput,
+    after?: DateTime,
 
     /**
      * Le sens dans lequel on veut récupérer les bookings :
@@ -93,53 +118,54 @@ type GetBookingsParams = PaginationParams & {
     direction?: Direction,
 };
 
-//
-// - Fonctions
-//
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
 
-const all = async (params: GetAllParams): Promise<PaginatedData<Beneficiary[]>> => (
-    (await requester.get('/beneficiaries', { params })).data
-);
+const all = async (params: GetAllParams = {}): Promise<PaginatedData<Beneficiary[]>> => {
+    const response = await requester.get('/beneficiaries', { params });
+    return withPaginationEnvelope(BeneficiarySchema).parse(response.data);
+};
 
-const one = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => (
-    (await requester.get(`/beneficiaries/${id}`)).data
-);
+const one = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => {
+    const response = await requester.get(`/beneficiaries/${id}`);
+    return BeneficiaryDetailsSchema.parse(response.data);
+};
 
-const create = async (data: BeneficiaryEdit): Promise<BeneficiaryDetails> => (
-    (await requester.post('/beneficiaries', data)).data
-);
+const create = async (data: BeneficiaryEdit): Promise<BeneficiaryDetails> => {
+    const response = await requester.post('/beneficiaries', data);
+    return BeneficiaryDetailsSchema.parse(response.data);
+};
 
-const update = async (id: Beneficiary['id'], data: BeneficiaryEdit): Promise<BeneficiaryDetails> => (
-    (await requester.put(`/beneficiaries/${id}`, data)).data
-);
+const update = async (id: Beneficiary['id'], data: BeneficiaryEdit): Promise<BeneficiaryDetails> => {
+    const response = await requester.put(`/beneficiaries/${id}`, data);
+    return BeneficiaryDetailsSchema.parse(response.data);
+};
 
-const restore = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => (
-    (await requester.put(`/beneficiaries/restore/${id}`)).data
-);
+const restore = async (id: Beneficiary['id']): Promise<BeneficiaryDetails> => {
+    const response = await requester.put(`/beneficiaries/restore/${id}`);
+    return BeneficiaryDetailsSchema.parse(response.data);
+};
 
 const remove = async (id: Beneficiary['id']): Promise<void> => {
     await requester.delete(`/beneficiaries/${id}`);
 };
 
-const bookings = async (
-    id: Beneficiary['id'],
-    { after, ...otherParams }: GetBookingsParams = {},
-): Promise<PaginatedData<BookingSummary[]>> => {
-    const params: Record<string, any> = { ...otherParams };
-    if (after !== undefined) {
-        params.after = moment(after).format();
-    }
-    return (await requester.get(`/beneficiaries/${id}/bookings`, { params })).data;
+const bookings = async (id: Beneficiary['id'], params: GetBookingsParams = {}): Promise<PaginatedData<BookingExcerpt[]>> => {
+    const response = await requester.get(`/beneficiaries/${id}/bookings`, { params });
+    return withPaginationEnvelope(BookingExcerptSchema).parse(response.data);
 };
 
 const estimates = async (id: Beneficiary['id']): Promise<Estimate[]> => {
-    const rawEstimates: RawEstimate[] = (await requester.get(`/beneficiaries/${id}/estimates`)).data;
-    return rawEstimates.map(normalizeEstimate);
+    const response = await requester.get(`/beneficiaries/${id}/estimates`);
+    return EstimateSchema.array().parse(response.data);
 };
 
 const invoices = async (id: Beneficiary['id']): Promise<Invoice[]> => {
-    const rawInvoices: RawInvoice[] = (await requester.get(`/beneficiaries/${id}/invoices`)).data;
-    return rawInvoices.map(normalizeInvoice);
+    const response = await requester.get(`/beneficiaries/${id}/invoices`);
+    return InvoiceSchema.array().parse(response.data);
 };
 
 export default {

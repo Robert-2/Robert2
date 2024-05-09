@@ -52,7 +52,7 @@ const FileManager = defineComponent({
     },
     emits: ['documentUploaded', 'documentDelete'],
     computed: {
-        isEmpty() {
+        isEmpty(): boolean {
             return this.documents.length === 0;
         },
     },

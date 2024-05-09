@@ -5,11 +5,12 @@ namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
+use Loxya\Models\Category;
 use Loxya\Support\Arr;
 
 final class CategoriesTest extends ApiTestCase
 {
-    public static function data(int $id, $details = false)
+    public static function data(?int $id = null, string $format = Category::SERIALIZE_DEFAULT)
     {
         $categories = new Collection([
             [
@@ -40,13 +41,15 @@ final class CategoriesTest extends ApiTestCase
             ],
         ]);
 
-        if (!$details) {
-            $categories = $categories->map(fn($category) => (
+        $categories = match ($format) {
+            Category::SERIALIZE_DEFAULT => $categories->map(static fn ($category) => (
                 Arr::except($category, ['sub_categories'])
-            ));
-        }
+            )),
+            Category::SERIALIZE_DETAILS => $categories,
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
 
-        return static::_dataFactory($id, $categories->all());
+        return static::dataFactory($id, $categories->all());
     }
 
     public function testGetAll(): void
@@ -54,10 +57,10 @@ final class CategoriesTest extends ApiTestCase
         $this->client->get('/api/categories');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            self::data(4, true),
-            self::data(2, true),
-            self::data(1, true),
-            self::data(3, true),
+            self::data(4, Category::SERIALIZE_DETAILS),
+            self::data(2, Category::SERIALIZE_DETAILS),
+            self::data(1, Category::SERIALIZE_DETAILS),
+            self::data(3, Category::SERIALIZE_DETAILS),
         ]);
     }
 
@@ -107,14 +110,16 @@ final class CategoriesTest extends ApiTestCase
 
     public function testUpdate(): void
     {
-        $updatedData = [
+        $this->client->put('/api/categories/1', [
             'name' => 'Sound edited',
-        ];
-        $this->client->put('/api/categories/1', $updatedData);
+        ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(
-            array_replace(self::data(1, true), $updatedData)
-        );
+        $this->assertResponseData(array_replace(
+            self::data(1, Category::SERIALIZE_DETAILS),
+            [
+                'name' => 'Sound edited',
+            ],
+        ));
     }
 
     public function testDelete(): void

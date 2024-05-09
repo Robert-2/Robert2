@@ -4,7 +4,7 @@
     $block: &;
 
     position: relative;
-    padding: 1rem 0.8rem;
+    padding: 1.1rem 0.8rem 1rem;
     border: 1px solid globals.$text-muted-color;
     border-radius: globals.$border-radius-large;
     color: globals.$text-soft-color;
@@ -12,7 +12,16 @@
 
     &__not-saved {
         position: absolute;
+        top: -7px;
+        left: -7px;
         color: globals.$text-warning-color;
+        font-size: 1.2rem;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
     }
 
     &__title {
@@ -25,7 +34,6 @@
 
     &__detail,
     &__total {
-        margin-top: 0.8rem;
         line-height: 1.4rem;
         text-transform: capitalize;
     }
@@ -33,10 +41,6 @@
     &__total {
         color: globals.$text-base-color;
         font-size: 1.4rem;
-    }
-
-    &__status-icon {
-        margin-right: 5px;
     }
 
     &--not-saved {

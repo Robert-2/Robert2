@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Traits\TransientAttributes;
+use Respect\Validation\Validator as V;
 
 /**
  * Attribut de matériel personnalisé.
@@ -19,12 +19,13 @@ use Loxya\Models\Traits\TransientAttributes;
  * @property string $type
  * @property string|null $unit
  * @property int|null $max_length
+ * @property bool|null $is_totalisable
  * @property-read int|float|bool|string|null $value
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  *
- * @property-read Collection|Category[] $categories
- * @property-read Collection|Material[] $materials
+ * @property-read Collection<array-key, Category> $categories
+ * @property-read Collection<array-key, Material> $materials
  */
 final class Attribute extends BaseModel implements Serializable
 {
@@ -33,7 +34,9 @@ final class Attribute extends BaseModel implements Serializable
         serialize as baseSerialize;
     }
 
-    protected $orderField = 'id';
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_DETAILS = 'details';
 
     public function __construct(array $attributes = [])
     {
@@ -65,7 +68,7 @@ final class Attribute extends BaseModel implements Serializable
             V::equals('integer'),
             V::equals('float'),
             V::equals('boolean'),
-            V::equals('date')
+            V::equals('date'),
         );
     }
 
@@ -151,47 +154,10 @@ final class Attribute extends BaseModel implements Serializable
         }
 
         if ($this->type === 'boolean') {
-            return $value === 'true' || $value === '1';
+            return filter_var($value, \FILTER_VALIDATE_BOOL);
         }
 
         return $value;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Serialization
-    // -
-    // ------------------------------------------------------
-
-    protected static $serializedNames = [
-        'max_length' => 'maxLength',
-        'is_totalisable' => 'isTotalisable',
-    ];
-
-    public function serialize(): array
-    {
-        $data = $this->baseSerialize();
-
-        switch ($data['type']) {
-            case 'integer':
-            case 'float':
-                unset($data['maxLength']);
-                break;
-
-            case 'string':
-                unset($data['unit'], $data['isTotalisable']);
-                break;
-
-            default:
-                unset($data['unit'], $data['isTotalisable'], $data['maxLength']);
-        }
-
-        unset(
-            $data['created_at'],
-            $data['updated_at'],
-        );
-
-        return $data;
     }
 
     // ------------------------------------------------------
@@ -215,16 +181,59 @@ final class Attribute extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
+    // -    Serialization
+    // -
+    // ------------------------------------------------------
+
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
+    {
+        /** @var Attribute $attribute */
+        $attribute = tap(clone $this, static function (Attribute $attribute) use ($format) {
+            if ($format === self::SERIALIZE_DETAILS) {
+                $attribute->append(['categories']);
+            }
+        });
+
+        $data = $attribute->attributesForSerialization();
+
+        switch ($data['type']) {
+            case 'integer':
+            case 'float':
+                unset($data['max_length']);
+                break;
+
+            case 'string':
+                unset($data['unit'], $data['is_totalisable']);
+                break;
+
+            default:
+                unset(
+                    $data['unit'],
+                    $data['max_length'],
+                    $data['is_totalisable'],
+                );
+        }
+
+        unset(
+            $data['created_at'],
+            $data['updated_at'],
+        );
+
+        return $data;
+    }
+
+    // ------------------------------------------------------
+    // -
     // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 
-    public static function staticEdit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): static
     {
         $isCreate = $id === null;
         if (!$isCreate) {
             if (!static::staticExists($id)) {
-                throw (new ModelNotFoundException)
+                throw (new ModelNotFoundException())
                     ->setModel(self::class, $id);
             }
 
@@ -232,7 +241,7 @@ final class Attribute extends BaseModel implements Serializable
             unset($data['type']);
         }
 
-        return dbTransaction(function () use ($id, $data) {
+        return dbTransaction(static function () use ($id, $data) {
             $attribute = static::updateOrCreate(compact('id'), $data);
 
             if (isset($data['categories'])) {
@@ -240,7 +249,7 @@ final class Attribute extends BaseModel implements Serializable
                 // on veut conserver les valeurs existantes des caractéristiques du matériel,
                 // donc on ne déclenche pas les events du model `AttributeCategory`.
                 if (empty($data['categories'])) {
-                    static::withoutEvents(function () use ($attribute, $data) {
+                    static::withoutEvents(static function () use ($attribute, $data) {
                         $attribute->categories()->sync($data['categories']);
                     });
                 } else {

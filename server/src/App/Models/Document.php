@@ -5,13 +5,13 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
-use Monolog\Logger;
-use Psr\Http\Message\UploadedFileInterface;
 use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
 use Loxya\Support\Str;
+use Monolog\Level as LogLevel;
+use Psr\Http\Message\UploadedFileInterface;
+use Respect\Validation\Validator as V;
 
 /**
  * Document attaché à un matériel, un événement,
@@ -73,18 +73,27 @@ final class Document extends BaseModel implements Serializable
 
     public function checkName()
     {
+        // NOTE: Utilise l'attribut calculé pour inférer la valeur depuis le
+        //       fichier raw si c'est ce qui est actuellement spécifié dans
+        //       le modèle.
         V::notEmpty()->length(2, 191)->check($this->name);
         return true;
     }
 
     public function checkType()
     {
+        // NOTE: Utilise l'attribut calculé pour inférer la valeur depuis le
+        //       fichier raw si c'est ce qui est actuellement spécifié dans
+        //       le modèle.
         V::notEmpty()->length(2, 191)->check($this->type);
         return true;
     }
 
     public function checkSize()
     {
+        // NOTE: Utilise l'attribut calculé pour inférer la valeur depuis le
+        //       fichier raw si c'est ce qui est actuellement spécifié dans
+        //       le modèle.
         V::notEmpty()->numericVal()->check($this->size);
         return true;
     }
@@ -92,8 +101,7 @@ final class Document extends BaseModel implements Serializable
     public function checkFile($file)
     {
         if (!($file instanceof UploadedFileInterface)) {
-            V::notEmpty()->length(2, 191)->check($file);
-            return true;
+            return V::notEmpty()->length(2, 191);
         }
         /** @var UploadedFileInterface $file */
 
@@ -217,7 +225,7 @@ final class Document extends BaseModel implements Serializable
 
             try {
                 return @mime_content_type($this->path) ?: null;
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 return null;
             }
         };
@@ -242,7 +250,7 @@ final class Document extends BaseModel implements Serializable
 
             try {
                 return @filesize($this->path) ?: null;
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 return null;
             }
         };
@@ -313,7 +321,7 @@ final class Document extends BaseModel implements Serializable
             if (!@file_exists($this->path)) {
                 throw new \Exception(
                     "Une erreur est survenue lors de l'upload du fichier: " .
-                    "La chaîne passée ne correspond pas à un fichier existant dans le dossier de destination."
+                    "La chaîne passée ne correspond pas à un fichier existant dans le dossier de destination.",
                 );
             }
 
@@ -331,10 +339,10 @@ final class Document extends BaseModel implements Serializable
 
             try {
                 $newFile->moveTo($this->base_path . DS . $filename);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 throw new \Exception(
                     "Une erreur est survenue lors de l'upload du fichier: " .
-                    "Le fichier n'a pas pû être déplacé dans le dossier de destination."
+                    "Le fichier n'a pas pû être déplacé dans le dossier de destination.",
                 );
             }
 
@@ -349,7 +357,7 @@ final class Document extends BaseModel implements Serializable
                 try {
                     $filename = $this->getAttributeFromArray('file');
                     @unlink($this->base_path . DS . $filename);
-                } catch (\Throwable $e) {
+                } catch (\Throwable) {
                     // NOTE: On ne fait rien si la suppression plante car de toute
                     //       façon on est déjà dans un contexte d'erreur...
                 }
@@ -379,7 +387,7 @@ final class Document extends BaseModel implements Serializable
         if ($previousFile !== null) {
             try {
                 @unlink($this->base_path . DS . $previousFile);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 // NOTE: On ne fait rien si la suppression plante, le fichier sera orphelin mais le
                 //       plantage de sa suppression ne justifie pas qu'on unsave le document, etc.
             }
@@ -398,10 +406,10 @@ final class Document extends BaseModel implements Serializable
         if ($deleted && file_exists($this->path)) {
             try {
                 @unlink($this->path);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 container('logger')->log(
-                    Logger::WARNING,
-                    sprintf('Unable to delete file "%s" (path: %s)', $this->name, $this->path)
+                    LogLevel::Warning,
+                    sprintf('Unable to delete file "%s" (path: %s)', $this->name, $this->path),
                 );
             }
         }

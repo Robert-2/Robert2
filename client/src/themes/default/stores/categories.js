@@ -1,16 +1,9 @@
+import createEntityStore from '@/utils/createEntityStore';
 import apiCategories from '@/stores/api/categories';
-import formatOptions from '@/utils/formatOptions';
 
-export default {
-    namespaced: true,
-    state: {
-        list: [],
-        isFetched: false,
-        error: null,
-    },
-    getters: {
-        options: (state) => formatOptions(state.list),
-
+export default createEntityStore(
+    () => apiCategories.all(),
+    {
         category: (state) => (categoryId) => (
             state.list.find((_category) => _category.id === categoryId)
         ),
@@ -32,38 +25,4 @@ export default {
             return name;
         },
     },
-    mutations: {
-        init(state, data) {
-            state.list = data;
-            state.isFetched = true;
-            state.error = null;
-        },
-
-        setError(state, errorData) {
-            state.error = errorData;
-        },
-    },
-    actions: {
-        async fetch({ state, commit }) {
-            if (state.isFetched) {
-                return;
-            }
-
-            try {
-                commit('init', await apiCategories.all());
-            } catch (error) {
-                commit('setError', error);
-            }
-        },
-
-        async refresh({ state, commit }) {
-            state.isFetched = false;
-
-            try {
-                commit('init', await apiCategories.all());
-            } catch (error) {
-                commit('setError', error);
-            }
-        },
-    },
-};
+);

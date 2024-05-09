@@ -1,4 +1,5 @@
 @use '~@/themes/default/style/globals';
+@use 'sass:color';
 
 .MinimalistLayout {
     position: relative;
@@ -23,6 +24,16 @@
         font-size: 0.8rem;
         line-height: 1.52rem;
         text-align: center;
+
+        &__link {
+            color: color.adjust(globals.$text-muted-color, $lightness: 25%);
+            transition: color 300ms;
+
+            &:hover,
+            &:active {
+                color: color.adjust(globals.$text-muted-color, $lightness: 35%);
+            }
+        }
     }
 
     //
@@ -37,15 +48,7 @@
 
         .Logo {
             max-width: 100%;
-            max-height: 80px;
-        }
-
-        &__premium {
-            position: absolute;
-            bottom: 30px;
-            right: calc(50% - 75px);
-            color: globals.$text-base-color;
-            font-size: 1.1rem;
+            max-height: 40px;
         }
     }
 
@@ -60,13 +63,7 @@
     @media (min-width: globals.$screen-mobile) {
         &__logo {
             .Logo {
-                max-height: 120px;
-            }
-
-            &__premium {
-                bottom: 28px;
-                right: calc(50% - 115px);
-                font-size: 1.4rem;
+                max-height: 50px;
             }
         }
     }
@@ -74,13 +71,7 @@
     @media (min-width: globals.$screen-tablet) {
         &__logo {
             .Logo {
-                max-height: 150px;
-            }
-
-            &__premium {
-                bottom: 35px;
-                right: calc(50% - 185px);
-                font-size: 1.8rem;
+                max-height: 60px;
             }
         }
 

@@ -19,13 +19,13 @@ declare module 'vue-tables-2-premium' {
 
     type ColumnsVisibility = Record<string, ColumnVisibility>;
 
-    type TemplateRenderFunction<Data = any> = (
-        (h: CreateElement, row: Data, index: number) => JSX.Element | string | null
+    type TemplateRenderFunction<Datum = any> = (
+        (h: CreateElement, row: Datum, index: number) => JSX.Element | JSX.Element[] | string | null
     );
 
-    type RowClickEventPayload<Data = any> = { row: Data, event: PointerEvent, index: number };
+    type RowClickEventPayload<Datum = any> = { row: Datum, event: PointerEvent, index: number };
 
-    type BaseTableOptions<Data> = {
+    type BaseTableOptions<Datum> = {
         headings?: Record<string, string>,
         initialPage?: number,
         perPage?: number,
@@ -33,19 +33,20 @@ declare module 'vue-tables-2-premium' {
         sortable?: string[],
         multiSorting?: Record<string, Array<{ column: string, matchDir: boolean }>>,
         filterByColumn?: boolean,
+        filterable?: boolean,
         columnsDropdown?: boolean,
         preserveState?: boolean,
         saveState?: boolean,
         columnsDisplay?: ColumnsVisibility,
         columnsClasses?: Record<string, string>,
-        templates?: Record<string, TemplateRenderFunction<Data>>,
-        rowClassCallback(row: Data): VNodeClass,
+        templates?: Record<string, TemplateRenderFunction<Datum>>,
+        rowClassCallback?(row: Datum): VNodeClass,
     };
 
-    interface BaseTableInstance<Data> {
+    interface BaseTableInstance<Datum> {
         name: string;
         columns: string[];
-        data: Data[];
+        data: Datum[];
         filtersCount: number;
         openChildRows: number[];
         selectedRows: number[] | undefined;
@@ -61,7 +62,7 @@ declare module 'vue-tables-2-premium' {
         resetCustomFilters(): void;
         setLoadingState(): void;
         $refs: {
-            table: BaseTableInstance<Data>,
+            table: BaseTableInstance<Datum>,
         };
     }
 
@@ -75,22 +76,39 @@ declare module 'vue-tables-2-premium' {
     // - Client component specific types
     //
 
-    export type ClientCustomFilter<Data> = {
+    export type ClientCustomFilter<Datum> = {
         name: string,
-        callback(item: Data, identifier: number | string | boolean): boolean,
+        callback(item: Datum, identifier: number | string | boolean): boolean,
     };
 
-    export type CustomSortFunction<Data> = (ascending: boolean) => (a: Data, b: Data) => number;
+    /**
+     * Fonction personnalisé de tri de la colonne.
+     *
+     * Cette fonction, à qui la direction de tri souhaité est passé (via `ascending`),
+     * doit renvoyer une autre fonction qui s'occupera de comparer deux éléments de
+     * la colonne et devra renvoyé si le premier élément (`a`) arrive avant (= `-1`) ou
+     * après (= `1`) le deuxième (`b`) (ou s'ils sont égaux (= `0`)).
+     *
+     * Si non spécifié, le tri consistera en une simple comparaison des valeurs
+     * (e.g si ascendant: `a > b ? 1 : -1`) en ayant au préalable mis les chaînes
+     * de caractères en minuscules (si ce sont des chaînes qui sont comparés).
+     *
+     * @param ascending - Spécifie si le tri doit être effectué de manière
+     *                    ascendante ou descendante.
+     */
+    export type ColumnSorter<Datum = any> = (ascending: boolean) => (
+        (a: Datum, b: Datum) => number
+    );
 
-    export type ClientTableOptions<Data = any, Filters = any> = BaseTableOptions<Data> & {
-        initFilters: Filters,
-        customSorting?: Record<string, CustomSortFunction<Data>>,
-        customFilters?: Array<ClientCustomFilter<Data>>,
+    export type ClientTableOptions<Datum = any, Filters = any> = BaseTableOptions<Datum> & {
+        initFilters?: Filters,
+        customSorting?: Record<string, ColumnSorter<Datum>>,
+        customFilters?: Array<ClientCustomFilter<Datum>>,
     };
 
-    export interface ClientTableInstance<Data = any> extends BaseTableInstance<Data> {
-        filteredData: Data[];
-        allFilteredData: Data[];
+    export interface ClientTableInstance<Datum = any> extends BaseTableInstance<Datum> {
+        filteredData: Datum[];
+        allFilteredData: Datum[];
     }
 
     //
@@ -101,14 +119,14 @@ declare module 'vue-tables-2-premium' {
         Promise<{ data: Data } | undefined>
     );
 
-    export type ServerTableOptions<Data = any> = BaseTableOptions<Data> & {
+    export type ServerTableOptions<Datum = any> = BaseTableOptions<Datum> & {
         customFilters?: string[],
-        requestFunction?: RequestFunction<Data>,
+        requestFunction?: RequestFunction<Datum[]>,
     };
 
-    export interface ServerTableInstance<Data = any> extends BaseTableInstance<Data> {
+    export interface ServerTableInstance<Datum = any> extends BaseTableInstance<Datum> {
         setRequestParams(params: Record<string, unknown>): void;
-        geData(): Data[];
+        getData(): Datum[];
         getQueryParams(): Record<string, unknown>;
     }
 }

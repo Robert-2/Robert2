@@ -82,17 +82,14 @@ const ColorPicker = defineComponent({
         swatches: {
             type: Array as PropType<Required<Props>['swatches']>,
             default: () => config.colorSwatches ?? [
-                '#264653',
-                '#2a9d8f',
-                '#e9c46a',
-                '#f4a261',
-                '#e76f51',
-                '#d62828',
-                '#023e8a',
-                '#0077b6',
-                '#0096c7',
-                '#00b4d8',
-                '#48cae4',
+                '#264653', '#40606c', '#597986',
+                '#2a9d8f', '#44b6a8', '#5dd0c2',
+                '#f4a261', '#ffbb7a', '#ffd594',
+                '#e9c46a', '#ffde84', '#fff79d',
+                '#d62828', '#f04242', '#ff5b5b',
+                '#e76f51', '#ff886a', '#ffa284',
+                '#023e8a', '#1b58a3', '#0077b6',
+                '#0096c7', '#00b4d8', '#48cae4',
             ],
             validator: (values: unknown) => {
                 if (!Array.isArray(values)) {
@@ -112,7 +109,7 @@ const ColorPicker = defineComponent({
             },
         },
     },
-    emits: ['change', 'pick'],
+    emits: ['change'],
     computed: {
         color(): Color {
             if (this.value === null || !Color.isValid(this.value)) {

@@ -7,6 +7,7 @@ import apiSession from '@/stores/api/session';
 import type { Module, ActionContext } from 'vuex';
 import type { Session, Credentials } from '@/stores/api/session';
 import type { Group } from '@/stores/api/groups';
+import type { UserSettings } from '@/stores/api/users';
 
 export type State = {
     user: Session | null,
@@ -41,6 +42,8 @@ const store: Module<State, any> = {
             const normalizedGroups = Array.isArray(groups) ? groups : [groups];
             return normalizedGroups.includes(state.user.group);
         },
+
+        user: (state: State) => state.user,
     },
     mutations: {
         setUser(state: State, user: Session) {
@@ -53,6 +56,10 @@ const store: Module<State, any> = {
 
         setLocale(state: State, language: string) {
             state.user!.language = language;
+        },
+
+        setInterfaceSettings(state: State, settings: UserSettings) {
+            state.user!.default_bookings_view = settings.default_bookings_view;
         },
     },
     actions: {
@@ -86,13 +93,9 @@ const store: Module<State, any> = {
         },
 
         async logout(_: ActionContext<State, any>, full: boolean = true) {
-            const hasPotentiallyStatefulSession = !!(
-                config.auth.isCASEnabled ||
-                config.auth.isSAML2Enabled
-            );
             const theme = '';
 
-            if (hasPotentiallyStatefulSession && full) {
+            if (full) {
                 window.location.assign(`${config.baseUrl}${theme}/logout`);
             } else {
                 cookies.remove(config.auth.cookie);

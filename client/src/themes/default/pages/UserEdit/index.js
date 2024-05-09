@@ -30,6 +30,7 @@ const UserEdit = defineComponent({
         isNew() {
             return this.id === null;
         },
+
         pageTitle() {
             const { $t: __, isNew, isFetched, user } = this;
 
@@ -143,7 +144,7 @@ const UserEdit = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="user-edit" title={pageTitle}>
+                <Page name="user-edit" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );

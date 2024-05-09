@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Invoices Api Schema 1`] = `
+{
+  "currency": "EUR",
+  "date": /* DateTime Instance => */ "2020-01-30 14:00:00",
+  "discount_rate": /* Decimal Instance => */ "4.4766",
+  "id": 1,
+  "number": "2020-00001",
+  "total_with_taxes": /* Decimal Instance => */ "652.96",
+  "total_without_taxes": /* Decimal Instance => */ "544.13",
+  "url": "http://loxya.test/invoices/1/pdf",
+}
+`;

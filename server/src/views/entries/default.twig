@@ -1,9 +1,8 @@
-{% extends "base.twig" %}
+{% extends 'base.twig' %}
 
 {% block head %}
     {% if env is not same as('development') -%}
     <link href="{{ client_asset('/css/chunk-vendors.css') }}" rel="preload" as="style">
-    <link href="{{ client_asset('/css/chunk-common.css') }}" rel="preload" as="style">
     <link href="{{ client_asset('/css/default.css') }}" rel="preload" as="style">
     {% endif -%}
 
@@ -13,13 +12,12 @@
 
     {% if env is not same as('development') -%}
     <link href="{{ client_asset('/css/chunk-vendors.css') }}" rel="stylesheet">
-    <link href="{{ client_asset('/css/chunk-common.css') }}" rel="stylesheet">
     <link href="{{ client_asset('/css/default.css') }}" rel="stylesheet">
     {% endif -%}
 {% endblock %}
 
 {% block body %}
-    <noscript><strong>{{ translate('enable-javascript-message') }}</strong></noscript>
+    <noscript><strong>{{ __('enable-javascript-message') }}</strong></noscript>
     <div id="app">
         {{ include('blocks/loading.twig') }}
     </div>

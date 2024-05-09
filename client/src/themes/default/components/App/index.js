@@ -59,7 +59,7 @@ const App = {
     },
     render() {
         const { layout } = this;
-        invariant(layout in layouts, `Le layout "${layout}" n'existe pas.`);
+        invariant(layout in layouts, `The \`${layout}\` layout doesn't exist.`);
         const Layout = layouts[layout];
 
         return (

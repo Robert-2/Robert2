@@ -8,16 +8,15 @@
     flex-flow: column nowrap;
     width: globals.$sidebar-full-width;
     height: calc(100% - #{globals.$main-header-height});
-    background-color: globals.$bg-color-side-nav;
+    background-color: globals.$bg-color-emphasis;
     transition: left 300ms cubic-bezier(0, 0.72, 0.43, 1);
 
     &__logo {
         padding: globals.$spacing-small 0;
         text-align: center;
 
-        // stylelint-disable-next-line selector-max-type
-        img {
-            height: 3rem;
+        .Logo {
+            height: globals.$main-header-height * 0.5;
         }
     }
 
@@ -29,6 +28,12 @@
         justify-content: flex-start;
         overflow: auto;
         user-select: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 
     &__footer {

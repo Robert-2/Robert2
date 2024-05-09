@@ -98,7 +98,6 @@ const Notepad = defineComponent({
         const {
             name,
             value,
-            readOnly,
             inheritedDisabled: disabled,
             handleInput,
             handleChange,
@@ -117,7 +116,6 @@ const Notepad = defineComponent({
                     value={value}
                     onInput={handleInput}
                     onChange={handleChange}
-                    readOnly={readOnly}
                     disabled={disabled}
                 />
             </div>

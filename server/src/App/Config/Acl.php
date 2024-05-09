@@ -5,7 +5,7 @@ namespace Loxya\Config;
 
 use Loxya\Models\Enums\Group;
 
-class Acl
+final class Acl
 {
     public const PUBLIC_ROUTES = [
         '/healthcheck',
@@ -13,6 +13,11 @@ class Acl
         '/login',
 
         '/calendar/public',
+
+        '/static',
+
+        // - Permaliens publics.
+        '/p/',
 
         //
         // - Api
@@ -117,10 +122,12 @@ class Acl
                 'attachDocument',
                 'update',
                 'restore',
-                'updateReturnInventory',
-                'finishReturnInventory',
                 'updateDepartureInventory',
                 'finishDepartureInventory',
+                'cancelDepartureInventory',
+                'updateReturnInventory',
+                'finishReturnInventory',
+                'cancelReturnInventory',
                 'delete',
                 'createInvoice',
                 'createEstimate',
@@ -145,6 +152,7 @@ class Acl
             ],
             'Booking' => [
                 'getAll',
+                'getOneSummary',
                 'updateMaterials',
             ],
             'Document' => [
@@ -240,6 +248,7 @@ class Acl
             ],
             'Booking' => [
                 'getAll',
+                'getOneSummary',
             ],
             'Document' => [
                 'getFile',

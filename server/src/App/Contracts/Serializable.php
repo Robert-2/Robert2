@@ -10,6 +10,8 @@ interface Serializable
      *
      * Dans le contexte de l'application, un élément "sérialisé" est
      * un élément que l'on peut faire transiter via l'API REST.
+     *
+     * @return array L'instance, sérialisée sous forme de tableau.
      */
-    public function serialize();
+    public function serialize(): array;
 }

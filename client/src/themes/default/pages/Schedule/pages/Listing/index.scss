@@ -1,0 +1,139 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.ScheduleListing {
+    $block: &;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    &__filters {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: globals.$spacing-small;
+        gap: globals.$spacing-small;
+
+        .ScheduleListingFilters {
+            flex: 0 1 auto;
+        }
+    }
+
+    &__row {
+        cursor: pointer;
+
+        &:hover > #{$block}__cell {
+            background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
+        }
+
+        &--with-warning {
+            > #{$block}__cell {
+                background-color: color.adjust(globals.$text-danger-color, $alpha: -0.7);
+            }
+
+            &:hover > #{$block}__cell {
+                background-color: color.adjust(globals.$text-danger-color, $alpha: -0.6);
+            }
+
+            #{$block}__cell--icon {
+                color: globals.$text-danger-color;
+            }
+        }
+    }
+
+    &__cell {
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+
+        &--icon {
+            width: 35px;
+            text-align: center;
+        }
+
+        &--mobilization-period {
+            min-width: 280px;
+
+            // - Important, pour surcharger le style du header
+            /* stylelint-disable-next-line declaration-no-important */
+            text-align: center !important;
+        }
+
+        &--beneficiaries,
+        &--categories,
+        &--parks {
+            display: none;
+        }
+    }
+
+    &__title {
+        margin: 0;
+    }
+
+    &__operation-period {
+        color: globals.$text-soft-color;
+
+        @include globals.icon('calendar-alt') {
+            margin-right: globals.$spacing-thin;
+        }
+    }
+
+    &__beneficiaries,
+    &__categories,
+    &__parks {
+        @extend %reset-list;
+
+        &__item {
+            display: inline-block;
+            margin-right: globals.$spacing-thin;
+
+            &:not(:last-child)::after {
+                content: ',';
+            }
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__cell {
+            &--beneficiaries {
+                display: table-cell;
+            }
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__cell {
+            &--parks {
+                display: table-cell;
+            }
+        }
+    }
+
+    @media (min-width: globals.$screen-big-desktop) {
+        &__cell {
+            &--categories {
+                display: table-cell;
+            }
+        }
+
+        &__filters {
+            position: absolute;
+            z-index: 1;
+            left: globals.$table-search-input;
+            right: calc(#{globals.$spacing-large} + 45px + #{globals.$spacing-medium});
+            flex-wrap: nowrap;
+            align-items: center;
+            margin-bottom: 0;
+            margin-left: globals.$spacing-small;
+
+            .ScheduleListingFilters {
+                flex-wrap: nowrap;
+            }
+        }
+    }
+}

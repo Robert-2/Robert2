@@ -1,0 +1,48 @@
+@use 'sass:color';
+@use '../dimensions' as *;
+
+$input-min-height: 40px;
+$input-font-size: 1.05rem;
+$input-line-height: 1.4;
+
+$input-padding-horizontal: 13px;
+$input-padding-vertical: 11px;
+
+$input-background-color: hsl(253deg, 4%, 23%);
+$input-text-color: #fff;
+
+$input-border-width: 1px;
+$input-border-color: $input-background-color;
+$input-border-radius: $border-radius-normal;
+
+// - Placeholder
+$input-placeholder-color: color.adjust($input-background-color, $saturation: 4%, $lightness: 35%);
+
+// - Autofill
+$input-autofill-background-color: color.adjust($input-background-color, $lightness: 5%);
+$input-autofill-text-color: #fff;
+
+//
+// - État: Désactivé.
+//
+
+$input-disabled-background-color: color.adjust($input-background-color, $lightness: -5%, $alpha: -0.5);
+$input-disabled-text-color: color.adjust($input-text-color, $lightness: -5%, $alpha: -0.5);
+$input-disabled-placeholder-color: color.adjust($input-disabled-background-color, $saturation: 4%, $lightness: 45%);
+$input-disabled-border-color: color.adjust($input-border-color, $lightness: -5%, $alpha: -0.5);
+
+//
+// - État: Focus.
+//
+
+$input-focus-background-color: color.adjust($input-background-color, $lightness: 5%);
+$input-focus-text-color: #fff;
+$input-focus-border-color: $input-focus-background-color;
+
+//
+// - État: Erreur.
+//
+
+$input-error-background-color: $input-background-color;
+$input-error-text-color: $input-text-color;
+$input-error-border-color: #ad0101;

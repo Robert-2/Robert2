@@ -2,57 +2,64 @@
 
 .EventTotals {
     display: flex;
+    align-items: flex-end;
 
     &__infos,
     &__billing {
         flex: 1;
     }
 
+    &__infos {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-small;
+
+        &__item {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+    }
+
     &__billing {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-    }
+        gap: globals.$spacing-medium;
 
-    &__items-count,
-    &__duration,
-    &__total-replacement {
-        margin-bottom: globals.$spacing-medium;
-        font-size: 1.2rem;
-        font-weight: 600;
-    }
-
-    &__line {
-        $line: &;
-
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: globals.$spacing-small;
-        font-size: 1.1rem;
-
-        &__title {
-            width: 240px;
-            margin-right: 5px;
+        &__group {
+            display: flex;
+            flex-direction: column;
+            gap: globals.$spacing-small;
         }
 
-        &__price {
-            width: 120px;
-            text-align: right;
-        }
+        &__line {
+            $line: &;
 
-        &--secondary {
-            margin-bottom: globals.$spacing-medium;
-            color: globals.$text-light-color;
-        }
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 1.1rem;
 
-        &--grand-total {
-            margin-bottom: globals.$spacing-medium;
+            &__title {
+                width: 240px;
+                margin-right: 5px;
+            }
 
-            #{$line}__title,
-            #{$line}__price {
-                font-size: 1.2rem;
-                font-weight: 600;
+            &__price {
+                width: 120px;
+                text-align: right;
+            }
+
+            &--grand-total {
+                #{$line}__title,
+                #{$line}__price {
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                }
+            }
+
+            &--secondary {
+                color: globals.$text-light-color;
             }
         }
     }

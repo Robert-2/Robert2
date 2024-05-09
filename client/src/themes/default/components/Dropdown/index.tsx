@@ -1,7 +1,15 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import ClickOutside from 'vue-click-outside';
+import { MountingPortal as Portal } from 'portal-vue';
 import Button, { TYPES } from '@/themes/default/components/Button';
+import Transition from './components/Transition';
+import {
+    computePosition,
+    autoPlacement,
+    autoUpdate,
+    offset,
+} from '@floating-ui/dom';
 
 import type { PropType } from '@vue/composition-api';
 import type { Type, IconLoose } from '@/themes/default/components/Button';
@@ -56,11 +64,16 @@ type Props = {
     type?: Type,
 };
 
-type Data = {
-    isOpen: boolean,
+type InstanceProperties = {
+    cancelDropdownPositionUpdater: (() => void) | undefined,
 };
 
-// @vue/component
+type Data = {
+    isOpen: boolean,
+    dropdownPosition: Position,
+};
+
+/** Un menu déroulant affichant le contenu fourni. */
 const Dropdown = defineComponent({
     name: 'Dropdown',
     directives: { ClickOutside },
@@ -82,8 +95,12 @@ const Dropdown = defineComponent({
             ),
         },
     },
+    setup: (): InstanceProperties => ({
+        cancelDropdownPositionUpdater: undefined,
+    }),
     data: (): Data => ({
         isOpen: false,
+        dropdownPosition: { x: 0, y: 0 },
     }),
     computed: {
         inferredIcon(): IconLoose {
@@ -107,7 +124,22 @@ const Dropdown = defineComponent({
             return icon;
         },
     },
+    mounted() {
+        this.registerDropdownPositionUpdater();
+    },
+    updated() {
+        this.registerDropdownPositionUpdater();
+    },
+    beforeDestroy() {
+        this.cleanupDropdownPositionUpdater();
+    },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
         handleToggle() {
             this.isOpen = !this.isOpen;
         },
@@ -119,6 +151,60 @@ const Dropdown = defineComponent({
         handleClickDropdown() {
             this.isOpen = false;
         },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        async updateDropdownPosition(): Promise<void> {
+            const $button = this.$refs.button as HTMLElement;
+            const $dropdown = this.$refs.dropdown as HTMLElement | undefined;
+
+            if (!this.isOpen || !$dropdown) {
+                return;
+            }
+
+            const oldPosition = { ...this.dropdownPosition };
+            const newPosition = await computePosition($button, $dropdown, {
+                placement: 'bottom',
+                middleware: [
+                    autoPlacement({
+                        alignment: 'end',
+                        allowedPlacements: ['bottom-start', 'bottom-end'],
+                    }),
+                    offset(10),
+                ],
+            });
+
+            if (newPosition.x === oldPosition.x && newPosition.y === oldPosition.y) {
+                return;
+            }
+
+            this.dropdownPosition = { x: newPosition.x, y: newPosition.y };
+        },
+
+        cleanupDropdownPositionUpdater() {
+            if (typeof this.cancelDropdownPositionUpdater === 'function') {
+                this.cancelDropdownPositionUpdater();
+                this.cancelDropdownPositionUpdater = undefined;
+            }
+        },
+
+        registerDropdownPositionUpdater() {
+            this.cleanupDropdownPositionUpdater();
+
+            const $button = this.$refs.button as HTMLElement | undefined;
+            const $dropdown = this.$refs.dropdown as HTMLElement | undefined;
+            if ($button && $dropdown) {
+                this.cleanupDropdownPositionUpdater = autoUpdate(
+                    $button,
+                    $dropdown,
+                    this.updateDropdownPosition.bind(this),
+                );
+            }
+        },
     },
     render() {
         const children = this.$slots.default;
@@ -126,6 +212,7 @@ const Dropdown = defineComponent({
             type,
             label,
             inferredIcon: icon,
+            dropdownPosition,
             isOpen,
             handleToggle,
             handleClickOutside,
@@ -137,13 +224,27 @@ const Dropdown = defineComponent({
         }];
 
         return (
-            <div class={classNames} v-clickOutside={handleClickOutside}>
-                <Button icon={icon} type={type} onClick={handleToggle}>
-                    {label}
-                </Button>
-                <div class="Dropdown__menu" onClick={handleClickDropdown}>
-                    {children}
+            <div ref="container" class={classNames} v-clickOutside={handleClickOutside}>
+                <div ref="button" class="Dropdown__button">
+                    <Button icon={icon} type={type} onClick={handleToggle}>
+                        {label}
+                    </Button>
                 </div>
+                {isOpen && (
+                    <Portal mountTo="#app" transition={Transition} append>
+                        <div
+                            ref="dropdown"
+                            class="Dropdown__menu"
+                            onClick={handleClickDropdown}
+                            style={{
+                                left: `${dropdownPosition.x}px`,
+                                top: `${dropdownPosition.y}px`,
+                            }}
+                        >
+                            {children}
+                        </div>
+                    </Portal>
+                )}
             </div>
         );
     },

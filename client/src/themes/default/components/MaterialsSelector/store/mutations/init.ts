@@ -13,7 +13,7 @@ import type { State } from '../_types';
  */
 const init = (state: State, materials: SelectedMaterial[]): void => {
     const reducer = (acc: State['materials'], material: SelectedMaterial): State['materials'] => {
-        // - Calcule la quantité minimum
+        // - Calcule la quantité minimum.
         const quantity = Math.max(0, material.quantity);
         if (quantity === 0) {
             return acc;

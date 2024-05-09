@@ -1,4 +1,4 @@
-import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
 import type { State } from '../_types';
 
 type Payload = {

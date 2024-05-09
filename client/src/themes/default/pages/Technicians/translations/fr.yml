@@ -4,6 +4,7 @@ help: Vous pouvez envoyer un email à un technicien en cliquant sur son adresse.
 
 action-add: Nouveau technicien
 period-of-availability: Période de disponibilité
+is-preparer: "Est préparateur\_?"
 
 confirm-delete: "Mettre ce technicien à la corbeille\_?"
 confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce technicien\_?"

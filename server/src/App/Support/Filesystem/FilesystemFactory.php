@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Loxya\Support\Filesystem;
 
 use Aws\S3\S3Client;
-use Loxya\Support\Arr;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter as S3Adapter;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter as AwsS3PortableVisibilityConverter;
 use League\Flysystem\Filesystem as Flysystem;
@@ -16,6 +15,7 @@ use League\Flysystem\PhpseclibV3\SftpAdapter;
 use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 use League\Flysystem\Visibility;
+use Loxya\Support\Arr;
 
 class FilesystemFactory
 {
@@ -43,7 +43,7 @@ class FilesystemFactory
     {
         $visibility = PortableVisibilityConverter::fromArray(
             $config['permissions'] ?? [],
-            $config['directory_visibility'] ?? $config['visibility'] ?? Visibility::PRIVATE
+            $config['directory_visibility'] ?? $config['visibility'] ?? Visibility::PRIVATE,
         );
 
         $links = ($config['links'] ?? null) === 'skip'
@@ -137,7 +137,7 @@ class FilesystemFactory
         $root = $config['root'] ?? '/';
         $provider = SftpConnectionProvider::fromArray($config);
         $visibility = PortableVisibilityConverter::fromArray(
-            $config['permissions'] ?? []
+            $config['permissions'] ?? [],
         );
 
         $adapter = new SftpAdapter($provider, $root, $visibility);
@@ -190,7 +190,7 @@ class FilesystemFactory
 
         $root = (string) ($s3Config['root'] ?? '');
         $visibility = new AwsS3PortableVisibilityConverter(
-            $config['visibility'] ?? Visibility::PUBLIC
+            $config['visibility'] ?? Visibility::PUBLIC,
         );
 
         // - Autres options bas niveau.

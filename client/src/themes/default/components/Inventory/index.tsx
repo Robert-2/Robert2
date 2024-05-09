@@ -38,7 +38,7 @@ type Props = {
      * L'inventaire déjà réalisé (le cas échéant).
      *
      * Le matériel dont il est fait l'inventaire dans cette prop. doit
-     * impérativement exister dans la prop. `materials`.
+     * impérativement exister dans la prop. `materials` (idem pour ses unités).
      *
      * @see {@link InventoryData} pour plus d'informations.
      */
@@ -148,12 +148,8 @@ const Inventory = defineComponent({
                 (Object.values(DisplayGroup) as string[]).includes(displayGroup)
             ),
         },
-        paused: {
-            type: Boolean as PropType<Required<Props>['paused']>,
-            default: false,
-        },
     },
-    emits: ['change', 'unexpectedScan'],
+    emits: ['change'],
     setup: (): InstanceProperties => ({
         cancelScanObservation: undefined,
     }),
@@ -182,8 +178,9 @@ const Inventory = defineComponent({
                 //     // return dispatchMaterialInSections(this.materials, 'park_id', parks);
                 //     return groupByParks(this.materials, parks);
                 // }
-                default:
+                default: {
                     return [{ id: null, name: null, materials: this.materials }];
+                }
             }
         },
     },

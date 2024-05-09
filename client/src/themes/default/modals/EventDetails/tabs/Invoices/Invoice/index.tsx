@@ -1,5 +1,4 @@
 import './index.scss';
-import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
 import formatAmount from '@/utils/formatAmount';
 import Icon from '@/themes/default/components/Icon';
@@ -27,13 +26,13 @@ type Props = {
     /**
      * La facture est-elle obsolète ?
      *
-     * Par exemple si elle une nouvelle facture pour la même
+     * Par exemple si une nouvelle facture pour la même
      * "cible" a été régénérée depuis.
      */
     outdated?: boolean,
 };
 
-// @vue/component
+/** Une facture d'événement dans l'onglet des factures. */
 const EventDetailsInvoice = defineComponent({
     name: 'EventDetailsInvoice',
     props: {
@@ -54,23 +53,18 @@ const EventDetailsInvoice = defineComponent({
         },
     },
     computed: {
-        normalizedInvoice() {
-            const { invoice } = this;
-            const date = moment(invoice.date);
-            return { ...invoice, date };
-        },
-
-        useTaxes() {
+        useTaxes(): boolean {
             const {
                 total_without_taxes: totalWithoutTaxes,
                 total_with_taxes: totalWithTaxes,
             } = this.invoice;
 
-            return totalWithoutTaxes.toNumber() !== totalWithTaxes.toNumber();
+            return !totalWithoutTaxes.equals(totalWithTaxes);
         },
     },
     render() {
-        const { $t: __, layout, outdated, normalizedInvoice, useTaxes } = this;
+        const { $t: __, layout, outdated, invoice, useTaxes } = this;
+        const isVerticalLayout = layout === InvoiceLayout.VERTICAL;
         const {
             url,
             date,
@@ -78,8 +72,7 @@ const EventDetailsInvoice = defineComponent({
             currency,
             discount_rate: discountRate,
             total_without_taxes: totalWithoutTaxes,
-        } = normalizedInvoice;
-        const isVerticalLayout = layout === InvoiceLayout.VERTICAL;
+        } = invoice;
 
         // - Discount text
         const discountText = !discountRate.isZero()
@@ -100,7 +93,7 @@ const EventDetailsInvoice = defineComponent({
                         <Icon name="file-invoice-dollar" />
                     </div>
                     <div class="EventDetailsInvoice__text">
-                        {__('invoice-title', { number, date: date.format('L') })}<br />
+                        {__('invoice-title', { number, date: date.toReadable() })}<br />
                         {
                             useTaxes
                                 ? __('with-amount-of-excl-tax', { amount: formatAmount(totalWithoutTaxes, currency) })
@@ -112,7 +105,7 @@ const EventDetailsInvoice = defineComponent({
                 <div class="EventDetailsInvoice__actions">
                     <Button
                         icon="download"
-                        type="secondary"
+                        type={outdated ? 'secondary' : 'primary'}
                         class="EventDetailsInvoice__download"
                         to={url}
                         external

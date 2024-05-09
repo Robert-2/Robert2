@@ -5,11 +5,13 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Support\Assert;
+use Respect\Validation\Validator as V;
 
 /**
  * Tag.
@@ -20,14 +22,14 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
- * @property-read Collection|Material[] $materials
+ * @property-read Collection<array-key, Material> $materials
+ *
+ * @method static Builder|static search(string $term)
  */
 final class Tag extends BaseModel implements Serializable
 {
     use SoftDeletable;
     use Serializer;
-
-    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {
@@ -50,13 +52,15 @@ final class Tag extends BaseModel implements Serializable
             ->length(1, 48)
             ->check($value);
 
-        $query = static::where('name', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('name', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        return !$query->withTrashed()->exists()
-            ?: 'tag-name-already-in-use';
+        return !$alreadyExists ?: 'tag-name-already-in-use';
     }
 
     // ------------------------------------------------------
@@ -91,6 +95,22 @@ final class Tag extends BaseModel implements Serializable
     // ------------------------------------------------------
 
     protected $fillable = ['name'];
+
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    protected $orderable = ['name'];
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where('name', 'LIKE', $term);
+    }
 
     // ------------------------------------------------------
     // -

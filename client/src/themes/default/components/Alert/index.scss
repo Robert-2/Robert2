@@ -1,0 +1,39 @@
+@use './variables' as *;
+@use '~@/themes/default/style/globals';
+@use 'sass:map';
+
+.Alert {
+    display: flex;
+    align-items: center;
+    padding: globals.$spacing-medium globals.$spacing-medium;
+    border-radius: globals.$border-radius-large;
+    white-space: pre-line;
+    gap: globals.$spacing-medium;
+
+    &::before {
+        opacity: 0.8;
+    }
+
+    //
+    // - Variantes
+    //
+
+    // stylelint-disable-next-line scss/dollar-variable-first-in-block, order/order
+    $variants: (
+        warning: $warning-variant,
+        info: $info-variant,
+    );
+
+    @each $name, $variant in $variants {
+        &--#{$name} {
+            background: map.get($variant, background);
+            color: map.get($variant, color);
+
+            @include globals.icon(map.get($variant, icon)) {
+                min-width: 20px;
+                font-size: 1.5rem;
+                text-align: center;
+            }
+        }
+    }
+}

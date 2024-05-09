@@ -11,7 +11,7 @@ use Slim\Exception\HttpException;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Interfaces\ErrorRendererInterface;
 
-class JsonErrorRenderer implements ErrorRendererInterface
+final class JsonErrorRenderer implements ErrorRendererInterface
 {
     public function __invoke(\Throwable $exception, bool $displayErrorDetails): string
     {
@@ -30,7 +30,7 @@ class JsonErrorRenderer implements ErrorRendererInterface
 
     private static function format(\Throwable $exception, bool $displayErrorDetails): array
     {
-        $output = ['code' => ApiErrorCode::UNKNOWN];
+        $output = ['code' => ApiErrorCode::UNKNOWN->value];
 
         if ($exception instanceof ModelNotFoundException) {
             return $output;
@@ -44,7 +44,7 @@ class JsonErrorRenderer implements ErrorRendererInterface
                     $requestDetail = sprintf(
                         "Method must be one of: [%s]. You asked: %s",
                         implode(', ', $exception->getAllowedMethods()),
-                        $requestDetail
+                        $requestDetail,
                     );
                 }
                 $output['message'] = $exception->getMessage();
@@ -54,14 +54,14 @@ class JsonErrorRenderer implements ErrorRendererInterface
         }
 
         if ($exception instanceof ValidationException) {
-            $output['code'] = ApiErrorCode::VALIDATION_FAILED;
+            $output['code'] = ApiErrorCode::VALIDATION_FAILED->value;
             $output['message'] = $exception->getMessage();
             $output['details'] = $exception->getValidationErrors();
             return $output;
         }
 
         if ($exception instanceof ApiException) {
-            $output['code'] = $exception->getCode();
+            $output['code'] = $exception->getApiCode()->value;
             if (!empty($exception->getMessage())) {
                 $output['message'] = $exception->getMessage();
             }
@@ -72,7 +72,7 @@ class JsonErrorRenderer implements ErrorRendererInterface
             $output['debug'] = [
                 'file' => sprintf('%s, line %s.', $exception->getFile(), $exception->getLine()),
                 'message' => $exception->getMessage(),
-                'stackTrace' => $exception->getTrace(),
+                'stackTrace' => array_slice($exception->getTrace(), 0, 2),
             ];
         }
 

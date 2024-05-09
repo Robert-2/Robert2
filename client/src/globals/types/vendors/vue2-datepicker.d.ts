@@ -26,6 +26,11 @@ declare module 'vue2-datepicker' {
         onClick(): any,
     };
 
+    export type TimePickerValue = {
+        value: number,
+        text: string,
+    };
+
     export type TimePickerOptions = {
         start: string,
         step: string,
@@ -57,8 +62,8 @@ declare module 'vue2-datepicker' {
         confirmText?: string,
         multiple?: boolean,
         disabled?: boolean,
-        disabledDate?(date: Date, currentValue: Date[]): boolean,
-        disabledTime?(date: Date): boolean,
+        disabledDate?(date: Date, currentValue: [?Date, ?Date]): boolean,
+        disabledTime?(date: Date, side: 0 | 1): boolean,
         appendToBody?: boolean,
         inline?: boolean,
         inputClass?: string,
@@ -84,7 +89,10 @@ declare module 'vue2-datepicker' {
         use12h?: boolean,
         showTimeHeader?: boolean,
         timeTitleFormat?: string,
-        timePickerOptions?: TimePickerOptions,
+        timePickerOptions?: (
+            | TimePickerOptions
+            | ((selectedDate: Date, type?: 'start' | 'end') => TimePickerOptionValue[])
+        ),
         prefixClass?: string,
         scrollDuration?: number,
     }>;

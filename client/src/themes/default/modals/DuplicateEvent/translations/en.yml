@@ -1,11 +1,13 @@
 title: "Duplicate event \"{title}\""
 
-dates-of-duplicated-event: Dates of new event
+operation-period: Dates of new event
+mobilization-period: Mobilization period of the material
+mobilization-period-help: "Period during which materials are mobilized for the new event."
+sync-mobilization-period: Use a material mobilization period identical to the event dates?
+
 please-choose-dates: Please choose new event dates.
 new-event-saved: New event successfully saved.
 
-technician-already-busy-force: |
-    Some of the technicians from the original event are busy during the period of the new event.
-
-    If you continue, the new event will be created without them.
-force-duplicate: Duplicate anyway
+technician-transfer-warning: |
+    Please note that the technicians from the original event will not be transferred to the new event.
+    Make sure to assign them manually by editing the event after duplication.

@@ -1,7 +1,7 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import groupByCategories from './utils/groupByCategories';
-import MaterialsCategoryItem from './CategoryItem';
+import groupByCategories, { SortBy } from './utils/groupByCategories';
+import MaterialsCategoryItem from './components/CategoryItem';
 
 import type { PropType } from '@vue/composition-api';
 import type { BookingMaterial } from './utils/_types';
@@ -16,9 +16,9 @@ type Props = {
 };
 
 /**
- * MaterialsSorted
+ * Liste de matériel triée.
  *
- * Affiche la liste de matériel d'un booking (événement ou réservation), classé
+ * Affiche la liste de matériel d'un booking (événement), classé
  * par catégories (classement par défaut), ou par sous-liste de matériel.
  *
  * Le classement par sous-liste est réservé aux événements. Dans chaque sous-liste,
@@ -44,7 +44,7 @@ const MaterialsSorted = defineComponent({
             return groupByCategories(
                 data,
                 allCategories ?? [],
-                withRentalPrices ? 'price' : 'name',
+                withRentalPrices ? SortBy.PRICE : SortBy.NAME,
             );
         },
     },

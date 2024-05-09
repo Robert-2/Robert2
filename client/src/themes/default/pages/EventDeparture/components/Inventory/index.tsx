@@ -1,6 +1,7 @@
 import './index.scss';
-import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
+import DateTime from '@/utils/datetime';
+import Button from '@/themes/default/components/Button';
 import Inventory, {
     DisplayGroup,
     InventoryLock,
@@ -8,7 +9,7 @@ import Inventory, {
 } from '@/themes/default/components/Inventory';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event, EventMaterial } from '@/stores/api/events';
+import type { EventDetails, EventMaterial } from '@/stores/api/events';
 import type {
     AwaitedMaterial,
     InventoryData as CoreInventoryData,
@@ -23,7 +24,7 @@ type InventoryMaterialData = CoreInventoryMaterialData<false, true>;
 
 type Props = {
     /** L'événement dont on veut faire l'inventaire de départ. */
-    event: Event,
+    event: EventDetails,
 
     /** L'inventaire déjà réalisé (le cas échéant) pour l'événement. */
     inventory: InventoryData,
@@ -48,7 +49,7 @@ type InstanceProperties = {
 };
 
 type Data = {
-    now: number,
+    now: DateTime,
 };
 
 /** L'inventaire de matériel de la page d'inventaire de départ d'événement. */
@@ -80,12 +81,12 @@ const EventDepartureInventory = defineComponent({
             default: false,
         },
     },
-    emits: ['change'],
+    emits: ['change', 'requestCancel'],
     setup: (): InstanceProperties => ({
         nowTimer: undefined,
     }),
     data: (): Data => ({
-        now: Date.now(),
+        now: DateTime.now(),
     }),
     computed: {
         awaitedMaterials(): Array<AwaitedMaterial<false>> {
@@ -126,6 +127,19 @@ const EventDepartureInventory = defineComponent({
             return !!this.event.is_departure_inventory_done;
         },
 
+        isCancellable(): boolean {
+            const { event } = this;
+
+            // - Si l'inventaire de départ n'est pas fait ou bien que l'événement est archivé ou si
+            //   l'inventaire de retour est effectué, on ne permet pas d'annuler l'inventaire de départ.
+            if (!this.isDone || event.is_archived || event.is_return_inventory_done) {
+                return false;
+            }
+
+            // - On ne permet d'annuler l'inventaire de départ que si l'événement n'a pas encore commencé.
+            return event.operation_period.start.isAfter(this.now);
+        },
+
         globalStatus(): string | null {
             const { __, event, isDone } = this;
 
@@ -139,9 +153,9 @@ const EventDepartureInventory = defineComponent({
 
             let relativeDate = null;
             if (event.departure_inventory_datetime !== null) {
-                const inventoryDatetime = moment(event.departure_inventory_datetime);
+                const inventoryDatetime = event.departure_inventory_datetime;
                 relativeDate = inventoryDatetime.isAfter(this.now)
-                    ? inventoryDatetime.from(inventoryDatetime.clone().add(1, 'milliseconds'))
+                    ? inventoryDatetime.from(inventoryDatetime.add(1, 'milliseconds'))
                     : inventoryDatetime.from(this.now);
             }
 
@@ -162,7 +176,7 @@ const EventDepartureInventory = defineComponent({
     },
     mounted() {
         // - Actualise le timestamp courant toutes les 10 secondes.
-        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 10_000);
+        this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 10_000);
     },
     beforeDestroy() {
         if (this.nowTimer) {
@@ -178,6 +192,13 @@ const EventDepartureInventory = defineComponent({
 
         handleChange(id: AwaitedMaterial['id'], materialInventory: InventoryMaterialData) {
             this.$emit('change', id, materialInventory);
+        },
+
+        handleCancel() {
+            if (!this.isCancellable) {
+                return;
+            }
+            this.$emit('requestCancel');
         },
 
         // ------------------------------------------------------
@@ -205,15 +226,26 @@ const EventDepartureInventory = defineComponent({
             isDone,
             paused,
             isComplete,
+            isCancellable,
             handleChange,
+            handleCancel,
         } = this;
 
         return (
             <div class="EventDepartureInventory">
                 {isDone && (
-                    <p class="EventDepartureInventory__summary">
-                        {globalStatus}
-                    </p>
+                    <div class="EventDepartureInventory__summary">
+                        <div class="EventDepartureInventory__summary__message">
+                            <p class="EventDepartureInventory__summary__message__text">
+                                {globalStatus}
+                            </p>
+                            {isCancellable && (
+                                <Button size="small" type="warning" onClick={handleCancel}>
+                                    {__('put-back-on-hold')}
+                                </Button>
+                            )}
+                        </div>
+                    </div>
                 )}
                 <Inventory
                     inventory={inventory}

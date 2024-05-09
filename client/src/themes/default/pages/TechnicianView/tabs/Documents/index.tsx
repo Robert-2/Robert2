@@ -98,9 +98,10 @@ const TechnicianViewDocuments = defineComponent({
         // ------------------------------------------------------
 
         async fetchDocuments(): Promise<void> {
+            const { id } = this.technician;
+
             try {
-                const data = await apiTechnicians.documents(this.technician.id);
-                this.documents = data;
+                this.documents = await apiTechnicians.documents(id);
                 this.isFetched = true;
             } catch {
                 this.hasCriticalError = true;

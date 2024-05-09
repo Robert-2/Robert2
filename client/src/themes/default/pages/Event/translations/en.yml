@@ -1,9 +1,7 @@
 title-create: New event
 title-simple: Modify event
 title: 'Modify event "{title}"'
-help-edit: ''
 cannot-be-modified: This event cannot be modified anymore.
-back-to-calendar: Back to calendar
 save-and-go-to-prev-step: Save and back to previous step
 save-and-go-to-next-step: Save and continue
 go-to-prev-step: Back to previous step
@@ -16,6 +14,7 @@ event-materials: Materials
 event-summary: Summary
 event-confirmation: Confirmation
 
+no-technician-with-this-search: No technicians were found with this search.
 no-technician-pass-this-step: |-
     There is no technician available for this period.
     You can skip this step.
@@ -35,3 +34,93 @@ beneficiary-billing-help: Only the first beneficiary in the list will be display
 technicians-help: >-
     Double-click on a technician's line to assign her/him to the event at the
     needed start date/time.
+technicians-search-placeholder: Search for a name or email address...
+clear-search: Clear search term
+
+steps:
+    informations:
+        operation-period: Event's dates
+        mobilization-period: Mobilization period of the material
+        mobilization-period-help: "Period during which materials are mobilized for this event."
+        sync-mobilization-period: Use a material mobilization period identical to the event dates?
+        color-on-calendar: Color on calendar
+
+        readonly-mobilization-period-warning:
+            entirely: |
+                Now that the departure and return inventories have been completed,
+                it is no longer possible to modify the material mobilization period.
+
+            start-only:
+                with-author-date: |
+                    As the departure inventory have been completed on {date} by {author}, it
+                    is no longer possible to modify the material mobilization start date.
+
+                    The mobilization end date, on the other hand, remains modifiable until the return inventory is conducted.
+
+                with-author: |
+                    As the departure inventory have been completed by {author}, it
+                    is no longer possible to modify the material mobilization start date.
+
+                    The mobilization end date, on the other hand, remains modifiable until the return inventory is conducted.
+
+                with-date: |
+                    As the departure inventory have been completed on {date}, it
+                    is no longer possible to modify the material mobilization start date.
+
+                    The mobilization end date, on the other hand, remains modifiable until the return inventory is conducted.
+
+                simple: |
+                    As the departure inventory have been completed, it is no longer possible
+                    to modify the material mobilization start date.
+
+                    The mobilization end date, on the other hand, remains modifiable until the return inventory is conducted.
+
+            end-only:
+                with-author-date: |
+                    As the return inventory was completed on {date} by {author}, it is
+                    no longer possible to modify the material mobilization end date.
+
+                with-author: |
+                    As the return inventory was completed by {author}, it is
+                    no longer possible to modify the material mobilization end date.
+
+                with-date: |
+                    As the return inventory was completed on {date}, it is
+                    no longer possible to modify the material mobilization end date.
+
+                simple: |
+                    As the return inventory was completed, it is no longer possible to modify the material mobilization end date.
+
+        technician-transfer-warning:
+            without-critical-impact: |
+                Caution, you are about to change the event dates.
+
+                As it appears you are only extending the existing period,
+                technician assignments will remain unchanged and will still apply.
+
+                However, if you wish to adjust these assignments according to the new dates, after
+                confirming your changes, proceed to step 3 to readjust the technician assignments.
+
+            with-critical-impact: |
+                Caution, you are about to change the event dates, which will affect the previously assigned technicians.
+
+                The new period for technician assignment after your changes is: {period}.
+
+                Upon confirming the date modification, the assignments will be reviewed to check their applicability to the new period:
+                - Assignments that remain fully applicable will be kept as is.
+                - Partially applicable assignments will be adjusted to retain only the portions feasible during the new technician assignment period.
+                - Assignments that no longer correspond to the new dates will be removed.
+
+                Regardless, be sure to review the final assignments at step 3 after changing the dates.
+
+    beneficiaries:
+        numbered-label: "Beneficiary {number}"
+        add-beneficiary: Add a beneficiary
+        remove-beneficiary: Remove this beneficiary
+        cancel-add-beneficiary: Cancel adding beneficiary
+        beneficiary-not-found: Beneficiary not found. Perhaps he has been deleted?
+        create-a-beneficiary: Create a new beneficiary
+
+    technicians:
+        assignation-saved: Technician assignment successfully saved.
+        assignation-removed: Technician assignment successfully removed.

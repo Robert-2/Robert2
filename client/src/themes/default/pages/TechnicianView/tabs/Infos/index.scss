@@ -48,6 +48,12 @@
                 width: $icon-width;
             }
         }
+
+        &--preparer {
+            @include globals.icon('dolly') {
+                width: $icon-width;
+            }
+        }
     }
 
     &__address {

@@ -9,7 +9,7 @@ unavailabilities:
     inventory-period-not-started-details:
         "La période d'enregistrement de l'inventaire de départ n'a pas encore commencée pour cet événement.
         \n\n
-        Vous pourrez effectuer cet inventaire à partir du {date}\_à\_{time}."
+        Vous pourrez effectuer cet inventaire à partir du {date}."
     inventory-period-not-started: >-
         La période d'enregistrement de l'inventaire de départ n'a pas encore commencée pour cet événement.
         L'inventaire de départ sera réalisable 24 heures avant le début de l'événement.
@@ -38,8 +38,27 @@ status:
 actions:
     update-materials: Modifier le matériel de l'événement
 
-confirm-terminate-title: "Voulez-vous vraiment terminer cet inventaire de départ \_?"
+confirm-terminate-title: "Voulez-vous vraiment terminer cet inventaire de départ\_?"
 confirm-terminate-text: Veuillez noter qu'il ne sera plus possible de le modifier.
+confirm-terminate-with-mobilization-adjustment-text:
+    "Veuillez noter qu'il ne sera plus possible de le modifier.
+    \n\n
+    Aussi, puisque vous avez effectué l'inventaire de départ en amont de la date
+    de début de mobilisation prévue, celle-ci sera automatiquement ajustée à la date
+    actuelle, à la quinzaine de minutes près."
+
+put-back-on-hold: Remettre l'inventaire en attente
+confirm-rollback-title: "Voulez-vous vraiment remettre cet inventaire de départ en attente\_?"
+confirm-rollback-text: |
+    Cela entraînera l'annulation de la soumission, comme si l'inventaire n'avait jamais été finalisé.
+
+    Cette action n'aura aucun impact direct sur le stock. Vous pourrez par contre de nouveau modifier
+    la date de début de mobilisation du matériel de l'événement (celle-ci ne sera pas ajustée automatiquement).
+confirm-rollback-with-mobilization-adjustment-text: |
+    Cela entraînera l'annulation de la soumission, comme si l'inventaire n'avait jamais été finalisé.
+
+    La date de début de mobilisation du matériel va aussi être réinitialisée à la date de début d'opération prévue pour cet événement.
+    Vous aurez toutefois la possibilité de modifié celle-ci si nécessaire après l'annulation de l'inventaire.
 
 confirm-unsaved-edit-material-title: Modifications non sauvegardées
 confirm-unsaved-edit-material-text:
@@ -48,20 +67,6 @@ confirm-unsaved-edit-material-text:
     \n\n
     Êtes-vous sûr de vouloir poursuivre vers la modification du matériel,
     sans sauvegarder au préalable\_?"
-
-unexpected-material-title: "Matériel hors-événement\_!"
-unexpected-material-text:
-    "Le matériel que vous venez de scanner ne fait pas parti de l'événement.
-    \n\n
-    L'inventaire de départ n'a pas vocation à modifier la liste du matériel de l'événement
-    mais uniquement à s'assurer que tout part comme prévu (avec des éventuels commentaires)."
-unexpected-material-editable-text:
-    "Le matériel que vous venez de scanner ne fait pas parti de l'événement.
-    \n\n
-    L'inventaire de départ n'a pas vocation à modifier la liste du matériel de l'événement
-    mais uniquement à s'assurer que tout part comme prévu (avec des éventuels commentaires).
-    \n\n
-    Vous pouvez modifier l'événement en passant par le bouton en haut de page."
 
 incomplete-inventory-help:
     Les inventaires de départ ne peuvent être marqués comme terminés que lorsque tout

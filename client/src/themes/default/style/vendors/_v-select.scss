@@ -8,10 +8,10 @@
     min-width: 130px;
     min-height: $input-min-height;
     padding: 0 $input-padding-horizontal;
-    border: $input-border-size solid $bg-color-input-normal;
+    border: $input-border-width solid $input-border-color;
     border-radius: $input-border-radius;
-    background-color: $bg-color-input-normal;
-    font-family: $text-base-font-family;
+    background-color: $input-background-color;
+    font-family: $base-font-family;
     font-size: $input-font-size;
     line-height: $input-line-height;
 }
@@ -28,19 +28,20 @@
     &__dropdown-menu {
         left: -1px;
         width: calc(100% + 2px);
-        border: $input-border-size solid $input-focus-border-color;
+        border: $input-border-width solid $input-focus-border-color;
         border-top: none;
         border-radius: 0 0 $border-radius-normal $border-radius-normal;
-        background: $bg-color-input-normal;
+        background-color: $input-background-color;
+        color: $input-text-color;
     }
 
     &__dropdown-option {
         padding: 0.4rem 0.9rem;
-        color: $color-input;
+        color: $input-text-color;
 
         &--highlight {
             background: rgba(255, 255, 255, 0.07);
-            color: $color-input;
+            color: $input-text-color;
         }
     }
 
@@ -57,7 +58,7 @@
             padding: 0.3rem 0.7rem;
             border: none;
             background-color: $bg-color-tooltip;
-            color: $color-input;
+            color: $input-text-color;
             line-height: normal;
         }
 
@@ -91,7 +92,7 @@
         line-height: normal;
 
         &::placeholder {
-            color: $text-light-color;
+            color: $input-placeholder-color;
         }
     }
 
@@ -136,9 +137,9 @@
     }
 
     &--disabled {
-        border-color: $bg-color-input-normal;
-        background-color: $bg-color-input-disabled;
-        color: $color-input-disabled;
+        border-color: $input-disabled-border-color;
+        background-color: $input-disabled-background-color;
+        color: $input-disabled-text-color;
 
         #{$block}__dropdown-toggle,
         #{$block}__clear,
@@ -151,7 +152,7 @@
 
         #{$block}__actions {
             #{$block}__open-indicator {
-                fill: $bg-color-input-normal;
+                fill: $input-disabled-placeholder-color;
                 cursor: not-allowed;
             }
         }

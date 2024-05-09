@@ -37,4 +37,55 @@
             margin: 0 0 0 10px;
         }
     }
+
+    &__existing-user {
+        display: flex;
+        margin-top: globals.$spacing-medium;
+        text-align: center;
+        gap: 10px;
+
+        &__pseudo,
+        &__email {
+            flex: 1;
+            width: 50%;
+        }
+
+        &__email {
+            margin-left: 10px;
+        }
+
+        &__label {
+            padding: 5px 0;
+        }
+
+        &__value {
+            overflow: hidden;
+            padding: 9px 0;
+            color: #fff;
+            line-height: 1.4;
+            text-overflow: ellipsis;
+            word-break: break-all;
+        }
+    }
+
+    &__existing-user-help,
+    &__create-user-help {
+        margin-top: globals.$spacing-medium;
+        font-style: italic;
+    }
+
+    &__create-user {
+        display: flex;
+        margin: globals.$spacing-medium 0;
+
+        #{$block}__pseudo {
+            flex: 1;
+            margin: 0;
+        }
+
+        #{$block}__user-email {
+            flex: 1;
+            margin: 0 0 0 10px;
+        }
+    }
 }

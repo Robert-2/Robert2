@@ -1,36 +1,37 @@
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
-import Decimal from 'decimal.js';
 
-//
-// - Types
-//
+import type { SchemaInfer } from '@/utils/validation';
 
-export type RawEstimate<DecimalType extends string | Decimal = string> = {
-    id: number,
-    date: string,
-    url: string,
-    discount_rate: DecimalType,
-    total_without_taxes: DecimalType,
-    total_with_taxes: DecimalType,
-    currency: string,
-};
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
 
-export type Estimate = RawEstimate<Decimal>;
-
-//
-// - Normalizer
-//
-
-export const normalize = (estimate: RawEstimate): Estimate => ({
-    ...estimate,
-    discount_rate: new Decimal(estimate.discount_rate),
-    total_without_taxes: new Decimal(estimate.total_without_taxes),
-    total_with_taxes: new Decimal(estimate.total_with_taxes),
+export const EstimateSchema = z.strictObject({
+    id: z.number(),
+    date: z.datetime(),
+    url: z.string(),
+    discount_rate: z.decimal(),
+    total_without_taxes: z.decimal(),
+    total_with_taxes: z.decimal(),
+    currency: z.string(),
 });
 
-//
-// - Fonctions
-//
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Estimate = SchemaInfer<typeof EstimateSchema>;
+
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
 
 const remove = async (id: Estimate['id']): Promise<void> => {
     await requester.delete(`/estimates/${id}`);

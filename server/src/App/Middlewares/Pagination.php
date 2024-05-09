@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Loxya\Middlewares;
 
 use Illuminate\Pagination\Paginator;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 final class Pagination implements MiddlewareInterface
 {
@@ -17,7 +17,7 @@ final class Pagination implements MiddlewareInterface
             throw new \InvalidArgumentException('Not a Loxya request.');
         }
 
-        Paginator::currentPageResolver(fn () => (
+        Paginator::currentPageResolver(static fn () => (
             $request->getQueryParam('page')
         ));
 

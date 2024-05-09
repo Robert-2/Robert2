@@ -29,7 +29,9 @@
     }
 
     &__save {
-        margin-top: globals.$spacing-large;
+        display: flex;
+        align-items: center;
+        gap: globals.$spacing-small;
     }
 
     &--not-discountable {

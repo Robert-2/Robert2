@@ -1,0 +1,263 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Attributes Api all() parse the returned data correctly 1`] = `
+[
+  {
+    "categories": [
+      {
+        "id": 2,
+        "name": "Lumière",
+      },
+      {
+        "id": 1,
+        "name": "Son",
+      },
+    ],
+    "id": 1,
+    "is_totalisable": true,
+    "name": "Poids",
+    "type": "float",
+    "unit": "kg",
+  },
+  {
+    "categories": [],
+    "id": 2,
+    "max_length": null,
+    "name": "Couleur",
+    "type": "string",
+  },
+  {
+    "categories": [
+      {
+        "id": 2,
+        "name": "Lumière",
+      },
+      {
+        "id": 1,
+        "name": "Son",
+      },
+    ],
+    "id": 3,
+    "is_totalisable": true,
+    "name": "Puissance",
+    "type": "integer",
+    "unit": "W",
+  },
+  {
+    "categories": [],
+    "id": 4,
+    "name": "Conforme",
+    "type": "boolean",
+  },
+  {
+    "categories": [],
+    "id": 5,
+    "name": "Date d'achat",
+    "type": "date",
+  },
+]
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "categories": [
+    {
+      "id": 2,
+      "name": "Lumière",
+    },
+    {
+      "id": 1,
+      "name": "Son",
+    },
+  ],
+  "id": 1,
+  "is_totalisable": true,
+  "name": "Poids",
+  "type": "float",
+  "unit": "kg",
+}
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "categories": [],
+  "id": 2,
+  "max_length": null,
+  "name": "Couleur",
+  "type": "string",
+}
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "categories": [
+    {
+      "id": 2,
+      "name": "Lumière",
+    },
+    {
+      "id": 1,
+      "name": "Son",
+    },
+  ],
+  "id": 3,
+  "is_totalisable": true,
+  "name": "Puissance",
+  "type": "integer",
+  "unit": "W",
+}
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "categories": [],
+  "id": 4,
+  "name": "Conforme",
+  "type": "boolean",
+}
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #5) 1`] = `
+{
+  "categories": [],
+  "id": 5,
+  "name": "Date d'achat",
+  "type": "date",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #1) 1`] = `
+{
+  "categories": [
+    {
+      "id": 2,
+      "name": "Lumière",
+    },
+    {
+      "id": 1,
+      "name": "Son",
+    },
+  ],
+  "id": 1,
+  "is_totalisable": true,
+  "name": "Poids",
+  "type": "float",
+  "unit": "kg",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #2) 1`] = `
+{
+  "categories": [],
+  "id": 2,
+  "max_length": null,
+  "name": "Couleur",
+  "type": "string",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #3) 1`] = `
+{
+  "categories": [
+    {
+      "id": 2,
+      "name": "Lumière",
+    },
+    {
+      "id": 1,
+      "name": "Son",
+    },
+  ],
+  "id": 3,
+  "is_totalisable": true,
+  "name": "Puissance",
+  "type": "integer",
+  "unit": "W",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #4) 1`] = `
+{
+  "categories": [],
+  "id": 4,
+  "name": "Conforme",
+  "type": "boolean",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #5) 1`] = `
+{
+  "categories": [],
+  "id": 5,
+  "name": "Date d'achat",
+  "type": "date",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "categories": [
+    {
+      "id": 2,
+      "name": "Lumière",
+    },
+    {
+      "id": 1,
+      "name": "Son",
+    },
+  ],
+  "id": 1,
+  "is_totalisable": true,
+  "name": "Poids",
+  "type": "float",
+  "unit": "kg",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "categories": [],
+  "id": 2,
+  "max_length": null,
+  "name": "Couleur",
+  "type": "string",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #3) 1`] = `
+{
+  "categories": [
+    {
+      "id": 2,
+      "name": "Lumière",
+    },
+    {
+      "id": 1,
+      "name": "Son",
+    },
+  ],
+  "id": 3,
+  "is_totalisable": true,
+  "name": "Puissance",
+  "type": "integer",
+  "unit": "W",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #4) 1`] = `
+{
+  "categories": [],
+  "id": 4,
+  "name": "Conforme",
+  "type": "boolean",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #5) 1`] = `
+{
+  "categories": [],
+  "id": 5,
+  "name": "Date d'achat",
+  "type": "date",
+}
+`;

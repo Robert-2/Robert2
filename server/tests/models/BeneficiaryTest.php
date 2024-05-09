@@ -158,13 +158,15 @@ final class BeneficiaryTest extends TestCase
             ],
         ];
 
-        $result = Beneficiary::new($data)->append('user')->toArray();
+        $result = Beneficiary::new($data)
+            ->append(['user'])
+            ->attributesToArray();
         $expected = [
             'id' => 5,
             'reference' => null,
             'person_id' => 8,
             'company_id' => null,
-            'can_make_reservation' => false,
+            'can_make_reservation' => 0,
             'note' => null,
             'created_at' => '2023-02-10 15:00:00',
             'updated_at' => '2023-02-10 15:00:00',
@@ -178,41 +180,9 @@ final class BeneficiaryTest extends TestCase
             'postal_code' => '74000',
             'locality' => 'Annecy',
             'full_address' => '74000 Annecy',
-            'company' => null,
-            'country' => [
-                'id' => 2,
-                'name' => 'Suisse',
-                'code' => 'CH',
-                'created_at' => '2021-02-12 13:21:02',
-                'updated_at' => '2021-02-12 13:21:02',
-            ],
             'country_id' => 2,
             'user_id' => null,
             'user' => null,
-            'person' => [
-                'id' => 8,
-                'user_id' => null,
-                'first_name' => 'José',
-                'last_name' => 'Gatillon',
-                'email' => 'test@other-benef.net',
-                'phone' => null,
-                'street' => null,
-                'postal_code' => '74000',
-                'locality' => 'Annecy',
-                'country_id' => 2,
-                'created_at' => '2023-02-10 15:00:00',
-                'updated_at' => '2023-02-10 15:00:00',
-                'full_name' => 'José Gatillon',
-                'full_address' => '74000 Annecy',
-                'country' => [
-                    'id' => 2,
-                    'name' => 'Suisse',
-                    'code' => 'CH',
-                    'created_at' => '2021-02-12 13:21:02',
-                    'updated_at' => '2021-02-12 13:21:02',
-                ],
-                'user' => null,
-            ],
         ];
         $this->assertSame($expected, $result);
     }

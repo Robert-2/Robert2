@@ -16,6 +16,22 @@
         "value": "1"
     },
     {
+        "key": "eventSummary.showReplacementPrices",
+        "value": "1"
+    },
+    {
+        "key": "eventSummary.showDescriptions",
+        "value": "0"
+    },
+    {
+        "key": "eventSummary.showTags",
+        "value": "0"
+    },
+    {
+        "key": "eventSummary.showPictures",
+        "value": "0"
+    },
+    {
         "key": "calendar.event.showLocation",
         "value": "1"
     },
@@ -30,6 +46,10 @@
     {
         "key": "calendar.public.uuid",
         "value": "dfe7cd82-52b9-4c9b-aaed-033df210f23b"
+    },
+    {
+        "key": "calendar.public.displayedPeriod",
+        "value": "operation"
     },
     {
         "key": "returnInventory.mode",

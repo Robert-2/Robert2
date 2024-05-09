@@ -4,6 +4,86 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.0 (2024-05-09)
+
+- __[CHANGEMENT CRITIQUE]__ Loxya requiert maintenant au minimum PHP 8.1 pour fonctionner.
+- L'application utilise maintenant le nom "Loxya" partout (plutôt que "Loxya (Robert2)").
+- Ajoute le support PHP 8.2 et PHP 8.3.
+- Le compte des événements pour les unités de matériel tient compte des événements supprimés (Premium).
+- Les événements supprimés ne sont plus affichés dans le calendrier des techniciens.
+- Dans la fiche bénéficiaire, un onglet "Historique" affiche la liste des e-mails qui ont été envoyés
+  au bénéficiaire. Dans les fenêtres des événements et réservations, un onglet "Historique" affiche
+  la liste des messages de rappels qui ont été envoyés aux bénéficiaires (Premium).
+- Prend en charge l'utilisation d'un wildcard (`*`) pour configurer la création automatique du
+  bénéficiaire lié à l'utilisateur se connectant via un service externe (CAS ou SAML2) (Premium).
+- Ajout de la possibilité de définir les événements à l'heure près. Ceci se choisit à la première
+  étape de l'édition d'un événement, en cochant, ou non, "Jours entiers?" (activé par défaut)
+  dans le sélecteur des dates de l'événement. 
+- Pour les réservations publiques, l'administrateur a la possibilité de configurer les
+  réservations pour qu'elles soient basées sur des créneaux horaires précis ou sur des
+  journées entières. Cette configuration est disponible dans les paramètres de réservation (Premium).
+- Ajoute la possibilité de distinguer la période de l'événement (et donc de facturation si 
+  celle-ci est activée), parfois appelée "Période d'exploitation", de la période de mobilisation
+  du matériel. Ceci peut par exemple être utile pour inclure le temps nécessaire à l'installation
+  et à la désinstallation du matériel avant et après l'événement.  
+  La planification de cette période de mobilisation peut être effectuée lors de l'édition d'un événement. 
+  Quoi qu'il en soit, la mobilisation du matériel commencera dès que l'inventaire de départ aura été marqué
+  comme terminé (si celui-ci est effectué avant la date de mobilisation initialement prévue).
+  Pour ce qui est du retour, c'est l'inventaire de retour qui permettra de signifier que le matériel est
+  de retour en stock (ou bien la date de fin de mobilisation prévue en l'absence d'inventaire de retour
+  avant celle-ci).
+- __Attention__ lors de la mise à jour à l'étape de migration de la base de données, les dates
+  de mobilisation des événements existants qui ont un inventaire de départ et/ou de retour terminé
+  seront synchronisées avec les dates de ces inventaires. Si vous êtes abonné à une offre SaaS et que
+  vous ne souhaitez pas que ces dates soient modifiées, mais plutôt que ce soient les dates des inventaires
+  de départ et retour qui soient modifiées pour correspondre aux dates des événements, merci de _contacter
+  le support_ avant de demander la mise à jour.
+- Ajoute une page qui liste tous les événements (et réservations pour la Premium), avec une pagination,
+  une recherche intelligente sur le titre, le lieu et le bénéficiaire, et un filtre par parc
+  et par catégorie.
+- Ajoute un paramètre utilisateur permettant de choisir la vue par défaut entre la frise
+  temporelle (calendrier), et la liste paginée des événements et réservations.
+- Lors de la modification des dates d'un événement (que ce soit en le déplaçant, ou en le faisant commencer 
+  plus tôt ou terminer plus tard), les assignations des techniciens ne seront plus déplacées par l'application
+  car celle-ci n'avait aucune garantie que le technicien était réellement disponible aux nouvelles dates et heures assignées
+  (qui pouvaient d'ailleurs se retrouver au beau milieu de la nuit en fonction de la nouvelle date et heure de début de l'événement).
+  Pour chaque assignation de technicien:
+  - Si celle-ci est encore "réalisable" pendant les nouvelles dates sans changer quoi que ce soit, celle-ci sera conservée inchangée.
+  - Si les nouvelles dates impactent en partie l'assignation, celle-ci sera tronquée / raccourcie.
+  - Si les nouvelles périodes n'incluent plus du tout l'assignation, celle-ci sera supprimée.
+  Une alerte a été ajoutée au moment d'éditer les dates pour rappeler à l'opérateur d'ajuster les assignations 
+  après avoir changé les dates.
+- Lors de la duplication des événements, l'assignation des techniciens ne sera plus dupliquée automatiquement.
+  En effet, l'application n'avait aucune garantie que les techniciens assignés au précédent événement étaient réellement 
+  disponibles aux nouvelles dates et heures dupliqués. L'assignation de techniciens nécessite dans la majorité des cas
+  une validation humaine, d'autant qu'en fonction de l'heure de départ du nouvel événement, les assignations pouvaient se
+  retrouver en dehors des heures ouvrables.
+- Les réservations publiques (Premium) prennent maintenant en compte les heures et jours d'ouverture de l'établissement.
+  Pour mettre en place ces plages sur votre instance hébergée par nos soins, n'hésitez pas à prendre contact avec nos services.
+- Affiche le commentaire du demandeur dans la fenêtre d'une réservation, onglet "informations" (Premium).
+- Corrige la suppression définitive d'un utilisateur ayant un bénéficiaire (ou technicien) lié dans la corbeille.
+- Corrige le comportement des inventaires de retour quand un matériel qui a été supprimé est
+  présent dans la liste.
+- Ajoute la prise en charge de l'envoi des e-mails via le service inclut dans les abonnements SaaS.
+- Ajoute une section dans les paramètres généraux, onglet "fiches de sortie", qui permet de choisir
+  si on veut afficher ou non les colonnes "valeur de remplacement", "description du matériel",
+  les "tags" associés au matériel, numéros de série des unités (Premium), et la photo du matériel.
+- Ajoute la possibilité de joindre la fiche de sortie aux e-mails qui notifient les bénéficiaires que leur
+  réservation a été approuvée (choix dans les paramètres globaux, onglet "Réservations en ligne") (Premium).
+- Dans la fenêtre d'un événement ou d'une réservation, un nouveau bouton permet d'envoyer la liste
+  du matériel par e-mail au(x) bénéficiaire(s) (Premium).
+- À l'étape 3 ("techniciens") de l'édition des événements, un champ de recherche permet de chercher
+  un technicien dans la liste, par son nom, son prénom ou son adresse e-mail.
+- À l'étape 4 de l'édition des événements, les détails du matériel (avec la photo) sont affichés quand le
+  curseur de la souris survole une ligne dans la liste.
+- Dans la fenêtre d'un événement, un nouveau bouton permet d'envoyer la fiche de sortie en PDF à
+  tous les techniciens qui sont assignés à l'événement (Premium).
+- Dans la fenêtre d'un événement ou d'une réservation, un nouveau bouton permet de copier le permalien
+  de la fiche de sortie dans le presse-papier. Toute personne utilisant ce lien pourra télécharger
+  la fiche de sortie actualisée, au format PDF, même sans être connecté au logiciel (Premium).
+- Il est maintenant possible de remettre les inventaires de départ et de retour en attente.
+  Cela revient à annuler leur état "terminé" et à rétablir le stock en réintégrant les quantités cassés.
+
 ## 0.23.3 (2024-04-11)
 
 - Limite le nombre de vérifications différées simultanées du matériel manquant (2 par défaut).

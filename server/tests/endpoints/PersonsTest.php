@@ -7,9 +7,9 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
 final class PersonsTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(?int $id = null)
     {
-        return static::_dataFactory($id, [
+        return static::dataFactory($id, [
             [
                 'id' => 1,
                 'user_id' => 1,

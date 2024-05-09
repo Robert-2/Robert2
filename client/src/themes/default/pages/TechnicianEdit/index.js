@@ -30,6 +30,7 @@ const TechnicianEdit = defineComponent({
         isNew() {
             return this.id === null;
         },
+
         pageTitle() {
             const { $t: __, isNew, isFetched, technician } = this;
 
@@ -142,7 +143,7 @@ const TechnicianEdit = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="technician-edit" title={pageTitle}>
+                <Page name="technician-edit" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );

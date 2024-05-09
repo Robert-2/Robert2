@@ -5,12 +5,14 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Support\Assert;
+use Respect\Validation\Validator as V;
 
 /**
  * Société.
@@ -29,15 +31,14 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
- * @property-read Collection|Beneficiary[] $beneficiaries
+ * @property-read Collection<array-key, Beneficiary> $beneficiaries
+ *
+ * @method static Builder|static search(string $term)
  */
 final class Company extends BaseModel implements Serializable
 {
     use Serializer;
     use SoftDeletable;
-
-    protected $orderField = 'legal_name';
-    protected $searchField = 'legal_name';
 
     public function __construct(array $attributes = [])
     {
@@ -65,13 +66,15 @@ final class Company extends BaseModel implements Serializable
             ->length(2, 191)
             ->check($value);
 
-        $query = static::where('legal_name', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('legal_name', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        return !$query->withTrashed()->exists()
-            ?: 'company-legal-name-already-in-use';
+        return !$alreadyExists ?: 'company-legal-name-already-in-use';
     }
 
     public function checkCountryId($value)
@@ -108,7 +111,6 @@ final class Company extends BaseModel implements Serializable
 
     protected $appends = [
         'full_address',
-        'country',
     ];
 
     protected $casts = [
@@ -167,13 +169,36 @@ final class Company extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    protected $orderable = [
+        'legal_name',
+    ];
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where('legal_name', 'LIKE', $term);
+    }
+
+    // ------------------------------------------------------
+    // -
     // -    Serialization
     // -
     // ------------------------------------------------------
 
     public function serialize(): array
     {
-        return (new DotArray($this->attributesForSerialization()))
+        /** @var Company $company */
+        $company = tap(clone $this, static function (Company $company) {
+            $company->append(['country']);
+        });
+
+        return (new DotArray($company->attributesForSerialization()))
             ->delete(['created_at', 'updated_at', 'deleted_at'])
             ->all();
     }

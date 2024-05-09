@@ -1,9 +1,13 @@
 @use '~@/themes/default/style/globals';
 
 .IconMessage {
+    display: inline-flex;
+    align-items: flex-start;
     margin: 0;
+    gap: globals.$spacing-small;
 
     &__icon {
-        margin-right: globals.$spacing-thin;
+        margin-top: 2px;
+        font-size: 1.1rem;
     }
 }

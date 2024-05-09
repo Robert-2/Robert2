@@ -1,7 +1,7 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
-import moment from 'moment';
+import DateTime, { DateTimeRoundingMethod } from '@/utils/datetime';
+import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import apiEvents from '@/stores/api/events';
@@ -17,10 +17,10 @@ import Inventory, { InventoryErrorsSchema, DisplayGroup } from './components/Inv
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-import type { Moment } from 'moment';
+import type Period from '@/utils/period';
 import type { ComponentRef } from 'vue';
 import type {
-    Event,
+    EventDetails,
     EventMaterial,
 } from '@/stores/api/events';
 import type {
@@ -36,19 +36,20 @@ type InstanceProperties = {
 
 type Data = (
     & {
-        id: Event['id'],
+        id: EventDetails['id'],
         inventoryRaw: InventoryData,
         displayGroup: DisplayGroup,
         criticalError: string | null,
         isDirtyRaw: boolean,
         isSaving: boolean,
+        isCancelling: boolean,
         isUpdatingMaterial: boolean,
         inventoryErrors: InventoryMaterialError[] | null,
-        now: number,
+        now: DateTime,
     }
     & (
         | { isFetched: false, event: null }
-        | { isFetched: true, event: Event }
+        | { isFetched: true, event: EventDetails }
     )
 );
 
@@ -67,10 +68,11 @@ const EventDeparture = defineComponent({
             isFetched: false,
             isDirtyRaw: false,
             isSaving: false,
+            isCancelling: false,
             isUpdatingMaterial: false,
             criticalError: null,
             inventoryErrors: null,
-            now: Date.now(),
+            now: DateTime.now(),
         };
     },
     computed: {
@@ -82,16 +84,14 @@ const EventDeparture = defineComponent({
                 : __('title-simple');
         },
 
-        inventoryPeriodStart(): Moment | undefined {
+        inventoryPeriodStart(): DateTime | undefined {
             if (!this.event) {
                 return undefined;
             }
 
-            // FIXME: Lorsque les dates de mobilisation auront été implémentées,
-            //        on devra pouvoir commencer l'inventaire de départ quand on
-            //        veut avant le début de l'événement et cela "bougera" la date
-            //        de début de mobilisation à cette date.
-            return moment(this.event.start_date).subtract(1, 'days');
+            // - 30 jours avant le début de mobilisation prévu.
+            const { mobilization_period: mobilisationPeriod } = this.event;
+            return (mobilisationPeriod as Period<false>).start.subDay(30);
         },
 
         inventory(): InventoryData {
@@ -116,7 +116,7 @@ const EventDeparture = defineComponent({
             if (this.inventoryPeriodStart === undefined) {
                 return false;
             }
-            return this.inventoryPeriodStart.isSameOrBefore(this.now, 'day');
+            return this.inventoryPeriodStart.isSameOrBefore(this.now);
         },
 
         isInventoryPeriodClosed(): boolean {
@@ -130,20 +130,15 @@ const EventDeparture = defineComponent({
                 return true;
             }
 
-            // NOTE 1: C'est la date de début d'événement qui fait foi pour permettre
-            //         de calculer la période d'ouverture de l'inventaire de départ, pas
-            //         la date de début de mobilisation. La date de début de mobilisation
-            //         est la résultante de cet inventaire de départ.
-            // NOTE 2: On laisse un délai de 1 jour après la date de départ pour faire
-            //         l'inventaire de départ (mais en ne dépassant jamais la date de
-            //         fin d'événement).
-            // FIXME: Lorsque les dates de mobilisation auront été implémentées, il ne
-            //        faudra permettre les inventaires de départ que jusqu'à la date de
-            //        début de l'événement.
-            let inventoryPeriodCloseDate = moment(this.event.start_date).add(1, 'days');
-            if (inventoryPeriodCloseDate.isAfter(this.event.end_date)) {
-                inventoryPeriodCloseDate = moment(this.event.end_date);
+            // NOTE: On laisse un délai de 1 jour après la date de début de mobilisation
+            //       pour faire l'inventaire de départ (mais en ne dépassant jamais la date
+            //       de fin de mobilisation).
+            const { mobilization_period: mobilisationPeriod } = this.event;
+            let inventoryPeriodCloseDate = mobilisationPeriod.start.addDay();
+            if (inventoryPeriodCloseDate.isAfter(mobilisationPeriod.end as any)) {
+                inventoryPeriodCloseDate = mobilisationPeriod.end;
             }
+
             return inventoryPeriodCloseDate.isBefore(this.now);
         },
 
@@ -191,18 +186,10 @@ const EventDeparture = defineComponent({
                 return true;
             }
 
-            // FIXME: À re-activer lorsque les inventaires de retour terminés
-            //        rendront disponibles les stocks utilisés dans l'événement
-            //        (en bougeant la date de fin de mobilisation) OU quand la
-            //        gestion horaire aura été implémentée.
-            //        Sans ça, pour les événements qui partent juste après un autre
-            //        dont l'inventaire de retour a été terminé, sur un même jour,
-            //        on est bloqué car le système pense qu'il y a une pénurie.
-            // // - Si l'inventaire n'est pas déjà effectué, la période d'inventaire
-            // //   doit être encore en cours et la réservation ne doit pas contenir
-            // //   de pénurie.
-            // return !this.isInventoryPeriodClosed && !this.hasMaterialShortage;
-            return !this.isInventoryPeriodClosed;
+            // - Si l'inventaire n'est pas déjà effectué, la période d'inventaire
+            //   doit être encore en cours et la réservation ne doit pas contenir
+            //   de pénurie.
+            return !this.isInventoryPeriodClosed && !this.hasMaterialShortage;
         },
 
         isEditable(): boolean {
@@ -238,6 +225,24 @@ const EventDeparture = defineComponent({
             });
         },
 
+        isCancellable(): boolean {
+            const { event } = this;
+
+            // - Si l'inventaire de départ n'est pas fait, il n'y a rien à annuler.
+            if (!event || !this.isDone) {
+                return false;
+            }
+
+            // - Si l'événement est archivé ou si l'inventaire de retour est effectué,
+            //   on ne permet pas d'annuler l'inventaire de départ.
+            if (event.is_archived || event.is_return_inventory_done) {
+                return false;
+            }
+
+            // - On ne permet d'annuler l'inventaire de départ que si l'événement n'a pas encore commencé.
+            return event.operation_period.start.isAfter(this.now);
+        },
+
         canTerminate(): boolean {
             return this.isEditable && this.isComplete;
         },
@@ -245,8 +250,8 @@ const EventDeparture = defineComponent({
     mounted() {
         this.fetchData();
 
-        // - Actualise le timestamp courant toutes les minutes.
-        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 60_000);
+        // - Actualise le timestamp courant toutes les 10 secondes.
+        this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 10_000);
     },
     beforeDestroy() {
         if (this.nowTimer) {
@@ -287,25 +292,73 @@ const EventDeparture = defineComponent({
         async handleTerminate() {
             const { __ } = this;
 
-            if (!this.canTerminate) {
+            if (!this.event || !this.canTerminate) {
                 return;
             }
 
-            // FIXME: Lorsque les périodes de mobilisation auront été implémentées,
-            //        si l'inventaire est fait avant la date de début de mobilisation,
-            //        adapter celle-ci pour coiler à la date de réalisation de l'inventaire
-            //        de départ et donc le spécifier dans cette modale.
-            //        (e.g. "Ceci va modifier la date de début de mobilisation du matériel")
+            // - Si l'inventaire de départ est réalisé avant la date de début de mobilisation prévue,
+            //   la date de début de mobilisation va être déplacée automatiquement.
+            const { mobilization_period: mobilisationPeriod } = this.event;
+            const roundedDepartureInventoryDate = DateTime.now().roundMinutes(15, DateTimeRoundingMethod.CEIL);
+            const willMoveMobilizationStartDate = (
+                roundedDepartureInventoryDate
+                    .isBefore((mobilisationPeriod as Period<false>).start)
+            );
+
             const isConfirmed = await confirm({
                 title: __('confirm-terminate-title'),
                 confirmButtonText: __('global.terminate-inventory'),
-                text: __('confirm-terminate-text'),
+                text: willMoveMobilizationStartDate
+                    ? __('confirm-terminate-with-mobilization-adjustment-text')
+                    : __('confirm-terminate-text'),
             });
             if (!isConfirmed) {
                 return;
             }
 
             await this.save(true);
+        },
+
+        async handleCancel() {
+            if (!this.isCancellable || this.isCancelling) {
+                return;
+            }
+            this.isCancelling = true;
+            const { __, event } = this;
+            const {
+                id,
+                operation_period: operationPeriod,
+            } = event!;
+
+            // - Si la période de réalisation de l'inventaire de départ est terminée mais que la date
+            //   de début d'opération est dans le futur, on reset la date de début de mobilisation.
+            //   (sans quoi l'utilisateur risque de ne plus pouvoir faire l'inventaire de départ
+            //   juste après avoir annulé l'ancien)
+            const willMoveMobilizationStartDate = (
+                this.isInventoryPeriodClosed &&
+                operationPeriod.setFullDays(false).start.isAfter(this.now)
+            );
+
+            const isConfirmed = await confirm({
+                type: 'danger',
+                title: __('confirm-rollback-title'),
+                text: willMoveMobilizationStartDate
+                    ? __('confirm-rollback-with-mobilization-adjustment-text')
+                    : __('confirm-rollback-text'),
+            });
+            if (!isConfirmed) {
+                this.isCancelling = false;
+                return;
+            }
+
+            try {
+                const updatedEvent = await apiEvents.cancelDepartureInventory(id);
+                this.setEvent(updatedEvent);
+            } catch {
+                this.$toasted.error(__('global.errors.unexpected'));
+            } finally {
+                this.isCancelling = false;
+            }
         },
 
         async handleUpdateMaterialClick() {
@@ -365,7 +418,7 @@ const EventDeparture = defineComponent({
             this.isSaving = true;
             const { __, inventory } = this;
 
-            const doRequest = (): Promise<Event> => (
+            const doRequest = (): Promise<EventDetails> => (
                 finish
                     ? apiEvents.finishDepartureInventory(this.id, inventory)
                     : apiEvents.updateDepartureInventory(this.id, inventory)
@@ -398,7 +451,7 @@ const EventDeparture = defineComponent({
             }
         },
 
-        setEvent(event: Event) {
+        setEvent(event: EventDetails) {
             this.event = event;
 
             this.isDirtyRaw = false;
@@ -437,11 +490,12 @@ const EventDeparture = defineComponent({
             isArchived,
             canTerminate,
             hasMaterials,
-            // hasMaterialShortage,
+            hasMaterialShortage,
             isInventoryPeriodOpen,
             isInventoryPeriodClosed,
             isUpdatingMaterial,
             handleSave,
+            handleCancel,
             handleTerminate,
             handleChangeInventory,
             handleChangeDisplayGroup,
@@ -450,7 +504,7 @@ const EventDeparture = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="event-departure" title={pageTitle}>
+                <Page name="event-departure" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
@@ -482,21 +536,14 @@ const EventDeparture = defineComponent({
                     />
                 );
             }
-            // FIXME: À re-activer lorsque les inventaires de retour terminés
-            //        rendront disponibles les stocks utilisés dans l'événement
-            //        (en bougeant la date de fin de mobilisation) OU quand la
-            //        gestion horaire aura été implémentée.
-            //        Sans ça, pour les événements qui partent juste après un autre
-            //        dont l'inventaire de retour a été terminé, sur un même jour,
-            //        on est bloqué car le système pense qu'il y a une pénurie.
-            // if (!isDone && hasMaterialShortage) {
-            //     return (
-            //         <Unavailable
-            //             event={event}
-            //             reason={UnavailabilityReason.MATERIAL_SHORTAGE}
-            //         />
-            //     );
-            // }
+            if (!isDone && hasMaterialShortage) {
+                return (
+                    <Unavailable
+                        event={event}
+                        reason={UnavailabilityReason.MATERIAL_SHORTAGE}
+                    />
+                );
+            }
             if (!isDone && isInventoryPeriodClosed) {
                 return (
                     <Unavailable
@@ -512,8 +559,9 @@ const EventDeparture = defineComponent({
                     inventory={inventory}
                     errors={inventoryErrors}
                     displayGroup={displayGroup}
-                    onChange={handleChangeInventory}
                     paused={isUpdatingMaterial}
+                    onChange={handleChangeInventory}
+                    onRequestCancel={handleCancel}
                 />
             );
         };

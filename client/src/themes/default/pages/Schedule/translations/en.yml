@@ -1,0 +1,65 @@
+toggle:
+    calendar: Calendar
+    listing: Listing
+
+#
+# - Sous-pages (vues)
+#
+
+calendar:
+    title: Calendar
+    help: |-
+        Click and drag to move timeline and use mouse wheel to zoom in / out.
+        Hover an event with your mouse to display details about it.
+        Double-click on an event to open its preview, and modify its details.
+        Double-click on an empty column to create an event with start date pre-filled.
+
+    calendar: Calendar
+    listing: Listing
+
+    add-event: New event
+    event-saved: The event was saved.
+    loading-event: Loading event...
+    center-on-today: Center on today
+    display-all-parks: All parks
+    display-all-categories: All categories
+    event-with-missing-material-only: Events with missing material only?
+    help-add-event: Create a new event
+    help-center-view-on-today: Center calendar on today
+
+    caption:
+        title: 'Caption:'
+        archived: Archived
+        past-and-ok: Past, inventory done
+        past-material-not-returned: Material not returned!
+        past-no-inventory: Past without inventory
+        past-not-confirmed: Past and not confirmed
+        current-confirmed: Current and confirmed
+        current-not-confirmed: Current not confirmed
+        future-confirmed: Future and confirmed
+        future-not-confirmed: Future not confirmed
+
+listing:
+    title: Events
+    add-event: New event
+
+    calendar: Calendar
+    listing: Listing
+
+    all-periods: All periods
+    all-states: All states
+    states:
+        ending-today: Ending today
+        return-inventory-todo: Return inventory to do
+        not-confirmed: Not confirmed
+        archived: Archived
+
+    columns:
+        title: Title
+        mobilization-period: Mobilization period
+        operation-period: Operation period
+        beneficiaries: Beneficiary(ies)
+        categories: Category(ies)
+        parks: Park(s)
+
+    same-as-operation: Same as operation.

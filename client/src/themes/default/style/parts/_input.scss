@@ -5,22 +5,40 @@ textarea {
     flex: 0 0 auto;
     padding: $input-padding-vertical $input-padding-horizontal;
     outline: 0;
-    border: $input-border-size solid $bg-color-input-normal;
+    border: $input-border-width solid $input-border-color;
     border-radius: $input-border-radius;
-    background-color: $bg-color-input-normal;
-    color: $color-input;
-    font-family: $text-base-font-family;
+    background-color: $input-background-color;
+    color: $input-text-color;
+    font-family: $base-font-family;
     font-size: $input-font-size;
     line-height: $input-line-height;
 
+    &::placeholder {
+        color: $input-placeholder-color;
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+        -webkit-text-fill-color: $input-autofill-text-color;
+        box-shadow: 0 0 0 1000px $input-autofill-background-color inset;
+        transition: background-color 50000ms ease-in-out 0;
+    }
+
     &:focus {
         border-color: $input-focus-border-color;
+        background-color: $input-focus-background-color;
+        color: $input-focus-text-color;
     }
 
     &:disabled {
-        border-color: $bg-color-input-normal;
-        background-color: $bg-color-input-disabled;
-        color: $color-input-disabled;
+        border-color: $input-disabled-border-color;
+        background-color: $input-disabled-background-color;
+        color: $input-disabled-text-color;
+
+        &::placeholder {
+            color: $input-disabled-placeholder-color;
+        }
     }
 }
 

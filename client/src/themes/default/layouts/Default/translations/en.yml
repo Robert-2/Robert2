@@ -1,5 +1,6 @@
 menu:
-    calendar: Calendar
+    schedule-calendar: Schedule
+    schedule-listing: Schedule
     materials: Materials
     technicians: Technicians
     beneficiaries: Beneficiaries
@@ -8,3 +9,4 @@ menu:
     parks: Material parks
     users: Users
     settings: Settings
+    online-booking: Online booking

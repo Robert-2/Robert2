@@ -81,7 +81,13 @@ const Users = defineComponent({
                     key: 'phone',
                     title: __('phone'),
                     class: 'Users__cell Users__cell--phone',
-                    render: (h, user) => user.phone ?? null,
+                    render: (h, { phone }) => (
+                        phone ?? (
+                            <span class="Users__cell__empty">
+                                {__('not-specified')}
+                            </span>
+                        )
+                    ),
                 },
                 {
                     key: 'actions',
@@ -90,7 +96,7 @@ const Users = defineComponent({
                     render: (h, user) => {
                         const isActiveUser = user.id === currentUserId;
                         if (isActiveUser) {
-                            return <Button type="edit" to={{ name: 'user-settings' }} />;
+                            return null;
                         }
 
                         const isUserAdmin = user.group === Group.ADMIN;
@@ -112,21 +118,25 @@ const Users = defineComponent({
                         }
 
                         return (
-                            <Fragment>
+                            <Dropdown>
                                 <Button
                                     type="edit"
                                     to={{
                                         name: 'edit-user',
                                         params: { id: user.id },
                                     }}
-                                />
+                                >
+                                    {__('action-edit')}
+                                </Button>
                                 {!isUserAdmin && (
                                     <Button
                                         type="trash"
                                         onClick={() => { handleDeleteItem(user.id); }}
-                                    />
+                                    >
+                                        {__('action-delete')}
+                                    </Button>
                                 )}
-                            </Fragment>
+                            </Dropdown>
                         );
                     },
                 },
@@ -246,7 +256,7 @@ const Users = defineComponent({
 
         if (hasCriticalError) {
             return (
-                <Page name="users" title={__('page.users.title')}>
+                <Page name="users" title={__('page.users.title')} centered>
                     <CriticalError />
                 </Page>
             );
@@ -265,7 +275,7 @@ const Users = defineComponent({
         // - Actions de la page.
         const actions = !isTrashDisplayed
             ? [
-                <Button type="add" icon="user-plus" to={{ name: 'add-user' }}>
+                <Button type="add" icon="user-plus" to={{ name: 'add-user' }} collapsible>
                     {__('page.users.action-add')}
                 </Button>,
                 <Dropdown>
@@ -285,7 +295,7 @@ const Users = defineComponent({
                 name="users"
                 title={title}
                 help={help}
-                isLoading={isLoading}
+                loading={isLoading}
                 actions={actions}
             >
                 <div class="Users">

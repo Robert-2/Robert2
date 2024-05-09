@@ -19,7 +19,7 @@ type Data = {
 
 /**
  * Page des paramètres des inventaires de départ / sortie
- * des événements / réservations.
+ * des événements.
  */
 const InventoriesGlobalSettings = defineComponent({
     name: 'InventoriesGlobalSettings',
@@ -111,12 +111,7 @@ const InventoriesGlobalSettings = defineComponent({
                         />
                     </Fieldset>
                     <section class="InventoriesGlobalSettings__actions">
-                        <Button
-                            icon="save"
-                            htmlType="submit"
-                            type="success"
-                            loading={isSaving}
-                        >
+                        <Button icon="save" htmlType="submit" type="primary" loading={isSaving}>
                             {isSaving ? __('saving') : __('save')}
                         </Button>
                     </section>

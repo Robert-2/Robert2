@@ -1,3 +1,5 @@
+@use '~@/themes/default/style/globals';
+
 .EventStep2 {
     max-width: 800px;
     min-width: 250px;
@@ -11,16 +13,12 @@
 
     &__help {
         margin-top: 0;
-
-        .fas {
-            margin-right: 0.3rem;
-            font-size: 1.2rem;
-        }
     }
 
     &__actions {
         display: flex;
         justify-content: space-between;
-        padding: 1rem 0 0.5rem;
+        padding: globals.$spacing-large 0;
+        gap: globals.$spacing-small;
     }
 }

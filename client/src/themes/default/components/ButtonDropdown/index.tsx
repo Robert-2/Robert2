@@ -53,6 +53,12 @@ type Action = {
      * N'est utile que quand l'action secondaire n'est pas un lien.
      */
     onClick?(e: MouseEvent): void,
+
+    /**
+     * Action supplémentaire éventuelle, qui sera affichée sur la même ligne
+     * que l'action secondaire, à droite.
+     */
+    secondary?: Action,
 };
 
 type Props = {
@@ -232,10 +238,25 @@ const ButtonDropdown = defineComponent({
                                 external={action.external}
                                 onClick={action.onClick ?? (() => {})}
                                 disabled={disabled}
-                                class="ButtonDropdown__action-button"
+                                class={[
+                                    'ButtonDropdown__action-button',
+                                    { 'ButtonDropdown__action-button--primary': !!action.secondary },
+                                ]}
                             >
                                 {action.label}
                             </Button>
+                            {!!action.secondary && (
+                                <Button
+                                    type={action.secondary.type}
+                                    to={action.secondary.target}
+                                    icon={action.secondary.icon}
+                                    external={action.secondary.external}
+                                    onClick={action.secondary.onClick ?? (() => {})}
+                                    disabled={disabled}
+                                    v-tooltip={action.secondary.label}
+                                    class="ButtonDropdown__action-button ButtonDropdown__action-button--secondary"
+                                />
+                            )}
                         </li>
                     ))}
                 </ul>

@@ -3,16 +3,19 @@ import warning from 'warning';
 import { computed, defineComponent } from '@vue/composition-api';
 import Select from '@/themes/default/components/Select';
 import Radio from '@/themes/default/components/Radio';
-import Datepicker, { Type as DatepickerType } from '@/themes/default/components/Datepicker';
+import DatePicker, { Type as DatePickerType } from '@/themes/default/components/DatePicker';
 import SwitchToggle from '@/themes/default/components/SwitchToggle';
 import Input, { TYPES as INPUT_TYPES } from '@/themes/default/components/Input';
 import Textarea from '@/themes/default/components/Textarea';
 import InputCopy from '@/themes/default/components/InputCopy';
 import InputColor from '@/themes/default/components/InputColor';
+import DateTime from '@/utils/datetime';
+import Period from '@/utils/period';
 import Color from '@/utils/color';
+import Day from '@/utils/day';
 
 const TYPES = [
-    ...Object.values(DatepickerType),
+    ...Object.values(DatePickerType),
     ...INPUT_TYPES,
     'color',
     'copy',
@@ -45,14 +48,32 @@ export default defineComponent({
         },
         required: { type: Boolean, default: false },
         disabled: { type: [Boolean, String], default: false },
+        readonly: { type: [Boolean, String], default: false },
         help: { type: String, default: undefined },
         errors: { type: Array, default: null },
         placeholder: {
+            // NOTE: Attention à ne pas mettre `Boolean` en premier, sans quoi
+            //       passer `placeholder=""` donnera `placeholder={true}`.
+            // eslint-disable-next-line vue/prefer-prop-type-boolean-first
             type: [String, Boolean, Object],
             default: undefined,
         },
         value: {
-            type: [String, Number, Date, Array, Boolean, Color],
+            type: [
+                // NOTE: Attention à ne pas mettre `Boolean` en premier, sans quoi
+                //       passer `value=""` donnera `value={true}`.
+                /* eslint-disable vue/prefer-prop-type-boolean-first */
+                String,
+                Number,
+                Date,
+                Boolean,
+                Array,
+                Color,
+                Period,
+                DateTime,
+                Day,
+                /* eslint-enable vue/prefer-prop-type-boolean-first */
+            ],
             default: undefined,
         },
         rows: { type: Number, default: undefined },
@@ -62,14 +83,21 @@ export default defineComponent({
         addon: { type: String, default: undefined },
         options: { type: Array, default: undefined },
 
-        // - Props. spécifiques aux date picker.
+        // - Props. spécifiques aux datepickers.
         range: { type: Boolean, default: false },
-        minDate: { type: [String, Object, Date, Number], default: undefined },
-        maxDate: { type: [String, Object, Date, Number], default: undefined },
+        minDate: {
+            type: [String, DateTime],
+            default: undefined,
+        },
+        maxDate: {
+            type: [String, DateTime],
+            default: undefined,
+        },
         disabledDate: { type: Function, default: undefined },
         withFullDaysToggle: { type: Boolean, default: false },
         withoutMinutes: { type: Boolean, default: false },
     },
+    emits: ['change', 'input'],
     computed: {
         invalid() {
             return this.errors && this.errors.length > 0;
@@ -149,11 +177,12 @@ export default defineComponent({
             const customUselessProps = [
                 'name', 'placeholder', 'value', 'rows', 'step',
                 'min', 'max', 'addon', 'options', 'disabledDate',
-                'minDate', 'maxDate',
+                'minDate', 'maxDate', 'withFullDaysToggle', 'range',
+                'withoutMinutes',
             ];
             customUselessProps.forEach((customUselessProp) => {
                 warning(
-                    this.type !== 'custom' || this[customUselessProp] === undefined,
+                    this.type !== 'custom' || !(customUselessProp in this.$options.propsData),
                     `<FormField> La prop. \`${customUselessProp}\` a été fournie pour ` +
                     'un champ "custom", celle-ci ne sera pas utilisée.',
                 );
@@ -174,6 +203,7 @@ export default defineComponent({
             required,
             invalid,
             disabled,
+            readonly,
             verticalForm: vertical,
             options,
             step,
@@ -226,7 +256,7 @@ export default defineComponent({
                                 max={max}
                                 name={name}
                                 autocomplete={type === 'password' ? 'new-password' : 'off'}
-                                disabled={!!disabled}
+                                disabled={!!(disabled || readonly)}
                                 invalid={invalid}
                                 placeholder={_placeholder}
                                 value={value}
@@ -241,7 +271,7 @@ export default defineComponent({
                                 name={name}
                                 options={options}
                                 placeholder={_placeholder}
-                                disabled={!!disabled}
+                                disabled={!!(disabled || readonly)}
                                 invalid={invalid}
                                 value={value}
                                 onInput={handleInput}
@@ -253,7 +283,7 @@ export default defineComponent({
                                 class="FormField__input"
                                 name={name}
                                 options={options}
-                                disabled={!!disabled}
+                                disabled={!!(disabled || readonly)}
                                 invalid={invalid}
                                 value={value}
                                 onInput={handleInput}
@@ -267,22 +297,23 @@ export default defineComponent({
                                 name={name}
                                 value={value}
                                 rows={rows}
-                                disabled={!!disabled}
+                                disabled={!!(disabled || readonly)}
                                 invalid={invalid}
                                 placeholder={_placeholder}
                                 onInput={handleInput}
                                 onChange={handleChange}
                             />
                         )}
-                        {Object.values(DatepickerType).includes(type) && (
-                            <Datepicker
+                        {Object.values(DatePickerType).includes(type) && (
+                            <DatePicker
                                 class="FormField__input"
                                 name={name}
                                 type={type}
                                 value={value}
                                 range={range}
                                 invalid={invalid}
-                                disabled={disabled}
+                                disabled={!!disabled}
+                                readonly={readonly}
                                 placeholder={_placeholder}
                                 minDate={minDate}
                                 maxDate={maxDate}
@@ -297,7 +328,7 @@ export default defineComponent({
                             <InputColor
                                 class="FormField__input"
                                 name={name}
-                                disabled={!!disabled}
+                                disabled={!!(disabled || readonly)}
                                 invalid={invalid}
                                 value={value}
                                 placeholder={placeholder}
@@ -309,8 +340,13 @@ export default defineComponent({
                             <SwitchToggle
                                 class="FormField__input"
                                 name={name}
+                                options={options}
                                 value={value ?? false}
-                                disabled={disabled}
+                                disabled={(
+                                    typeof disabled !== 'string'
+                                        ? !!(disabled || readonly)
+                                        : disabled
+                                )}
                                 onInput={handleInput}
                                 onChange={handleChange}
                             />

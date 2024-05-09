@@ -1,9 +1,12 @@
+import '../index.scss';
 import clsx from 'clsx';
 import generateUniqueId from 'lodash/uniqueId';
 import { defineComponent } from '@vue/composition-api';
+import config from '@/globals/config';
 import { initColumnsDisplay } from '../@utils';
 
-import type { CreateElement, VNodeClass } from 'vue';
+import type { ClassValue } from 'clsx';
+import type { CreateElement } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { ColumnsDisplay } from '../@utils';
 import type {
@@ -21,7 +24,7 @@ import type {
     RowClickEventPayload,
 } from 'vue-tables-2-premium';
 
-export type Props<Data = any> = {
+export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>> = {
     /**
      * Nom unique du tableau.
      *
@@ -29,7 +32,7 @@ export type Props<Data = any> = {
      * l'utilisateur puisse le récupérer dans le même état la prochaine fois.
      * (on parle ici des colonnes affichées, du tri, etc.)
      */
-    name?: string,
+    name?: string | undefined,
 
     /**
      * Les colonnes du tableau.
@@ -40,7 +43,10 @@ export type Props<Data = any> = {
      *
      * Voir {@see {@link Column}} pour le format des données des colonnes.
      */
-    columns: Columns<Data>,
+    columns: TColumns,
+
+    /** Permet d'activer ou de désactiver le champ de filtrage du tableau. */
+    filterable?: boolean,
 
     /**
      * L'ordre dans lequel le tableau doit être triée initialement.
@@ -52,24 +58,30 @@ export type Props<Data = any> = {
      *
      * Si cette prop. n'est pas passée, le tableau conservera son tri initial.
      */
-    defaultOrderBy?: OrderBy | OrderBy['column'],
+    defaultOrderBy?: OrderBy<TColumns> | OrderBy<TColumns>['column'],
 
     /**
      * La fonction permettant de récupérer le jeu de données.
      */
-    fetcher: RequestFunction,
+    fetcher: RequestFunction<Datum[]>,
 
     /**
      * Classe(s) qui seront ajoutées aux lignes du tableau.
      *
      * Différents formats sont acceptés:
      * - Les formats acceptés par défaut par Vue pour les classes.
-     *   ({@see {@link VNodeClass}})
+     *   ({@see {@link ClassValue}})
      * - Une fonction a qui le jeu de données de chaque ligne sera passé
      *   et qui devra renvoyer des classes dans les formats acceptés par
      *   Vue (cf. ci-dessus).
      */
-    rowClass?: VNodeClass | ((row: Data) => VNodeClass),
+    rowClass?: ClassValue | ((row: Datum) => ClassValue),
+
+    /**
+     * Le nombre maximum d'enregistrements récupérables par page, pour
+     * surcharger la valeur par défaut de la configuration.
+     */
+    perPage?: number,
 };
 
 type InstanceProperties = {
@@ -79,6 +91,9 @@ type InstanceProperties = {
 /**
  * Un tableau dont les données sont récupérées depuis
  * une source de données distante.
+ *
+ * Si vous avez déjà toutes les données en votre possession à
+ * l'initialisation du tableau, utilisez plutôt `<ClientTable />`.
  */
 const ServerTable = defineComponent({
     name: 'ServerTable',
@@ -95,6 +110,10 @@ const ServerTable = defineComponent({
             type: Function as PropType<Props['fetcher']>,
             required: true,
         },
+        filterable: {
+            type: Boolean as PropType<Required<Props>['filterable']>,
+            default: true,
+        },
         defaultOrderBy: {
             type: [Object, String] as PropType<Props['defaultOrderBy']>,
             default: undefined,
@@ -110,8 +129,12 @@ const ServerTable = defineComponent({
             ] as PropType<Props['rowClass']>,
             default: undefined,
         },
+        perPage: {
+            type: Number as PropType<Props['perPage']>,
+            default: undefined,
+        },
     },
-    emit: ['rowClick'],
+    emits: ['rowClick'],
     setup: (): InstanceProperties => ({
         uniqueId: undefined,
     }),
@@ -130,9 +153,13 @@ const ServerTable = defineComponent({
 
                     return {
                         ...acc,
-                        [column.key]: (h: CreateElement, row: any): RenderedColumn => (
-                            rawRenderColumn(h, row)
-                        ),
+                        [column.key]: (h: CreateElement, row: any, index: number): RenderedColumn => {
+                            const renderedColumn = rawRenderColumn(h, row, index);
+
+                            return column.key === 'actions'
+                                ? <div class="Table__cell__actions">{renderedColumn}</div>
+                                : renderedColumn;
+                        },
                     };
                 },
                 {},
@@ -151,10 +178,10 @@ const ServerTable = defineComponent({
         columnsClasses(): Record<Column['key'], string> {
             return this.columns.reduce(
                 (acc: Record<Column['key'], string>, column: Column) => {
-                    const columnClass = column.class;
-                    return undefined !== columnClass
-                        ? { ...acc, [column.key]: `${columnClass} ` }
-                        : acc;
+                    const columnClass = ['Table__cell', {
+                        'Table__cell--actions': column.key === 'actions',
+                    }];
+                    return { ...acc, [column.key]: `${clsx(columnClass, column.class)} ` };
                 },
                 {},
             );
@@ -182,12 +209,14 @@ const ServerTable = defineComponent({
                 name,
                 fetcher,
                 rowClass,
+                filterable,
                 defaultOrderBy,
                 columnsHeadings,
                 columnsClasses,
                 columnsDisplay,
                 columnsSortable,
                 columnsRenders,
+                perPage = config.defaultPaginationLimit,
             } = this;
 
             const persistState = name !== undefined;
@@ -198,11 +227,14 @@ const ServerTable = defineComponent({
                 sortable: columnsSortable,
                 headings: columnsHeadings,
                 templates: columnsRenders,
+                filterByColumn: false,
+                filterable,
                 columnsDisplay,
                 columnsClasses,
                 requestFunction: fetcher,
-                rowClassCallback: (row: any): VNodeClass => (
-                    clsx(typeof rowClass === 'function' ? rowClass(row) : rowClass)
+                perPage: perPage ?? config.defaultPaginationLimit,
+                rowClassCallback: (row: any): ClassValue => (
+                    clsx('Table__row', typeof rowClass === 'function' ? rowClass(row) : rowClass)
                 ),
             };
 
@@ -231,9 +263,17 @@ const ServerTable = defineComponent({
         // ------------------------------------------------------
 
         handleRowClick({ row, event: e }: RowClickEventPayload) {
-            const { nodeName } = (e.target! as HTMLElement);
-            if (['A', 'BUTTON'].includes(nodeName)) {
+            if (e.type === 'dblclick') {
                 return;
+            }
+
+            let currentElement: HTMLElement | null = e.target as HTMLElement;
+            while (currentElement && currentElement !== document.body) {
+                const { nodeName } = currentElement;
+                if (['A', 'BUTTON'].includes(nodeName)) {
+                    return;
+                }
+                currentElement = currentElement.parentElement;
             }
 
             this.$emit('rowClick', row);
@@ -264,14 +304,25 @@ const ServerTable = defineComponent({
         },
     },
     render() {
-        const { name, uniqueId, columnsKeys, options, handleRowClick } = this;
+        const {
+            name,
+            uniqueId,
+            filterable,
+            columnsKeys,
+            options,
+            handleRowClick,
+        } = this;
+
+        const className = ['Table', {
+            'Table--filterable': filterable,
+        }];
 
         return (
             <v-server-table
                 ref="table"
+                class={className}
                 key={name ?? uniqueId}
                 name={name ?? uniqueId}
-                class="Table"
                 columns={columnsKeys}
                 options={options}
                 onRow-click={handleRowClick}
@@ -280,4 +331,5 @@ const ServerTable = defineComponent({
     },
 });
 
+export type { Columns, Column };
 export default ServerTable;

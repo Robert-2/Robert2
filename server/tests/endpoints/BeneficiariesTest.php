@@ -4,18 +4,20 @@ declare(strict_types=1);
 namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Loxya\Support\Arr;
-use Loxya\Models\Beneficiary;
 use Illuminate\Support\Collection;
+use Loxya\Models\Beneficiary;
 use Loxya\Models\Event;
+use Loxya\Support\Arr;
 
 final class BeneficiariesTest extends ApiTestCase
 {
-    public static function data(int $id, string $format = Beneficiary::SERIALIZE_DEFAULT)
+    public static function data(?int $id = null, string $format = Beneficiary::SERIALIZE_DEFAULT)
     {
         $beneficiaries = new Collection([
             [
                 'id' => 1,
+                'user_id' => 1,
+                'user' => UsersTest::data(1),
                 'first_name' => 'Jean',
                 'last_name' => 'Fountain',
                 'full_name' => 'Jean Fountain',
@@ -25,21 +27,20 @@ final class BeneficiariesTest extends ApiTestCase
                 'street' => "1, somewhere av.",
                 'postal_code' => '1234',
                 'locality' => "Megacity",
-                'user_id' => 1,
                 'country_id' => 1,
                 'full_address' => "1, somewhere av.\n1234 Megacity",
                 'company_id' => 1,
                 'note' => null,
                 'company' => CompaniesTest::data(1),
                 'country' => CountriesTest::data(1),
-                'can_make_reservation' => true,
                 'stats' => [
                     'borrowings' => 2,
                 ],
-                'user' => UsersTest::data(1),
             ],
             [
                 'id' => 2,
+                'user_id' => 2,
+                'user' => UsersTest::data(2),
                 'first_name' => 'Roger',
                 'last_name' => 'Rabbit',
                 'full_name' => 'Roger Rabbit',
@@ -49,21 +50,20 @@ final class BeneficiariesTest extends ApiTestCase
                 'street' => null,
                 'postal_code' => null,
                 'locality' => null,
-                'user_id' => 2,
                 'country_id' => null,
                 'full_address' => null,
                 'company_id' => null,
                 'note' => null,
                 'company' => null,
                 'country' => null,
-                'can_make_reservation' => true,
                 'stats' => [
                     'borrowings' => 2,
                 ],
-                'user' => UsersTest::data(2),
             ],
             [
                 'id' => 3,
+                'user_id' => null,
+                'user' => null,
                 'first_name' => 'Client',
                 'last_name' => 'Benef',
                 'full_name' => 'Client Benef',
@@ -74,20 +74,19 @@ final class BeneficiariesTest extends ApiTestCase
                 'postal_code' => '88080',
                 'locality' => 'Wazzaville',
                 'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
-                'user_id' => null,
                 'country_id' => null,
                 'company_id' => null,
                 'note' => null,
                 'company' => null,
                 'country' => null,
-                'can_make_reservation' => false,
                 'stats' => [
                     'borrowings' => 1,
                 ],
-                'user' => null,
             ],
             [
                 'id' => 4,
+                'user_id' => null,
+                'user' => null,
                 'first_name' => 'Alphonse',
                 'last_name' => 'Latour',
                 'full_name' => 'Alphonse Latour',
@@ -98,29 +97,26 @@ final class BeneficiariesTest extends ApiTestCase
                 'postal_code' => null,
                 'locality' => null,
                 'full_address' => null,
-                'user_id' => null,
                 'country_id' => null,
                 'company_id' => null,
                 'note' => null,
                 'company' => null,
                 'country' => null,
-                'can_make_reservation' => false,
                 'stats' => [
                     'borrowings' => 0,
                 ],
-                'user' => null,
             ],
         ]);
 
         $beneficiaries = match ($format) {
-            Beneficiary::SERIALIZE_DEFAULT => $beneficiaries->map(fn($material) => (
+            Beneficiary::SERIALIZE_DEFAULT => $beneficiaries->map(static fn ($material) => (
                 Arr::except($material, ['user', 'stats'])
             )),
             Beneficiary::SERIALIZE_DETAILS => $beneficiaries,
             default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
         };
 
-        return static::_dataFactory($id, $beneficiaries->all());
+        return static::dataFactory($id, $beneficiaries->all());
     }
 
     public function testGetAll(): void
@@ -199,38 +195,23 @@ final class BeneficiariesTest extends ApiTestCase
         $this->client->get('/api/beneficiaries/1/bookings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(2, [
-            array_replace(
-                EventsTest::data(5, Event::SERIALIZE_BOOKING_SUMMARY),
-                ['entity' => 'event'],
-            ),
-            array_replace(
-                EventsTest::data(1, Event::SERIALIZE_BOOKING_SUMMARY),
-                ['entity' => 'event'],
-            ),
+            EventsTest::data(5, Event::SERIALIZE_BOOKING_EXCERPT),
+            EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
         ]);
 
         // - Test avec une date minimum.
         $this->client->get('/api/beneficiaries/1/bookings?after=2020-01-01');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(1, [
-            array_replace(
-                EventsTest::data(5, Event::SERIALIZE_BOOKING_SUMMARY),
-                ['entity' => 'event'],
-            ),
+            EventsTest::data(5, Event::SERIALIZE_BOOKING_EXCERPT),
         ]);
 
         // - Test avec un sens ascendant.
         $this->client->get('/api/beneficiaries/1/bookings?direction=asc');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(2, [
-            array_replace(
-                EventsTest::data(1, Event::SERIALIZE_BOOKING_SUMMARY),
-                ['entity' => 'event'],
-            ),
-            array_replace(
-                EventsTest::data(5, Event::SERIALIZE_BOOKING_SUMMARY),
-                ['entity' => 'event'],
-            ),
+            EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
+            EventsTest::data(5, Event::SERIALIZE_BOOKING_EXCERPT),
         ]);
     }
 
@@ -292,7 +273,6 @@ final class BeneficiariesTest extends ApiTestCase
             'postal_code' => '74000',
             'locality' => 'Annecy',
             'country_id' => 2,
-            'can_make_reservation' => false,
             'note' => null,
         ]);
 
@@ -314,7 +294,6 @@ final class BeneficiariesTest extends ApiTestCase
             'country_id' => 2,
             'country' => CountriesTest::data(2),
             'full_address' => "1 rue du test\n74000 Annecy",
-            'can_make_reservation' => false,
             'stats' => [
                 'borrowings' => 0,
             ],
@@ -326,7 +305,6 @@ final class BeneficiariesTest extends ApiTestCase
         $this->client->post('/api/beneficiaries', [
             'first_name' => 'Tester',
             'last_name' => 'Leblanc',
-            'can_make_reservation' => false,
             'pseudo' => 'new-test',
             'email' => 'tester@robertmanager.net',
             'password' => '0123456',
@@ -334,7 +312,7 @@ final class BeneficiariesTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
     }
 
-    public function testUpdateBadData()
+    public function testUpdateBadData(): void
     {
         $this->client->put('/api/beneficiaries/2', [
             'first_name' => 'Tester',
@@ -377,7 +355,7 @@ final class BeneficiariesTest extends ApiTestCase
                     'last_name' => 'Gatillon',
                     'full_name' => 'José Gatillon',
                 ]),
-            ]
+            ],
         ));
     }
 

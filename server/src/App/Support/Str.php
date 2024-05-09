@@ -13,7 +13,7 @@ class Str extends StrCore
      *
      * @param string $string La chaîne à "sluggifier".
      * @param string $separator Le séparateur à utiliser.
-     * @param string $language Le groupe de règles à utiliser pour la normalisation des caractères.
+     * @param string $rulesets Le groupe de règles à utiliser pour la normalisation des caractères.
      *                         (@see {@link \Cocur\Slugify\Slugify::$options})
      *
      * @return string La chaîne "sluggifiée".
