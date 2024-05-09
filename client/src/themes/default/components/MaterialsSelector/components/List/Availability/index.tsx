@@ -3,7 +3,7 @@ import { defineComponent } from '@vue/composition-api';
 import store from '../../../store';
 
 import type { PropType } from '@vue/composition-api';
-import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
 
 type Props = {
     /** Le matériel avec ses quantités disponibles. */

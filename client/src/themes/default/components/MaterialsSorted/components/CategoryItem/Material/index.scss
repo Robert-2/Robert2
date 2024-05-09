@@ -1,0 +1,58 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialsCategoryItemMaterial {
+    display: flex;
+    align-items: center;
+    padding: 0.7rem 0;
+    border-bottom: 1px dashed globals.$list-left-border-color;
+    list-style: none;
+
+    &__label {
+        flex: 1;
+
+        &__name {
+            overflow: hidden;
+            max-width: 590px;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        &__ref,
+        &__units {
+            display: inline-block;
+            overflow: hidden;
+            color: globals.$text-light-color;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        &__ref {
+            max-width: 220px;
+        }
+    }
+
+    &__quantity {
+        flex: 0 0 3rem;
+        margin: 0 0.8rem;
+
+        &__icon {
+            margin-right: 3px;
+            color: globals.$text-light-color;
+            font-size: 0.8rem;
+        }
+    }
+
+    &__total {
+        flex: 0 0 5rem;
+        margin-left: 0.8rem;
+        text-align: right;
+    }
+
+    &__price {
+        flex: 0 0 auto;
+        margin-left: 0.8rem;
+        color: globals.$text-light-color;
+        text-align: right;
+    }
+}

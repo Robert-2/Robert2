@@ -6,26 +6,25 @@ namespace Loxya\Controllers;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Http\Request;
 use Loxya\Models\Enums\Group;
+use Loxya\Models\OpeningHour;
 use Loxya\Models\Setting;
 use Loxya\Services\Auth;
+use Loxya\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
 
-class SettingController extends BaseController
+final class SettingController extends BaseController
 {
-    // ------------------------------------------------------
-    // -
-    // -    Getters
-    // -
-    // ------------------------------------------------------
-
     public function getAll(Request $request, Response $response): ResponseInterface
     {
         $isAdmin = Auth::is(Group::ADMIN);
         $settings = Setting::getList($isAdmin);
 
-        // - Ajout de l'URL public du calendrier, si activé.
+        // - Ajout des horaires d'ouverture.
+        Arr::set($settings, 'general.openingHours', OpeningHour::all());
+
+        // - Ajout de l'URL public et du mode d'affichage du calendrier, si activé.
         $publicCalendar = $settings['calendar']['public'];
         if ($isAdmin && $publicCalendar['enabled']) {
             $settings['calendar']['public']['url'] = null;
@@ -37,16 +36,17 @@ class SettingController extends BaseController
                 );
             }
         }
+        if (!$publicCalendar['enabled']) {
+            unset($settings['calendar']['public']['displayedPeriod']);
+        }
         unset($settings['calendar']['public']['uuid']);
+
+        // - Spécifique OSS
+        unset($settings['reservation']);
+        unset($settings['eventSummary']['showUnitsSerialNumbers']);
 
         return $response->withJson($settings, StatusCode::STATUS_OK);
     }
-
-    // ------------------------------------------------------
-    // -
-    // -    Setters
-    // -
-    // ------------------------------------------------------
 
     public function update(Request $request, Response $response): ResponseInterface
     {

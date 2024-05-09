@@ -6,13 +6,11 @@ title: "Bénéficiaire\_: «\_{name}\_»"
 #
 
 infos:
-    reservations-allowed: Autorisées.
-    reservations-no-access: Pas d'accès.
     user-account: Compte utilisateur
     borrowings-count: Nombre d'emprunts
     no-borrowing: Aucun.
     next-borrowings-title: Emprunts en cours ou à venir
-    no-borrowing-planned: Aucune réservation ni événement prévu.
+    no-borrowing-planned: Aucun événement prévu.
 
 billing:
     title: Devis & Factures
@@ -29,5 +27,5 @@ borrowings:
     title: Emprunts ({count})
     nothing-to-show: Ce bénéficiaire n'a effectué aucun emprunt.
     done: Terminé
-    currently-out: En cours
-    expected-to-be-out-on: Prévu le {date}
+    currently-mobilized: En cours
+    mobilized-starting-from: Prévu le {date}

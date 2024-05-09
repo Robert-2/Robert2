@@ -1,12 +1,20 @@
 error-occurred-while-import-lists-from-event: "Une erreur est survenue lors de l'import des listes depuis l'événement."
 error-occurred-while-deleting-list: "Une erreur est survenue lors de la suppression de la liste."
 
+new-sub-list: Nouvelle sous-liste
+new-sub-list-confirm: |
+    Vous êtes sur le point d'ajouter une sous-liste à cet événement.
+
+    Celui-ci contient déjà du matériel hors-liste, si vous créez une sous-liste, ces matériels déjà existants seront placés dans une liste "virtuelle" globale.
+
 add-materials-from:
     an-event: Ajouter du matériel depuis un événement
     dropdown:
         title: Ajouter du matériel depuis...
         choices:
             an-event: Un événement...
+
+list-deleted: La liste a été supprimée.
 
 #
 # - Filtres

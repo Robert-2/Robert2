@@ -14,7 +14,7 @@ module.exports = {
         project: './tsconfig.json',
         tsconfigRootDir: __dirname,
         babelOptions: {
-            configFile: './babel.config.js',
+            configFile: require.resolve('./babel.config.js'),
         },
     },
 
@@ -32,12 +32,17 @@ module.exports = {
         {
             files: ['**/locale/**/*'],
             rules: {
-                'quotes': ['off'],
+                '@stylistic/js/quotes': ['off'],
+                '@stylistic/ts/quotes': ['off'],
                 'global-require': ['off'],
             },
         },
         {
-            files: ['**/tests/**/*', '**/__tests__/*', '**/*.spec.*'],
+            files: [
+                '**/tests/**/*',
+                '**/__tests__/*',
+                '**/*.spec.*',
+            ],
             env: { jest: true },
             settings: {
                 'import/resolver': {
@@ -73,10 +78,25 @@ module.exports = {
             ],
             extends: '@pulsanova/node',
         },
+        // - Autorise les imports cycliques dans les stores / fixtures (schemas Zod).
+        {
+            files: [
+                '**/stores/api/*',
+                '**/stores/api/**/*',
+                '**/tests/fixtures/**/*',
+            ],
+            rules: {
+                'import/no-cycle': ['off'],
+            },
+        },
         // - Autorise le `snake_case` dans les types d'API vu que pour le moment
         //   celle-ci accepte et retourne uniquement sous ce format.
         {
-            files: ['**/stores/api/*.ts', '**/stores/api/**/*.ts'],
+            files: [
+                '**/stores/api/*.ts',
+                '**/stores/api/**/*.ts',
+                '**/tests/fixtures/**/*.ts',
+            ],
             rules: {
                 '@typescript-eslint/naming-convention': [
                     'error',

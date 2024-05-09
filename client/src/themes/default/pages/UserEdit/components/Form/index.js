@@ -28,6 +28,7 @@ export default {
         isSaving: { type: Boolean, default: false },
         errors: { type: Object, default: () => ({}) },
     },
+    emits: ['change', 'submit', 'cancel'],
     data() {
         const data = {
             ...DEFAULT_VALUES,

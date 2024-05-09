@@ -120,6 +120,10 @@ final class AttributeTest extends TestCase
         $this->assertEquals('Masse', $result->name);
         $this->assertEquals('g', $result->unit);
         $this->assertFalse($result->is_totalisable);
-        $this->assertEquals([4, 3], $result->categories->map(fn ($category) => $category->id)->toArray());
+        $this->assertEquals([4, 3], (
+            $result->categories
+                ->map(static fn ($category) => $category->id)
+                ->toArray()
+        ));
     }
 }

@@ -12,13 +12,13 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Psr7\Stream;
 
-class DocumentController extends BaseController
+final class DocumentController extends BaseController
 {
     use Crud\HardDelete;
 
     public function getFile(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $document = Document::findOrFail($id);
 
         $fileName = $document->name;
@@ -46,11 +46,11 @@ class DocumentController extends BaseController
                 ->withHeader('Content-Length', $fileStream->getSize())
                 ->withStatus(StatusCode::STATUS_OK)
                 ->withBody($fileStream);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new \RuntimeException(sprintf(
                 "Cannot send the file \"%s\". Details: %s",
                 $fileName,
-                $e->getMessage()
+                $e->getMessage(),
             ));
         }
     }

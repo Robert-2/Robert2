@@ -23,6 +23,7 @@ trait Create
         }
 
         if (method_exists($this->getModelClass(), 'unserialize')) {
+            // @phpstan-ignore-next-line
             $postData = $this->getModelClass()::unserialize($postData);
         }
 
@@ -34,6 +35,7 @@ trait Create
                 throw $e;
             }
 
+            // @phpstan-ignore-next-line
             $errors = $this->getModelClass()::serializeValidation($errors);
             throw new ValidationException($errors);
         }

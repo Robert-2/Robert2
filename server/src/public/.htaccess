@@ -2,11 +2,12 @@
     RewriteEngine On
     RewriteBase /
 
-    # Make Authentication work on php-fcgi, even if 'Authorization' header is not supported
+    # - Fait fonctionner l'authentification sur php-fcgi, même si
+    #   l'en-tête `Authorization` n'est pas supporté.
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
-    # Redirect all requests to index.php
+    # - Redirige toutes les requêtes vers `index.php`.
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [QSA,L]

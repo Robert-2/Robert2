@@ -10,9 +10,9 @@ jobs:
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./client }}
         steps    :
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
-              with: { node-version: '16' }
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with: { node-version: '18' }
             - run: yarn install --non-interactive --pure-lockfile
             - run: yarn lint:js --max-warnings 0 --color
 
@@ -21,9 +21,9 @@ jobs:
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./client }}
         steps    :
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
-              with: { node-version: '16' }
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with: { node-version: '18' }
             - run: yarn install --non-interactive --pure-lockfile
             - run: yarn lint:scss --max-warnings 0 --color
 
@@ -32,9 +32,9 @@ jobs:
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./client }}
         steps    :
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
-              with: { node-version: '16' }
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with: { node-version: '18' }
             - run: yarn install --non-interactive --pure-lockfile
             - run: yarn check-types
 
@@ -43,9 +43,9 @@ jobs:
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./client }}
         steps    :
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
-              with: { node-version: '16' }
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with: { node-version: '18' }
             - run: yarn install --non-interactive --pure-lockfile
             - run: yarn test --colors --coverage --passWithNoTests
 
@@ -54,11 +54,11 @@ jobs:
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./server }}
         steps    :
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
-                  php-version : 8.0
-                  extensions  : dom, mbstring, pdo, intl, simplexml
+                  php-version : 8.1
+                  extensions  : dom, mbstring, pdo, intl-74.2, simplexml
                   coverage    : none
             - run: composer install --no-interaction --no-progress
             - run: composer lint
@@ -68,11 +68,11 @@ jobs:
         runs-on  : ubuntu-latest
         defaults : { run: { working-directory: ./server }}
         steps    :
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
-                  php-version : 8.0
-                  extensions  : dom, mbstring, pdo, intl, simplexml
+                  php-version : 8.1
+                  extensions  : dom, mbstring, pdo, intl-74.2, simplexml
                   coverage    : none
             - run: composer install --no-interaction --no-progress
             - run: composer phpstan
@@ -88,7 +88,7 @@ jobs:
             DB_PORT: 3306
         strategy:
             matrix:
-                php: [8.0, 8.1]
+                php: [8.1, 8.2, 8.3]
         defaults: { run: { working-directory: ./server }}
         services:
             mysql:
@@ -100,11 +100,11 @@ jobs:
                     - 3306
                 options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
                   php-version : ${{ matrix.php }}
-                  extensions  : dom, mbstring, pdo, intl, simplexml
+                  extensions  : dom, mbstring, pdo, intl-74.2, simplexml
                   coverage    : xdebug
             - run: composer install --no-interaction --no-progress
             - run: ./vendors/bin/phpunit -d --without-creating-snapshots

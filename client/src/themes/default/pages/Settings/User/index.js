@@ -13,14 +13,16 @@ const UserSettings = defineComponent({
 
         return (
             <Page name="user-settings" title={__('page.user-settings.title')}>
-                <Tabs>
-                    <Tab title={__('page.user-settings.profile.title')} icon="user-alt">
-                        <ProfileSettings />
-                    </Tab>
-                    <Tab title={__('page.user-settings.interface.title')} icon="paint-brush">
-                        <InterfaceSettings />
-                    </Tab>
-                </Tabs>
+                <div class="UserSettings">
+                    <Tabs>
+                        <Tab title={__('page.user-settings.profile.title')} icon="user-alt">
+                            <ProfileSettings />
+                        </Tab>
+                        <Tab title={__('page.user-settings.interface.title')} icon="paint-brush">
+                            <InterfaceSettings />
+                        </Tab>
+                    </Tabs>
+                </div>
             </Page>
         );
     },

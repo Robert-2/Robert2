@@ -1,36 +1,12 @@
 @use '~@/themes/default/style/globals';
 
-.Page--attributes {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.Attributes {
     height: 100%;
 
-    .Attributes {
-        flex: 1;
-    }
-}
-
-.Attributes {
     &__table {
-        width: 100%;
-        min-width: 800px;
-        margin: 0;
-        background-color: globals.$bg-color-table-td;
-        color: globals.$text-base-color;
-        border-collapse: collapse;
+        height: 100%;
 
-        &__header {
-            background-color: globals.$bg-color-table-th;
-            color: globals.$text-soft-color;
-            font-weight: 600;
-            text-align: left;
-        }
-
-        &__col {
-            padding: 0.8rem 0.5rem;
-            border-bottom: 1px solid globals.$bg-color-body;
-
+        &__cell {
             &--name {
                 width: 300px;
             }
@@ -43,7 +19,10 @@
             &--max-length,
             &--is-totalisable {
                 width: 120px;
-                text-align: center;
+
+                // - Important pour surcharger la définition du <th> de `.VueTables`.
+                // stylelint-disable-next-line declaration-no-important
+                text-align: center !important;
             }
 
             &--max-length {
@@ -56,11 +35,16 @@
         }
     }
 
-    &__no-data {
-        margin: 0;
-        padding: 1.5rem 0.5rem;
-        background-color: globals.$bg-color-table-td;
-        font-style: italic;
-        text-align: center;
+    &__item {
+        &__name {
+            font-weight: 700;
+        }
+
+        &__categories {
+            &--empty {
+                color: globals.$text-light-color;
+                font-style: italic;
+            }
+        }
     }
 }

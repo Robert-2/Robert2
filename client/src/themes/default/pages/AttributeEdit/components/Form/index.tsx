@@ -1,5 +1,6 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
+import { AttributeType } from '@/stores/api/attributes';
 import pick from 'lodash/pick';
 import Fragment from '@/components/Fragment';
 import FormField from '@/themes/default/components/FormField';
@@ -7,18 +8,18 @@ import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
-import type { AttributeDetails, AttributeEdit, AttributeType } from '@/stores/api/attributes';
 import type { Category } from '@/stores/api/categories';
+import type { AttributeDetails, AttributeCreate } from '@/stores/api/attributes';
 
 type Props = {
-    /** Les données de l'attribut actuellement sauvées en BDD. */
+    /** Les données déjà sauvegardées de l'attribut (s'il existait déjà). */
     savedData?: AttributeDetails | null,
 
-    /** Pour indiquer quand la sauvegarde est en cours. */
+    /** Permet d'indiquer que la sauvegarde est en cours. */
     isSaving?: boolean,
 
-    /** Liste des erreurs de validation. */
-    errors?: Record<keyof AttributeEdit, string[]>,
+    /** Liste des erreurs de validation éventuelles. */
+    errors?: Record<keyof AttributeCreate, string[]>,
 };
 
 type CategoryOption = {
@@ -27,20 +28,19 @@ type CategoryOption = {
 };
 
 type Data = {
-    attribute: AttributeEdit,
-    hasCriticalError: boolean,
+    data: AttributeCreate,
 };
 
-const DEFAULT_VALUES: AttributeEdit = Object.freeze({
+const DEFAULT_VALUES: AttributeCreate = Object.freeze({
     name: '',
-    type: 'integer',
+    type: AttributeType.INTEGER,
     unit: '',
-    isTotalisable: false,
-    maxLength: '',
+    max_length: '',
+    is_totalisable: false,
     categories: [],
 });
 
-// @vue/component
+/** Formulaire d'édition d'un attribut de matériel. */
 const AttributeEditForm = defineComponent({
     name: 'AttributeEditForm',
     provide: {
@@ -60,17 +60,15 @@ const AttributeEditForm = defineComponent({
             default: null,
         },
     },
+    emits: ['submit', 'cancel'],
     data(): Data {
-        const attribute = {
+        const data = {
             ...DEFAULT_VALUES,
             ...pick(this.savedData ?? {}, Object.keys(DEFAULT_VALUES)),
             categories: this.savedData?.categories.map(({ id }: Category) => id) ?? [],
         };
 
-        return {
-            attribute,
-            hasCriticalError: false,
-        };
+        return { data };
     },
     computed: {
         isNew(): boolean {
@@ -85,22 +83,22 @@ const AttributeEditForm = defineComponent({
             const { $t: __ } = this;
 
             return [
-                { value: 'integer', label: __('page.attribute-edit.type-integer') },
-                { value: 'float', label: __('page.attribute-edit.type-float') },
-                { value: 'date', label: __('page.attribute-edit.type-date') },
-                { value: 'string', label: __('page.attribute-edit.type-string') },
-                { value: 'boolean', label: __('page.attribute-edit.type-boolean') },
+                { value: AttributeType.INTEGER, label: __('page.attribute-edit.type-integer') },
+                { value: AttributeType.FLOAT, label: __('page.attribute-edit.type-float') },
+                { value: AttributeType.DATE, label: __('page.attribute-edit.type-date') },
+                { value: AttributeType.STRING, label: __('page.attribute-edit.type-string') },
+                { value: AttributeType.BOOLEAN, label: __('page.attribute-edit.type-boolean') },
             ];
         },
 
         hasMaxLength(): boolean {
-            const { type } = this.attribute;
+            const { type } = this.data;
             return type === 'string';
         },
 
         isNumber(): boolean {
-            const { type } = this.attribute;
-            return !!type && ['integer', 'float'].includes(type);
+            const { type } = this.data;
+            return !!type && [AttributeType.INTEGER, AttributeType.FLOAT].includes(type);
         },
     },
     mounted() {
@@ -114,7 +112,7 @@ const AttributeEditForm = defineComponent({
         // ------------------------------------------------------
 
         handleToggleCategory(categoryId: Category['id']) {
-            const { categories } = this.attribute;
+            const { categories } = this.data;
 
             const foundIndex = categories.indexOf(categoryId);
             if (foundIndex === -1) {
@@ -126,10 +124,18 @@ const AttributeEditForm = defineComponent({
 
         handleSubmit(e: SubmitEvent) {
             e.preventDefault();
-            const { isNew, attribute, isNumber } = this;
-            const { name, type, categories, unit, isTotalisable, maxLength } = attribute;
 
-            const data: AttributeEdit = { name, categories };
+            const { isNew, data: rawData, isNumber } = this;
+            const {
+                name,
+                type,
+                categories,
+                unit,
+                max_length: maxLength,
+                is_totalisable: isTotalisable,
+            } = rawData;
+
+            const data: AttributeCreate = { name, categories };
             if (isNew) {
                 // Ici le type est forcément défini (cf. DEFAULT_VALUES)
                 data.type = type!;
@@ -137,11 +143,11 @@ const AttributeEditForm = defineComponent({
 
             if (isNumber && unit) {
                 data.unit = unit;
-                data.isTotalisable = !!isTotalisable;
+                data.is_totalisable = !!isTotalisable;
             }
 
-            if (type === 'string') {
-                data.maxLength = maxLength || null;
+            if (type === AttributeType.STRING) {
+                data.max_length = maxLength ?? null;
             }
 
             this.$emit('submit', data);
@@ -154,17 +160,17 @@ const AttributeEditForm = defineComponent({
     render() {
         const {
             $t: __,
-            attribute,
+            data,
             errors,
             isNew,
             typesOptions,
             isNumber,
+            isSaving,
             hasMaxLength,
             categoriesOptions,
             handleToggleCategory,
             handleSubmit,
             handleCancel,
-            isSaving,
         } = this;
 
         return (
@@ -176,7 +182,7 @@ const AttributeEditForm = defineComponent({
                     <FormField
                         label={__('page.attribute-edit.name')}
                         class="AttributeEditForm__name"
-                        v-model={attribute.name}
+                        v-model={data.name}
                         errors={errors?.name}
                         autocomplete="off"
                         required
@@ -186,7 +192,7 @@ const AttributeEditForm = defineComponent({
                         label={__('page.attribute-edit.type')}
                         class="AttributeEditForm__type"
                         options={typesOptions}
-                        v-model={attribute.type}
+                        v-model={data.type}
                         errors={errors?.type}
                         placeholder={false}
                         disabled={!isNew}
@@ -197,15 +203,15 @@ const AttributeEditForm = defineComponent({
                             <FormField
                                 label={__('page.attribute-edit.unit')}
                                 class="AttributeEditForm__unit"
-                                v-model={attribute.unit}
+                                v-model={data.unit}
                                 errors={errors?.unit}
                             />
                             <FormField
                                 type="switch"
                                 label={__('page.attribute-edit.is-totalisable')}
                                 class="AttributeEditForm__is-totalisable"
-                                v-model={attribute.isTotalisable}
-                                errors={errors?.isTotalisable}
+                                v-model={data.is_totalisable}
+                                errors={errors?.is_totalisable}
                             />
                             <p class="AttributeEditForm__is-totalisable-help">
                                 {__('page.attribute-edit.totalisable-help')}
@@ -218,8 +224,8 @@ const AttributeEditForm = defineComponent({
                                 type="number"
                                 label={__('page.attribute-edit.max-length')}
                                 class="AttributeEditForm__max-length"
-                                v-model={attribute.maxLength}
-                                errors={errors?.maxLength}
+                                v-model={data.max_length}
+                                errors={errors?.max_length}
                                 step={1}
                             />
                         </Fragment>
@@ -232,7 +238,7 @@ const AttributeEditForm = defineComponent({
                         </p>
                         <div class="AttributeEditForm__categories__choices">
                             {categoriesOptions.map(({ label, value: categoryId }: CategoryOption) => {
-                                const isSelected = attribute.categories.includes(categoryId);
+                                const isSelected = data.categories.includes(categoryId);
                                 return (
                                     <span
                                         key={categoryId}

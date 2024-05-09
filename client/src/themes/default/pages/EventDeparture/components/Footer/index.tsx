@@ -3,11 +3,11 @@ import { defineComponent } from '@vue/composition-api';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 
 type Props = {
     /** L'événement dont on veut obtenir le footer d'inventaire de départ. */
-    event: Event,
+    event: EventDetails,
 
     /** Indique si l'inventaire de départ peut-être "terminée" ou non. */
     canTerminate: boolean,

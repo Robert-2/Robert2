@@ -8,7 +8,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 #[AsCommand(name: 'migrations:migrate', aliases: ['migrate'])]
-class MigrateCommand extends CoreMigrateCommand
+final class MigrateCommand extends CoreMigrateCommand
 {
     use ConfigurationTrait;
 

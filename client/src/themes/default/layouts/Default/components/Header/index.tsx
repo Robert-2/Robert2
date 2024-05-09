@@ -1,16 +1,17 @@
 import './index.scss';
-import { mapState } from 'vuex';
 import { defineComponent } from '@vue/composition-api';
 import Logo from '@/themes/default/components/Logo';
 import Icon from '@/themes/default/components/Icon';
 import Menu from './Menu';
 
-// @vue/component
+/** Header du layout par défaut de l'application. */
 const DefaultLayoutHeader = defineComponent({
     name: 'DefaultLayoutHeader',
     emits: ['toggleMenu'],
     computed: {
-        ...mapState({ pageTitle: 'pageRawTitle' }),
+        pageTitle(): string {
+            return this.$store.state.pageRawTitle;
+        },
     },
     watch: {
         $route() {

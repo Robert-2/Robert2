@@ -1,6 +1,6 @@
 @use '~@/themes/default/style/globals';
 
-.CompanySelect {
+.BeneficiaryEditCompanySelect {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -13,10 +13,5 @@
 
     &__edit-button {
         margin-left: 10px;
-    }
-
-    .ErrorMessage {
-        width: 100%;
-        text-align: right;
     }
 }

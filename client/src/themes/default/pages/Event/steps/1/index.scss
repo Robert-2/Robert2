@@ -5,10 +5,10 @@
     min-width: 250px;
     margin: 0 auto;
 
-    &__period {
+    &__operation-period {
         display: flex;
-        align-items: flex-end;
-        margin-top: 1rem;
+        align-items: flex-start;
+        margin: 1rem 0;
         gap: 10px;
 
         &__dates {
@@ -21,6 +21,14 @@
             align-items: center;
             justify-content: center;
             height: 39px;
+            margin-top: 26px;
+        }
+    }
+
+    &__warning {
+        &--technician-transfer,
+        &--mobilization-period-readonly {
+            margin-top: globals.$spacing-medium;
         }
     }
 
@@ -35,6 +43,15 @@
         }
     }
 
+    &__preparer {
+        margin-top: 1rem;
+
+        &__label {
+            display: block;
+            padding: 5px 0;
+        }
+    }
+
     &__color {
         --input-width: 160px;
     }
@@ -44,7 +61,7 @@
         flex-wrap: wrap;
         justify-content: flex-end;
         padding: globals.$spacing-large 0;
-        gap: 10px;
+        gap: globals.$spacing-small;
     }
 
     //

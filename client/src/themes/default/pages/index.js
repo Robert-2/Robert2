@@ -1,5 +1,5 @@
 import Login from './Login';
-import Calendar from './Calendar';
+import Schedule, { pages as schedulePages } from './Schedule';
 import Event from './Event';
 import EventDeparture from './EventDeparture';
 import EventReturn from './EventReturn';
@@ -41,13 +41,22 @@ export default [
     },
 
     //
-    // - Calendrier
+    // - Accueil
     //
 
     {
-        name: 'calendar',
+        name: 'home',
         path: '/',
-        component: Calendar,
+        redirect: { name: 'schedule' },
+    },
+
+    //
+    // - Planning
+    //
+
+    {
+        path: '/schedule',
+        component: Schedule,
         meta: {
             requiresAuth: true,
             requiresGroups: [
@@ -56,6 +65,7 @@ export default [
                 Group.VISITOR,
             ],
         },
+        children: schedulePages,
     },
 
     //
@@ -91,7 +101,7 @@ export default [
     },
     {
         name: 'edit-event',
-        path: '/events/:id',
+        path: '/events/:id(\\d+)',
         component: Event,
         meta: {
             requiresAuth: true,

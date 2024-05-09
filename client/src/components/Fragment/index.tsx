@@ -1,7 +1,7 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 
-// @vue/component
+/** Un élément permettant d'en grouper d'autres sans élément racine. */
 const Fragment = defineComponent({
     name: 'Fragment',
     render() {

@@ -4,19 +4,20 @@ declare(strict_types=1);
 namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Loxya\Support\Arr;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Controllers\Traits\WithCrud;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\User;
 use Loxya\Services\Auth;
+use Loxya\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Response;
 
-class UserController extends BaseController
+final class UserController extends BaseController
 {
     use WithCrud {
         update as protected _originalUpdate;
@@ -25,33 +26,27 @@ class UserController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $paginated = (bool) $request->getQueryParam('paginated', true);
-        $search = $request->getQueryParam('search', null);
-        $group = $request->getQueryParam('group', null);
-        $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool) $request->getQueryParam('ascending', true);
-        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
+        $group = $request->getRawEnumQueryParam('group', Group::all());
+        $search = $request->getStringQueryParam('search');
+        $limit = $request->getIntegerQueryParam('limit');
+        $ascending = $request->getBooleanQueryParam('ascending', true);
+        $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
+        $orderBy = $request->getOrderByQueryParam('orderBy', User::class);
 
-        $orderBy = $request->getQueryParam('orderBy', null);
-        if (!in_array($orderBy, ['pseudo', 'email', 'group'], true)) {
-            $orderBy = null;
-        }
+        $query = User::query()
+            ->when(
+                $search !== null && strlen($search) >= 2,
+                static fn (Builder $subQuery) => $subQuery->search($search),
+            )
+            ->when($group !== null, static fn (Builder $subQuery) => (
+                $subQuery->where('group', '=', $group)
+            ))
+            ->when($onlyDeleted, static fn (Builder $subQuery) => (
+                $subQuery->onlyTrashed()
+            ))
+            ->customOrderBy($orderBy, $ascending ? 'asc' : 'desc');
 
-        $query = (new User())
-            ->setOrderBy($orderBy, $ascending)
-            ->setSearch($search)
-            ->getAll($onlyDeleted);
-
-        if (in_array($group, Group::all(), true)) {
-            $query->where('group', '=', $group);
-        }
-
-        if ($paginated) {
-            $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null);
-        } else {
-            $results = $query->get();
-        }
-
+        $results = $this->paginate($request, $query, $limit);
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
@@ -62,7 +57,7 @@ class UserController extends BaseController
             if (Auth::user()->id === (int) $id) {
                 throw new HttpForbiddenException(
                     $request,
-                    "Self retrieving this way is forbidden, use `GET /api/users/self`."
+                    'Self retrieving this way is forbidden, use `GET /api/users/self`.',
                 );
             }
 
@@ -85,7 +80,7 @@ class UserController extends BaseController
             if (Auth::user()->id === (int) $id) {
                 throw new HttpForbiddenException(
                     $request,
-                    "Self update this way is forbidden, use `PUT /api/users/self`."
+                    'Self update this way is forbidden, use `PUT /api/users/self`.',
                 );
             }
 
@@ -99,14 +94,14 @@ class UserController extends BaseController
 
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
-            throw new HttpBadRequestException($request, "No data was provided.");
+            throw new HttpBadRequestException($request, 'No data was provided.');
         }
 
         $postData = User::unserialize(
             Arr::except($postData, array_merge(User::SETTINGS_ATTRIBUTES, [
                 'id',
                 'group',
-            ]))
+            ])),
         );
 
         try {
@@ -125,24 +120,57 @@ class UserController extends BaseController
 
     public function getSettings(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
-        $user = User::findOrFail($id);
+        $id = $request->getAttribute('id');
+        if ($id !== 'self') {
+            if (Auth::user()->id === (int) $id) {
+                throw new HttpForbiddenException(
+                    $request,
+                    'Self retrieving this way is forbidden, use `GET /api/users/self/settings`.',
+                );
+            }
 
-        return $response->withJson($user->settings, StatusCode::STATUS_OK);
+            // - Si ce n'est pas un admin, on empêche la récupération des autres utilisateurs.
+            if (!Auth::is(Group::ADMIN)) {
+                throw new HttpForbiddenException($request);
+            }
+        } else {
+            $id = Auth::user()->id;
+        }
+
+        $user = User::findOrFail((int) $id);
+        $result = $user->serialize(User::SERIALIZE_SETTINGS);
+        return $response->withJson($result, StatusCode::STATUS_OK);
     }
 
     public function updateSettings(Request $request, Response $response): ResponseInterface
     {
-        $postData = (array) $request->getParsedBody();
-        if (empty($postData)) {
-            throw new HttpBadRequestException($request, "No data was provided.");
+        $id = $request->getAttribute('id');
+        if ($id !== 'self') {
+            if (Auth::user()->id === (int) $id) {
+                throw new HttpForbiddenException(
+                    $request,
+                    'Self updating this way is forbidden, use `PUT /api/users/self/settings`.',
+                );
+            }
+
+            // - Si ce n'est pas un admin, on empêche la récupération des autres utilisateurs.
+            if (!Auth::is(Group::ADMIN)) {
+                throw new HttpForbiddenException($request);
+            }
+        } else {
+            $id = Auth::user()->id;
         }
 
-        $id = (int) $request->getAttribute('id');
-        $data = Arr::only($postData, User::SETTINGS_ATTRIBUTES);
+        $postData = Arr::only(
+            (array) $request->getParsedBody(),
+            User::SETTINGS_ATTRIBUTES,
+        );
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, 'No data was provided.');
+        }
 
         try {
-            $user = User::staticEdit($id, $data);
+            $user = User::staticEdit((int) $id, $postData);
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
             if (empty($errors)) {
@@ -153,14 +181,15 @@ class UserController extends BaseController
             throw new ValidationException($errors);
         }
 
-        return $response->withJson($user->settings, StatusCode::STATUS_OK);
+        $result = $user->serialize(User::SERIALIZE_SETTINGS);
+        return $response->withJson($result, StatusCode::STATUS_OK);
     }
 
     public function delete(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         if (Auth::user()->id === $id) {
-            throw new HttpForbiddenException($request, "Self deletion is forbidden.");
+            throw new HttpForbiddenException($request, 'Self deletion is forbidden.');
         }
         return $this->_originalDelete($request, $response);
     }

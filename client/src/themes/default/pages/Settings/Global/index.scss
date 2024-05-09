@@ -1,16 +1,8 @@
 @use '~@/themes/default/style/globals';
 
-.Page--global-settings {
-    display: flex;
-    height: 100%;
-
-    .GlobalSettings {
-        flex: 1;
-    }
-}
-
 .GlobalSettings {
     display: flex;
+    height: 100%;
     gap: globals.$spacing-large;
 
     &__sidebar {

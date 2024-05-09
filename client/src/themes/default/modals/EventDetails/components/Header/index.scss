@@ -1,38 +1,37 @@
 @use '~@/themes/default/style/globals';
 
 .EventDetailsHeader {
-    flex: 0 0 auto;
     display: flex;
     align-items: center;
-    padding: 0.7rem 1rem;
-    background-color: globals.$bg-color-main-header;
+    padding: 10px 15px;
+    background-color: globals.$bg-color-emphasis;
+    gap: globals.$spacing-medium;
 
-    &__status {
-        flex: 0 0 auto;
-        padding: 0 1rem 0 0;
+    &__icon {
         font-size: 2rem;
 
-        .fa-exclamation-triangle {
+        &--warning {
             color: globals.$text-danger-color;
         }
     }
 
-    &__details {
+    &__title {
         flex: 1;
         color: globals.$text-soft-color;
 
-        &__title {
+        &__primary {
             @include globals.line-clamp(2);
 
-            margin: 0 0 0.4rem;
+            margin: 0;
             color: globals.$text-base-color;
             font-size: 1.4rem;
-            font-weight: 800;
+            font-weight: 600;
             word-break: break-word;
         }
 
-        &__location-dates {
-            margin-bottom: 0.2rem;
+        &__secondary {
+            margin: 0;
+            color: globals.$text-soft-color;
             font-size: 1.2rem;
         }
 
@@ -43,9 +42,9 @@
         }
     }
 
-    .EventDetailsHeaderActions {
-        flex: 0 0 auto;
-        margin: 0 1rem;
+    &__actions {
+        display: flex;
+        gap: globals.$spacing-small;
     }
 
     &__close-button {

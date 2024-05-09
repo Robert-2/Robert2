@@ -12,7 +12,7 @@ final class EventMaterialTest extends TestCase
     {
         // - On supprime tout le matériel d'un événement avec
         //   un inventaire de départ et de retour fait.
-        $event = tap(Event::findOrFail(1), function ($event) {
+        $event = tap(Event::findOrFail(1), static function ($event) {
             $event->materials()->sync([]);
             $event->refresh();
         });

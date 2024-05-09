@@ -4,51 +4,72 @@ declare(strict_types=1);
 namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Controllers\Traits\WithCrud;
 use Loxya\Http\Request;
 use Loxya\Models\Material;
 use Loxya\Models\Park;
+use Loxya\Services\Auth;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
-class ParkController extends BaseController
+final class ParkController extends BaseController
 {
-    use WithCrud;
+    use WithCrud {
+        getOne as protected _originalGetOne;
+        update as protected _originalUpdate;
+        delete as protected _originalDelete;
+        restore as protected _originalRestore;
+    }
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $paginated = (bool) $request->getQueryParam('paginated', true);
-        $search = $request->getQueryParam('search', null);
-        $limit = $request->getQueryParam('limit', null);
-        $ascending = (bool) $request->getQueryParam('ascending', true);
-        $onlyDeleted = (bool) $request->getQueryParam('deleted', false);
+        $search = $request->getStringQueryParam('search');
+        $limit = $request->getIntegerQueryParam('limit');
+        $ascending = $request->getBooleanQueryParam('ascending', true);
+        $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
 
-        $query = (new Park)
-            ->setOrderBy(null, $ascending)
-            ->setSearch($search)
-            ->getAll($onlyDeleted);
+        $query = Park::query()
+            ->when(
+                $search !== null && strlen($search) >= 2,
+                static fn (Builder $subQuery) => $subQuery->search($search),
+            )
+            ->when($onlyDeleted, static fn (Builder $subQuery) => (
+                $subQuery->onlyTrashed()
+            ))
+            ->orderBy('name', $ascending ? 'asc' : 'desc');
 
-        if ($paginated) {
-            $results = $this->paginate($request, $query, is_numeric($limit) ? (int) $limit : null);
-        } else {
-            $results = $query->get();
-        }
-
+        $results = $this->paginate($request, $query, $limit);
         return $response->withJson($results, StatusCode::STATUS_OK);
     }
 
     public function getList(Request $request, Response $response): ResponseInterface
     {
-        $parks = Park::select(['id', 'name']);
-        $results = $parks->get()->each->setAppends([])->toArray();
+        $parks = Park::query()
+            ->orderBy('name')
+            ->get();
 
-        return $response->withJson($results, StatusCode::STATUS_OK);
+        $data = $parks->map(static fn ($park) => $park->serialize(Park::SERIALIZE_SUMMARY));
+        return $response->withJson($data, StatusCode::STATUS_OK);
+    }
+
+    public function getOne(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        if (!Auth::user()->hasAccessToPark($id)) {
+            throw new HttpNotFoundException($request);
+        }
+        return $this->_originalGetOne($request, $response);
     }
 
     public function getOneMaterials(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
+        if (!Auth::user()->hasAccessToPark($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
         if (!Park::staticExists($id)) {
             throw new HttpNotFoundException($request);
         }
@@ -59,10 +80,42 @@ class ParkController extends BaseController
 
     public function getOneTotalAmount(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
-        $park = Park::withTrashed()->findOrFail($id)->append(['total_amount']);
-        $result = ['id' => $id, 'totalAmount' => $park->total_amount];
-        return $response->withJson($result, StatusCode::STATUS_OK);
+        $id = $request->getIntegerAttribute('id');
+        if (!Auth::user()->hasAccessToPark($id)) {
+            throw new HttpNotFoundException($request);
+        }
+
+        /** @var Park $park */
+        $park = Park::withTrashed()->findOrFail($id);
+
+        return $response->withJson($park->total_amount, StatusCode::STATUS_OK);
+    }
+
+    public function update(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        if (!Auth::user()->hasAccessToPark($id)) {
+            throw new HttpNotFoundException($request);
+        }
+        return $this->_originalUpdate($request, $response);
+    }
+
+    public function delete(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        if (!Auth::user()->hasAccessToPark($id)) {
+            throw new HttpNotFoundException($request);
+        }
+        return $this->_originalDelete($request, $response);
+    }
+
+    public function restore(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        if (!Auth::user()->hasAccessToPark($id)) {
+            throw new HttpNotFoundException($request);
+        }
+        return $this->_originalRestore($request, $response);
     }
 
     // ------------------------------------------------------
@@ -71,10 +124,8 @@ class ParkController extends BaseController
     // -
     // ------------------------------------------------------
 
-    protected static function _formatOne(Park $park): Park
+    protected static function _formatOne(Park $park): array
     {
-        return $park->append([
-            'has_ongoing_booking',
-        ]);
+        return $park->serialize(Park::SERIALIZE_DETAILS);
     }
 }

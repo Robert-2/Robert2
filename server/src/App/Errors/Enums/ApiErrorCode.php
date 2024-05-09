@@ -9,32 +9,41 @@ namespace Loxya\Errors\Enums;
  * NOTE IMPORTANTE:
  * En cas de modif., pensez à aussi mettre à jour le fichier lié dans la partie front-end.
  * {@see {@link /client/src/stores/api/@codes.ts}}
- *
- * TODO: En PHP 8.1, migrer vers une énumération.
- *       Voir https://www.php.net/manual/fr/language.enumerations.php
  */
-class ApiErrorCode
+enum ApiErrorCode: int
 {
     /** Erreur inconnue ou sans prise en charge. */
-    public const UNKNOWN = 0;
+    case UNKNOWN = 0;
+
+    //
+    // - Erreurs liées aux réservations.
+    //
+
+    /**
+     * Les réservations ne sont pas ouvertes dans cette application.
+     * (ou en tous cas pas pour cet utilisateur / bénéficiaire)
+     */
+    case RESERVATION_DISABLED = 100;
+
+    /**
+     * Si un panier de réservation a expiré.
+     *
+     * Note: Ce code n'est accessible que pendant 1 heure à partir du
+     * moment ou le panier a expiré. Au delà, ce sera comme si le panier
+     * n'avait jamais existé (Voir `RESERVATION_CART_MISSING`).
+     */
+    case RESERVATION_CART_EXPIRED = 101;
+
+    /** S'il n'y a aucun panier de réservation en cours. */
+    case RESERVATION_CART_MISSING = 102;
 
     //
     // - Erreurs liées aux formulaires.
     //
 
     /** Une erreur ou plusieurs erreurs de validation ce sont produites. */
-    public const VALIDATION_FAILED = 400;
+    case VALIDATION_FAILED = 400;
 
     /** Le payload fourni dans la requête ne doit pas être vide. */
-    public const EMPTY_PAYLOAD = 401;
-
-    //
-    // - Conflits.
-    //
-
-    /**
-     * Un conflit dû au fait qu'une tentative d'assignation d'un
-     * technicien a échoué vu qu'il est déjà mobilisé à ce moment.
-     */
-    public const TECHNICIAN_ALREADY_BUSY = 201;
+    case EMPTY_PAYLOAD = 401;
 }

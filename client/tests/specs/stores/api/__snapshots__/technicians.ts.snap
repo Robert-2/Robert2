@@ -1,0 +1,628 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Technicians Api all() parse the returned data correctly 1`] = `
+{
+  "data": [
+    {
+      "country": null,
+      "country_id": null,
+      "email": "tester2@robertmanager.net",
+      "first_name": "Roger",
+      "full_address": null,
+      "full_name": "Roger Rabbit",
+      "id": 1,
+      "last_name": "Rabbit",
+      "locality": null,
+      "nickname": "Riri",
+      "note": null,
+      "phone": null,
+      "postal_code": null,
+      "street": null,
+      "user_id": 2,
+    },
+    {
+      "country": {
+        "code": "CH",
+        "id": 2,
+        "name": "Suisse",
+      },
+      "country_id": 2,
+      "email": "client@technicien.com",
+      "first_name": "Jean",
+      "full_address": null,
+      "full_name": "Jean Technicien",
+      "id": 2,
+      "last_name": "Technicien",
+      "locality": null,
+      "nickname": null,
+      "note": null,
+      "phone": "+33645698520",
+      "postal_code": null,
+      "street": null,
+      "user_id": null,
+    },
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "perPage": 2,
+    "total": {
+      "items": 2,
+      "pages": 1,
+    },
+  },
+}
+`;
+
+exports[`Technicians Api allWhileEvent() parse the returned data correctly 1`] = `
+[
+  {
+    "country": null,
+    "country_id": null,
+    "email": "tester2@robertmanager.net",
+    "events": [
+      {
+        "event": {
+          "color": null,
+          "created_at": /* DateTime Instance => */ "2018-12-01 12:50:45",
+          "description": null,
+          "id": 1,
+          "is_archived": false,
+          "is_billable": true,
+          "is_confirmed": false,
+          "is_departure_inventory_done": true,
+          "is_return_inventory_done": true,
+          "location": "Gap",
+          "mobilization_period": /* Period Instance => */ {
+            "end": "2018-12-19 00:00:00",
+            "isFullDays": false,
+            "start": "2018-12-16 15:45:00",
+          },
+          "note": null,
+          "operation_period": /* Period Instance => */ {
+            "end": "2018-12-18 18:00:00",
+            "isFullDays": false,
+            "start": "2018-12-17 10:00:00",
+          },
+          "reference": null,
+          "title": "Premier événement",
+          "updated_at": /* DateTime Instance => */ "2018-12-05 08:31:21",
+        },
+        "event_id": 1,
+        "id": 1,
+        "period": /* Period Instance => */ {
+          "end": "2018-12-18 22:00:00",
+          "isFullDays": false,
+          "start": "2018-12-17 09:00:00",
+        },
+        "position": "Régisseur",
+        "technician_id": 1,
+      },
+    ],
+    "first_name": "Roger",
+    "full_address": null,
+    "full_name": "Roger Rabbit",
+    "id": 1,
+    "last_name": "Rabbit",
+    "locality": null,
+    "nickname": "Riri",
+    "note": null,
+    "phone": null,
+    "postal_code": null,
+    "street": null,
+    "user_id": 2,
+  },
+  {
+    "country": {
+      "code": "CH",
+      "id": 2,
+      "name": "Suisse",
+    },
+    "country_id": 2,
+    "email": "client@technicien.com",
+    "events": [
+      {
+        "event": {
+          "color": null,
+          "created_at": /* DateTime Instance => */ "2018-12-01 12:50:45",
+          "description": null,
+          "id": 1,
+          "is_archived": false,
+          "is_billable": true,
+          "is_confirmed": false,
+          "is_departure_inventory_done": true,
+          "is_return_inventory_done": true,
+          "location": "Gap",
+          "mobilization_period": /* Period Instance => */ {
+            "end": "2018-12-19 00:00:00",
+            "isFullDays": false,
+            "start": "2018-12-16 15:45:00",
+          },
+          "note": null,
+          "operation_period": /* Period Instance => */ {
+            "end": "2018-12-18 18:00:00",
+            "isFullDays": false,
+            "start": "2018-12-17 10:00:00",
+          },
+          "reference": null,
+          "title": "Premier événement",
+          "updated_at": /* DateTime Instance => */ "2018-12-05 08:31:21",
+        },
+        "event_id": 1,
+        "id": 2,
+        "period": /* Period Instance => */ {
+          "end": "2018-12-18 18:00:00",
+          "isFullDays": false,
+          "start": "2018-12-18 14:00:00",
+        },
+        "position": "Technicien plateau",
+        "technician_id": 2,
+      },
+      {
+        "event": {
+          "color": null,
+          "created_at": /* DateTime Instance => */ "2022-05-29 18:00:00",
+          "description": null,
+          "id": 7,
+          "is_archived": false,
+          "is_billable": true,
+          "is_confirmed": true,
+          "is_departure_inventory_done": false,
+          "is_return_inventory_done": false,
+          "location": "Machin-le-chateau",
+          "mobilization_period": /* Period Instance => */ {
+            "end": "2023-05-29 00:00:00",
+            "isFullDays": false,
+            "start": "2023-05-25 00:00:00",
+          },
+          "note": null,
+          "operation_period": /* Period Instance => */ {
+            "end": "2023-05-28",
+            "isFullDays": true,
+            "start": "2023-05-25",
+          },
+          "reference": null,
+          "title": "Médiévales de Machin-le-chateau 2023",
+          "updated_at": /* DateTime Instance => */ "2022-05-29 18:05:00",
+        },
+        "event_id": 7,
+        "id": 3,
+        "period": /* Period Instance => */ {
+          "end": "2023-05-29 00:00:00",
+          "isFullDays": false,
+          "start": "2023-05-25 00:00:00",
+        },
+        "position": "Ingénieur du son",
+        "technician_id": 2,
+      },
+    ],
+    "first_name": "Jean",
+    "full_address": null,
+    "full_name": "Jean Technicien",
+    "id": 2,
+    "last_name": "Technicien",
+    "locality": null,
+    "nickname": null,
+    "note": null,
+    "phone": "+33645698520",
+    "postal_code": null,
+    "street": null,
+    "user_id": null,
+  },
+]
+`;
+
+exports[`Technicians Api assignments() parse the returned data correctly (with #1) 1`] = `
+[
+  {
+    "event": {
+      "color": null,
+      "created_at": /* DateTime Instance => */ "2018-12-01 12:50:45",
+      "description": null,
+      "id": 1,
+      "is_archived": false,
+      "is_billable": true,
+      "is_confirmed": false,
+      "is_departure_inventory_done": true,
+      "is_return_inventory_done": true,
+      "location": "Gap",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2018-12-19 00:00:00",
+        "isFullDays": false,
+        "start": "2018-12-16 15:45:00",
+      },
+      "note": null,
+      "operation_period": /* Period Instance => */ {
+        "end": "2018-12-18 18:00:00",
+        "isFullDays": false,
+        "start": "2018-12-17 10:00:00",
+      },
+      "reference": null,
+      "title": "Premier événement",
+      "updated_at": /* DateTime Instance => */ "2018-12-05 08:31:21",
+    },
+    "event_id": 1,
+    "id": 1,
+    "period": /* Period Instance => */ {
+      "end": "2018-12-18 22:00:00",
+      "isFullDays": false,
+      "start": "2018-12-17 09:00:00",
+    },
+    "position": "Régisseur",
+    "technician_id": 1,
+  },
+]
+`;
+
+exports[`Technicians Api assignments() parse the returned data correctly (with #2) 1`] = `
+[
+  {
+    "event": {
+      "color": null,
+      "created_at": /* DateTime Instance => */ "2018-12-01 12:50:45",
+      "description": null,
+      "id": 1,
+      "is_archived": false,
+      "is_billable": true,
+      "is_confirmed": false,
+      "is_departure_inventory_done": true,
+      "is_return_inventory_done": true,
+      "location": "Gap",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2018-12-19 00:00:00",
+        "isFullDays": false,
+        "start": "2018-12-16 15:45:00",
+      },
+      "note": null,
+      "operation_period": /* Period Instance => */ {
+        "end": "2018-12-18 18:00:00",
+        "isFullDays": false,
+        "start": "2018-12-17 10:00:00",
+      },
+      "reference": null,
+      "title": "Premier événement",
+      "updated_at": /* DateTime Instance => */ "2018-12-05 08:31:21",
+    },
+    "event_id": 1,
+    "id": 2,
+    "period": /* Period Instance => */ {
+      "end": "2018-12-18 18:00:00",
+      "isFullDays": false,
+      "start": "2018-12-18 14:00:00",
+    },
+    "position": "Technicien plateau",
+    "technician_id": 2,
+  },
+  {
+    "event": {
+      "color": null,
+      "created_at": /* DateTime Instance => */ "2022-05-29 18:00:00",
+      "description": null,
+      "id": 7,
+      "is_archived": false,
+      "is_billable": true,
+      "is_confirmed": true,
+      "is_departure_inventory_done": false,
+      "is_return_inventory_done": false,
+      "location": "Machin-le-chateau",
+      "mobilization_period": /* Period Instance => */ {
+        "end": "2023-05-29 00:00:00",
+        "isFullDays": false,
+        "start": "2023-05-25 00:00:00",
+      },
+      "note": null,
+      "operation_period": /* Period Instance => */ {
+        "end": "2023-05-28",
+        "isFullDays": true,
+        "start": "2023-05-25",
+      },
+      "reference": null,
+      "title": "Médiévales de Machin-le-chateau 2023",
+      "updated_at": /* DateTime Instance => */ "2022-05-29 18:05:00",
+    },
+    "event_id": 7,
+    "id": 3,
+    "period": /* Period Instance => */ {
+      "end": "2023-05-29 00:00:00",
+      "isFullDays": false,
+      "start": "2023-05-25 00:00:00",
+    },
+    "position": "Ingénieur du son",
+    "technician_id": 2,
+  },
+]
+`;
+
+exports[`Technicians Api attachDocument() parse the returned data correctly (with document #1) 1`] = `
+{
+  "created_at": /* DateTime Instance => */ "2021-02-12 13:23:02",
+  "id": 1,
+  "name": "User-manual.pdf",
+  "size": 24681233,
+  "type": "application/pdf",
+  "url": "http://loxya.test/documents/1",
+}
+`;
+
+exports[`Technicians Api attachDocument() parse the returned data correctly (with document #2) 1`] = `
+{
+  "created_at": /* DateTime Instance => */ "2021-02-12 13:25:02",
+  "id": 2,
+  "name": "warranty.pdf",
+  "size": 124068,
+  "type": "application/pdf",
+  "url": "http://loxya.test/documents/2",
+}
+`;
+
+exports[`Technicians Api attachDocument() parse the returned data correctly (with document #3) 1`] = `
+{
+  "created_at": /* DateTime Instance => */ "2023-05-01 15:15:20",
+  "id": 3,
+  "name": "plan-de-salle.xls",
+  "size": 49802,
+  "type": "application/vnd.ms-excel",
+  "url": "http://loxya.test/documents/3",
+}
+`;
+
+exports[`Technicians Api attachDocument() parse the returned data correctly (with document #4) 1`] = `
+{
+  "created_at": /* DateTime Instance => */ "2023-05-02 17:32:05",
+  "id": 4,
+  "name": "Carte de l'étudiant.png",
+  "size": 9397,
+  "type": "image/x-png",
+  "url": "http://loxya.test/documents/4",
+}
+`;
+
+exports[`Technicians Api attachDocument() parse the returned data correctly (with document #5) 1`] = `
+{
+  "created_at": /* DateTime Instance => */ "2023-05-01 15:15:20",
+  "id": 5,
+  "name": "bon_de_sortie.doc",
+  "size": 10014149,
+  "type": "application/msword",
+  "url": "http://loxya.test/documents/5",
+}
+`;
+
+exports[`Technicians Api attachDocument() parse the returned data correctly (with document #6) 1`] = `
+{
+  "created_at": /* DateTime Instance => */ "2023-05-01 15:15:20",
+  "id": 6,
+  "name": "emploi-du-temps.xls",
+  "size": 70001,
+  "type": "application/vnd.ms-excel",
+  "url": "http://loxya.test/documents/6",
+}
+`;
+
+exports[`Technicians Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 1,
+  "last_name": "Rabbit",
+  "locality": null,
+  "nickname": "Riri",
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "street": null,
+  "user_id": 2,
+}
+`;
+
+exports[`Technicians Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
+  "email": "client@technicien.com",
+  "first_name": "Jean",
+  "full_address": null,
+  "full_name": "Jean Technicien",
+  "id": 2,
+  "last_name": "Technicien",
+  "locality": null,
+  "nickname": null,
+  "note": null,
+  "phone": "+33645698520",
+  "postal_code": null,
+  "street": null,
+  "user_id": null,
+}
+`;
+
+exports[`Technicians Api documents() parse the returned data correctly 1`] = `
+[
+  {
+    "created_at": /* DateTime Instance => */ "2021-02-12 13:23:02",
+    "id": 1,
+    "name": "User-manual.pdf",
+    "size": 24681233,
+    "type": "application/pdf",
+    "url": "http://loxya.test/documents/1",
+  },
+  {
+    "created_at": /* DateTime Instance => */ "2021-02-12 13:25:02",
+    "id": 2,
+    "name": "warranty.pdf",
+    "size": 124068,
+    "type": "application/pdf",
+    "url": "http://loxya.test/documents/2",
+  },
+  {
+    "created_at": /* DateTime Instance => */ "2023-05-01 15:15:20",
+    "id": 3,
+    "name": "plan-de-salle.xls",
+    "size": 49802,
+    "type": "application/vnd.ms-excel",
+    "url": "http://loxya.test/documents/3",
+  },
+  {
+    "created_at": /* DateTime Instance => */ "2023-05-02 17:32:05",
+    "id": 4,
+    "name": "Carte de l'étudiant.png",
+    "size": 9397,
+    "type": "image/x-png",
+    "url": "http://loxya.test/documents/4",
+  },
+  {
+    "created_at": /* DateTime Instance => */ "2023-05-01 15:15:20",
+    "id": 5,
+    "name": "bon_de_sortie.doc",
+    "size": 10014149,
+    "type": "application/msword",
+    "url": "http://loxya.test/documents/5",
+  },
+  {
+    "created_at": /* DateTime Instance => */ "2023-05-01 15:15:20",
+    "id": 6,
+    "name": "emploi-du-temps.xls",
+    "size": 70001,
+    "type": "application/vnd.ms-excel",
+    "url": "http://loxya.test/documents/6",
+  },
+]
+`;
+
+exports[`Technicians Api one() parse the returned data correctly (with #1) 1`] = `
+{
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 1,
+  "last_name": "Rabbit",
+  "locality": null,
+  "nickname": "Riri",
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "street": null,
+  "user_id": 2,
+}
+`;
+
+exports[`Technicians Api one() parse the returned data correctly (with #2) 1`] = `
+{
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
+  "email": "client@technicien.com",
+  "first_name": "Jean",
+  "full_address": null,
+  "full_name": "Jean Technicien",
+  "id": 2,
+  "last_name": "Technicien",
+  "locality": null,
+  "nickname": null,
+  "note": null,
+  "phone": "+33645698520",
+  "postal_code": null,
+  "street": null,
+  "user_id": null,
+}
+`;
+
+exports[`Technicians Api restore() parse the returned data correctly (with #1) 1`] = `
+{
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 1,
+  "last_name": "Rabbit",
+  "locality": null,
+  "nickname": "Riri",
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "street": null,
+  "user_id": 2,
+}
+`;
+
+exports[`Technicians Api restore() parse the returned data correctly (with #2) 1`] = `
+{
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
+  "email": "client@technicien.com",
+  "first_name": "Jean",
+  "full_address": null,
+  "full_name": "Jean Technicien",
+  "id": 2,
+  "last_name": "Technicien",
+  "locality": null,
+  "nickname": null,
+  "note": null,
+  "phone": "+33645698520",
+  "postal_code": null,
+  "street": null,
+  "user_id": null,
+}
+`;
+
+exports[`Technicians Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "country": null,
+  "country_id": null,
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_address": null,
+  "full_name": "Roger Rabbit",
+  "id": 1,
+  "last_name": "Rabbit",
+  "locality": null,
+  "nickname": "Riri",
+  "note": null,
+  "phone": null,
+  "postal_code": null,
+  "street": null,
+  "user_id": 2,
+}
+`;
+
+exports[`Technicians Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
+  "email": "client@technicien.com",
+  "first_name": "Jean",
+  "full_address": null,
+  "full_name": "Jean Technicien",
+  "id": 2,
+  "last_name": "Technicien",
+  "locality": null,
+  "nickname": null,
+  "note": null,
+  "phone": "+33645698520",
+  "postal_code": null,
+  "street": null,
+  "user_id": null,
+}
+`;

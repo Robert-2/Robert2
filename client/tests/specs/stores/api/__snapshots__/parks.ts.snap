@@ -1,0 +1,465 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Parks Api all() parse the returned data correctly 1`] = `
+{
+  "data": [
+    {
+      "country_id": 1,
+      "id": 1,
+      "locality": "Secretville",
+      "name": "default",
+      "note": null,
+      "opening_hours": "Du lundi au vendredi, de 09:00 à 19:00.",
+      "postal_code": "01234",
+      "street": "Hangar 951",
+      "total_items": 7,
+      "total_stock_quantity": 87,
+    },
+    {
+      "country_id": null,
+      "id": 2,
+      "locality": null,
+      "name": "spare",
+      "note": "Les bidouilles de fond de tiroir",
+      "opening_hours": null,
+      "postal_code": null,
+      "street": null,
+      "total_items": 2,
+      "total_stock_quantity": 3,
+    },
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "perPage": 2,
+    "total": {
+      "items": 2,
+      "pages": 1,
+    },
+  },
+}
+`;
+
+exports[`Parks Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "country_id": 1,
+  "has_ongoing_booking": false,
+  "id": 1,
+  "locality": "Secretville",
+  "name": "default",
+  "note": null,
+  "opening_hours": "Du lundi au vendredi, de 09:00 à 19:00.",
+  "postal_code": "01234",
+  "street": "Hangar 951",
+  "total_items": 7,
+  "total_stock_quantity": 87,
+}
+`;
+
+exports[`Parks Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "country_id": null,
+  "has_ongoing_booking": false,
+  "id": 2,
+  "locality": null,
+  "name": "spare",
+  "note": "Les bidouilles de fond de tiroir",
+  "opening_hours": null,
+  "postal_code": null,
+  "street": null,
+  "total_items": 2,
+  "total_stock_quantity": 3,
+}
+`;
+
+exports[`Parks Api list() parse the returned data correctly 1`] = `
+[
+  {
+    "id": 1,
+    "name": "default",
+  },
+  {
+    "id": 2,
+    "name": "spare",
+  },
+]
+`;
+
+exports[`Parks Api materials() parse the returned data correctly 1`] = `
+[
+  {
+    "attributes": [
+      {
+        "id": 1,
+        "is_totalisable": true,
+        "name": "Poids",
+        "type": "float",
+        "unit": "kg",
+        "value": 36.5,
+      },
+      {
+        "id": 2,
+        "max_length": null,
+        "name": "Couleur",
+        "type": "string",
+        "value": "Grise",
+      },
+      {
+        "id": 3,
+        "is_totalisable": true,
+        "name": "Puissance",
+        "type": "integer",
+        "unit": "W",
+        "value": 850,
+      },
+    ],
+    "category_id": 1,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+    "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
+    "id": 1,
+    "is_discountable": false,
+    "is_hidden_on_bill": false,
+    "is_reservable": true,
+    "name": "Console Yamaha CL3",
+    "note": null,
+    "out_of_order_quantity": 1,
+    "park_id": 1,
+    "picture": "http://loxya.test/materials/1/picture",
+    "reference": "CL3",
+    "rental_price": /* Decimal Instance => */ "300",
+    "replacement_price": /* Decimal Instance => */ "19400",
+    "stock_quantity": 5,
+    "sub_category_id": 1,
+    "tags": [
+      {
+        "id": 1,
+        "name": "Premium",
+      },
+    ],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+  },
+  {
+    "attributes": [
+      {
+        "id": 1,
+        "is_totalisable": true,
+        "name": "Poids",
+        "type": "float",
+        "unit": "kg",
+        "value": 2.2,
+      },
+      {
+        "id": 3,
+        "is_totalisable": true,
+        "name": "Puissance",
+        "type": "integer",
+        "unit": "W",
+        "value": 35,
+      },
+    ],
+    "category_id": 1,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+    "description": "Système de diffusion numérique",
+    "id": 2,
+    "is_discountable": true,
+    "is_hidden_on_bill": false,
+    "is_reservable": false,
+    "name": "Processeur DBX PA2",
+    "note": null,
+    "out_of_order_quantity": 0,
+    "park_id": 1,
+    "picture": null,
+    "reference": "DBXPA2",
+    "rental_price": /* Decimal Instance => */ "25.5",
+    "replacement_price": /* Decimal Instance => */ "349.9",
+    "stock_quantity": 2,
+    "sub_category_id": 2,
+    "tags": [
+      {
+        "id": 1,
+        "name": "Premium",
+      },
+    ],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+  },
+  {
+    "attributes": [
+      {
+        "id": 1,
+        "is_totalisable": true,
+        "name": "Poids",
+        "type": "float",
+        "unit": "kg",
+        "value": 0.85,
+      },
+      {
+        "id": 3,
+        "is_totalisable": true,
+        "name": "Puissance",
+        "type": "integer",
+        "unit": "W",
+        "value": 150,
+      },
+    ],
+    "category_id": 2,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+    "description": "Projecteur PAR64 à LED, avec son set de gélatines",
+    "id": 3,
+    "is_discountable": true,
+    "is_hidden_on_bill": false,
+    "is_reservable": true,
+    "name": "PAR64 LED",
+    "note": "Soyez délicats avec ces projos !",
+    "out_of_order_quantity": 4,
+    "park_id": 1,
+    "picture": null,
+    "reference": "PAR64LED",
+    "rental_price": /* Decimal Instance => */ "3.5",
+    "replacement_price": /* Decimal Instance => */ "89",
+    "stock_quantity": 34,
+    "sub_category_id": 3,
+    "tags": [
+      {
+        "id": 1,
+        "name": "Premium",
+      },
+    ],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+  },
+  {
+    "attributes": [
+      {
+        "id": 1,
+        "is_totalisable": true,
+        "name": "Poids",
+        "type": "float",
+        "unit": "kg",
+        "value": 3.15,
+      },
+      {
+        "id": 3,
+        "is_totalisable": true,
+        "name": "Puissance",
+        "type": "integer",
+        "unit": "W",
+        "value": 60,
+      },
+      {
+        "id": 4,
+        "name": "Conforme",
+        "type": "boolean",
+        "value": true,
+      },
+    ],
+    "category_id": 2,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+    "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
+    "id": 4,
+    "is_discountable": true,
+    "is_hidden_on_bill": false,
+    "is_reservable": true,
+    "name": "Showtec SDS-6",
+    "note": null,
+    "out_of_order_quantity": 0,
+    "park_id": 1,
+    "picture": null,
+    "reference": "SDS-6-01",
+    "rental_price": /* Decimal Instance => */ "15.95",
+    "replacement_price": /* Decimal Instance => */ "59",
+    "stock_quantity": 2,
+    "sub_category_id": 4,
+    "tags": [],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+  },
+  {
+    "attributes": [],
+    "category_id": 1,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+    "description": "Câble audio XLR 10 mètres, mâle-femelle",
+    "id": 5,
+    "is_discountable": true,
+    "is_hidden_on_bill": true,
+    "is_reservable": true,
+    "name": "Câble XLR 10m",
+    "note": null,
+    "out_of_order_quantity": 8,
+    "park_id": 1,
+    "picture": null,
+    "reference": "XLR10",
+    "rental_price": /* Decimal Instance => */ "0.5",
+    "replacement_price": /* Decimal Instance => */ "9.5",
+    "stock_quantity": 40,
+    "sub_category_id": null,
+    "tags": [],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+  },
+  {
+    "attributes": [
+      {
+        "id": 5,
+        "name": "Date d'achat",
+        "type": "date",
+        "value": /* Day Instance => */ "2021-01-28",
+      },
+    ],
+    "category_id": 1,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+    "description": "Mélangeur numérique 18 canaux",
+    "id": 6,
+    "is_discountable": false,
+    "is_hidden_on_bill": false,
+    "is_reservable": true,
+    "name": "Behringer X Air XR18",
+    "note": null,
+    "out_of_order_quantity": 1,
+    "park_id": 1,
+    "picture": null,
+    "reference": "XR18",
+    "rental_price": /* Decimal Instance => */ "49.99",
+    "replacement_price": /* Decimal Instance => */ "419",
+    "stock_quantity": 3,
+    "sub_category_id": 1,
+    "tags": [],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+  },
+  {
+    "attributes": [],
+    "category_id": 3,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+    "description": "Volume utile: 9.3 m3",
+    "id": 7,
+    "is_discountable": false,
+    "is_hidden_on_bill": false,
+    "is_reservable": true,
+    "name": "Volkswagen Transporter",
+    "note": null,
+    "out_of_order_quantity": 0,
+    "park_id": 1,
+    "picture": null,
+    "reference": "Transporter",
+    "rental_price": /* Decimal Instance => */ "300",
+    "replacement_price": /* Decimal Instance => */ "32000",
+    "stock_quantity": 2,
+    "sub_category_id": null,
+    "tags": [],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+  },
+  {
+    "attributes": [],
+    "category_id": 4,
+    "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+    "description": "Forêt mystique, typique des récits fantastiques.",
+    "id": 8,
+    "is_discountable": true,
+    "is_hidden_on_bill": false,
+    "is_reservable": true,
+    "name": "Décor Thème Forêt",
+    "note": null,
+    "out_of_order_quantity": 0,
+    "park_id": 1,
+    "picture": null,
+    "reference": "Decor-Forest",
+    "rental_price": /* Decimal Instance => */ "1500",
+    "replacement_price": /* Decimal Instance => */ "8500",
+    "stock_quantity": 2,
+    "sub_category_id": null,
+    "tags": [],
+    "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+  },
+]
+`;
+
+exports[`Parks Api one() parse the returned data correctly (with #1) 1`] = `
+{
+  "country_id": 1,
+  "has_ongoing_booking": false,
+  "id": 1,
+  "locality": "Secretville",
+  "name": "default",
+  "note": null,
+  "opening_hours": "Du lundi au vendredi, de 09:00 à 19:00.",
+  "postal_code": "01234",
+  "street": "Hangar 951",
+  "total_items": 7,
+  "total_stock_quantity": 87,
+}
+`;
+
+exports[`Parks Api one() parse the returned data correctly (with #2) 1`] = `
+{
+  "country_id": null,
+  "has_ongoing_booking": false,
+  "id": 2,
+  "locality": null,
+  "name": "spare",
+  "note": "Les bidouilles de fond de tiroir",
+  "opening_hours": null,
+  "postal_code": null,
+  "street": null,
+  "total_items": 2,
+  "total_stock_quantity": 3,
+}
+`;
+
+exports[`Parks Api restore() parse the returned data correctly (with #1) 1`] = `
+{
+  "country_id": 1,
+  "has_ongoing_booking": false,
+  "id": 1,
+  "locality": "Secretville",
+  "name": "default",
+  "note": null,
+  "opening_hours": "Du lundi au vendredi, de 09:00 à 19:00.",
+  "postal_code": "01234",
+  "street": "Hangar 951",
+  "total_items": 7,
+  "total_stock_quantity": 87,
+}
+`;
+
+exports[`Parks Api restore() parse the returned data correctly (with #2) 1`] = `
+{
+  "country_id": null,
+  "has_ongoing_booking": false,
+  "id": 2,
+  "locality": null,
+  "name": "spare",
+  "note": "Les bidouilles de fond de tiroir",
+  "opening_hours": null,
+  "postal_code": null,
+  "street": null,
+  "total_items": 2,
+  "total_stock_quantity": 3,
+}
+`;
+
+exports[`Parks Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "country_id": 1,
+  "has_ongoing_booking": false,
+  "id": 1,
+  "locality": "Secretville",
+  "name": "default",
+  "note": null,
+  "opening_hours": "Du lundi au vendredi, de 09:00 à 19:00.",
+  "postal_code": "01234",
+  "street": "Hangar 951",
+  "total_items": 7,
+  "total_stock_quantity": 87,
+}
+`;
+
+exports[`Parks Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "country_id": null,
+  "has_ongoing_booking": false,
+  "id": 2,
+  "locality": null,
+  "name": "spare",
+  "note": "Les bidouilles de fond de tiroir",
+  "opening_hours": null,
+  "postal_code": null,
+  "street": null,
+  "total_items": 2,
+  "total_stock_quantity": 3,
+}
+`;

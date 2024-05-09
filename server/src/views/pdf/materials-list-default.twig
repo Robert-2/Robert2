@@ -1,4 +1,4 @@
-{% extends "pdf/base.twig" %}
+{% extends 'pdf/base.twig' %}
 
 {% block style %}
 .listing-title {
@@ -15,20 +15,22 @@
 <table class="layout-table">
     <tr>
         <td class="third">
-            {{ include('blocks/company-address.twig', {
-                company: company,
-                showLegalNumbers: false,
-                showLogo: false,
-            }) }}
+            {{-
+                include('blocks/company-address.twig', {
+                    company,
+                    showLegalNumbers: false,
+                    showLogo: false,
+                })
+            -}}
         </td>
         <td class="two-third">
-            <h1 class="box center">{{ translate('materials-list') }}</h1>
+            <h1 class="box center">{{ __('materials-list') }}</h1>
             <h3 class="center">
-                {{ translate('as-of-date', date|format_date('long', locale=locale)) }}
+                {{ __('as-of-date', date|format_date('long', locale=locale)) }}
                 {% if parkOnlyName is not null %}
-                    {{ translate('for-park') }}
+                    {{ __('for-park') }}
                 {% else %}
-                    ({{ translate('all-parks') }})
+                    ({{ __('all-parks') }})
                 {% endif %}
             </h3>
             {% if parkOnlyName is not null %}
@@ -44,23 +46,23 @@
         {% if park['name'] is not empty %}
             {{ park['name'] }}
         {% else %}
-            ({{ translate('unknown-park') }})
+            ({{ __('unknown-park') }})
         {% endif %}
     </h3>
     {% endif %}
     <table class="listing-table">
         <thead>
             <tr>
-                <th style="width: 30mm;">{{ translate('reference') }}</th>
+                <th style="width: 30mm;">{{ __('reference') }}</th>
                 <th>
-                    {{ translate('designation') }}
+                    {{ __('designation') }}
                     {% if park['name'] is not empty %}
-                        <span class="normal lightest">- {{ translate('park-name', park['name']) }}</span>
+                        <span class="normal lightest">- {{ __('park-name', park['name']) }}</span>
                     {% endif %}
                 </th>
-                <th style="width: 20mm;">{{ translate('replacement-value') }}</th>
-                <th style="width: 16mm;">{{ translate('stock-quantity') }}</th>
-                <th style="width: 25mm;">{{ translate('recount-quantity') }}</th>
+                <th style="width: 20mm;">{{ __('replacement-value') }}</th>
+                <th style="width: 16mm;">{{ __('stock-quantity') }}</th>
+                <th style="width: 25mm;">{{ __('recount-quantity') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -68,20 +70,20 @@
             <tr>
                 <td class="section-title" colspan="5">
                     {% if subCategory == '--' %}
-                        {{ translate('not-categorized') }}
+                        {{ __('not-categorized') }}
                     {% else %}
-                        {{ subCategory|replace({ '__other': translate('other-materials') }) }}
+                        {{ subCategory|replace({ '__other': __('other-materials') }) }}
                     {% endif %}
                 </td>
             </tr>
             {% for material in materialsList %}
-                {{ include('blocks/materials/line-list.twig', { material: material }) }}
+                {{ include('blocks/materials/line-list.twig', { material }) }}
             {% endfor %}
         {% endfor %}
         </tbody>
     </table>
 {% endfor %}
 
-<h3 class="listing-title">{{ translate('notes') }}</h3>
+<h3 class="listing-title">{{ __('notes') }}</h3>
 <div class="inset" style="height: 100mm;"></div>
 {% endblock %}

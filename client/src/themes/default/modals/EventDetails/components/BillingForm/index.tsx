@@ -9,6 +9,11 @@ import Button from '@/themes/default/components/Button';
 import type { PropType } from '@vue/composition-api';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
 
+export type DiscountPayload = {
+    field: 'amount' | 'rate',
+    value: Decimal,
+};
+
 type Props = {
     /**
      * Le taux de remise, en pourcent.
@@ -65,23 +70,23 @@ const EventDetailsBillingForm = defineComponent({
     name: 'EventDetailsBillingForm',
     props: {
         discountRate: {
-            type: Object as PropType<Props['discountRate']>,
+            type: Decimal as PropType<Props['discountRate']>,
             required: true,
         },
         discountTarget: {
-            type: Object as PropType<Props['discountTarget']>,
+            type: Decimal as PropType<Props['discountTarget']>,
             required: true,
         },
         maxRate: {
-            type: Object as PropType<Required<Props>['maxRate']>,
+            type: Decimal as PropType<Required<Props>['maxRate']>,
             default: () => new Decimal(100),
         },
         minAmount: {
-            type: Object as PropType<Props['minAmount']>,
+            type: Decimal as PropType<Props['minAmount']>,
             default: undefined,
         },
         maxAmount: {
-            type: Object as PropType<Props['maxAmount']>,
+            type: Decimal as PropType<Props['maxAmount']>,
             default: undefined,
         },
         loading: {
@@ -119,7 +124,8 @@ const EventDetailsBillingForm = defineComponent({
             }
 
             const value = rate.clampedTo(0, this.maxRate);
-            this.$emit('change', { field: 'rate', value });
+            const payload: DiscountPayload = { field: 'rate', value };
+            this.$emit('change', payload);
         },
 
         handleChangeAmount(givenValue: string) {
@@ -129,7 +135,8 @@ const EventDetailsBillingForm = defineComponent({
             }
 
             const value = amount.clampedTo(0, this.maxAmount ?? Infinity);
-            this.$emit('change', { field: 'amount', value });
+            const payload: DiscountPayload = { field: 'amount', value };
+            this.$emit('change', payload);
         },
 
         handleSubmit(e: SubmitEvent) {

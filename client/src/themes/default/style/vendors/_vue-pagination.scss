@@ -13,7 +13,7 @@
 
         .page-link {
             padding: 0.35rem 0.65rem;
-            background: $bg-color-side-nav;
+            background: $bg-color-emphasis;
             cursor: pointer;
 
             &:hover {
@@ -21,13 +21,13 @@
             }
 
             &[disabled] {
-                background: $bg-color-side-nav;
+                background: $bg-color-emphasis;
                 color: $text-muted-color;
                 cursor: default;
             }
 
             &.active {
-                background: $bg-color-input-normal;
+                background: #454545;
                 color: $text-soft-color;
 
                 &:hover {

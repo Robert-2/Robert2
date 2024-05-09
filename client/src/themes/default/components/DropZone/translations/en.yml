@@ -1,5 +1,5 @@
 drag-and-drop-file-here: Drag and drop a file in this area.
 drag-and-drop-files-here: Drag and drop in this area to add new files.
 max-size: "Maximum size: {size}"
-choose-file: Or click here to choose a file
-choose-files: Or click here to choose files to add
+choose-file: Click here to choose a file
+choose-files: Click here to choose files to add

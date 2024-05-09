@@ -4,10 +4,11 @@ import './index.scss';
 export default {
     name: 'Breadcrumb',
     props: {
-        event: { type: Object, required: true },
+        event: { type: Object, default: null },
         steps: { type: Array, required: true },
         currentStep: { type: Number, required: true },
     },
+    emits: ['openStep'],
     methods: {
         openStep(step) {
             if (!this.isReachable(step)) {
@@ -27,7 +28,7 @@ export default {
             }
 
             // - Si l'événement est sauvegardé, chaque étape est accessible.
-            if (![null, undefined].includes(this.event?.id)) {
+            if (this.event !== null) {
                 return true;
             }
 
@@ -40,13 +41,7 @@ export default {
         },
 
         isValidated(step) {
-            let isValidated = true;
-            step.fields.forEach((field) => {
-                if (!this.event[field] || this.event[field].length === 0) {
-                    isValidated = false;
-                }
-            });
-            return isValidated;
+            return this.event && step.filled(this.event);
         },
 
         getStepClassNames(step) {

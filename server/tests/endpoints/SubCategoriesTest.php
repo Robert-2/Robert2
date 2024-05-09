@@ -7,9 +7,9 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
 final class SubCategoriesTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(?int $id = null)
     {
-        return static::_dataFactory($id, [
+        return static::dataFactory($id, [
             [
                 'id' => 1,
                 'name' => 'Mixeurs',
@@ -78,7 +78,7 @@ final class SubCategoriesTest extends ApiTestCase
         $this->client->put('/api/subcategories/1', $updatedData);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(
-            array_replace(self::data(1), $updatedData)
+            array_replace(self::data(1), $updatedData),
         );
     }
 

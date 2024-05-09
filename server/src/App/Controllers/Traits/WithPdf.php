@@ -14,7 +14,7 @@ trait WithPdf
 
     public function getOnePdf(Request $request, Response $response): ResponseInterface
     {
-        $id = (int) $request->getAttribute('id');
+        $id = $request->getIntegerAttribute('id');
         $model = $this->getModelClass()::findOrFail($id);
 
         if (!method_exists($model, 'toPdf')) {

@@ -75,7 +75,7 @@ class Loader implements LoaderInterface
      * @throws ContainerException
      * @throws NotFoundException
      */
-    public function get(string $key): string | array
+    public function get(string $key): string|array
     {
         if (!$this->has($key)) {
             throw new NotFoundException('Message not found.');

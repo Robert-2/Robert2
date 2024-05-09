@@ -13,7 +13,7 @@ use Loxya\Support\Filesystem\UploadedFile;
 
 final class MaterialsTest extends ApiTestCase
 {
-    public static function data(int $id, string $format = Material::SERIALIZE_DEFAULT)
+    public static function data(?int $id = null, string $format = Material::SERIALIZE_DEFAULT)
     {
         $materials = new Collection([
             [
@@ -21,65 +21,48 @@ final class MaterialsTest extends ApiTestCase
                 'name' => 'Console Yamaha CL3',
                 'reference' => 'CL3',
                 'description' => 'Console numérique 64 entrées / 8 sorties + Master + Sub',
-                'is_unitary' => false,
                 'park_id' => 1,
-                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => 1,
                 'rental_price' => 300,
                 'stock_quantity' => 5,
                 'out_of_order_quantity' => 1,
-                'replacement_price' => 19400,
+                'available_quantity' => 4,
+                'replacement_price' => 19_400,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
                 'is_reservable' => true,
-                'picture' => 'http://loxya.test/materials/1/picture',
+                'picture' => 'http://loxya.test/static/materials/1/picture',
                 'note' => null,
                 'attributes' => [
-                    [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
+                    array_merge(AttributesTest::data(1), [
                         'value' => 36.5,
-                        'isTotalisable' => true,
-                    ],
-                    [
-                        'id' => 2,
-                        'name' => 'Couleur',
-                        'type' => 'string',
+                    ]),
+                    array_merge(AttributesTest::data(2), [
                         'value' => 'Grise',
-                        'maxLength' => null,
-                    ],
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
+                    ]),
+                    array_merge(AttributesTest::data(3), [
                         'value' => 850,
-                        'isTotalisable' => true,
-                    ],
+                    ]),
                 ],
                 'tags' => [
                     TagsTest::data(1),
                 ],
                 'created_at' => '2021-02-12 23:00:00',
                 'updated_at' => '2021-02-12 23:00:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 2,
                 'name' => 'Processeur DBX PA2',
                 'reference' => 'DBXPA2',
                 'description' => 'Système de diffusion numérique',
-                'is_unitary' => false,
                 'park_id' => 1,
-                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => 2,
                 'rental_price' => 25.5,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
+                'available_quantity' => 2,
                 'replacement_price' => 349.9,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
@@ -87,43 +70,31 @@ final class MaterialsTest extends ApiTestCase
                 'picture' => null,
                 'note' => null,
                 'attributes' => [
-                    [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
+                    array_merge(AttributesTest::data(1), [
                         'value' => 2.2,
-                        'isTotalisable' => true,
-                    ],
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
+                    ]),
+                    array_merge(AttributesTest::data(3), [
                         'value' => 35,
-                        'isTotalisable' => true,
-                    ],
+                    ]),
                 ],
                 'tags' => [
                     TagsTest::data(1),
                 ],
                 'created_at' => '2021-02-12 23:01:00',
                 'updated_at' => '2021-02-12 23:02:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 3,
                 'name' => 'PAR64 LED',
                 'reference' => 'PAR64LED',
                 'description' => 'Projecteur PAR64 à LED, avec son set de gélatines',
-                'is_unitary' => false,
                 'park_id' => 1,
-                'park_location_id' => null,
                 'category_id' => 2,
                 'sub_category_id' => 3,
                 'rental_price' => 3.5,
                 'stock_quantity' => 34,
                 'out_of_order_quantity' => 4,
+                'available_quantity' => 30,
                 'replacement_price' => 89,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
@@ -131,43 +102,31 @@ final class MaterialsTest extends ApiTestCase
                 'picture' => null,
                 'note' => 'Soyez délicats avec ces projos !',
                 'attributes' => [
-                    [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
+                    array_merge(AttributesTest::data(1), [
                         'value' => 0.85,
-                        'isTotalisable' => true,
-                    ],
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
+                    ]),
+                    array_merge(AttributesTest::data(3), [
                         'value' => 150,
-                        'isTotalisable' => true,
-                    ],
+                    ]),
                 ],
                 'tags' => [
                     TagsTest::data(1),
                 ],
                 'created_at' => '2021-02-12 23:02:00',
                 'updated_at' => '2021-02-12 23:02:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 4,
                 'name' => 'Showtec SDS-6',
                 'reference' => 'SDS-6-01',
                 'description' => "Console DMX (jeu d'orgue) Showtec 6 canaux",
-                'is_unitary' => false,
                 'park_id' => 1,
-                'park_location_id' => null,
                 'category_id' => 2,
                 'sub_category_id' => 4,
                 'rental_price' => 15.95,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
+                'available_quantity' => 2,
                 'replacement_price' => 59,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
@@ -175,47 +134,32 @@ final class MaterialsTest extends ApiTestCase
                 'picture' => null,
                 'note' => null,
                 'attributes' => [
-                    [
-                        'id' => 1,
-                        'name' => 'Poids',
-                        'type' => 'float',
-                        'unit' => 'kg',
+                    array_merge(AttributesTest::data(1), [
                         'value' => 3.15,
-                        'isTotalisable' => true,
-                    ],
-                    [
-                        'id' => 3,
-                        'name' => 'Puissance',
-                        'type' => 'integer',
-                        'unit' => 'W',
+                    ]),
+                    array_merge(AttributesTest::data(3), [
                         'value' => 60,
-                        'isTotalisable' => true,
-                    ],
-                    [
-                        'id' => 4,
-                        'name' => 'Conforme',
-                        'type' => 'boolean',
+                    ]),
+                    array_merge(AttributesTest::data(4), [
                         'value' => true,
-                    ],
+                    ]),
                 ],
                 'tags' => [],
                 'created_at' => '2021-02-12 23:03:00',
                 'updated_at' => '2021-02-12 23:03:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 5,
                 'name' => 'Câble XLR 10m',
                 'reference' => 'XLR10',
                 'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
-                'is_unitary' => false,
                 'park_id' => 1,
-                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => null,
                 'rental_price' => 0.5,
                 'stock_quantity' => 40,
                 'out_of_order_quantity' => 8,
+                'available_quantity' => 32,
                 'replacement_price' => 9.5,
                 'is_hidden_on_bill' => true,
                 'is_discountable' => true,
@@ -226,21 +170,19 @@ final class MaterialsTest extends ApiTestCase
                 'tags' => [],
                 'created_at' => '2021-02-12 23:14:00',
                 'updated_at' => '2021-02-12 23:14:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 6,
                 'name' => 'Behringer X Air XR18',
                 'description' => 'Mélangeur numérique 18 canaux',
                 'reference' => 'XR18',
-                'is_unitary' => false,
                 'park_id' => 1,
-                'park_location_id' => null,
                 'category_id' => 1,
                 'sub_category_id' => 1,
                 'rental_price' => 49.99,
                 'stock_quantity' => 3,
                 'out_of_order_quantity' => 1,
+                'available_quantity' => 2,
                 'replacement_price' => 419,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
@@ -249,31 +191,26 @@ final class MaterialsTest extends ApiTestCase
                 'note' => null,
                 'tags' => [],
                 'attributes' => [
-                    [
-                        'id' => 5,
-                        'name' => "Date d'achat",
-                        'type' => 'date',
+                    array_merge(AttributesTest::data(5), [
                         'value' => '2021-01-28',
-                    ],
+                    ]),
                 ],
                 'created_at' => '2021-02-12 23:15:00',
                 'updated_at' => '2021-02-12 23:15:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 7,
                 'name' => 'Volkswagen Transporter',
                 'description' => 'Volume utile: 9.3 m3',
                 'reference' => 'Transporter',
-                'is_unitary' => false,
                 'park_id' => 2,
-                'park_location_id' => null,
                 'category_id' => 3,
                 'sub_category_id' => null,
                 'rental_price' => 300,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
-                'replacement_price' => 32000,
+                'available_quantity' => 2,
+                'replacement_price' => 32_000,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
                 'is_reservable' => true,
@@ -283,21 +220,19 @@ final class MaterialsTest extends ApiTestCase
                 'attributes' => [],
                 'created_at' => '2021-02-12 23:16:00',
                 'updated_at' => '2021-02-12 23:16:00',
-                'deleted_at' => null,
             ],
             [
                 'id' => 8,
                 'name' => 'Décor Thème Forêt',
                 'description' => 'Forêt mystique, typique des récits fantastiques.',
                 'reference' => 'Decor-Forest',
-                'is_unitary' => false,
                 'park_id' => 1,
-                'park_location_id' => null,
                 'category_id' => 4,
                 'sub_category_id' => null,
                 'rental_price' => 1500,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
+                'available_quantity' => 2,
                 'replacement_price' => 8500,
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
@@ -308,26 +243,31 @@ final class MaterialsTest extends ApiTestCase
                 'attributes' => [],
                 'created_at' => '2021-02-12 23:18:00',
                 'updated_at' => '2021-02-12 23:18:00',
-                'deleted_at' => null,
             ],
         ]);
 
         $materials = match ($format) {
-            Material::SERIALIZE_DEFAULT => $materials,
-            Material::SERIALIZE_DETAILS => $materials,
-            Material::SERIALIZE_PUBLIC => $materials->map(fn($material) => (
+            Material::SERIALIZE_DEFAULT => $materials->map(static fn ($material) => (
+                Arr::except($material, ['available_quantity'])
+            )),
+            Material::SERIALIZE_WITH_AVAILABILITY => $materials,
+            Material::SERIALIZE_DETAILS => $materials->map(static fn ($material) => (
+                Arr::except($material, ['available_quantity'])
+            )),
+            Material::SERIALIZE_PUBLIC => $materials->map(static fn ($material) => (
                 Arr::only($material, [
                     'id',
                     'name',
                     'description',
                     'picture',
+                    'available_quantity',
                     'rental_price',
                 ])
             )),
             default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
         };
 
-        return static::_dataFactory($id, $materials->all());
+        return static::dataFactory($id, $materials->all());
     }
 
     public function testGetAll(): void
@@ -335,36 +275,20 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(8, [
-            array_replace_recursive(self::data(6), [
-                'available_quantity' => 2,
-            ]),
-            array_replace_recursive(self::data(5), [
-                'available_quantity' => 32,
-            ]),
-            array_replace_recursive(self::data(1), [
-                'available_quantity' => 4,
-            ]),
-            array_replace_recursive(self::data(8), [
-                'available_quantity' => 2,
-            ]),
-            array_replace_recursive(self::data(3), [
-                'available_quantity' => 30,
-            ]),
-            array_replace_recursive(self::data(2), [
-                'available_quantity' => 2,
-            ]),
-            array_replace_recursive(self::data(4), [
-                'available_quantity' => 2,
-            ]),
-            array_replace_recursive(self::data(7), [
-                'available_quantity' => 2,
-            ]),
+            self::data(6, Material::SERIALIZE_WITH_AVAILABILITY),
+            self::data(5, Material::SERIALIZE_WITH_AVAILABILITY),
+            self::data(1, Material::SERIALIZE_WITH_AVAILABILITY),
+            self::data(8, Material::SERIALIZE_WITH_AVAILABILITY),
+            self::data(3, Material::SERIALIZE_WITH_AVAILABILITY),
+            self::data(2, Material::SERIALIZE_WITH_AVAILABILITY),
+            self::data(4, Material::SERIALIZE_WITH_AVAILABILITY),
+            self::data(7, Material::SERIALIZE_WITH_AVAILABILITY),
         ]);
 
         $this->client->get('/api/materials?orderBy=reference&ascending=0');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(8);
-        $results = $this->_getResponseAsArray();
+        $results = $this->client->getResponseAsArray();
 
         $expectedResults = [
             'XR18',
@@ -382,7 +306,7 @@ final class MaterialsTest extends ApiTestCase
 
         $this->client->get('/api/materials?paginated=0');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $results = $this->_getResponseAsArray();
+        $results = $this->client->getResponseAsArray();
         $this->assertCount(8, $results);
         $this->assertEquals('Behringer X Air XR18', $results[0]['name']);
         $this->assertEquals(3, $results[0]['stock_quantity']);
@@ -398,7 +322,7 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials?search=console');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(1);
-        $results = $this->_getResponseAsArray();
+        $results = $this->client->getResponseAsArray();
         $this->assertEquals('CL3', $results['data'][0]['reference']);
     }
 
@@ -413,53 +337,63 @@ final class MaterialsTest extends ApiTestCase
         $this->client->get('/api/materials/while-event/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            array_replace_recursive(self::data(1), [
-                'available_quantity' => 1,
-            ]),
-            array_replace_recursive(self::data(2), [
-                'available_quantity' => 0,
-            ]),
-            array_replace_recursive(self::data(8), [
-                'available_quantity' => 2,
-            ]),
-            array_replace_recursive(self::data(3), [
-                'available_quantity' => 30,
-            ]),
-            array_replace_recursive(self::data(4), [
-                'available_quantity' => 2,
-            ]),
-            array_replace_recursive(self::data(7), [
-                'available_quantity' => 2,
-            ]),
-            array_replace_recursive(self::data(5), [
-                'available_quantity' => 32,
-            ]),
-            array_replace_recursive(self::data(6), [
-                'available_quantity' => 2,
-            ]),
+            array_replace_recursive(
+                self::data(1, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 1,
+                ],
+            ),
+            array_replace_recursive(
+                self::data(2, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 0,
+                ],
+            ),
+            array_replace_recursive(
+                self::data(8, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 2,
+                ],
+            ),
+            array_replace_recursive(
+                self::data(3, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 30,
+                ],
+            ),
+            array_replace_recursive(
+                self::data(4, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 2,
+                ],
+            ),
+            array_replace_recursive(
+                self::data(7, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 2,
+                ],
+            ),
+            array_replace_recursive(
+                self::data(5, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 32,
+                ],
+            ),
+            array_replace_recursive(
+                self::data(6, Material::SERIALIZE_WITH_AVAILABILITY),
+                [
+                    'available_quantity' => 2,
+                ],
+            ),
         ]);
     }
 
     public function testGetOne(): void
     {
+        // - Matériel simple.
         $this->client->get('/api/materials/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1, Material::SERIALIZE_DETAILS));
-    }
-
-    public function testGetTagsNotFound(): void
-    {
-        $this->client->get('/api/materials/999/tags');
-        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-    }
-
-    public function testGetTags(): void
-    {
-        $this->client->get('/api/materials/1/tags');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
-            TagsTest::data(1),
-        ]);
     }
 
     public function testGetAllByTagsNotFound(): void
@@ -503,7 +437,7 @@ final class MaterialsTest extends ApiTestCase
         // - pendant laquelle se déroulent les événements n°1, n°2 et n°3
         $this->client->get('/api/materials?quantitiesPeriod[start]=2018-12-16&quantitiesPeriod[end]=2018-12-19');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
+        $response = $this->client->getResponseAsArray();
         $this->assertCount(8, $response['data']);
 
         foreach ([2, 20, 0, 2, 20, 0, 1, 2] as $index => $expected) {
@@ -514,7 +448,7 @@ final class MaterialsTest extends ApiTestCase
         // - Test avec une période non valide (retourne les quantités en stock uniquement)
         $this->client->get('/api/materials?quantitiesPeriod[end]=2018-12-18');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $response = $this->_getResponseAsArray();
+        $response = $this->client->getResponseAsArray();
         $this->assertCount(8, $response['data']);
 
         foreach ([3, 40, 5, 2, 34, 2, 2, 2] as $index => $expected) {
@@ -580,9 +514,7 @@ final class MaterialsTest extends ApiTestCase
             'id' => 9,
             'name' => 'Analog Mixing Console Yamaha RM800',
             'reference' => 'RM800',
-            'is_unitary' => false,
             'park_id' => 1,
-            'park_location_id' => null,
             'category_id' => 1,
             'sub_category_id' => 1,
             'rental_price' => 100,
@@ -602,7 +534,6 @@ final class MaterialsTest extends ApiTestCase
             ],
             'created_at' => '2022-10-22 18:42:36',
             'updated_at' => '2022-10-22 18:42:36',
-            'deleted_at' => null,
         ]);
     }
 
@@ -630,9 +561,7 @@ final class MaterialsTest extends ApiTestCase
             'id' => 9,
             'name' => 'Console numérique Yamaha 01V96 V2',
             'reference' => '01V96-v2',
-            'is_unitary' => false,
             'park_id' => 1,
-            'park_location_id' => null,
             'category_id' => 1,
             'sub_category_id' => 1,
             'rental_price' => 180,
@@ -652,7 +581,7 @@ final class MaterialsTest extends ApiTestCase
                     'type' => 'float',
                     'unit' => 'kg',
                     'value' => 12.5,
-                    'isTotalisable' => true,
+                    'is_totalisable' => true,
                 ],
                 [
                     'id' => 3,
@@ -660,7 +589,7 @@ final class MaterialsTest extends ApiTestCase
                     'type' => 'integer',
                     'unit' => 'W',
                     'value' => 60,
-                    'isTotalisable' => true,
+                    'is_totalisable' => true,
                 ],
                 [
                     'id' => 4,
@@ -672,7 +601,6 @@ final class MaterialsTest extends ApiTestCase
             'tags' => [],
             'created_at' => '2022-10-22 18:42:36',
             'updated_at' => '2022-10-22 18:42:36',
-            'deleted_at' => null,
         ]);
     }
 
@@ -693,7 +621,7 @@ final class MaterialsTest extends ApiTestCase
                 'reference' => 'CL3-v2',
                 'stock_quantity' => 6,
                 'updated_at' => '2023-05-26 16:00:00',
-            ]
+            ],
         ));
 
         // - Test with a negative value for stock quantity
@@ -706,7 +634,7 @@ final class MaterialsTest extends ApiTestCase
                 'reference' => 'CL3-v2',
                 'stock_quantity' => 0,
                 'updated_at' => '2023-05-26 16:00:00',
-            ]
+            ],
         ));
 
         // - Test with an out-of-order quantity higher than stock quantity
@@ -720,7 +648,7 @@ final class MaterialsTest extends ApiTestCase
                 'stock_quantity' => 5,
                 'out_of_order_quantity' => 5,
                 'updated_at' => '2023-05-26 16:00:00',
-            ]
+            ],
         ));
     }
 
@@ -761,7 +689,7 @@ final class MaterialsTest extends ApiTestCase
     {
         Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
 
-        $createUploadedFile = function (string $from) {
+        $createUploadedFile = static function (string $from) {
             $tmpFile = tmpfile();
             fwrite($tmpFile, file_get_contents($from));
             return $tmpFile;
@@ -782,7 +710,7 @@ final class MaterialsTest extends ApiTestCase
                 'id' => 6,
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    13269,
+                    13_269,
                     UPLOAD_ERR_OK,
                     "Facture d'achat.pdf",
                     'application/pdf',
@@ -791,7 +719,7 @@ final class MaterialsTest extends ApiTestCase
                     'id' => 7,
                     'name' => "Facture d'achat.pdf",
                     'type' => 'application/pdf',
-                    'size' => 13269,
+                    'size' => 13_269,
                     'url' => 'http://loxya.test/documents/7',
                     'created_at' => '2022-10-22 18:42:36',
                 ],
@@ -800,7 +728,7 @@ final class MaterialsTest extends ApiTestCase
                 'id' => 4,
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    13269,
+                    13_269,
                     UPLOAD_ERR_OK,
                     'Garantie (expire fin 2023).pdf',
                     'application/pdf',
@@ -809,7 +737,7 @@ final class MaterialsTest extends ApiTestCase
                     'id' => 8,
                     'name' => 'Garantie (expire fin 2023).pdf',
                     'type' => 'application/pdf',
-                    'size' => 13269,
+                    'size' => 13_269,
                     'url' => 'http://loxya.test/documents/8',
                     'created_at' => '2022-10-22 18:42:36',
                 ],
@@ -818,7 +746,7 @@ final class MaterialsTest extends ApiTestCase
                 'id' => 4,
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    156325,
+                    156_325,
                     UPLOAD_ERR_OK,
                     'Notice.pdf',
                     'application/pdf',
@@ -827,7 +755,7 @@ final class MaterialsTest extends ApiTestCase
                     'id' => 9,
                     'name' => 'Notice.pdf',
                     'type' => 'application/pdf',
-                    'size' => 156325,
+                    'size' => 156_325,
                     'url' => 'http://loxya.test/documents/9',
                     'created_at' => '2022-10-22 18:42:36',
                 ],
@@ -847,7 +775,7 @@ final class MaterialsTest extends ApiTestCase
             [
                 'file' => new UploadedFile(
                     $createUploadedFile(TESTS_FILES_FOLDER . DS . 'file.pdf'),
-                    262144000,
+                    262_144_000,
                     UPLOAD_ERR_OK,
                     'Un fichier bien trop volumineux.pdf',
                     'application/pdf',
@@ -867,7 +795,7 @@ final class MaterialsTest extends ApiTestCase
             [
                 'file' => new UploadedFile(
                     tmpfile(),
-                    121540,
+                    121_540,
                     UPLOAD_ERR_OK,
                     'app.dmg',
                     'application/octet-stream',
@@ -908,31 +836,19 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponsePaginatedData(4, [
             array_replace(
                 EventsTest::data(7, Event::SERIALIZE_BOOKING_SUMMARY),
-                [
-                    'entity' => 'event',
-                    'pivot' => ['quantity' => 2],
-                ],
+                ['pivot' => ['quantity' => 2]],
             ),
             array_replace(
                 EventsTest::data(4, Event::SERIALIZE_BOOKING_SUMMARY),
-                [
-                    'entity' => 'event',
-                    'pivot' => ['quantity' => 1],
-                ],
+                ['pivot' => ['quantity' => 1]],
             ),
             array_replace(
                 EventsTest::data(2, Event::SERIALIZE_BOOKING_SUMMARY),
-                [
-                    'entity' => 'event',
-                    'pivot' => ['quantity' => 3],
-                ],
+                ['pivot' => ['quantity' => 3]],
             ),
             array_replace(
                 EventsTest::data(1, Event::SERIALIZE_BOOKING_SUMMARY),
-                [
-                    'entity' => 'event',
-                    'pivot' => ['quantity' => 1],
-                ],
+                ['pivot' => ['quantity' => 1]],
             ),
         ]);
 
@@ -942,10 +858,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertResponsePaginatedData(4, [
             array_replace(
                 EventsTest::data(4, Event::SERIALIZE_BOOKING_SUMMARY),
-                [
-                    'entity' => 'event',
-                    'pivot' => ['quantity' => 1],
-                ],
+                ['pivot' => ['quantity' => 1]],
             ),
         ]);
     }
@@ -957,6 +870,6 @@ final class MaterialsTest extends ApiTestCase
         $responseStream = $this->client->get('/materials/pdf');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
-        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
     }
 }

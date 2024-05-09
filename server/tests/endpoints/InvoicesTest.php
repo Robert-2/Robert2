@@ -7,9 +7,9 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 
 final class InvoicesTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(?int $id = null)
     {
-        return static::_dataFactory($id, [
+        return static::dataFactory($id, [
             [
                 'id' => 1,
                 'number' => '2020-00001',
@@ -33,6 +33,6 @@ final class InvoicesTest extends ApiTestCase
         $responseStream = $this->client->get('/invoices/1/pdf');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
-        $this->assertMatchesHtmlSnapshot($responseStream->getContents());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
     }
 }

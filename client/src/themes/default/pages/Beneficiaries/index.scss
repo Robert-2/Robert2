@@ -1,22 +1,12 @@
 @use '~@/themes/default/style/globals';
 @use 'sass:color';
 
-.Page--beneficiaries {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    .Beneficiaries {
-        flex: 1;
-    }
-}
-
 .Beneficiaries {
     $block: &;
 
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     &__table {
         flex: 1;
@@ -33,10 +23,14 @@
     }
 
     &__cell {
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+
         &--reference,
         &--email,
         &--company,
-        &--can-make-reservation,
         &--address,
         &--note {
             display: none;
@@ -49,12 +43,6 @@
         &--note {
             max-width: 200px;
             white-space: pre-line;
-        }
-
-        &--actions {
-            width: 1%;
-            text-align: right;
-            white-space: nowrap;
         }
 
         //

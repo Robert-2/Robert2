@@ -67,7 +67,6 @@ export default {
             const { $t: __, user } = this;
 
             const postData = { ...user };
-            delete postData.restricted_parks;
             delete postData.group;
 
             const hasPassword = !!postData.password;
@@ -205,7 +204,7 @@ export default {
                         </div>
                     </section>
                     <section class="ProfileUserSettings__actions">
-                        <Button icon="save" htmlType="submit" type="success">
+                        <Button icon="save" htmlType="submit" type="primary">
                             {__('save')}
                         </Button>
                     </section>

@@ -2,7 +2,7 @@ import { defineComponent } from '@vue/composition-api';
 import StateMessage, { State } from '@/themes/default/components/StateMessage';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 import type { Action } from '@/themes/default/components/StateMessage';
 
 export enum UnavailabilityReason {
@@ -21,7 +21,7 @@ const REASONS_STATE = {
 
 type Props = {
     /** L'événement concerné par l'inventaire de retour. */
-    event: Event,
+    event: EventDetails,
 
     /**
      * La raison pour laquelle l'inventaire de retour est indisponible.
@@ -105,8 +105,8 @@ const EventReturnUnavailable = defineComponent({
             return {
                 type: 'primary',
                 icon: 'arrow-left',
-                target: { name: 'calendar' },
-                label: __('global.back-to-calendar'),
+                target: { name: 'schedule' },
+                label: __('global.back-to-schedule'),
             };
         };
 

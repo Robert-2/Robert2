@@ -1,4 +1,5 @@
 import './index.scss';
+import Decimal from 'decimal.js';
 import isEqual from 'lodash/isEqual';
 import stringIncludes from '@/utils/stringIncludes';
 import { defineComponent } from '@vue/composition-api';
@@ -6,17 +7,18 @@ import Fragment from '@/components/Fragment';
 import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import StateMessage, { State } from '@/themes/default/components/StateMessage';
+import MaterialPopover from '@/themes/default/components/Popover/Material';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 import Availability from './Availability';
 import Quantity from './Quantity';
 import store from '../../store';
 
-import type { PropType } from '@vue/composition-api';
 import type { Tag } from '@/stores/api/tags';
-import type { SelectedQuantities, Filters } from '../../_types';
-import type { MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { PropType } from '@vue/composition-api';
+import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
 import type { ClientTableInstance } from 'vue-tables-2-premium';
+import type { Filters } from '../../_types';
 
 type FilterResolver<T extends keyof Filters> = (
     (material: Material, filter: NonNullable<Filters[T]>) => boolean
@@ -28,18 +30,19 @@ type Props = {
 
     /** Les filtres utilisés pour éventuellement filtrer le matériel. */
     filters?: Filters,
+
+    /** Permet de choisir si on veut afficher les montants de location ou non. */
+    withRentalPrices: boolean,
 };
 
 type Data = {
-    columns: string[],
     tableOptions: any,
     openChildRows: Array<Material['id']>,
-    manualOrder: Array<SelectedQuantities['id']>,
 };
 
 const NO_PAGINATION_LIMIT = 100_000;
 
-// @vue/component
+/** Liste de matériel d'un événement. */
 const MaterialsSelectorList = defineComponent({
     name: 'MaterialsSelectorList',
     props: {
@@ -51,24 +54,17 @@ const MaterialsSelectorList = defineComponent({
             type: Object as PropType<Required<Props>['filters']>,
             default: () => ({}),
         },
+        withRentalPrices: {
+            type: Boolean as PropType<Props['withRentalPrices']>,
+            required: true,
+        },
     },
     emits: ['requestShowAllMaterials'],
     data(): Data {
         const { filters } = this;
 
         return {
-            manualOrder: [],
             openChildRows: [],
-            columns: [
-                'child-toggler',
-                'quantity',
-                'name',
-                'availability',
-                'price',
-                'quantity-input',
-                'amount',
-                'actions',
-            ],
             tableOptions: {
                 filterable: false,
                 columnsDropdown: false,
@@ -88,36 +84,13 @@ const MaterialsSelectorList = defineComponent({
                     'amount': 'MaterialsSelectorList__col MaterialsSelectorList__col--amount ',
                     'actions': 'MaterialsSelectorList__col MaterialsSelectorList__col--actions ',
                 },
+                rowClassCallback: () => 'MaterialsSelectorList__row',
                 initFilters: filters,
-                customSorting: {
-                    custom: (ascending: boolean) => (a: Material, b: Material) => {
-                        // @ts-expect-error -- À sortir du `data()` qui n'est pas censé acceder à l'instance du component...
-                        const { filters: _filters, manualOrder } = this;
-                        let result = null;
-
-                        // - Si on est en mode "sélectionnés uniquement" et qu'au moins l'un
-                        //   des deux à un ordre manuellement défini, on l'utilise.
-                        if (_filters.onlySelected) {
-                            const aManualOrderIndex = manualOrder?.indexOf(a.id);
-                            const bManualOrderIndex = manualOrder?.indexOf(b.id);
-                            if (aManualOrderIndex !== -1 || bManualOrderIndex !== -1) {
-                                result = aManualOrderIndex > bManualOrderIndex ? -1 : 1;
-                            }
-                        }
-
-                        // - Sinon on fallback sur le tri par nom.
-                        if (result === null) {
-                            result = a.name.localeCompare(b.name, undefined, { ignorePunctuation: true });
-                        }
-
-                        return ascending || result === 0 ? result : -result;
-                    },
-                },
             },
         };
     },
     computed: {
-        filteredMaterials() {
+        filteredMaterials(): Material[] {
             const { materials, filters } = this;
 
             const filterResolvers: { [T in keyof Filters]: FilterResolver<T> } = {
@@ -178,6 +151,20 @@ const MaterialsSelectorList = defineComponent({
             }
 
             return this.filters.onlySelected && this.isSelectionEmpty;
+        },
+
+        columns(): string[] {
+            const { withRentalPrices } = this;
+
+            return [
+                'quantity',
+                'name',
+                'availability',
+                withRentalPrices && 'price',
+                'quantity-input',
+                withRentalPrices && 'amount',
+                'actions',
+            ].filter(Boolean) as string[];
         },
     },
     watch: {
@@ -258,7 +245,6 @@ const MaterialsSelectorList = defineComponent({
     render() {
         const {
             __,
-            list,
             filters,
             columns,
             filteredMaterials,
@@ -335,12 +321,14 @@ const MaterialsSelectorList = defineComponent({
                         options={tableOptions}
                         scopedSlots={{
                             'name': ({ row: material }: { row: Material }) => (
-                                <span class="MaterialsSelectorList__material-name" ref={`items[${material.id}]`}>
-                                    {material.name}
-                                    <span class="MaterialsSelectorList__material-name__reference">
-                                        {__('global.ref-ref', { reference: material.reference })}
+                                <MaterialPopover material={material}>
+                                    <span class="MaterialsSelectorList__material-name" ref={`items[${material.id}]`}>
+                                        {material.name}
+                                        <span class="MaterialsSelectorList__material-name__reference">
+                                            {__('global.ref-ref', { reference: material.reference })}
+                                        </span>
                                     </span>
-                                </span>
+                                </MaterialPopover>
                             ),
                             'quantity': ({ row: material }: { row: Material }) => (
                                 getQuantity(material) > 0 ? `${getQuantity(material)}\u00A0×` : null
@@ -350,7 +338,6 @@ const MaterialsSelectorList = defineComponent({
                                     // NOTE: Problème dans `vue-tables-2` qui utilise des indexes dans les `key`
                                     // @see https://github.com/matfish2/vue-tables-2/blob/master/templates/VtTableBody.vue#L9
                                     key={`${material.id}--availability`}
-                                    list={list}
                                     material={material}
                                     filters={filters}
                                 />
@@ -370,9 +357,11 @@ const MaterialsSelectorList = defineComponent({
                                     onChange={setQuantity}
                                 />
                             ),
-                            'amount': ({ row: material }: { row: Material }) => (
-                                formatAmount((material.rental_price ?? 0) * getQuantity(material))
-                            ),
+                            'amount': ({ row: material }: { row: Material }) => {
+                                const rentalPrice = material.rental_price ?? new Decimal(0);
+                                const quantity = getQuantity(material);
+                                return formatAmount(rentalPrice.times(quantity));
+                            },
                             'actions': ({ row: material }: { row: Material }) => (
                                 getQuantity(material) > 0
                                     ? (

@@ -2,11 +2,11 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import ErrorMessage from '@/themes/default/components/ErrorMessage';
 
-// @vue/component
+/** @deprecated */
 export default defineComponent({
     name: 'Help',
     props: {
-        message: { type: [String, Object], required: true },
+        message: { type: [String, Object], default: '' },
         error: { type: [String, Error], default: null },
         isLoading: { type: Boolean, default: false },
     },

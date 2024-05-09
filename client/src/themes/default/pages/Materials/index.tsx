@@ -1,7 +1,8 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
-import moment from 'moment';
+import Period from '@/utils/period';
+import DateTime from '@/utils/datetime';
 import HttpCode from 'status-code-enum';
+import { defineComponent } from '@vue/composition-api';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import config from '@/globals/config';
 import { confirm } from '@/utils/alert';
@@ -20,53 +21,55 @@ import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
 import MaterialsFilters from '@/themes/default/components/MaterialsFilters';
 import TagsList from '@/themes/default/components/TagsList';
-import Datepicker from '@/themes/default/components/Datepicker';
+import DatePicker from '@/themes/default/components/DatePicker';
 import { Group } from '@/stores/api/groups';
 import Quantities from './components/Quantities';
 
 import type { ComponentRef, CreateElement } from 'vue';
 import type { PaginationParams } from '@/stores/api/@types';
-import type { Column } from '@/themes/default/components/Table';
+import type { Columns } from '@/themes/default/components/Table';
 import type { Filters as CoreFilters } from '@/themes/default/components/MaterialsFilters';
-import type { Filters, MaterialWithAvailabilities as Material } from '@/stores/api/materials';
+import type { Filters, MaterialWithAvailability as Material } from '@/stores/api/materials';
 import type { Tag } from '@/stores/api/tags';
 
 type InstanceProperties = {
-    todayTimer: ReturnType<typeof setInterval> | undefined,
+    nowTimer: ReturnType<typeof setInterval> | undefined,
 };
 
 type Data = {
-    today: string,
     isLoading: boolean,
     hasCriticalError: boolean,
     shouldDisplayTrashed: boolean,
     isTrashDisplayed: boolean,
-    rawPeriodForQuantities: [string, string] | null,
+    rawPeriodForQuantities: Period | null,
+    periodForQuantitiesIsFullDays: boolean,
+    now: DateTime,
 };
 
 /** Page de listing du matériel. */
 const Materials = defineComponent({
     name: 'Materials',
     setup: (): InstanceProperties => ({
-        todayTimer: undefined,
+        nowTimer: undefined,
     }),
     data: (): Data => ({
         isLoading: false,
         hasCriticalError: false,
         isTrashDisplayed: false,
         shouldDisplayTrashed: false,
-        today: moment().format('YYYY-MM-DD'),
         rawPeriodForQuantities: null,
+        periodForQuantitiesIsFullDays: false,
+        now: DateTime.now(),
     }),
     computed: {
         isAdmin(): boolean {
             return this.$store.getters['auth/is'](Group.ADMIN);
         },
 
-        periodForQuantities() {
+        periodForQuantities(): Period {
             if (this.rawPeriodForQuantities === null) {
-                const { today } = this;
-                return [today, today];
+                const currentHour = this.now.startOfHour();
+                return new Period(currentHour, currentHour.addHour());
             }
             return this.rawPeriodForQuantities;
         },
@@ -76,8 +79,7 @@ const Materials = defineComponent({
             const routeQuery = this.$route?.query ?? {};
 
             // - Période.
-            const [start, end] = this.periodForQuantities;
-            filters.quantitiesPeriod = { start, end };
+            filters.quantitiesPeriod = this.periodForQuantities;
 
             // - Catégorie.
             if ('category' in routeQuery) {
@@ -114,7 +116,7 @@ const Materials = defineComponent({
             return filters;
         },
 
-        columns(): Array<Column<Material>> {
+        columns(): Columns<Material> {
             const isBillingEnabled = config.billingMode !== 'none';
             const {
                 $t: __,
@@ -145,6 +147,13 @@ const Materials = defineComponent({
                     class: 'Materials__cell Materials__cell--description',
                     sortable: true,
                     hidden: true,
+                    render: (h: CreateElement, { description }: Material) => (
+                        (description ?? '').length > 0 ? description : (
+                            <span class="Materials__cell__empty">
+                                {__('not-specified')}
+                            </span>
+                        )
+                    ),
                 },
                 !isTrashDisplayed && {
                     key: 'park',
@@ -164,7 +173,7 @@ const Materials = defineComponent({
                         const categoryName = store.getters['categories/categoryName'](categoryId);
                         if (!categoryName) {
                             return (
-                                <span class="Materials__not-categorized">
+                                <span class="Materials__cell__empty">
                                     {__('not-categorized')}
                                 </span>
                             );
@@ -201,8 +210,14 @@ const Materials = defineComponent({
                     class: 'Materials__cell Materials__cell--replacement-price',
                     sortable: true,
                     hidden: true,
-                    render: (h: CreateElement, material: Material) => (
-                        formatAmount(material.replacement_price ?? 0)
+                    render: (h: CreateElement, { replacement_price: replacementPrice }: Material) => (
+                        replacementPrice !== null
+                            ? formatAmount(replacementPrice)
+                            : (
+                                <span class="Materials__cell__empty">
+                                    {__('not-specified')}
+                                </span>
+                            )
                     ),
                 },
                 !isTrashDisplayed && {
@@ -224,7 +239,7 @@ const Materials = defineComponent({
                     sortable: true,
                     hidden: true,
                     render(h: CreateElement, material: Material) {
-                        const quantityBroken: number = (() => material.out_of_order_quantity!)();
+                        const quantityBroken: number = material.out_of_order_quantity;
 
                         const className = ['Materials__quantity-broken', {
                             'Materials__quantity-broken--exists': quantityBroken > 0,
@@ -286,16 +301,22 @@ const Materials = defineComponent({
                                     icon="eye"
                                     to={{ name: 'view-material', params: { id } }}
                                 />
-                                <Button
-                                    type="edit"
-                                    to={{ name: 'edit-material', params: { id } }}
-                                />
-                                <Button
-                                    type="trash"
-                                    onClick={(e: MouseEvent) => {
-                                        handleDeleteItemClick(e, id);
-                                    }}
-                                />
+                                <Dropdown>
+                                    <Button
+                                        type="edit"
+                                        to={{ name: 'edit-material', params: { id } }}
+                                    >
+                                        {__('action-edit')}
+                                    </Button>
+                                    <Button
+                                        type="trash"
+                                        onClick={(e: MouseEvent) => {
+                                            handleDeleteItemClick(e, id);
+                                        }}
+                                    >
+                                        {__('action-delete')}
+                                    </Button>
+                                </Dropdown>
                             </Fragment>
                         );
                     },
@@ -304,7 +325,7 @@ const Materials = defineComponent({
         },
     },
     watch: {
-        rawPeriodForQuantities() {
+        periodForQuantities() {
             this.refreshTable();
         },
     },
@@ -317,15 +338,12 @@ const Materials = defineComponent({
         this.$store.dispatch('parks/fetch');
         this.$store.dispatch('tags/fetch');
 
-        // - Actualise la date courante toutes les 10 minutes.
-        this.todayTimer = setInterval(
-            () => { this.today = moment().format('YYYY-MM-DD'); },
-            600_000,
-        );
+        // - Actualise le timestamp courant toutes les minutes.
+        this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 60_000);
     },
     beforeDestroy() {
-        if (this.todayTimer) {
-            clearInterval(this.todayTimer);
+        if (this.nowTimer) {
+            clearInterval(this.nowTimer);
         }
     },
     methods: {
@@ -337,16 +355,20 @@ const Materials = defineComponent({
 
         handleChangeFilters(newFilters: CoreFilters) {
             const query: Record<string, string> = {};
-            if (newFilters.park !== undefined) {
+            if (newFilters.park !== undefined && newFilters.park !== null) {
                 query.park = newFilters.park.toString();
             }
-            if (newFilters.category !== undefined) {
+            if (newFilters.category !== undefined && newFilters.category !== null) {
                 query.category = newFilters.category.toString();
             }
-            if (newFilters.subCategory !== undefined) {
+            if (newFilters.subCategory !== undefined && newFilters.subCategory !== null) {
                 query.subCategory = newFilters.subCategory.toString();
             }
-            if (newFilters.tags !== undefined && newFilters.tags.length > 0) {
+            if (
+                newFilters.tags !== undefined &&
+                newFilters.tags !== null &&
+                newFilters.tags.length > 0
+            ) {
                 query.tags = newFilters.tags.join(',');
             }
 
@@ -354,17 +376,9 @@ const Materials = defineComponent({
             this.setTablePage(1);
         },
 
-        handleChangePeriodForQuantities([start, end]: [string, string]) {
-            this.rawPeriodForQuantities = start !== null && end !== null
-                ? [start, end]
-                : null;
-        },
-
-        handleRowClick({ id }: Material) {
-            this.$router.push({
-                name: 'view-material',
-                params: { id: id.toString() },
-            });
+        handleChangePeriodForQuantities(newPeriod: Period<true> | null, isFullDays: boolean) {
+            this.periodForQuantitiesIsFullDays = isFullDays;
+            this.rawPeriodForQuantities = newPeriod;
         },
 
         async handleDeleteItemClick(e: MouseEvent, id: Material['id']) {
@@ -389,6 +403,7 @@ const Materials = defineComponent({
             this.isLoading = true;
             try {
                 await apiMaterials.remove(id);
+
                 this.$toasted.success(__('page.materials.deleted'));
                 this.refreshTable();
             } catch {
@@ -413,6 +428,7 @@ const Materials = defineComponent({
             this.isLoading = true;
             try {
                 await apiMaterials.restore(id);
+
                 this.$toasted.success(__('page.materials.restored'));
                 this.refreshTable();
             } catch {
@@ -443,9 +459,15 @@ const Materials = defineComponent({
             };
         },
 
+        handleRowClick({ id }: Material) {
+            this.$router.push({
+                name: 'view-material',
+                params: { id: id.toString() },
+            });
+        },
+
         handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
-            this.isTrashDisplayed = !this.isTrashDisplayed;
             this.setTablePage(1);
         },
 
@@ -467,7 +489,8 @@ const Materials = defineComponent({
                     deleted: this.shouldDisplayTrashed,
                 });
 
-                return { data };
+                this.isTrashDisplayed = this.shouldDisplayTrashed;
+                return data;
             } catch (error) {
                 if (isRequestErrorStatusCode(error, HttpCode.ClientErrorRangeNotSatisfiable)) {
                     this.setTablePage(1);
@@ -505,6 +528,7 @@ const Materials = defineComponent({
             handleToggleShowTrashed,
             isTrashDisplayed,
             periodForQuantities,
+            periodForQuantitiesIsFullDays,
             handleChangePeriodForQuantities,
             handleChangeFilters,
             handleRowClick,
@@ -512,7 +536,7 @@ const Materials = defineComponent({
 
         if (hasCriticalError) {
             return (
-                <Page name="materials" title={__('page.materials.title')}>
+                <Page name="materials" title={__('page.materials.title')} centered>
                     <CriticalError />
                 </Page>
             );
@@ -523,7 +547,7 @@ const Materials = defineComponent({
                 <Page
                     name="materials"
                     title={__('page.materials.title-trash')}
-                    isLoading={isLoading}
+                    loading={isLoading}
                     actions={[
                         <Button onClick={handleToggleShowTrashed} icon="eye" type="primary">
                             {__('display-not-deleted-items')}
@@ -548,9 +572,9 @@ const Materials = defineComponent({
                 name="materials"
                 title={__('page.materials.title')}
                 help={__('page.materials.help')}
-                isLoading={isLoading}
+                loading={isLoading}
                 actions={[
-                    <Button type="add" to={{ name: 'add-material' }} icon="plus">
+                    <Button type="add" to={{ name: 'add-material' }} icon="plus" collapsible>
                         {__('page.materials.action-add')}
                     </Button>,
                     <Dropdown>
@@ -584,16 +608,17 @@ const Materials = defineComponent({
                             onChange={handleChangeFilters}
                         />
                         <div class="Materials__quantities-date">
-                            <Datepicker
-                                type="date"
+                            <DatePicker
+                                type={periodForQuantitiesIsFullDays ? 'date' : 'datetime'}
                                 value={periodForQuantities}
                                 onChange={handleChangePeriodForQuantities}
                                 class="Materials__quantities-date__input"
+                                withFullDaysToggle
                                 withSnippets
                                 range
                                 v-tooltip={{
                                     placement: 'top',
-                                    content: __('page.materials.date-to-display-available-quantities'),
+                                    content: __('page.materials.period-to-display-available-quantities'),
                                 }}
                             />
                         </div>

@@ -6,7 +6,7 @@ namespace Loxya\Tests\Fixtures;
 use Ifsnop\Mysqldump as IMysqldump;
 use Loxya\Config\Config;
 
-class Fixtures
+final class Fixtures
 {
     protected const DATA_DUMP_FILE = TMP_FOLDER . DS . 'data.sql';
     protected const SCHEMA_DUMP_FILE = TMP_FOLDER . DS . 'schema.sql';
@@ -35,12 +35,12 @@ class Fixtures
 
         $sqlRecreate = sprintf(
             'DROP DATABASE IF EXISTS `%1$s`; CREATE DATABASE `%1$s`;',
-            $dbConfig['testDatabase']
+            $dbConfig['testDatabase'],
         );
 
         $pdo = self::getConnection();
         $pdo->prepare($sqlRecreate)->execute();
-        $pdo = null;
+        unset($pdo);
 
         static::_log("\nOK.\n\n");
     }
@@ -71,10 +71,10 @@ class Fixtures
             WHERE `TABLE_SCHEMA` = '%s' AND `TABLE_NAME` != 'phinxlog';
         ", $dbConfig['testDatabase']);
 
-        $pdo  = self::getConnection();
+        $pdo = self::getConnection();
         $stmt = $pdo->prepare($query);
         $stmt->execute();
-        $pdo = null;
+        unset($pdo);
 
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
@@ -98,16 +98,13 @@ class Fixtures
                 'skip-comments' => true,
                 'no-data' => true,
                 'reset-auto-increment' => true,
-            ]
+            ],
         );
 
         $dumpFile = self::SCHEMA_DUMP_FILE;
-
         $dump->start($dumpFile);
 
-        static::_log("Optimizing dump file (Memory engine, varchar, etc.)...\n");
-
-        $dumpContent  = sprintf("USE `%s`;\n", $dbConfig['testDatabase']);
+        $dumpContent = sprintf("USE `%s`;\n", $dbConfig['testDatabase']);
         $dumpContent .= file_get_contents($dumpFile) . "\n\n";
 
         $prefixedTable = sprintf('CREATE TABLE `%s`.', $dbConfig['testDatabase']);
@@ -136,7 +133,7 @@ class Fixtures
 
         file_put_contents(self::DATA_DUMP_FILE, $dataseed->getFinalQuery());
 
-        static::_log("OK, done in " . getExecutionTime($startTime) . ".\n\n");
+        static::_log(sprintf("OK, done in %s.\n\n", getExecutionTime($startTime)));
     }
 
     public static function resetDataWithDump(): void
@@ -152,8 +149,8 @@ class Fixtures
 
             $queryData = file_get_contents(self::DATA_DUMP_FILE);
             $pdo->prepare($queryData)->execute();
-            $pdo = null;
-        } catch (\Exception $e) {
+            unset($pdo);
+        } catch (\Throwable $e) {
             echo "\033[91m\n\nThere is an SQL error in fixtures data.\n";
             echo "Please check `src/var/tmp/tests/data.sql` and all seed files you have modified.\n";
             echo "Here is the detailed SQL error message:\n\n";

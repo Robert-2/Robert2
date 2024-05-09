@@ -12,13 +12,28 @@ final class SettingsTest extends ApiTestCase
         $this->client->get('/api/settings');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
+            'general' => [
+                'openingHours' => [
+                    ['weekday' => 0, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 1, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 3, 'start_time' => '09:00:00', 'end_time' => '12:00:00'],
+                    ['weekday' => 3, 'start_time' => '14:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 4, 'start_time' => '09:00:00', 'end_time' => '24:00:00'],
+                    ['weekday' => 5, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 6, 'start_time' => '09:45:00', 'end_time' => '12:30:00'],
+                ],
+            ],
             'eventSummary' => [
                 'customText' => [
                     'title' => "Contrat",
                     'content' => "Un petit contrat de test.",
                 ],
                 'materialDisplayMode' => 'categories',
+                'showDescriptions' => false,
                 'showLegalNumbers' => true,
+                'showReplacementPrices' => true,
+                'showPictures' => false,
+                'showTags' => false,
             ],
             'calendar' => [
                 'event' => [
@@ -28,6 +43,7 @@ final class SettingsTest extends ApiTestCase
                 'public' => [
                     'enabled' => true,
                     'url' => 'http://loxya.test/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics',
+                    'displayedPeriod' => 'operation',
                 ],
             ],
             'returnInventory' => [
@@ -54,6 +70,7 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.materialDisplayMode' => 'not-valid',
             'eventSummary.customText.title' => str_repeat('A', 192),
             'calendar.public.uuid' => 'not-valid',
+            'calendar.public.displayedPeriod' => 'not-valid',
         ]);
         $this->assertApiValidationError([
             'calendar.event.showBorrower' => [
@@ -72,6 +89,12 @@ final class SettingsTest extends ApiTestCase
             'calendar.public.uuid' => [
                 'This unique identifier (UUID) is invalid.',
             ],
+            'calendar.public.displayedPeriod' => [
+                'One of the following rules must be verified:',
+                'Must equal "mobilization".',
+                'Must equal "operation".',
+                'Must equal "both".',
+            ],
         ]);
     }
 
@@ -85,6 +108,10 @@ final class SettingsTest extends ApiTestCase
                 ],
                 'materialDisplayMode' => 'categories',
                 'showLegalNumbers' => true,
+                'showReplacementPrices' => false,
+                'showDescriptions' => true,
+                'showTags' => true,
+                'showPictures' => true,
             ],
             'calendar' => [
                 'event' => [
@@ -93,6 +120,7 @@ final class SettingsTest extends ApiTestCase
                 ],
                 'public' => [
                     'enabled' => false,
+                    'displayedPeriod' => 'both',
                 ],
             ],
             'returnInventory' => [
@@ -101,13 +129,28 @@ final class SettingsTest extends ApiTestCase
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
+            'general' => [
+                'openingHours' => [
+                    ['weekday' => 0, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 1, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 3, 'start_time' => '09:00:00', 'end_time' => '12:00:00'],
+                    ['weekday' => 3, 'start_time' => '14:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 4, 'start_time' => '09:00:00', 'end_time' => '24:00:00'],
+                    ['weekday' => 5, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 6, 'start_time' => '09:45:00', 'end_time' => '12:30:00'],
+                ],
+            ],
             'eventSummary' => [
                 'customText' => [
                     'title' => 'foo',
                     'content' => 'bar',
                 ],
                 'materialDisplayMode' => 'categories',
+                'showDescriptions' => true,
                 'showLegalNumbers' => true,
+                'showReplacementPrices' => false,
+                'showTags' => true,
+                'showPictures' => true,
             ],
             'calendar' => [
                 'event' => [
@@ -130,16 +173,37 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.customText.title' => null,
             'eventSummary.customText.content' => null,
             'eventSummary.showLegalNumbers' => false,
+            'eventSummary.showReplacementPrices' => false,
+            'eventSummary.showDescriptions' => true,
+            'eventSummary.showTags' => true,
+            'eventSummary.showPictures' => true,
+            'calendar.public.enabled' => true,
+            'calendar.public.displayedPeriod' => 'mobilization',
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
+            'general' => [
+                'openingHours' => [
+                    ['weekday' => 0, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 1, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 3, 'start_time' => '09:00:00', 'end_time' => '12:00:00'],
+                    ['weekday' => 3, 'start_time' => '14:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 4, 'start_time' => '09:00:00', 'end_time' => '24:00:00'],
+                    ['weekday' => 5, 'start_time' => '09:00:00', 'end_time' => '18:00:00'],
+                    ['weekday' => 6, 'start_time' => '09:45:00', 'end_time' => '12:30:00'],
+                ],
+            ],
             'eventSummary' => [
                 'customText' => [
                     'title' => null,
                     'content' => null,
                 ],
                 'materialDisplayMode' => 'flat',
+                'showDescriptions' => true,
                 'showLegalNumbers' => false,
+                'showReplacementPrices' => false,
+                'showTags' => true,
+                'showPictures' => true,
             ],
             'calendar' => [
                 'event' => [
@@ -147,7 +211,9 @@ final class SettingsTest extends ApiTestCase
                     'showLocation' => false,
                 ],
                 'public' => [
-                    'enabled' => false,
+                    'enabled' => true,
+                    'displayedPeriod' => 'mobilization',
+                    'url' => 'http://loxya.test/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics',
                 ],
             ],
             'returnInventory' => [
@@ -168,7 +234,7 @@ final class SettingsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyNotEquals(
             'calendar.public.url',
-            'http://loxya.test/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics'
+            'http://loxya.test/calendar/public/dfe7cd82-52b9-4c9b-aaed-033df210f23b.ics',
         );
 
         // - Par défaut, le calendrier public est désactivé.

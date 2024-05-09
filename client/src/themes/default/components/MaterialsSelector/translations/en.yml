@@ -1,12 +1,20 @@
 error-occurred-while-import-lists-from-event: "An error occurred while importing the lists from the event."
 error-occurred-while-deleting-list: "An error occurred while deleting the list."
 
+new-sub-list: New sub-list
+new-sub-list-confirm: |
+    You are about to add a sub-list to this event.
+
+    This event already contains off-list material, therefore if you create a sub-list, these existing materials will be placed in a global "virtual" list.
+
 add-materials-from:
     an-event: Add materials from an event
     dropdown:
         title: Add materials from...
         choices:
             an-event: An event...
+
+list-deleted: The list has been deleted.
 
 #
 # - Filtres
@@ -24,4 +32,6 @@ list-availability:
     stock-count:
         - "{count} available in stock"
         - "{count} available in stock"
-    surplus-count: "{count} in surplus / broken"
+    surplus-count:
+        - "{count} in surplus / broken"
+        - "{count} in surplus / broken"

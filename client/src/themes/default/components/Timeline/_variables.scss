@@ -1,0 +1,39 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+$background-color: globals.$calendar-background-color;
+$separator-color: globals.$calendar-separator-color;
+$border-radius: globals.$border-radius-large;
+
+$header-background-color: #262527;
+$header-box-shadow: 0 0 5px rgba(#000, 0.25);
+$header-text-color: globals.$text-soft-color;
+
+//
+// - Représentation du moment présent (jour / heure).
+//
+
+$today-background-color: #323749;
+$today-border-color: color.adjust($today-background-color, $lightness: 5%);
+$today-time-cursor-color: #3378c3;
+
+//
+// - Éléments.
+//
+
+$item-border-radius: globals.$border-radius-large;
+
+//
+// -- Éléments de type "range".
+//
+
+$range-item-background-color: globals.$calendar-event-normal-color;
+$range-item-box-shadow: 1px 2px 3px rgba(#000, 0.5);
+$range-item-text-color: globals.$calendar-event-normal-text-color;
+
+//
+// -- Éléments de type "background".
+//
+
+$background-item-background-color: rgba(31, 31, 31, 0.6);
+$background-item-text-color: rgba(255, 255, 255, 0.5);

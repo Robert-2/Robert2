@@ -10,19 +10,18 @@ use Loxya\Models\User;
 
 final class UserTest extends TestCase
 {
-    public function testFromLoginNotFound(): void
-    {
-        $this->expectException(ModelNotFoundException::class);
-        User::fromLogin('foo', 'bar');
-    }
-
     public function testFromLogin(): void
     {
+        // - Avec un un couple d'identifiants inexistants.
+        $this->assertException(ModelNotFoundException::class, static fn () => (
+            User::fromLogin('foo', 'bar')
+        ));
+
         // - Retourne l'utilisateur n°1 et sa personne associée en utilisant l'e-mail
         try {
             $resultUser = User::fromLogin('tester@robertmanager.net', 'testing-pw');
             $this->assertEquals(1, $resultUser->id);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException) {
             $this->fail('The user has not been correctly retrieved.');
         }
 
@@ -30,7 +29,7 @@ final class UserTest extends TestCase
         try {
             $resultUser = User::fromLogin('test1', 'testing-pw');
             $this->assertEquals(1, $resultUser->id);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException) {
             $this->fail('The user has not been correctly retrieved.');
         }
     }
@@ -77,8 +76,6 @@ final class UserTest extends TestCase
         $this->assertEquals('testAdd', $result->pseudo);
         $this->assertEquals('testadd@testing.org', $result->email);
         $this->assertEquals(Group::MEMBER, $result->group);
-        $this->assertNull($result->cas_identifier);
-        $this->assertNull($result->saml2_identifier);
         $this->assertEquals(8, $result->person->id);
         $this->assertEquals(6, $result->person->user_id);
         $this->assertEquals('Testing', $result->person->first_name);

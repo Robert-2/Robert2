@@ -164,7 +164,7 @@ final class FixEstimatesAndInvoicesDiscountFields extends AbstractMigration
                         $dailyTotalTaxes,
                         $dailyTotalWithTaxes,
                         $entry['id'],
-                    ]
+                    ],
                 );
             }
 

@@ -3,7 +3,7 @@
         "baseUrl": ".",
         "outDir": "./dist",
         "allowJs": true,
-        // "allowArbitraryExtensions": true,
+        "allowArbitraryExtensions": true,
         "allowImportingTsExtensions": false,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
@@ -17,7 +17,6 @@
         "moduleSuffixes": [""],
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
-        // "noUncheckedIndexedAccess": true,
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "sourceMap": true,
@@ -25,10 +24,11 @@
         "target": "ESNext",
         "useDefineForClassFields": true,
         "verbatimModuleSyntax": true,
+        "noErrorTruncation": true,
         "paths": {
             "@/*": ["./src/*"],
             "@fixtures/*": ["./tests/fixtures/*"]
         }
     },
-    "include": ["./src", "./tests"]
+    "include": ["./src", "./tests", "./vendors"]
 }

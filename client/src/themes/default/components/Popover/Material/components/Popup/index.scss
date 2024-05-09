@@ -1,0 +1,174 @@
+@use '~@/themes/default/style/globals';
+
+.MaterialPopoverPopup {
+    $block: &;
+
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    max-height: 300px;
+    border-radius: globals.$border-radius-large;
+    background-color: globals.$bg-color-body;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+    //
+    // - Layout
+    //
+
+    &__picture {
+        flex: 0 0 auto;
+        overflow: hidden;
+        height: 120px;
+        border-top-left-radius: globals.$border-radius-large;
+        border-top-right-radius: globals.$border-radius-large;
+        background-color: #fff;
+
+        &--placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            background-color: globals.$bg-color-emphasis;
+
+            @include globals.icon('image', 'regular') {
+                color: globals.$text-muted-color;
+                font-size: 6rem;
+            }
+        }
+    }
+
+    &__main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        padding: globals.$spacing-medium;
+        gap: globals.$spacing-medium;
+
+        &__header {
+            display: flex;
+            align-items: flex-start;
+            gap: globals.$spacing-small;
+
+            #{$block}__title {
+                flex: 1;
+            }
+        }
+
+        &__infos {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            gap: globals.$spacing-medium;
+        }
+    }
+
+    //
+    // - Elements
+    //
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    &__title {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        &__name {
+            @include globals.line-clamp(3);
+
+            font-size: 1.17rem;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        &__reference {
+            display: block;
+            color: globals.$text-light-color;
+            font-weight: 500;
+        }
+    }
+
+    &__park {
+        @include globals.line-clamp(3);
+
+        overflow: hidden;
+        max-width: 90px;
+        color: globals.$text-light-color;
+        word-break: break-word;
+    }
+
+    &__description {
+        margin: 0;
+        white-space: pre-wrap;
+    }
+
+    &__note {
+        margin: 0;
+        color: globals.$text-light-color;
+        white-space: pre-wrap;
+
+        @include globals.icon('clipboard', 'regular') {
+            margin-right: globals.$spacing-thin;
+        }
+    }
+
+    &__attributes {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-thin;
+    }
+
+    &__attribute {
+        display: flex;
+        margin: 0;
+        gap: globals.$spacing-thin;
+
+        &__name {
+            @extend %reset-dl;
+
+            @include globals.icon('cog') {
+                margin-right: globals.$spacing-thin;
+            }
+        }
+
+        &__value {
+            @extend %reset-dd;
+
+            flex: 1;
+            font-weight: 600;
+        }
+    }
+
+    &__not-discountable {
+        margin: 0;
+        color: globals.$text-warning-color;
+
+        @include globals.icon('file-invoice-dollar') {
+            margin-right: globals.$spacing-thin;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-big-desktop) {
+        width: 350px;
+        max-height: 350px;
+
+        &__picture {
+            overflow: hidden;
+            height: 170px;
+
+            &--placeholder {
+                height: 100px;
+            }
+        }
+    }
+}

@@ -16,17 +16,17 @@ use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Contracts\Cache\CacheInterface;
 
 return [
-    'logger' => function () {
+    'logger' => static function () {
         $settings = Config::get('logger', []);
         return new Services\Logger($settings);
     },
 
-    'auth' => function (ContainerInterface $container) {
+    'auth' => static function (ContainerInterface $container) {
         $authenticators = $container->get('auth.authenticators');
         return new Services\Auth($authenticators);
     },
 
-    'session' => function () {
+    'session' => static function () {
         $secure = Config::getBaseUri()->getScheme() === 'https';
         $sessionClass = Config::getEnv() !== 'test'
             ? PhpSession::class
@@ -46,21 +46,22 @@ return [
         DI\get(Services\Auth\JWT::class),
     ]),
 
-    'cache' => function (): TagAwareAdapter {
-        return new TagAwareAdapter(
-            new FilesystemAdapter('core', 0, CACHE_FOLDER)
-        );
-    },
+    'cache' => static fn (): TagAwareAdapter => (
+        new TagAwareAdapter(
+            new FilesystemAdapter('core', 0, CACHE_FOLDER),
+        )
+    ),
 
-    'flash' => function (ContainerInterface $container) {
-        return $container->get(SessionInterface::class)->getFlash();
-    },
+    'flash' => static fn (ContainerInterface $container) => (
+        $container->get(SessionInterface::class)->getFlash()
+    ),
 
     'console.commands' => DI\add([
         DI\get(Command\Migrations\MigrateCommand::class),
         DI\get(Command\Migrations\StatusCommand::class),
         DI\get(Command\Migrations\RollbackCommand::class),
         DI\get(Command\Migrations\CreateCommand::class),
+        DI\get(Command\Test\EmailCommand::class),
     ]),
 
     //
@@ -69,6 +70,7 @@ return [
 
     'i18n' => DI\get(Services\I18n::class),
     'view' => DI\get(Services\View::class),
+    'mailer' => DI\get(Services\Mailer::class),
     'httpCache' => DI\get(\Slim\HttpCache\CacheProvider::class),
 
     Services\Auth::class => DI\get('auth'),

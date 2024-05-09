@@ -8,7 +8,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 #[AsCommand(name: 'migrations:status')]
-class StatusCommand extends CoreStatusCommand
+final class StatusCommand extends CoreStatusCommand
 {
     use ConfigurationTrait;
 

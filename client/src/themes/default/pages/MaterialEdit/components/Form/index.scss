@@ -29,6 +29,11 @@
         }
     }
 
+    &__help-stock-unitary {
+        margin: 0;
+        font-style: italic;
+    }
+
     &__park {
         display: flex;
         margin-top: globals.$spacing-medium;

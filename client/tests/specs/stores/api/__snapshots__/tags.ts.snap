@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tags Api all() parse the returned data correctly 1`] = `
+[
+  {
+    "id": 1,
+    "name": "Premium",
+  },
+  {
+    "id": 2,
+    "name": "Vintage",
+  },
+]
+`;
+
+exports[`Tags Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "name": "Premium",
+}
+`;
+
+exports[`Tags Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "name": "Vintage",
+}
+`;
+
+exports[`Tags Api restore() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "name": "Premium",
+}
+`;
+
+exports[`Tags Api restore() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "name": "Vintage",
+}
+`;
+
+exports[`Tags Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "name": "Premium",
+}
+`;
+
+exports[`Tags Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "name": "Vintage",
+}
+`;

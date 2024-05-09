@@ -10,9 +10,9 @@
         height: globals.$input-min-height;
         max-width: var(--input-width, 100%);
         padding: 4px;
-        border: globals.$input-border-size solid globals.$bg-color-input-normal;
+        border: globals.$input-border-width solid globals.$input-border-color;
         border-radius: globals.$input-border-radius;
-        background-color: globals.$bg-color-input-normal;
+        background-color: globals.$input-background-color;
         cursor: pointer;
 
         &__preview {
@@ -37,7 +37,7 @@
     &--empty {
         #{$block}__field__preview {
             $empty-bar-color: #9c272d;
-            $empty-color-accent: color.scale(globals.$bg-color-input-normal, $lightness: -40%);
+            $empty-color-accent: color.scale(globals.$input-background-color, $lightness: -40%);
 
             @include globals.checkerboard($empty-color-accent, transparent);
 
@@ -76,6 +76,8 @@
     &--invalid {
         #{$block}__field {
             border-color: globals.$input-error-border-color;
+            background-color: globals.$input-error-background-color;
+            color: globals.$input-error-text-color;
         }
     }
 }

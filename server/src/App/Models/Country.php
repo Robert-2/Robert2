@@ -5,8 +5,10 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
+use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
 
 /**
@@ -17,12 +19,12 @@ use Respect\Validation\Validator as V;
  * @property string $code
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
+ *
+ * @method static Builder|static search(string $term)
  */
 final class Country extends BaseModel implements Serializable
 {
     use Serializer;
-
-    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {
@@ -47,13 +49,14 @@ final class Country extends BaseModel implements Serializable
             ->length(4, 96)
             ->check($value);
 
-        $query = static::where('name', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('name', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->exists();
 
-        return !$query->withTrashed()->exists()
-            ?: 'country-name-already-in-use';
+        return !$alreadyExists ?: 'country-name-already-in-use';
     }
 
     public function checkCode($value)
@@ -63,14 +66,14 @@ final class Country extends BaseModel implements Serializable
             ->length(4, 4)
             ->check($value);
 
-        $query = static::where('code', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('code', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->exists();
 
-        return $query->withTrashed()->exists()
-            ? 'country-code-already-in-use'
-            : true;
+        return !$alreadyExists ?: 'country-code-already-in-use';
     }
 
     // ------------------------------------------------------
@@ -93,6 +96,24 @@ final class Country extends BaseModel implements Serializable
     // ------------------------------------------------------
 
     protected $fillable = ['name', 'code'];
+
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    protected $orderable = [
+        'name',
+    ];
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where('name', 'LIKE', $term);
+    }
 
     // ------------------------------------------------------
     // -

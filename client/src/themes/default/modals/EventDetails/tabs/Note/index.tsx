@@ -1,14 +1,14 @@
 import './index.scss';
 import throttle from 'lodash/throttle';
 import { defineComponent } from '@vue/composition-api';
-import { DEBOUNCE_WAIT } from '@/globals/constants';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
 import { Group } from '@/stores/api/groups';
 import apiEvents from '@/stores/api/events';
 import Notepad from '@/themes/default/components/Notepad';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 import type { DebouncedMethod } from 'lodash';
 
 /**
@@ -21,7 +21,7 @@ const MAX_AUTOMATIC_SAVE_ATTEMPTS: number = 2;
 
 type Props = {
     /** L'événement dont on souhaite afficher l'onglet des notes. */
-    event: Event,
+    event: EventDetails,
 };
 
 enum SaveMode {
@@ -53,6 +53,7 @@ const EventDetailsNote = defineComponent({
             required: true,
         },
     },
+    emits: ['updated'],
     setup: (): InstanceProperties => ({
         throttledSave: undefined,
     }),
@@ -71,7 +72,11 @@ const EventDetailsNote = defineComponent({
         },
     },
     created() {
-        this.throttledSave = throttle(this.save.bind(this), DEBOUNCE_WAIT, { leading: false });
+        this.throttledSave = throttle(
+            this.save.bind(this),
+            DEBOUNCE_WAIT_DURATION.asMilliseconds(),
+            { leading: false },
+        );
     },
     beforeDestroy() {
         this.throttledSave?.flush();

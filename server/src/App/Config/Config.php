@@ -5,10 +5,10 @@ namespace Loxya\Config;
 
 use Loxya\Support\Arr;
 use Loxya\Support\BaseUri;
-use Monolog\Logger;
+use Monolog\Level as LogLevel;
 use Psr\Http\Message\UriInterface;
 
-class Config
+final class Config
 {
     private const FILE = CONFIG_FOLDER . DS . 'settings.json';
 
@@ -45,6 +45,7 @@ class Config
         'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
         'degressiveRateFunction' => 'daysCount',
         'healthcheck' => false,
+        'instanceId' => null,
         'proxy' => [
             'enabled' => false,
             'host' => 'proxy.loxya.test',
@@ -101,7 +102,7 @@ class Config
         ],
         'logger' => [
             'timezone' => 'Europe/Paris',
-            'level' => Logger::NOTICE,
+            'level' => LogLevel::Notice,
             'max_files' => 10,
         ],
         'maxFileUploadSize' => 25 * 1024 * 1024, // - En octets
@@ -129,6 +130,21 @@ class Config
             'image/png',
             'image/webp',
             'image/svg+xml',
+        ],
+        'email' => [
+            'from' => '', // - Peut aussi être un tableau au format ['name' => '...', 'email' => '...']
+            'driver' => 'mail', // - Valeurs possibles `mail`, `smtp`, `loxya`, ou `mailjet`. Default : `mail`.
+            'smtp' => [
+                'host' => 'localhost',
+                'port' => 1025,
+                'username' => null, // - Si `null`, l'authentification SMTP sera désactivée.
+                'password' => null,
+                'security' => '',
+            ],
+            'mailjet' => [
+                'apiKey' => null,
+                'apiSecretKey' => null,
+            ],
         ],
         // - Couleurs personnalisées à utiliser dans le color-picker de l'application.
         //   (à la place des propositions par défaut, doit être un tableau avec des codes hexadécimaux ou `null`)
@@ -260,7 +276,7 @@ class Config
             $dbConfig['driver'],
             $dbConfig['host'],
             $dbConfig['port'],
-            $dbConfig['database']
+            $dbConfig['database'],
         );
 
         if (!$options['noCharset']) {
@@ -279,17 +295,20 @@ class Config
                 $dbConfig['dsn'],
                 $dbConfig['username'],
                 $dbConfig['password'],
-                $dbConfig['options']
+                $dbConfig['options'],
             );
 
         // @codeCoverageIgnoreStart
         } catch (\PDOException $e) {
             $details = match ($e->getCode()) {
-                2002 => "Hostname '{$dbConfig['host']}' unreachable. Please check DB 'host' in config.",
-                1045 => "Bad credentials. Please check DB 'username' and 'password' in config.",
-                1049 => (
-                    "Database '{$dbConfig['database']}' is missing. " .
-                    "You should create it, or check its name in config."
+                2002 => sprintf(
+                    "Hostname `%s` unreachable. Please check DB `host` in configuration.",
+                    $dbConfig['host'],
+                ),
+                1045 => "Bad credentials. Please check DB `username` and `password` in configuration.",
+                1049 => sprintf(
+                    "Database `%s` is missing. You should create it, or check its name in configuration.",
+                    $dbConfig['database'],
                 ),
                 default => null,
             };
@@ -357,7 +376,7 @@ class Config
     public static function saveCustomConfig(array $customConfig): void
     {
         if (empty($customConfig)) {
-            throw new \InvalidArgumentException("Custom config: empty data.");
+            throw new \InvalidArgumentException("Empty configuration.");
         }
 
         foreach (self::CUSTOM_SETTINGS as $field => $type) {
@@ -366,18 +385,20 @@ class Config
 
             if (!array_key_exists($field, $customConfig)) {
                 if ($isRequired) {
-                    throw new \InvalidArgumentException(
-                        "Custom config: Required field '$field' is missing."
-                    );
+                    throw new \InvalidArgumentException(sprintf(
+                        "Required configuration field `%s` is missing.",
+                        $field,
+                    ));
                 }
                 continue;
             }
 
             $functionTest = sprintf('is_%s', $type);
             if (!$functionTest($customConfig[$field])) {
-                throw new \InvalidArgumentException(
-                    "Custom config: Field '$field' must be of type '$type'."
-                );
+                throw new \InvalidArgumentException(vsprintf(
+                    "Configuration Field `%s` must be of type `%s`.",
+                    [$field, $type],
+                ));
             }
         }
 
@@ -389,7 +410,10 @@ class Config
         $jsonSettings = json_encode($customConfig, self::JSON_OPTIONS);
         $saved = file_put_contents(static::FILE, $jsonSettings);
         if (!$saved) {
-            throw new \RuntimeException("Unable to write JSON settings file. Check write access to config folder.");
+            throw new \RuntimeException(
+                "Unable to write JSON settings file. " .
+                "Check write access to `config/` folder.",
+            );
         }
     }
 

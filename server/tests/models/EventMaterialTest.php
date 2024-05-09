@@ -15,7 +15,7 @@ final class EventMaterialTest extends TestCase
 
         // - Quantité: 15 / Quantité partie: 10
         /** @var EventMaterial $eventMaterial */
-        $eventMaterial = tap(EventMaterial::findOrFail(6), function ($eventMaterial) {
+        $eventMaterial = tap(EventMaterial::findOrFail(6), static function ($eventMaterial) {
             $eventMaterial->quantity = 15;
             $eventMaterial->save();
             $eventMaterial->refresh();

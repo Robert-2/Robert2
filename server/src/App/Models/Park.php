@@ -5,11 +5,14 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Support\Arr;
+use Loxya\Support\Assert;
+use Respect\Validation\Validator as V;
 
 /**
  * Parc de matériel.
@@ -27,18 +30,22 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read int $total_stock_quantity
  * @property-read float $total_amount
  * @property-read bool $has_ongoing_booking
- * @property-read Collection|Material[] $materials
+ * @property-read Collection<array-key, Material> $materials
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
+ *
+ * @method static Builder|static search(string $term)
  */
 final class Park extends BaseModel implements Serializable
 {
     use Serializer;
     use SoftDeletable;
 
-    protected $orderField = 'name';
-    protected $searchField = 'name';
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_SUMMARY = 'summary';
+    public const SERIALIZE_DETAILS = 'details';
 
     public function __construct(array $attributes = [])
     {
@@ -66,13 +73,15 @@ final class Park extends BaseModel implements Serializable
             ->length(2, 96)
             ->check($value);
 
-        $query = static::where('name', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('name', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        return !$query->withTrashed()->exists()
-            ?: 'park-name-already-in-use';
+        return !$alreadyExists ?: 'park-name-already-in-use';
     }
 
     public function checkCountryId($value)
@@ -107,11 +116,6 @@ final class Park extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    protected $appends = [
-        'total_items',
-        'total_stock_quantity',
-    ];
-
     protected $casts = [
         'name' => 'string',
         'street' => 'string',
@@ -125,14 +129,12 @@ final class Park extends BaseModel implements Serializable
         'deleted_at' => 'immutable_datetime',
     ];
 
-    public function getTotalItemsAttribute()
+    public function getTotalItemsAttribute(): int
     {
-        $total = $this->materials()->count();
-
-        return $total;
+        return $this->materials()->count();
     }
 
-    public function getTotalStockQuantityAttribute()
+    public function getTotalStockQuantityAttribute(): int
     {
         $total = 0;
 
@@ -144,37 +146,33 @@ final class Park extends BaseModel implements Serializable
         return $total;
     }
 
-    public function getTotalAmountAttribute()
+    public function getTotalAmountAttribute(): float
     {
         $total = 0;
 
-        $materials = Material::getParkAll($this->id)->toArray();
+        $materials = Material::getParkAll($this->id);
         foreach ($materials as $material) {
-            $total += ($material['replacement_price'] * (int) $material['stock_quantity']);
+            $total += ($material->replacement_price ?? 0) * (int) $material->stock_quantity;
         }
 
         return $total;
     }
 
-    public function getHasOngoingBookingAttribute()
+    public function getHasOngoingBookingAttribute(): bool
     {
         if (!$this->exists || !$this->id) {
             return false;
         }
 
-        $ongoingEvents = Event::inPeriod('today')
+        $ongoingEvents = Event::inProgress()
             ->with('materials')
             ->get();
 
-        foreach ($ongoingEvents as $ongoingEvent) {
-            foreach ($ongoingEvent->materials as $material) {
-                if ($material->park_id === $this->id) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return $ongoingEvents->some(fn (Event $ongoingEvent) => (
+            $ongoingEvent->materials->some(fn (Material $material) => (
+                $material->park_id === $this->id
+            ))
+        ));
     }
 
     // ------------------------------------------------------
@@ -197,7 +195,7 @@ final class Park extends BaseModel implements Serializable
     {
         if ($this->total_items > 0) {
             throw new \LogicException(
-                sprintf("The park #%d contains material and therefore cannot be deleted.", $this->id)
+                sprintf("The park #%d contains material and therefore cannot be deleted.", $this->id),
             );
         }
 
@@ -206,14 +204,52 @@ final class Park extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    protected $orderable = [
+        'name',
+    ];
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where('name', 'LIKE', $term);
+    }
+
+    // ------------------------------------------------------
+    // -
     // -    Serialization
     // -
     // ------------------------------------------------------
 
-    public function serialize(): array
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        return (new DotArray($this->attributesForSerialization()))
+        /** @var Park $park */
+        $park = tap(clone $this, static function (Park $park) use ($format) {
+            if ($format !== self::SERIALIZE_SUMMARY) {
+                $park->append([
+                    'total_items',
+                    'total_stock_quantity',
+                ]);
+            }
+
+            if ($format === self::SERIALIZE_DETAILS) {
+                $park->append([
+                    'has_ongoing_booking',
+                ]);
+            }
+        });
+
+        $data = (new DotArray($park->attributesForSerialization()))
             ->delete(['created_at', 'updated_at', 'deleted_at'])
             ->all();
+
+        return $format === self::SERIALIZE_SUMMARY
+            ? Arr::only($data, ['id', 'name'])
+            : $data;
     }
 }

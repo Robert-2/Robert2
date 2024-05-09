@@ -13,7 +13,7 @@ import Loading from '@/themes/default/components/Loading';
 import Form from './components/Form';
 
 import type { ComponentRef } from 'vue';
-import type { AttributeDetails, AttributeEdit as AttributeEditType } from '@/stores/api/attributes';
+import type { AttributeDetails, AttributeCreate } from '@/stores/api/attributes';
 import type { Category } from '@/stores/api/categories';
 
 type Data = {
@@ -71,7 +71,7 @@ const AttributeEdit = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleSubmit(data: AttributeEditType) {
+        handleSubmit(data: AttributeCreate) {
             this.save(data);
         },
 
@@ -101,7 +101,7 @@ const AttributeEdit = defineComponent({
             }
         },
 
-        async save(data: AttributeEditType) {
+        async save(data: AttributeCreate) {
             if (this.isSaving) {
                 return;
             }
@@ -170,7 +170,7 @@ const AttributeEdit = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="attribute-edit" title={pageTitle}>
+                <Page name="attribute-edit" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );

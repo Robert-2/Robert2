@@ -24,7 +24,9 @@ const DefaultLayout = (_, { root, slots }) => {
                 {isLogged.value && <Header onToggleMenu={handleToggleSidebar} />}
                 <div class="DefaultLayout__body">
                     {isLogged.value && <Sidebar isOpen={isOpenedSidebar.value} />}
-                    {children}
+                    <div class="DefaultLayout__body__content">
+                        {children}
+                    </div>
                 </div>
             </div>
         );

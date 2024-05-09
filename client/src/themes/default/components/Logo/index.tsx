@@ -1,15 +1,38 @@
 import { defineComponent } from '@vue/composition-api';
-import minimalistLogoSrc from './assets/logo-R.svg';
-import logoSrc from './assets/logo.svg';
+import generateUniqueId from 'lodash/uniqueId';
 
 import type { PropType } from '@vue/composition-api';
 
+/** Variante de couleur du logo. */
+enum Variant {
+    /** Variante clair du logo. */
+    LIGHT = 'light',
+
+    /** Variante sombre du logo. */
+    DARK = 'dark',
+}
+
 type Props = {
-    /** Doit-on utiliser la version minimaliste du Logo ? */
-    minimalist: boolean,
+    /**
+     * Doit-on utiliser la version minimaliste du Logo ?
+     *
+     * @default false
+     */
+    minimalist?: boolean,
+
+    /**
+     * Variante de couleur du logo à utiliser.
+     *
+     * @default Variant.LIGHT
+     */
+    variant?: Variant,
 };
 
-// @vue/component
+type InstanceProperties = {
+    uniqueId: string | undefined,
+};
+
+/** Logo de l'application. */
 const Logo = defineComponent({
     name: 'Logo',
     props: {
@@ -17,10 +40,86 @@ const Logo = defineComponent({
             type: Boolean as PropType<Required<Props>['minimalist']>,
             default: false,
         },
+        variant: {
+            type: String as PropType<Required<Props>['variant']>,
+            default: Variant.LIGHT,
+        },
+    },
+    setup: (): InstanceProperties => ({
+        uniqueId: undefined,
+    }),
+    created() {
+        this.uniqueId = generateUniqueId(`Logo-`);
     },
     render() {
-        const src = this.minimalist ? minimalistLogoSrc : logoSrc;
-        return <img class="Logo" src={src} alt="Robert2" />;
+        const { uniqueId, minimalist, variant } = this;
+
+        if (minimalist) {
+            return (
+                <svg class="Logo Logo--minimalist" viewBox="895 895 3140 3130">
+                    <title>Loxya</title>
+
+                    <linearGradient id={`${uniqueId!}__gradient-1`} x1="907.909" x2="2146.599" y1="1684.941" y2="1684.941" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stop-color="#0085de" />
+                        <stop offset=".988" stop-color="#00437d" />
+                    </linearGradient>
+                    <path fill={`url(#${uniqueId!}__gradient-1)`} d="m1580.07 2461.03-.87.87-489.23-489.24c-242.74-242.74-242.74-640.01 0-882.77 121.37-121.37 281.37-181.92 441.38-181.92 160 0 320.01 60.54 441.38 181.92l170.95 171.25s77.27 460.71-563.61 1199.89z" />
+
+                    <linearGradient id={`${uniqueId!}__gradient-2`} x1="2461.962" x2="4016.027" y1="3238.931" y2="3238.931" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stop-color="#0085de" />
+                        <stop offset=".988" stop-color="#00437d" />
+                    </linearGradient>
+                    <path fill={`url(#${uniqueId!}__gradient-2)`} d="M3833.96 3833.9c-242.74 242.74-640.01 242.74-882.75 0l-489.24-489.24 318.28 318s-77.55-460.99 564.2-1200.75h.28l489.23 489.23c242.76 242.74 242.76 640.02 0 882.76z" />
+
+                    <linearGradient id={`${uniqueId!}__gradient-3`} x1="1579.197" x2="3344.447" y1="2461.898" y2="2461.898" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stop-color="#0085de" />
+                        <stop offset=".988" stop-color="#00437d" />
+                    </linearGradient>
+                    <path fill={`url(#${uniqueId!}__gradient-3)`} d="m2780.24 3662.65-318.28-318-882.76-882.75.87-.87c640.88-739.18 563.61-1199.89 563.61-1199.89l318.28 318 882.48 882.77c-641.75 739.75-564.2 1200.74-564.2 1200.74z" />
+
+                    <linearGradient id={`${uniqueId!}__gradient-4`} x1="910.918" x2="4016.027" y1="2462.908" y2="2462.908" gradientUnits="userSpaceOnUse">
+                        <stop offset=".145" stop-color="#0095ff" />
+                        <stop offset="1" stop-color="#0ff" />
+                    </linearGradient>
+                    <path fill={`url(#${uniqueId!}__gradient-4)`} d="m3833.96 1972.66-489.23 489.24h-.28c-641.75 739.76-564.2 1200.75-564.2 1200.75l-277.71-277.47c-22.41-22.39-58.72-22.38-81.12.02l-448.68 448.69c-121.37 121.37-281.38 181.92-441.38 181.92-163.66 0-327.3-63.33-449.61-190.3-237.75-246.79-223.48-642.68 18.84-884.99l478.62-478.62.87-.87c640.88-739.18 563.61-1199.89 563.61-1199.89l254.87 254.64c35.03 35 91.79 34.98 126.8-.03l415.68-415.68c228.85-228.85 597.53-257.19 847.4-51.5 287.43 236.63 302.61 667.02 45.52 924.09z" />
+                </svg>
+            );
+        }
+
+        return (
+            <svg class="Logo" viewBox="243 425 537 116">
+                <title>Loxya</title>
+
+                <path
+                    fill={variant === Variant.DARK ? '#454452' : '#ffffff'}
+                    d="M312.97 509.68h-37.86v-75.33c0-2.57-1.01-4.85-2.86-6.43a8.756 8.756 0 0 0-5.75-2.11h-13.74c-3.25 0-5.27 1.46-6.4 2.68-1.49 1.62-2.28 3.65-2.28 5.87v96.76c0 5.03 3.51 8.55 8.54 8.55h60.34c2.48 0 4.73-.99 6.33-2.78a8.662 8.662 0 0 0 2.22-5.84v-12.68c0-2.48-.89-4.65-2.59-6.29a8.428 8.428 0 0 0-5.95-2.4zm118.38-56.35c-2.51-4.31-5.59-8.3-9.14-11.86a58.006 58.006 0 0 0-11.86-9.14c-4.3-2.51-8.98-4.48-13.92-5.87-4.97-1.4-10.19-2.11-15.52-2.11-5.37 0-10.62.71-15.59 2.11a60.434 60.434 0 0 0-13.92 5.87c-4.32 2.52-8.3 5.6-11.84 9.15a59.713 59.713 0 0 0-9.11 11.82c-2.54 4.32-4.52 9.03-5.9 14a58.508 58.508 0 0 0-2.07 15.52c0 5.37.7 10.6 2.07 15.56 1.37 4.94 3.34 9.63 5.85 13.92a58.744 58.744 0 0 0 20.9 20.91c4.32 2.54 9.02 4.52 13.96 5.89 4.96 1.38 10.19 2.07 15.56 2.07 5.37 0 10.61-.7 15.56-2.07 4.94-1.37 9.63-3.33 13.94-5.85 4.31-2.51 8.3-5.57 11.84-9.09 3.56-3.53 6.64-7.52 9.15-11.83 2.5-4.3 4.48-8.97 5.87-13.88 1.4-4.95 2.11-10.18 2.11-15.56 0-5.37-.71-10.62-2.11-15.62a58.194 58.194 0 0 0-5.83-13.94zm-23.17 29.37c0 3.92-.71 7.61-2.11 10.98-1.41 3.39-3.36 6.36-5.8 8.85-2.45 2.49-5.38 4.49-8.72 5.96-3.27 1.44-6.88 2.17-10.71 2.17-3.88 0-7.5-.73-10.77-2.17-3.33-1.46-6.25-3.46-8.67-5.94-2.43-2.48-4.37-5.47-5.78-8.86-1.4-3.37-2.11-7.07-2.11-10.98 0-3.87.71-7.54 2.11-10.92 1.41-3.4 3.36-6.4 5.79-8.91 2.42-2.5 5.33-4.5 8.65-5.96 3.27-1.44 6.9-2.17 10.77-2.17 3.83 0 7.43.73 10.7 2.17 3.33 1.46 6.26 3.48 8.7 5.98 2.45 2.51 4.41 5.5 5.82 8.9 1.42 3.36 2.13 7.03 2.13 10.9zm266.79-50.22c0-3.81-2.93-6.68-6.82-6.68h-19.12c-.38 0-.77.04-1.15.12-1.01.22-1.86.47-2.59.79-2.08.91-3.23 2.76-4 4.28l-16.17 30.58-16.08-30.39c-.39-.73-.72-1.3-1.02-1.76-.62-.96-1.35-1.73-2.19-2.29-.92-.61-1.98-1-3.09-1.13-.05-.01-.11-.03-.18-.04a5.53 5.53 0 0 0-1.34-.17h-18.98c-3.89 0-6.82 2.81-6.82 6.54 0 .81.15 1.66.46 2.66.3.95.73 1.79 1.28 2.51l32.34 55.6v37.79c0 5.24 3.38 8.76 8.41 8.76h14.13c5.15 0 8.62-3.52 8.62-8.76V493c5.39-9.01 10.79-18.24 16.04-27.44 5.39-9.44 10.9-18.94 16.4-28.25.88-1.11 1.87-2.75 1.87-4.83zm104.31 97.66-.01-.08c-.04-.55-.17-1.1-.38-1.62l-36.57-91.5c-.01-.03-.03-.07-.04-.1l-2.29-5.4c-.08-.19-.17-.37-.26-.54-.43-.76-1-1.55-1.73-2.39-1.08-1.24-3.09-2.71-6.53-2.71h-11.15c-3.2 0-5.25 1.38-6.42 2.55-1.2 1.2-2 2.43-2.44 3.74l-37.25 92.75c-.03.06-.05.13-.07.2-.22.61-.47 1.29-.75 2.03-.37.96-.69 1.99-.97 3.08-.18.63-.26 1.31-.26 2.07 0 2.58 1.25 4.82 3.44 6.16 1.4.85 3.07 1.28 4.97 1.28h13.85c4.03 0 7.29-2.29 8.76-6.16.77-2.09 1.72-4.55 2.82-7.32.71-1.79 1.45-3.68 2.2-5.64h35.12c.42 1.09.84 2.18 1.26 3.24l3.87 9.82c.02.04.03.08.05.13.75 1.78 1.81 3.2 3.16 4.21 1.52 1.14 3.43 1.72 5.65 1.72h13.65c5.9 0 8.55-3.81 8.55-7.58a12.1 12.1 0 0 0-.23-1.94zm-65.98-35.46 11.87-28.9 11.87 28.9H713.3z"
+                />
+
+                <linearGradient id={`${uniqueId!}__gradient-1`} x1="455.122" x2="498.088" y1="455.745" y2="455.745" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stop-color="#0085de" />
+                    <stop offset=".988" stop-color="#00437d" />
+                </linearGradient>
+                <path fill={`url(#${uniqueId!}__gradient-1)`} d="m478.44 482.67-.03.03-16.97-16.97c-8.42-8.42-8.42-22.2 0-30.62 4.21-4.21 9.76-6.31 15.31-6.31 5.55 0 11.1 2.1 15.31 6.31l5.93 5.94c0-.01 2.68 15.98-19.55 41.62z" />
+
+                <linearGradient id={`${uniqueId!}__gradient-2`} x1="509.027" x2="562.932" y1="509.648" y2="509.648" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stop-color="#0085de" />
+                    <stop offset=".988" stop-color="#00437d" />
+                </linearGradient>
+                <path fill={`url(#${uniqueId!}__gradient-2)`} d="M556.62 530.29c-8.42 8.42-22.2 8.42-30.62 0l-16.97-16.97 11.04 11.03s-2.69-15.99 19.57-41.65h.01l16.97 16.97c8.42 8.41 8.42 22.2 0 30.62z" />
+
+                <linearGradient id={`${uniqueId!}__gradient-3`} x1="478.407" x2="539.637" y1="482.695" y2="482.695" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stop-color="#0085de" />
+                    <stop offset=".988" stop-color="#00437d" />
+                </linearGradient>
+                <path fill={`url(#${uniqueId!}__gradient-3)`} d="m520.07 524.35-11.04-11.03-30.62-30.62.03-.03c22.23-25.64 19.55-41.62 19.55-41.62l11.04 11.03 30.61 30.62c-22.26 25.65-19.57 41.65-19.57 41.65z" />
+
+                <linearGradient id={`${uniqueId!}__gradient-4`} x1="455.226" x2="562.932" y1="482.73" y2="482.73" gradientUnits="userSpaceOnUse">
+                    <stop offset=".145" stop-color="#0095ff" />
+                    <stop offset="1" stop-color="#0fffff" />
+                </linearGradient>
+                <path fill={`url(#${uniqueId!}__gradient-4)`} d="m556.62 465.73-16.97 16.97h-.01c-22.26 25.66-19.57 41.65-19.57 41.65l-9.63-9.62a1.98 1.98 0 0 0-2.81 0l-15.56 15.56c-4.21 4.21-9.76 6.31-15.31 6.31-5.68 0-11.35-2.2-15.6-6.6-8.25-8.56-7.75-22.29.65-30.7l16.6-16.6.03-.03c22.23-25.64 19.55-41.62 19.55-41.62l8.84 8.83a3.12 3.12 0 0 0 4.4 0l14.42-14.42c7.94-7.94 20.73-8.92 29.39-1.79 9.97 8.21 10.49 23.14 1.58 32.06z" />
+            </svg>
+        );
     },
 });
 

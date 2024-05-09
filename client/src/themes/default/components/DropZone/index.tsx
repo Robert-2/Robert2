@@ -170,7 +170,7 @@ const DropZone = defineComponent({
                         </span>
                     </p>
                     <Button
-                        type="primary"
+                        type="success"
                         class="DropZone__choose-files"
                         onClick={handleClickOpenFileBrowser}
                     >

@@ -5,14 +5,16 @@ namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
+use Loxya\Models\Enums\BookingViewMode;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\User;
+use Loxya\Support\Arr;
 
 final class UsersTest extends ApiTestCase
 {
-    public static function data(int $id, string $format = User::SERIALIZE_DEFAULT)
+    public static function data(?int $id = null, string $format = User::SERIALIZE_DEFAULT)
     {
-        $users = new Collection([
+        $users = (new Collection([
             [
                 'id' => 1,
                 'pseudo' => 'test1',
@@ -23,7 +25,7 @@ final class UsersTest extends ApiTestCase
                 'email' => 'tester@robertmanager.net',
                 'group' => Group::ADMIN,
                 'language' => 'en',
-                'notifications_enabled' => true,
+                'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
             [
                 'id' => 2,
@@ -35,7 +37,7 @@ final class UsersTest extends ApiTestCase
                 'email' => 'tester2@robertmanager.net',
                 'group' => Group::MEMBER,
                 'language' => 'fr',
-                'notifications_enabled' => true,
+                'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
             [
                 'id' => 3,
@@ -47,7 +49,7 @@ final class UsersTest extends ApiTestCase
                 'email' => 'nobody@robertmanager.net',
                 'group' => Group::MEMBER,
                 'language' => 'fr',
-                'notifications_enabled' => true,
+                'default_bookings_view' => BookingViewMode::LISTING->value,
             ],
             [
                 'id' => 4,
@@ -59,7 +61,7 @@ final class UsersTest extends ApiTestCase
                 'email' => 'visitor@robertmanager.net',
                 'group' => Group::VISITOR,
                 'language' => 'fr',
-                'notifications_enabled' => false,
+                'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
             [
                 'id' => 5,
@@ -69,23 +71,36 @@ final class UsersTest extends ApiTestCase
                 'full_name' => 'Caroline Farol',
                 'phone' => '+33786325500',
                 'email' => 'external@robertmanager.net',
-                'group' => Group::EXTERNAL,
+                'group' => Group::VISITOR,
                 'language' => 'en',
-                'notifications_enabled' => true,
+                'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
-        ]);
+        ]))->keyBy('id');
 
         $users = match ($format) {
-            User::SERIALIZE_DEFAULT => $users,
-            User::SERIALIZE_DETAILS => $users,
+            User::SERIALIZE_SETTINGS => $users->map(static fn ($user) => (
+                Arr::only($user, User::SETTINGS_ATTRIBUTES)
+            )),
+            User::SERIALIZE_DEFAULT => $users->map(static fn ($user) => (
+                Arr::except($user, [
+                    ...User::SETTINGS_ATTRIBUTES,
+                ])
+            )),
+            User::SERIALIZE_DETAILS => $users->map(static fn ($user) => (
+                Arr::except($user, User::SETTINGS_ATTRIBUTES)
+            )),
+            User::SERIALIZE_SESSION => $users,
             default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
         };
 
-        return static::_dataFactory($id, $users->all());
+        return $id !== null
+            ? $users->get($id)
+            : $users->values()->all();
     }
 
     public function testGetAll(): void
     {
+        // - Test simple.
         $this->client->get('/api/users');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(5, [
@@ -96,13 +111,12 @@ final class UsersTest extends ApiTestCase
             self::data(4),
         ]);
 
+        // - Test de récupération des enregistrements supprimés.
         $this->client->get('/api/users?deleted=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(0);
-    }
 
-    public function testGetAllOnlyMembers(): void
-    {
+        // - Test de récupération des membres d'un groupe en particulier.
         $this->client->get(sprintf('/api/users?group=%s', Group::MEMBER));
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(2, [
@@ -111,61 +125,78 @@ final class UsersTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOneNotFound(): void
-    {
-        $this->client->get('/api/users/9999');
-        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-    }
-
-    public function testForbidGetSelfWithId(): void
-    {
-        $this->client->get('/api/users/1');
-        $this->assertStatusCode(StatusCode::STATUS_FORBIDDEN);
-    }
-
     public function testGetOne(): void
     {
+        // - Avec un utilisateur inexistant.
+        $this->client->get('/api/users/9999');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Avec une récupération de soi-même => Interdit via cet endpoint.
+        $this->client->get('/api/users/1');
+        $this->assertStatusCode(StatusCode::STATUS_FORBIDDEN);
+
+        // - Avec le mot clé spécial `self` pour soi-même.
         $this->client->get('/api/users/self');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1, User::SERIALIZE_DETAILS));
     }
 
-    public function testGetOneSettingsNotFound(): void
-    {
-        $this->client->get('/api/users/9999/settings');
-        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-    }
-
     public function testGetOneSettings(): void
     {
-        $this->client->get('/api/users/1/settings');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
-            'language' => 'en',
-        ]);
-    }
-
-    public function testUpdateSettingsNoData(): void
-    {
-        $this->client->put('/api/users/1/settings', []);
-        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
-        $this->assertApiErrorMessage("No data was provided.");
-    }
-
-    public function testUpdateSettingsNoUser(): void
-    {
-        $this->client->put('/api/users/999/settings', ['language' => 'fr']);
+        // - Avec un utilisateur inexistant.
+        $this->client->get('/api/users/9999/settings');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Avec une récupération de soi-même => Interdit via cet endpoint.
+        $this->client->get('/api/users/1/settings');
+        $this->assertStatusCode(StatusCode::STATUS_FORBIDDEN);
+
+        // - Avec le mot clé spécial `self` pour soi-même.
+        $this->client->get('/api/users/self/settings');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(self::data(1, User::SERIALIZE_SETTINGS));
+
+        // - Test valide.
+        $this->client->get('/api/users/2/settings');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(self::data(2, User::SERIALIZE_SETTINGS));
     }
 
     public function testUpdateSettings(): void
     {
-        $this->client->put('/api/users/1/settings', [
+        // - Test sans données.
+        $this->client->put('/api/users/2/settings', []);
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("No data was provided.");
+
+        // - Test avec un utilisateur inexistant.
+        $this->client->put('/api/users/999/settings', ['language' => 'fr']);
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Avec une récupération de soi-même => Interdit via cet endpoint.
+        $this->client->put('/api/users/1/settings', ['language' => 'fr']);
+        $this->assertStatusCode(StatusCode::STATUS_FORBIDDEN);
+
+        // - Test valide.
+        $this->client->put('/api/users/2/settings', [
             'language' => 'fr',
+            'default_bookings_view' => BookingViewMode::CALENDAR->value,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'language' => 'fr',
+            'default_bookings_view' => BookingViewMode::CALENDAR->value,
+        ]);
+
+        // - Avec le mot clé spécial `self` pour soi-même.
+        $this->client->put('/api/users/self/settings', [
+            'language' => 'en',
+            'default_bookings_view' => BookingViewMode::LISTING->value,
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            'language' => 'en',
+            'default_bookings_view' => BookingViewMode::LISTING->value,
         ]);
     }
 
@@ -189,7 +220,6 @@ final class UsersTest extends ApiTestCase
                 'Must equal "admin".',
                 'Must equal "member".',
                 'Must equal "visitor".',
-                'Must equal "external".',
             ],
             'password' => [
                 "This field is mandatory.",
@@ -227,9 +257,9 @@ final class UsersTest extends ApiTestCase
     public function testCreate(): void
     {
         $this->client->post('/api/users', [
-            'email' => 'nobody@test.org',
+            'email' => 'someone@test.org',
             'pseudo' => 'Jeanne',
-            'first_name' => 'Nobody',
+            'first_name' => 'Jeanne',
             'last_name' => 'Testeur',
             'password' => 'my-ultim4te-paßwor!',
             'group' => Group::MEMBER,
@@ -237,15 +267,13 @@ final class UsersTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
             'id' => 6,
-            'first_name' => 'Nobody',
+            'first_name' => 'Jeanne',
             'last_name' => 'Testeur',
-            'full_name' => 'Nobody Testeur',
+            'full_name' => 'Jeanne Testeur',
             'phone' => null,
-            'email' => 'nobody@test.org',
+            'email' => 'someone@test.org',
             'pseudo' => 'Jeanne',
             'group' => Group::MEMBER,
-            'language' => 'fr',
-            'notifications_enabled' => true,
         ]);
     }
 
@@ -276,7 +304,7 @@ final class UsersTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(array_replace(
             self::data(1, User::SERIALIZE_DETAILS),
-            $updatedData
+            $updatedData,
         ));
 
         // - Un autre utilisateur (en tant qu'admin)
@@ -291,7 +319,7 @@ final class UsersTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(array_replace(
             self::data(3, User::SERIALIZE_DETAILS),
-            $updatedData
+            $updatedData,
         ));
     }
 

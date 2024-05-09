@@ -1,6 +1,6 @@
 export default {
     'login': require('@/themes/default/pages/Login/translations/en.yml'),
-    'calendar': require('@/themes/default/pages/Calendar/translations/en.yml'),
+    'schedule': require('@/themes/default/pages/Schedule/translations/en.yml'),
     'event-edit': require('@/themes/default/pages/Event/translations/en.yml'),
     'event-departure': require('@/themes/default/pages/EventDeparture/translations/en.yml'),
     'event-return': require('@/themes/default/pages/EventReturn/translations/en.yml'),

@@ -49,7 +49,11 @@ const TechnicianView = defineComponent({
                 const { id } = this;
 
                 return [
-                    <Button type="edit" to={{ name: 'edit-technician', params: { id } }}>
+                    <Button
+                        type="edit"
+                        to={{ name: 'edit-technician', params: { id } }}
+                        collapsible
+                    >
                         {__('action-edit')}
                     </Button>,
                 ];
@@ -147,14 +151,14 @@ const TechnicianView = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="technician-view" title={pageTitle}>
+                <Page name="technician-view" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
         }
 
         return (
-            <Page name="technician-view" title={pageTitle} isLoading={isLoading}>
+            <Page name="technician-view" title={pageTitle} loading={isLoading}>
                 <div class="TechnicianView">
                     <Tabs
                         defaultIndex={selectedTabIndex}

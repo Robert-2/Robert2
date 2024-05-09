@@ -9,7 +9,7 @@ unavailabilities:
     inventory-period-not-started-details:
         "The departure inventory registration period has not yet begun for this event.
         \n\n
-        You will be able to do this inventory from {date}\_at\_{time}."
+        You will be able to do this inventory from {date}."
     inventory-period-not-started: >-
         The departure inventory registration period has not yet begun for this event.
         Departure inventory will be available 24 hours before the start of the event.
@@ -40,6 +40,25 @@ actions:
 
 confirm-terminate-title: Do you really want to terminate this departure inventory?
 confirm-terminate-text: Please note that it will no longer be possible to modify it.
+confirm-terminate-with-mobilization-adjustment-text:
+    "Please note that it will no longer be possible to modify it.
+    \n\n
+    Also, as you have performed the departure inventory ahead of the planned
+    mobilization start date, the latter will automatically be adjusted to the
+    current date (to the nearest fifteen minutes)."
+
+put-back-on-hold: Put inventory back on hold
+confirm-rollback-title: "Do you really want to put this departure inventory back on hold?"
+confirm-rollback-text: |
+    This will result in the cancellation of the submission, as if the inventory had never been finalized.
+
+    This action will have no direct impact on the stock. However, you will be able to modify the start date
+    of the event's material mobilization again (this will not be changed automatically).
+confirm-rollback-with-mobilization-adjustment-text: |
+    This will result in the cancellation of the submission, as if the inventory had never been finalized.
+
+    The start date for the material mobilization will also be reset to the scheduled operation start date for this event.
+    However, you will be able to modify it if necessary after the inventory has been cancelled.
 
 confirm-unsaved-edit-material-title: Unsaved changes
 confirm-unsaved-edit-material-text:
@@ -47,20 +66,6 @@ confirm-unsaved-edit-material-text:
     \n\n
     Are you sure you want to continue with the material modification,
     without first saving?"
-
-unexpected-material-title: "Unexpected material!"
-unexpected-material-text:
-    "The material you just scanned is not part of the event.
-    \n\n
-    The purpose of the departure inventory is not to modify the event's material list
-    but only to ensure that everything leaves as planned (with comments, if needed)."
-unexpected-material-editable-text:
-    "The material you just scanned is not part of the event.
-    \n\n
-    The purpose of the departure inventory is not to modify the event's material list
-    but only to ensure that everything leaves as planned (with comments, if needed).
-    \n\n
-    You can modify the event using the button at the top of the page."
 
 incomplete-inventory-help:
     Departure inventories can only be marked as completed when all expected

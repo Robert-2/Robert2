@@ -5,6 +5,7 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
@@ -19,15 +20,18 @@ use Respect\Validation\Validator as V;
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  *
- * @property-read Collection|SubCategory[] $subCategories
- * @property-read Collection|SubCategory[] $sub_categories
- * @property-read Collection|Material[] $materials
- * @property-read Collection|Attribute[] $attributes
- * @property-read Collection|User[] $approvers
+ * @property-read Collection<array-key, SubCategory> $subCategories
+ * @property-read Collection<array-key, SubCategory> $sub_categories
+ * @property-read Collection<array-key, Material> $materials
+ * @property-read Collection<array-key, Attribute> $attributes
  */
 final class Category extends BaseModel implements Serializable
 {
     use Serializer;
+
+    // - Types de sérialisation.
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_DETAILS = 'details';
 
     public function __construct(array $attributes = [])
     {
@@ -50,12 +54,14 @@ final class Category extends BaseModel implements Serializable
             ->length(2, 96)
             ->check($value);
 
-        $query = static::where('name', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('name', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->exists();
 
-        return !$query->exists() ?: 'category-name-already-in-use';
+        return !$alreadyExists ?: 'category-name-already-in-use';
     }
 
     // ------------------------------------------------------
@@ -126,21 +132,21 @@ final class Category extends BaseModel implements Serializable
     public static function bulkAdd(array $categoriesNames = []): array
     {
         $categories = array_map(
-            function ($categoryName) {
+            static function ($categoryName) {
                 $existingCategory = static::where('name', $categoryName)->first();
                 if ($existingCategory) {
                     return $existingCategory;
                 }
 
                 $category = new static(['name' => trim($categoryName)]);
-                return tap($category, function ($instance) {
+                return tap($category, static function ($instance) {
                     $instance->validate();
                 });
             },
-            $categoriesNames
+            $categoriesNames,
         );
 
-        return dbTransaction(function () use ($categories) {
+        return dbTransaction(static function () use ($categories) {
             foreach ($categories as $category) {
                 if (!$category->exists || $category->isDirty()) {
                     $category->save();
@@ -157,9 +163,16 @@ final class Category extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function serialize(): array
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        return (new DotArray($this->attributesForSerialization()))
+        /** @var Category $category */
+        $category = tap(clone $this, static function (Category $category) use ($format) {
+            if ($format === self::SERIALIZE_DETAILS) {
+                return $category->append('sub_categories');
+            }
+        });
+
+        return (new DotArray($category->attributesForSerialization()))
             ->delete(['created_at', 'updated_at'])
             ->all();
     }

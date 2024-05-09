@@ -15,6 +15,7 @@ export default {
         initialTags: { type: Array, default: () => [] },
         persister: { type: Function, required: true },
     },
+    emits: ['saved', 'close'],
     data() {
         return {
             tags: this.initialTags.map(({ id }) => id),

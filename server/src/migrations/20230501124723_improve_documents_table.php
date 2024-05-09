@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class ImproveDocumentsTable extends AbstractMigration
 {
@@ -60,7 +62,9 @@ final class ImproveDocumentsTable extends AbstractMigration
         $prefix = Config::get('db.prefix');
         $documentsData = $this->fetchAll(sprintf('SELECT `id`, `name` FROM `%sdocuments`', $prefix));
         foreach ($documentsData as $documentData) {
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sdocuments', $prefix))
                 ->set(['file' => $documentData['name']])
                 ->where(['id' => $documentData['id']])
@@ -97,19 +101,21 @@ final class ImproveDocumentsTable extends AbstractMigration
 
         $prefix = Config::get('db.prefix');
         $incompatibleDocuments = $this->fetchAll(
-            sprintf("SELECT * FROM `%sdocuments` WHERE `entity_type` <> 'material' OR `name` <> `file`", $prefix)
+            sprintf("SELECT * FROM `%sdocuments` WHERE `entity_type` <> 'material' OR `name` <> `file`", $prefix),
         );
         if (count($incompatibleDocuments) > 0) {
             throw new \RuntimeException(
                 "Unable to rollback the migration, this would cause the " .
-                "loss of all technicians / events documents or newly uploaded documents."
+                "loss of all technicians / events documents or newly uploaded documents.",
             );
         }
 
         $prefix = Config::get('db.prefix');
         $documentsData = $this->fetchAll(sprintf('SELECT `id`, `name` FROM `%sdocuments`', $prefix));
         foreach ($documentsData as $documentData) {
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%sdocuments', $prefix))
                 ->set(['file' => $documentData['name']])
                 ->where(['id' => $documentData['id']])

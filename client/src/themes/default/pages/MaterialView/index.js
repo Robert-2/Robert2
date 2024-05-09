@@ -15,7 +15,6 @@ import Documents from './tabs/Documents';
 const TABS = [
     'infos',
     'documents',
-    'availabilities',
 ];
 
 /** Page de détails d'un matériel. */
@@ -25,7 +24,6 @@ const MaterialView = defineComponent({
         return {
             id: parseInt(this.$route.params.id, 10),
             material: null,
-            isLoading: false,
             isFetched: false,
             selectedTabIndex: 0,
             criticalError: null,
@@ -48,14 +46,20 @@ const MaterialView = defineComponent({
             const { $t: __, id, tabsIndexes, selectedTabIndex } = this;
 
             switch (tabsIndexes[selectedTabIndex]) {
-                case '#infos':
+                case '#infos': {
                     return [
-                        <Button type="edit" to={{ name: 'edit-material', params: { id } }}>
+                        <Button
+                            type="edit"
+                            to={{ name: 'edit-material', params: { id } }}
+                            collapsible
+                        >
                             {__('action-edit')}
                         </Button>,
                     ];
-                default:
+                }
+                default: {
                     return [];
+                }
             }
         },
     },
@@ -114,7 +118,6 @@ const MaterialView = defineComponent({
         },
 
         async fetchData() {
-            this.isLoading = true;
             try {
                 const data = await apiMaterials.one(this.id);
                 this.material = data;
@@ -131,8 +134,6 @@ const MaterialView = defineComponent({
                         ? ERROR.NOT_FOUND
                         : ERROR.UNKNOWN;
                 }
-            } finally {
-                this.isLoading = false;
             }
         },
     },
@@ -141,7 +142,6 @@ const MaterialView = defineComponent({
             $t: __,
             pageTitle,
             tabsActions,
-            isLoading,
             isFetched,
             criticalError,
             material,
@@ -152,14 +152,14 @@ const MaterialView = defineComponent({
 
         if (criticalError || !isFetched) {
             return (
-                <Page name="material-view" title={pageTitle}>
+                <Page name="material-view" title={pageTitle} centered>
                     {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
         }
 
         return (
-            <Page name="material-view" title={pageTitle} isLoading={isLoading}>
+            <Page name="material-view" title={pageTitle}>
                 <div class="MaterialView">
                     <Tabs
                         defaultIndex={selectedTabIndex}

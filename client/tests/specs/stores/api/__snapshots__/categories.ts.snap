@@ -1,0 +1,156 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Categories Api all() parse the returned data correctly 1`] = `
+[
+  {
+    "id": 1,
+    "name": "Son",
+    "sub_categories": [
+      {
+        "category_id": 1,
+        "id": 1,
+        "name": "Mixeurs",
+      },
+      {
+        "category_id": 1,
+        "id": 2,
+        "name": "Processeurs",
+      },
+    ],
+  },
+  {
+    "id": 2,
+    "name": "Lumière",
+    "sub_categories": [
+      {
+        "category_id": 2,
+        "id": 4,
+        "name": "Gradateurs",
+      },
+      {
+        "category_id": 2,
+        "id": 3,
+        "name": "Projecteurs",
+      },
+    ],
+  },
+  {
+    "id": 3,
+    "name": "Transport",
+    "sub_categories": [],
+  },
+  {
+    "id": 4,
+    "name": "Décors",
+    "sub_categories": [],
+  },
+]
+`;
+
+exports[`Categories Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "name": "Son",
+  "sub_categories": [
+    {
+      "category_id": 1,
+      "id": 1,
+      "name": "Mixeurs",
+    },
+    {
+      "category_id": 1,
+      "id": 2,
+      "name": "Processeurs",
+    },
+  ],
+}
+`;
+
+exports[`Categories Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "name": "Lumière",
+  "sub_categories": [
+    {
+      "category_id": 2,
+      "id": 4,
+      "name": "Gradateurs",
+    },
+    {
+      "category_id": 2,
+      "id": 3,
+      "name": "Projecteurs",
+    },
+  ],
+}
+`;
+
+exports[`Categories Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "id": 3,
+  "name": "Transport",
+  "sub_categories": [],
+}
+`;
+
+exports[`Categories Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "id": 4,
+  "name": "Décors",
+  "sub_categories": [],
+}
+`;
+
+exports[`Categories Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "name": "Son",
+  "sub_categories": [
+    {
+      "category_id": 1,
+      "id": 1,
+      "name": "Mixeurs",
+    },
+    {
+      "category_id": 1,
+      "id": 2,
+      "name": "Processeurs",
+    },
+  ],
+}
+`;
+
+exports[`Categories Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "name": "Lumière",
+  "sub_categories": [
+    {
+      "category_id": 2,
+      "id": 4,
+      "name": "Gradateurs",
+    },
+    {
+      "category_id": 2,
+      "id": 3,
+      "name": "Projecteurs",
+    },
+  ],
+}
+`;
+
+exports[`Categories Api update() parse the returned data correctly (with #3) 1`] = `
+{
+  "id": 3,
+  "name": "Transport",
+  "sub_categories": [],
+}
+`;
+
+exports[`Categories Api update() parse the returned data correctly (with #4) 1`] = `
+{
+  "id": 4,
+  "name": "Décors",
+  "sub_categories": [],
+}
+`;

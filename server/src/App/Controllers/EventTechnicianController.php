@@ -5,7 +5,7 @@ namespace Loxya\Controllers;
 
 use Loxya\Controllers\Traits\Crud;
 
-class EventTechnicianController extends BaseController
+final class EventTechnicianController extends BaseController
 {
     use Crud\GetOne;
     use Crud\Create;

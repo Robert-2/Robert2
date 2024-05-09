@@ -1,6 +1,6 @@
-{% extends "base.twig" %}
+{% extends 'base.twig' %}
 
-{% block title %}{{ translate("Install") }} - {{ translate(step) }}{% endblock %}
+{% block title %}{{ __('install') }} - {{ __(step) }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ asset('/installer/css/style.css') }}">
@@ -10,10 +10,10 @@
     <div class="layout">
         <header class="layout__header header">
             {{ include('components/logo.svg.twig', { class: 'header__logo' }) }}
-            <h3 class="header__title">{{ translate("Installation wizard") }}</h3>
+            <h3 class="header__title">{{ __('installation-wizard') }}</h3>
         </header>
         <div class="layout__content page">
-            {% if error %}<div class="page__error">{{ translate(error) }}</div>{% endif %}
+            {% if error %}<div class="page__error">{{ __(error) }}</div>{% endif %}
             {{ include('install/' ~ lang ~ '/' ~ step ~ '.twig') }}
         </div>
         <footer class="layout__footer footer">

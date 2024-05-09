@@ -1,18 +1,19 @@
 import './index.scss';
+import Day, { DayReadableFormat } from '@/utils/day';
+import { DateTimeReadableFormat } from '@/utils/datetime';
 import { defineComponent } from '@vue/composition-api';
-import moment from 'moment';
 import Button from '@/themes/default/components/Button';
 import MultiSwitch from '@/themes/default/components/MultiSwitch';
 import { DisplayGroup } from '../Inventory';
 
-import type { Moment } from 'moment';
+import type DateTime from '@/utils/datetime';
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
 
 type Props = {
     /** L'événement concerné par l'inventaire de départ. */
-    event: Event,
+    event: EventDetails,
 
     /** L'affichage par groupe actuellement utilisé. */
     displayGroup: DisplayGroup,
@@ -58,10 +59,10 @@ const EventDepartureHeader = defineComponent({
         //     return this.$store.state.parks.list.length > 1;
         // },
 
-        startDate(): Moment {
+        startDate(): DateTime | Day {
             // NOTE: On utilise la date de début d'événement pour la date de
             //       début (et non la date de début de mobilisation).
-            return moment(this.event.start_date);
+            return this.event.operation_period.start;
         },
 
         mainBeneficiary(): Beneficiary | null {
@@ -72,9 +73,9 @@ const EventDepartureHeader = defineComponent({
                 : null;
         },
     },
-    // created() {
-    //     this.$store.dispatch('parks/fetch');
-    // },
+    created() {
+        // this.$store.dispatch('parks/fetch');
+    },
     methods: {
         // ------------------------------------------------------
         // -
@@ -129,7 +130,11 @@ const EventDepartureHeader = defineComponent({
                             {__('global.start-on')}
                         </dt>
                         <dd class="EventDepartureHeader__infos__item__value">
-                            {startDate.format('LL')}
+                            {(
+                                startDate instanceof Day
+                                    ? startDate.toReadable(DayReadableFormat.LONG)
+                                    : startDate.toReadable(DateTimeReadableFormat.LONG)
+                            )}
                         </dd>
                     </div>
                     {mainBeneficiary !== null && (

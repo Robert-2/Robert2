@@ -35,7 +35,7 @@ final class PersonTest extends TestCase
         $this->assertEquals(2, $result->count());
         $this->assertEquals(
             ['Jean Fountain', 'Jean Technicien'],
-            $result->pluck('full_name')->all()
+            $result->pluck('full_name')->all(),
         );
 
         $result = Person::search('Fount')->get();

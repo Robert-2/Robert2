@@ -83,6 +83,14 @@
         }
     }
 
+    &__location {
+        display: none;
+        width: 160px;
+        color: globals.$text-soft-color;
+        font-size: 0.95rem;
+        text-align: center;
+    }
+
     &__awaited-quantity {
         display: none;
         justify-content: flex-end;
@@ -188,6 +196,10 @@
     @media (min-width: globals.$screen-desktop) {
         &__awaited-quantity {
             width: 170px;
+        }
+
+        &__location {
+            display: block;
         }
     }
 }

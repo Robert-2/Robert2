@@ -13,7 +13,12 @@ export default {
         return (
             <li class="EventDetailsReturnSummaryItem">
                 <div class="EventDetailsReturnSummaryItem__name">
-                    <router-link to={`/materials/${id}/view`}>{name}</router-link>
+                    <router-link
+                        to={`/materials/${id}/view`}
+                        class="EventDetailsReturnSummaryItem__name__link"
+                    >
+                        {name}
+                    </router-link>
                 </div>
                 <div class="EventDetailsReturnSummaryItem__missing">
                     {missing > 0 && __(

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Contracts;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Loxya\Models\User;
 
@@ -59,8 +60,8 @@ interface Bookable
      * la recherche des bookables.
      *
      * @param Builder $query
-     * @param string|Carbon|PeriodInterface $start
-     * @param null|string|Carbon $end (optionnel)
+     * @param string|DateTimeInterface|PeriodInterface $start
+     * @param string|DateTimeInterface|null $end (optionnel)
      */
     public function scopeInPeriod(Builder $query, $start, $end = null): Builder;
 }

@@ -1,14 +1,21 @@
-/* stylelint-disable scss/no-global-function-names, declaration-no-important */
+/* stylelint-disable scss/no-global-function-names */
 
 .timeline-event {
+    $block: &;
+
     .fas,
     .far {
-        width: 1.2rem;
+        width: 1.3rem;
         text-align: center;
     }
 
     .fa-exclamation-triangle {
         color: $text-danger-color;
+    }
+
+    .fa-spinner {
+        font-size: 1.1rem;
+        animation: timeline-event--rotate 2500ms linear infinite;
     }
 
     &--not-confirmed {
@@ -19,9 +26,11 @@
         font-weight: 600;
     }
 
+    // - La désactivation des `!important` est là pour surcharger le style core des éléments de timelines.
+    /* stylelint-disable declaration-no-important */
     &--past {
-        background-color: $calendar-event-past-color !important;
-        color: $calendar-event-past-text-color !important;
+        --background-color: #{$calendar-event-past-color} !important;
+        --color: $calendar-event-past-text-color !important;
 
         &.vis-selected {
             background-color: adjust-color($calendar-event-past-color, $lightness: 10%) !important;
@@ -29,37 +38,55 @@
     }
 
     &--no-return-inventory {
-        background-color: $calendar-event-no-return-inventory-color !important;
-        color: $calendar-event-no-return-inventory-text-color !important;
+        --background-color: #{$calendar-event-no-return-inventory-color} !important;
+        --color: $calendar-event-no-return-inventory-text-color !important;
 
         &.vis-selected {
-            background-color: adjust-color($calendar-event-no-return-inventory-color, $lightness: 10%) !important;
+            $background-color: adjust-color($calendar-event-no-return-inventory-color, $lightness: 10%);
+
+            --background-color: #{$background-color} !important;
         }
     }
 
     &--archived {
-        background-color: $calendar-event-archived-color !important;
-        color: $calendar-event-archived-text-color !important;
+        --background-color: #{$calendar-event-archived-color} !important;
+        --color: $calendar-event-archived-text-color !important;
 
         &.vis-selected {
-            background-color: adjust-color($calendar-event-archived-color, $lightness: 5%) !important;
+            $background-color: adjust-color($calendar-event-archived-color, $lightness: 5%);
+
+            --background-color: #{$background-color} !important;
         }
     }
+    /* stylelint-enable declaration-no-important */
 
     &--in-progress {
-        background-image:
-            linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.1) 25%,
-                transparent 25%,
-                transparent 50%,
-                rgba(255, 255, 255, 0.1) 50%,
-                rgba(255, 255, 255, 0.1) 75%,
-                transparent 75%,
-                transparent
-            );
-        background-size: 40px 40px;
-        animation: timeline-event--background-animation 2500ms linear infinite;
+        &,
+        &::before {
+            background-image:
+                linear-gradient(
+                    45deg,
+                    rgba(255, 255, 255, 0.1) 25%,
+                    transparent 25%,
+                    transparent 50%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    rgba(255, 255, 255, 0.1) 75%,
+                    transparent 75%,
+                    transparent
+                );
+            background-size: 40px 40px;
+            animation: timeline-event--background-animation 2500ms linear infinite;
+        }
+    }
+}
+
+//
+// - Animation
+//
+
+@keyframes timeline-event--rotate {
+    100% {
+        transform: rotate(360deg);
     }
 }
 

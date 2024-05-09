@@ -5,9 +5,11 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
+use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
 
 /**
@@ -20,13 +22,13 @@ use Respect\Validation\Validator as V;
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  *
- * @property-read Collection|Material[] $materials
+ * @property-read Collection<array-key, Material> $materials
+ *
+ * @method static Builder|static search(string $term)
  */
 final class SubCategory extends BaseModel implements Serializable
 {
     use Serializer;
-
-    protected $searchField = 'name';
 
     public function __construct(array $attributes = [])
     {
@@ -54,19 +56,15 @@ final class SubCategory extends BaseModel implements Serializable
             return true;
         }
 
-        $query = static::newQuery()
+        $alreadyExists = static::query()
             ->where('name', $value)
-            ->where('category_id', $this->category_id);
+            ->where('category_id', $this->category_id)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->exists();
 
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
-
-        if ($query->exists()) {
-            return 'subcategory-already-in-use-for-this-category';
-        }
-
-        return true;
+        return !$alreadyExists ?: 'subcategory-already-in-use-for-this-category';
     }
 
     public function checkCategoryId($value)
@@ -128,6 +126,22 @@ final class SubCategory extends BaseModel implements Serializable
         'name',
         'category_id',
     ];
+
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    protected $orderable = ['name'];
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where('name', 'LIKE', $term);
+    }
 
     // ------------------------------------------------------
     // -

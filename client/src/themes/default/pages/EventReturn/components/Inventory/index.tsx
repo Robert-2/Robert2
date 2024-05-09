@@ -1,6 +1,7 @@
 import './index.scss';
-import moment from 'moment';
 import { defineComponent } from '@vue/composition-api';
+import DateTime from '@/utils/datetime';
+import Button from '@/themes/default/components/Button';
 import IconMessage from '@/themes/default/components/IconMessage';
 import Inventory, {
     DisplayGroup,
@@ -9,7 +10,7 @@ import Inventory, {
 } from '@/themes/default/components/Inventory';
 
 import type { PropType } from '@vue/composition-api';
-import type { Event, EventMaterial } from '@/stores/api/events';
+import type { EventDetails, EventMaterial } from '@/stores/api/events';
 import type {
     AwaitedMaterial,
     InventoryData as CoreInventoryData,
@@ -24,7 +25,7 @@ type InventoryMaterialData = CoreInventoryMaterialData<true, true>;
 
 type Props = {
     /** L'événement dont on veut faire l'inventaire de retour. */
-    event: Event,
+    event: EventDetails,
 
     /** L'inventaire déjà réalisé (le cas échéant) pour l'événement. */
     inventory: InventoryData,
@@ -44,7 +45,7 @@ type InstanceProperties = {
 };
 
 type Data = {
-    now: number,
+    now: DateTime,
 };
 
 /** L'inventaire de matériel de la page d'inventaire de retour d'événement. */
@@ -76,12 +77,12 @@ const EventReturnInventory = defineComponent({
             default: null,
         },
     },
-    emits: ['change'],
+    emits: ['change', 'requestCancel'],
     setup: (): InstanceProperties => ({
         nowTimer: undefined,
     }),
     data: (): Data => ({
-        now: Date.now(),
+        now: DateTime.now(),
     }),
     computed: {
         awaitedMaterials(): AwaitedMaterial[] {
@@ -127,6 +128,28 @@ const EventReturnInventory = defineComponent({
             return !!this.event.is_return_inventory_started;
         },
 
+        isCancellable(): boolean {
+            const { event, hasBroken } = this;
+
+            // - Si l'inventaire de retour n'est pas fait ou bien que l'événement est
+            //   archivé, on ne permet pas d'annuler l'inventaire.
+            if (!this.isDone || event.is_archived) {
+                return false;
+            }
+
+            // - S'il n'y a pas de matériel cassé, on permet l'annulation de
+            //   l'inventaire quelque soit le moment ou il a été terminé.
+            //   Sinon, l'inventaire est annulable pendant 1 semaine après
+            //   l'avoir marqué comme terminé.
+            return (
+                !hasBroken ||
+                (
+                    event.return_inventory_datetime
+                        ?.isAfter(this.now.subWeek()) ?? false
+                )
+            );
+        },
+
         globalStatus(): string | null {
             const { __, event, isDone } = this;
 
@@ -140,9 +163,9 @@ const EventReturnInventory = defineComponent({
 
             let relativeDate = null;
             if (event.return_inventory_datetime !== null) {
-                const inventoryDatetime = moment(event.return_inventory_datetime);
+                const inventoryDatetime = event.return_inventory_datetime;
                 relativeDate = inventoryDatetime.isAfter(this.now)
-                    ? inventoryDatetime.from(inventoryDatetime.clone().add(1, 'milliseconds'))
+                    ? inventoryDatetime.from(inventoryDatetime.add(1, 'milliseconds'))
                     : inventoryDatetime.from(this.now);
             }
 
@@ -163,7 +186,7 @@ const EventReturnInventory = defineComponent({
     },
     mounted() {
         // - Actualise le timestamp courant toutes les 10 secondes.
-        this.nowTimer = setInterval(() => { this.now = Date.now(); }, 10_000);
+        this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 10_000);
     },
     beforeDestroy() {
         if (this.nowTimer) {
@@ -179,6 +202,13 @@ const EventReturnInventory = defineComponent({
 
         handleChange(id: AwaitedMaterial['id'], materialInventory: InventoryMaterialData) {
             this.$emit('change', id, materialInventory);
+        },
+
+        handleCancel() {
+            if (!this.isCancellable) {
+                return;
+            }
+            this.$emit('requestCancel');
         },
 
         // ------------------------------------------------------
@@ -207,17 +237,32 @@ const EventReturnInventory = defineComponent({
             hasStarted,
             isDone,
             isAllReturned,
+            isCancellable,
             canTerminate,
             handleChange,
+            handleCancel,
         } = this;
 
         return (
             <div class="EventReturnInventory">
                 {isDone && (
                     <div class="EventReturnInventory__summary">
-                        <p class="EventReturnInventory__summary__introduction">
-                            {globalStatus}
-                        </p>
+                        <div class="EventReturnInventory__summary__introduction">
+                            <div class="EventReturnInventory__summary__introduction__message">
+                                <p class="EventReturnInventory__summary__introduction__message__text">
+                                    {globalStatus}
+                                </p>
+                                {isCancellable && (
+                                    <Button size="small" type="warning" onClick={handleCancel}>
+                                        {(
+                                            hasBroken
+                                                ? __('put-back-on-hold-and-restore-stock')
+                                                : __('put-back-on-hold')
+                                        )}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
                         <div class="EventReturnInventory__summary__statuses">
                             {isAllReturned && (
                                 <IconMessage

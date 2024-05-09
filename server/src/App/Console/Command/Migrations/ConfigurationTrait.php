@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Loxya\Console\Command\Migrations;
 
+use Loxya\Config\Config;
 use Phinx\Config\Config as PhinxConfig;
 use Phinx\Config\ConfigInterface;
-use Loxya\Config\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -47,7 +47,7 @@ trait ConfigurationTrait
     // phpcs:ignore SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint
     public function setConfig(ConfigInterface $config)
     {
-        throw new \Exception('Non implémenté.');
+        throw new \Exception('Not implemented.');
     }
 
     // ------------------------------------------------------
@@ -56,9 +56,7 @@ trait ConfigurationTrait
     // -
     // ------------------------------------------------------
 
-    protected function configure(): void
-    {
-    }
+    abstract protected function configure(): void;
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

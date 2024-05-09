@@ -55,7 +55,7 @@
                 &:hover,
                 &:focus,
                 &:active {
-                    background-color: globals.$bg-color-input-normal;
+                    background-color: #454545;
                     color: globals.$text-light-color;
                 }
             }
@@ -63,17 +63,17 @@
 
         &--increment {
             border-radius: 0 globals.$input-border-radius globals.$input-border-radius 0;
-            background-color: globals.$bg-color-button-info;
+            background-color: globals.$bg-color-button-success;
             color: #fff;
 
             &:hover,
             &:focus {
-                background-color: color.adjust(globals.$bg-color-button-info, $lightness: 8%);
+                background-color: color.adjust(globals.$bg-color-button-success, $lightness: 8%);
                 color: #fff;
             }
 
             &:active {
-                background-color: color.adjust(globals.$bg-color-button-info, $lightness: -8%);
+                background-color: color.adjust(globals.$bg-color-button-success, $lightness: -8%);
                 color: #fff;
             }
 
@@ -82,7 +82,7 @@
                 &:hover,
                 &:focus,
                 &:active {
-                    background-color: color.adjust(globals.$bg-color-button-info, $lightness: 8%);
+                    background-color: color.adjust(globals.$bg-color-button-success, $lightness: 8%);
                     color: #fff;
                 }
             }

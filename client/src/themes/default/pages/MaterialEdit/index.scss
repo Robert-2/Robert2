@@ -1,23 +1,12 @@
 @use '~@/themes/default/style/globals';
 
-.Page--material-edit {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    .MaterialEdit {
-        flex: 1;
-        align-self: center;
-    }
-}
-
 .MaterialEdit {
     display: flex;
     flex-direction: column-reverse;
     justify-content: center;
-    width: 500px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
 
     &__side {
         margin-bottom: globals.$spacing-medium;
@@ -29,7 +18,7 @@
 
     @media screen and (min-width: globals.$screen-desktop) {
         flex-direction: row;
-        width: auto;
+        max-width: initial;
 
         &__body {
             width: 500px;

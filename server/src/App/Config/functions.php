@@ -4,8 +4,8 @@ declare(strict_types=1);
 use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Loxya\Config\Config;
-use Monolog\Logger;
 use Loxya\Kernel;
+use Monolog\Level as LogLevel;
 use Slim\Interfaces\RouteParserInterface;
 
 /**
@@ -54,7 +54,7 @@ function debug($message, ...$vars): void
     }
     $parts[] = $message;
 
-    container('logger')->log(Logger::DEBUG, implode(' ', $parts));
+    container('logger')->log(LogLevel::Debug, implode(' ', $parts));
 }
 
 /**
@@ -89,7 +89,7 @@ function dbTransaction(callable $callback): mixed
         $dbConnection->beginTransaction();
         $result = $callback();
         $dbConnection->commit();
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
         $dbConnection->rollBack();
         throw $e;
     }

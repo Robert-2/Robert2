@@ -8,14 +8,14 @@ use Loxya\Models\Document;
 
 final class DocumentsTest extends ApiTestCase
 {
-    public static function data(int $id)
+    public static function data(?int $id = null)
     {
-        return static::_dataFactory($id, [
+        return static::dataFactory($id, [
             [
                 'id' => 1,
                 'name' => 'User-manual.pdf',
                 'type' => 'application/pdf',
-                'size' => 24681233,
+                'size' => 24_681_233,
                 'url' => 'http://loxya.test/documents/1',
                 'created_at' => '2021-02-12 13:23:02',
             ],
@@ -23,7 +23,7 @@ final class DocumentsTest extends ApiTestCase
                 'id' => 2,
                 'name' => 'warranty.pdf',
                 'type' => 'application/pdf',
-                'size' => 124068,
+                'size' => 124_068,
                 'url' => 'http://loxya.test/documents/2',
                 'created_at' => '2021-02-12 13:25:02',
             ],
@@ -31,7 +31,7 @@ final class DocumentsTest extends ApiTestCase
                 'id' => 3,
                 'name' => 'plan-de-salle.xls',
                 'type' => 'application/vnd.ms-excel',
-                'size' => 49802,
+                'size' => 49_802,
                 'url' => 'http://loxya.test/documents/3',
                 'created_at' => '2023-05-01 15:15:20',
             ],
@@ -47,7 +47,7 @@ final class DocumentsTest extends ApiTestCase
                 'id' => 5,
                 'name' => 'bon_de_sortie.doc',
                 'type' => 'application/msword',
-                'size' => 10014149,
+                'size' => 10_014_149,
                 'url' => 'http://loxya.test/documents/5',
                 'created_at' => '2023-05-01 15:15:20',
             ],
@@ -55,7 +55,7 @@ final class DocumentsTest extends ApiTestCase
                 'id' => 6,
                 'name' => 'emploi-du-temps.xls',
                 'type' => 'application/vnd.ms-excel',
-                'size' => 70001,
+                'size' => 70_001,
                 'url' => 'http://loxya.test/documents/6',
                 'created_at' => '2023-05-01 15:15:20',
             ],

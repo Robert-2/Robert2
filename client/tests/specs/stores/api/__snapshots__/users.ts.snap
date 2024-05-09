@@ -1,0 +1,423 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Users Api all() parse the returned data correctly 1`] = `
+{
+  "data": [
+    {
+      "email": "tester@robertmanager.net",
+      "first_name": "Jean",
+      "full_name": "Jean Fountain",
+      "group": "admin",
+      "id": 1,
+      "last_name": "Fountain",
+      "phone": null,
+      "pseudo": "test1",
+    },
+    {
+      "email": "tester2@robertmanager.net",
+      "first_name": "Roger",
+      "full_name": "Roger Rabbit",
+      "group": "member",
+      "id": 2,
+      "last_name": "Rabbit",
+      "phone": null,
+      "pseudo": "test2",
+    },
+    {
+      "email": "nobody@robertmanager.net",
+      "first_name": "?",
+      "full_name": "?",
+      "group": "member",
+      "id": 3,
+      "last_name": "?",
+      "phone": null,
+      "pseudo": "nobody",
+    },
+    {
+      "email": "visitor@robertmanager.net",
+      "first_name": "Henry",
+      "full_name": "Henry Berluc",
+      "group": "visitor",
+      "id": 4,
+      "last_name": "Berluc",
+      "phone": "+33724000000",
+      "pseudo": "TheVisitor",
+    },
+    {
+      "email": "external@robertmanager.net",
+      "first_name": "Caroline",
+      "full_name": "Caroline Farol",
+      "group": "visitor",
+      "id": 5,
+      "last_name": "Farol",
+      "phone": "+33786325500",
+      "pseudo": "caroline",
+    },
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "perPage": 5,
+    "total": {
+      "items": 5,
+      "pages": 1,
+    },
+  },
+}
+`;
+
+exports[`Users Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_name": "Jean Fountain",
+  "group": "admin",
+  "id": 1,
+  "last_name": "Fountain",
+  "phone": null,
+  "pseudo": "test1",
+}
+`;
+
+exports[`Users Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_name": "Roger Rabbit",
+  "group": "member",
+  "id": 2,
+  "last_name": "Rabbit",
+  "phone": null,
+  "pseudo": "test2",
+}
+`;
+
+exports[`Users Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "email": "nobody@robertmanager.net",
+  "first_name": "?",
+  "full_name": "?",
+  "group": "member",
+  "id": 3,
+  "last_name": "?",
+  "phone": null,
+  "pseudo": "nobody",
+}
+`;
+
+exports[`Users Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "email": "visitor@robertmanager.net",
+  "first_name": "Henry",
+  "full_name": "Henry Berluc",
+  "group": "visitor",
+  "id": 4,
+  "last_name": "Berluc",
+  "phone": "+33724000000",
+  "pseudo": "TheVisitor",
+}
+`;
+
+exports[`Users Api create() parse the returned data correctly (with #5) 1`] = `
+{
+  "email": "external@robertmanager.net",
+  "first_name": "Caroline",
+  "full_name": "Caroline Farol",
+  "group": "visitor",
+  "id": 5,
+  "last_name": "Farol",
+  "phone": "+33786325500",
+  "pseudo": "caroline",
+}
+`;
+
+exports[`Users Api getSettings() parse the returned data correctly 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "en",
+}
+`;
+
+exports[`Users Api getSettings() parse the returned data correctly 2`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "en",
+}
+`;
+
+exports[`Users Api getSettings() parse the returned data correctly 3`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "fr",
+}
+`;
+
+exports[`Users Api getSettings() parse the returned data correctly 4`] = `
+{
+  "default_bookings_view": "listing",
+  "language": "fr",
+}
+`;
+
+exports[`Users Api getSettings() parse the returned data correctly 5`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "fr",
+}
+`;
+
+exports[`Users Api getSettings() parse the returned data correctly 6`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "en",
+}
+`;
+
+exports[`Users Api one() parse the returned data correctly 1`] = `
+{
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_name": "Jean Fountain",
+  "group": "admin",
+  "id": 1,
+  "last_name": "Fountain",
+  "phone": null,
+  "pseudo": "test1",
+}
+`;
+
+exports[`Users Api one() parse the returned data correctly 2`] = `
+{
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_name": "Jean Fountain",
+  "group": "admin",
+  "id": 1,
+  "last_name": "Fountain",
+  "phone": null,
+  "pseudo": "test1",
+}
+`;
+
+exports[`Users Api one() parse the returned data correctly 3`] = `
+{
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_name": "Roger Rabbit",
+  "group": "member",
+  "id": 2,
+  "last_name": "Rabbit",
+  "phone": null,
+  "pseudo": "test2",
+}
+`;
+
+exports[`Users Api one() parse the returned data correctly 4`] = `
+{
+  "email": "nobody@robertmanager.net",
+  "first_name": "?",
+  "full_name": "?",
+  "group": "member",
+  "id": 3,
+  "last_name": "?",
+  "phone": null,
+  "pseudo": "nobody",
+}
+`;
+
+exports[`Users Api one() parse the returned data correctly 5`] = `
+{
+  "email": "visitor@robertmanager.net",
+  "first_name": "Henry",
+  "full_name": "Henry Berluc",
+  "group": "visitor",
+  "id": 4,
+  "last_name": "Berluc",
+  "phone": "+33724000000",
+  "pseudo": "TheVisitor",
+}
+`;
+
+exports[`Users Api one() parse the returned data correctly 6`] = `
+{
+  "email": "external@robertmanager.net",
+  "first_name": "Caroline",
+  "full_name": "Caroline Farol",
+  "group": "visitor",
+  "id": 5,
+  "last_name": "Farol",
+  "phone": "+33786325500",
+  "pseudo": "caroline",
+}
+`;
+
+exports[`Users Api restore() parse the returned data correctly (with #1) 1`] = `
+{
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_name": "Jean Fountain",
+  "group": "admin",
+  "id": 1,
+  "last_name": "Fountain",
+  "phone": null,
+  "pseudo": "test1",
+}
+`;
+
+exports[`Users Api restore() parse the returned data correctly (with #2) 1`] = `
+{
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_name": "Roger Rabbit",
+  "group": "member",
+  "id": 2,
+  "last_name": "Rabbit",
+  "phone": null,
+  "pseudo": "test2",
+}
+`;
+
+exports[`Users Api restore() parse the returned data correctly (with #3) 1`] = `
+{
+  "email": "nobody@robertmanager.net",
+  "first_name": "?",
+  "full_name": "?",
+  "group": "member",
+  "id": 3,
+  "last_name": "?",
+  "phone": null,
+  "pseudo": "nobody",
+}
+`;
+
+exports[`Users Api restore() parse the returned data correctly (with #4) 1`] = `
+{
+  "email": "visitor@robertmanager.net",
+  "first_name": "Henry",
+  "full_name": "Henry Berluc",
+  "group": "visitor",
+  "id": 4,
+  "last_name": "Berluc",
+  "phone": "+33724000000",
+  "pseudo": "TheVisitor",
+}
+`;
+
+exports[`Users Api restore() parse the returned data correctly (with #5) 1`] = `
+{
+  "email": "external@robertmanager.net",
+  "first_name": "Caroline",
+  "full_name": "Caroline Farol",
+  "group": "visitor",
+  "id": 5,
+  "last_name": "Farol",
+  "phone": "+33786325500",
+  "pseudo": "caroline",
+}
+`;
+
+exports[`Users Api update() parse the returned data correctly 1`] = `
+{
+  "email": "tester@robertmanager.net",
+  "first_name": "Jean",
+  "full_name": "Jean Fountain",
+  "group": "admin",
+  "id": 1,
+  "last_name": "Fountain",
+  "phone": null,
+  "pseudo": "test1",
+}
+`;
+
+exports[`Users Api update() parse the returned data correctly 2`] = `
+{
+  "email": "tester2@robertmanager.net",
+  "first_name": "Roger",
+  "full_name": "Roger Rabbit",
+  "group": "member",
+  "id": 2,
+  "last_name": "Rabbit",
+  "phone": null,
+  "pseudo": "test2",
+}
+`;
+
+exports[`Users Api update() parse the returned data correctly 3`] = `
+{
+  "email": "nobody@robertmanager.net",
+  "first_name": "?",
+  "full_name": "?",
+  "group": "member",
+  "id": 3,
+  "last_name": "?",
+  "phone": null,
+  "pseudo": "nobody",
+}
+`;
+
+exports[`Users Api update() parse the returned data correctly 4`] = `
+{
+  "email": "visitor@robertmanager.net",
+  "first_name": "Henry",
+  "full_name": "Henry Berluc",
+  "group": "visitor",
+  "id": 4,
+  "last_name": "Berluc",
+  "phone": "+33724000000",
+  "pseudo": "TheVisitor",
+}
+`;
+
+exports[`Users Api update() parse the returned data correctly 5`] = `
+{
+  "email": "external@robertmanager.net",
+  "first_name": "Caroline",
+  "full_name": "Caroline Farol",
+  "group": "visitor",
+  "id": 5,
+  "last_name": "Farol",
+  "phone": "+33786325500",
+  "pseudo": "caroline",
+}
+`;
+
+exports[`Users Api updateSettings() parse the returned data correctly 1`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "en",
+}
+`;
+
+exports[`Users Api updateSettings() parse the returned data correctly 2`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "en",
+}
+`;
+
+exports[`Users Api updateSettings() parse the returned data correctly 3`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "fr",
+}
+`;
+
+exports[`Users Api updateSettings() parse the returned data correctly 4`] = `
+{
+  "default_bookings_view": "listing",
+  "language": "fr",
+}
+`;
+
+exports[`Users Api updateSettings() parse the returned data correctly 5`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "fr",
+}
+`;
+
+exports[`Users Api updateSettings() parse the returned data correctly 6`] = `
+{
+  "default_bookings_view": "calendar",
+  "language": "en",
+}
+`;

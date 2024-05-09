@@ -1,37 +1,53 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import Icon from '@/themes/default/components/Icon';
+import Icon, { Variant } from '@/themes/default/components/Icon';
 
 import type { PropType } from '@vue/composition-api';
-import type { Props as IconProps } from '@/themes/default/components/Icon';
 
-type Props = IconProps & {
+type Props = {
+    /**
+     * Le nom de l'icône à afficher.
+     *
+     * Pour une liste exhaustive des codes, voir: https://fontawesome.com/v5.15/icons?m=free
+     */
+    name: string,
+
+    /** Quelle variante faut-il utiliser pour l'icône ? */
+    variant?: Variant,
+
     /** Le texte à afficher à droite de l'icône */
     message: string,
 };
 
+/** Une icône suivie d'un message. */
 const IconMessage = defineComponent({
     name: 'IconMessage',
     props: {
-        ...Icon.props,
+        name: {
+            type: String as PropType<Props['name']>,
+            required: true,
+        },
+        variant: {
+            type: String as PropType<Required<Props>['variant']>,
+            default: Variant.SOLID,
+            validator: (value: unknown) => (
+                typeof value === 'string' &&
+                Object.values(Variant).includes(value as any)
+            ),
+        },
         message: {
             type: String as PropType<Required<Props>['message']>,
             required: true,
         },
     },
     render() {
-        const { name, variant, spin, message } = this;
+        const { name, variant, message } = this;
 
         return (
-            <p class="IconMessage">
-                <Icon
-                    class="IconMessage__icon"
-                    name={name}
-                    variant={variant}
-                    spin={spin}
-                />
+            <span class="IconMessage">
+                <Icon class="IconMessage__icon" name={name} variant={variant} />
                 <span class="IconMessage__message">{message}</span>
-            </p>
+            </span>
         );
     },
 });

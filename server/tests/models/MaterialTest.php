@@ -39,24 +39,25 @@ final class MaterialTest extends TestCase
 
     public function testAllWithAvailabilities(): void
     {
-        $originalMaterials =  Material::orderBy('id', 'asc')->get();
+        $originalMaterials = Material::orderBy('id', 'asc')->get();
 
         // - Calcul des quantités restantes de chaque matériel sans spécifier de date (aucun événement)
         $materials = Material::allWithAvailabilities($originalMaterials);
         $this->assertCount(8, $materials);
         $this->assertEquals([4, 2, 30, 2, 32, 2, 2, 2], $materials->pluck('available_quantity')->all());
 
-        // - Calcul des quantités restantes de chaque matériel pour une période sans événement
+        // - Calcul des quantités restantes de chaque matériel pour une période sans événement.
         $materials = Material::allWithAvailabilities($originalMaterials, new Period('2018-12-01', '2018-12-02'));
         $this->assertCount(8, $materials);
         $this->assertEquals([4, 2, 30, 2, 32, 2, 2, 2], $materials->pluck('available_quantity')->all());
 
-        // - Calcul des quantités restantes de chaque matériel pour une période avec trois événements
+        // - Calcul des quantités restantes de chaque matériel pour une période contenant
+        //   trois événements.
         $materials = Material::allWithAvailabilities($originalMaterials, new Period('2018-12-15', '2018-12-20'));
         $this->assertCount(8, $materials);
         $this->assertEquals([0, 0, 20, 1, 20, 2, 2, 2], $materials->pluck('available_quantity')->all());
 
-        // - Calcul des quantités restantes de chaque matériel pour une période avec un seul événement
+        // - Calcul des quantités restantes de chaque matériel pour une période contenant un seul événement.
         $materials = Material::allWithAvailabilities($originalMaterials, new Period('2018-12-19', '2018-12-20'));
         $this->assertCount(8, $materials);
         $this->assertEquals([1, 0, 30, 2, 32, 2, 2, 2], $materials->pluck('available_quantity')->all());
@@ -74,7 +75,7 @@ final class MaterialTest extends TestCase
         $this->assertCount(1, $results);
         $this->assertEquals(
             ['Console Yamaha CL3'],
-            $results->pluck('name')->all()
+            $results->pluck('name')->all(),
         );
 
         // - Search a material reference
@@ -82,7 +83,7 @@ final class MaterialTest extends TestCase
         $this->assertCount(2, $results);
         $this->assertEquals(
             ['DBXPA2', 'PAR64LED'],
-            $results->pluck('reference')->all()
+            $results->pluck('reference')->all(),
         );
     }
 
@@ -120,10 +121,10 @@ final class MaterialTest extends TestCase
             'name' => 'Analog Mixing Console Yamaha RM800',
             'description' => null,
             'reference' => 'RM800',
-            'is_unitary' => false,
             'park_id' => 1,
             'park_location_id' => null,
             'category_id' => 1,
+            'is_unitary' => 0,
             'sub_category_id' => null,
             'out_of_order_quantity' => null,
             'rental_price' => 100.0,
@@ -134,8 +135,6 @@ final class MaterialTest extends TestCase
             'is_reservable' => true,
             'picture' => null,
             'note' => null,
-            'tags' => [],
-            'attributes' => [],
             'created_at' => '2019-02-24 23:59:00',
             'updated_at' => '2019-02-24 23:59:00',
             'deleted_at' => null,

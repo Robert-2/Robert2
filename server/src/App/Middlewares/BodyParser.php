@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Loxya\Middlewares;
 
 use Adbar\Dot as DotArray;
+use Loxya\Support\Filesystem\UploadedFile;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Loxya\Support\Filesystem\UploadedFile;
 use Slim\Middleware\BodyParsingMiddleware as BodyParsingMiddlewareCore;
 
 final class BodyParser extends BodyParsingMiddlewareCore
@@ -26,7 +26,7 @@ final class BodyParser extends BodyParsingMiddlewareCore
             $parsedRequest = static::parseRequest($request);
             $request = $request->withParsedBody($parsedRequest['params']);
             $request = $request->withUploadedFiles(
-                static::normalizeUploadedFiles($parsedRequest['files'])
+                static::normalizeUploadedFiles($parsedRequest['files']),
             );
 
             // - Gestion des envois hybrides avec données sous forme de JSON et fichiers uploadés.
@@ -38,7 +38,7 @@ final class BodyParser extends BodyParsingMiddlewareCore
 
                 $rawUploadedFiles = $request->getUploadedFiles();
                 if (!empty($rawUploadedFiles)) {
-                    $uploadedFiles = new DotArray;
+                    $uploadedFiles = new DotArray();
                     foreach ($rawUploadedFiles as $name => $file) {
                         $name = base64_decode($name);
                         if ($name === false) {
@@ -77,7 +77,7 @@ final class BodyParser extends BodyParsingMiddlewareCore
                     (int) $value['size'],
                     (int) $value['error'],
                     $value['name'],
-                    $value['type']
+                    $value['type'],
                 );
         }
         return $normalized;

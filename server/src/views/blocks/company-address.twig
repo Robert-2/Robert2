@@ -1,35 +1,31 @@
-{%- if showLogo and company['logo'] is not empty -%}
-    <img src="{{ baseUrl }}/img/{{ company['logo'] }}" style="width: 75mm;" />
-{%- endif -%}
-
+{% if showLogo and company.logo is not empty %}
+<img src="{{ baseUrl }}/img/{{ company.logo }}" style="width: 75mm;" />
+{% endif %}
 <p class="size12 strong">
-    {{- company['name'] -}}<br>
-    {{- company['street'] -}}<br>
-    {{- company['zipCode'] }} {{ company['locality'] }}<br>
-    {{- company['country'] -}}
+    {{ company.name }}<br />
+    {{ company.street }}<br />
+    {{ company.zipCode }} {{ company.locality }}<br />
+    {{ company.country }}
 </p>
-
-{%- if showLegalNumbers -%}
+{% if showLegalNumbers -%}
 <p>
-    {%- for legalNumber in company['legalNumbers'] -%}
-        {%- if legalNumber['value'] is not empty -%}
-            {{- legalNumber['name'] }}: {{ legalNumber['value'] }}<br>
+    {%- for legalNumber in company.legalNumbers -%}
+        {%- if legalNumber.value is not empty -%}
+        {{- legalNumber.name }}: {{ legalNumber.value }}<br />
         {%- endif -%}
     {%- endfor -%}
 </p>
-{%- endif -%}
-
-{%- if company['phone'] is not empty or company['email'] is not empty -%}
+{% endif -%}
+{% if company.phone is not empty or company.email is not empty -%}
 <p>
-    {%- if company['phone'] is not empty -%}
-    {{- translate('phone', [company['phone']]) }}<br>
+    {%- if company.phone is not empty -%}
+    {{- __('phone', company.phone) }}<br />
     {%- endif -%}
-    {%- if company['email'] is not empty -%}
-    {{- translate('email', [company['email']]) -}}
+    {%- if company.email is not empty -%}
+    {{- __('email', company.email) -}}
     {%- endif -%}
 </p>
-{%- endif -%}
-
-{%- if showLegalNumbers and company['vatNumber'] is not empty -%}
-<p>{{ translate('vatNumber', [company['vatNumber']]) }}</p>
-{%- endif -%}
+{% endif -%}
+{% if showLegalNumbers and company.vatNumber is not empty -%}
+<p>{{ __('vat-number', company.vatNumber) }}</p>
+{% endif %}

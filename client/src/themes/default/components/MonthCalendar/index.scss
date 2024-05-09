@@ -21,7 +21,7 @@
             text-transform: capitalize;
         }
 
-        &__total {
+        &__count {
             position: absolute;
             left: 0;
         }
@@ -35,10 +35,6 @@
             min-height: 0;
         }
 
-        .cv-header-day:last-of-type {
-            margin-right: 15px;
-        }
-
         .cv-weekdays {
             overflow-y: scroll;
         }
@@ -48,19 +44,17 @@
         .cv-header-days,
         .cv-week,
         .cv-weeks {
-            border-color: globals.$text-muted-color;
+            border-color: globals.$calendar-separator-color;
         }
 
         .cv-day:not(.outsideOfMonth) {
-            background-color: globals.$calendar-main-background-color;
+            background-color: globals.$calendar-background-color;
 
             .cv-day-number {
                 color: globals.$text-base-color;
             }
 
             &.today {
-                background-color: globals.$calendar-current-date-background-color;
-
                 .cv-day-number {
                     color: globals.$text-warning-color;
                 }

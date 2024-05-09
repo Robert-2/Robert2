@@ -1,11 +1,12 @@
 import './index.scss';
+import axios from 'axios';
+import HttpCode from 'status-code-enum';
 import { defineComponent } from '@vue/composition-api';
-import config from '@/globals/config';
+import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
 import apiEvents from '@/stores/api/events';
 import Help from '@/themes/default/components/Help';
 import Page from '@/themes/default/components/Page';
 import Loading from '@/themes/default/components/Loading';
-import EventStore from './EventStore';
 import Breadcrumb from './components/Breadcrumb';
 import MiniSummary from './components/MiniSummary';
 import EventStep1 from './steps/1';
@@ -14,64 +15,28 @@ import EventStep3 from './steps/3';
 import EventStep4 from './steps/4';
 import EventStep5 from './steps/5';
 
-// @vue/component
+/** Page de création d'un événement. */
 const EventPage = defineComponent({
     name: 'Event',
     data() {
-        const { $t: __ } = this;
+        const id = this.$route.params.id
+            ? parseInt(this.$route.params.id, 10)
+            : null;
 
         return {
-            help: 'page.event-edit.help-edit',
-            isFetched: false,
-            error: null,
-            isLoading: false,
-            steps: [
-                {
-                    id: 1,
-                    name: __('page.event-edit.event-informations'),
-                    fields: ['title', 'start_date', 'end_date'],
-                },
-                {
-                    id: 2,
-                    name: __('page.event-edit.event-beneficiaries'),
-                    fields: ['beneficiaries'],
-                },
-                {
-                    id: 3,
-                    name: __('page.event-edit.event-technicians'),
-                    fields: ['technicians'],
-                },
-                {
-                    id: 4,
-                    name: __('page.event-edit.event-materials'),
-                    fields: ['materials'],
-                },
-                {
-                    id: 5,
-                    name: __('page.event-edit.event-summary'),
-                    fields: ['title', 'start_date', 'end_date', 'beneficiaries', 'materials'],
-                },
-            ],
+            id,
             currentStep: 1,
-            event: {
-                id: this.$route.params.id || null,
-                title: '',
-                start_date: this.$route.query.atDate || '',
-                end_date: this.$route.query.atDate || '',
-                location: '',
-                description: '',
-                is_confirmed: false,
-                is_billable: config.billingMode !== 'none',
-                beneficiaries: [],
-                technicians: [],
-                materials: [],
-            },
+            isFetched: false,
+            isLoading: false,
+            isDirty: false,
+            criticalError: null,
+            error: null,
+            event: null,
         };
     },
     computed: {
         isNew() {
-            const { id } = this.event;
-            return !id || id === 'new';
+            return this.id === null;
         },
 
         pageTitle() {
@@ -81,17 +46,54 @@ const EventPage = defineComponent({
                 return __('page.event-edit.title-create');
             }
 
-            if (!isFetched || !event) {
-                return __('page.event-edit.title-simple');
-            }
+            return isFetched
+                ? __('page.event-edit.title', { title: event.title })
+                : __('page.event-edit.title-simple');
+        },
 
-            const { title } = event;
-            return __('page.event-edit.title', { title });
+        steps() {
+            const { $t: __ } = this;
+
+            return [
+                {
+                    id: 1,
+                    name: __('page.event-edit.event-informations'),
+                    filled: () => true,
+                },
+                {
+                    id: 2,
+                    name: __('page.event-edit.event-beneficiaries'),
+                    filled: (event) => (
+                        event.beneficiaries.length > 0
+                    ),
+                },
+                {
+                    id: 3,
+                    name: __('page.event-edit.event-technicians'),
+                    filled: (event) => (
+                        event.technicians.length > 0
+                    ),
+                },
+                {
+                    id: 4,
+                    name: __('page.event-edit.event-materials'),
+                    filled: (event) => (
+                        event.materials.length > 0
+                    ),
+                },
+                {
+                    id: 5,
+                    name: __('page.event-edit.event-summary'),
+                    filled: (event) => (
+                        event.beneficiaries.length > 0 &&
+                        event.materials.length > 0
+                    ),
+                },
+            ];
         },
     },
     mounted() {
-        this.fetch();
-        EventStore.commit('reset');
+        this.fetchData();
     },
     methods: {
         // ------------------------------------------------------
@@ -100,16 +102,24 @@ const EventPage = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleUpdateEvent(data) {
-            this.help = { type: 'success', text: 'page.event-edit.saved' };
-            this.error = null;
+        handleUpdateEvent(event) {
             this.isLoading = false;
-            this.event = data;
-            EventStore.commit('init', this.event);
+            this.error = null;
+            this.event = event;
+            this.isDirty = false;
+        },
+
+        handleStepDataChange() {
+            this.isDirty = true;
+        },
+
+        handleStepDataReset() {
+            this.isDirty = false;
         },
 
         handleOpenStep(stepId) {
             this.currentStep = stepId;
+            this.isDirty = false;
         },
 
         handleError(error) {
@@ -123,13 +133,13 @@ const EventPage = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async fetch() {
+        async fetchData() {
             if (this.isNew) {
                 this.isFetched = true;
                 return;
             }
 
-            const { $t: __, event: { id } } = this;
+            const { $t: __, id } = this;
             this.isLoading = true;
 
             try {
@@ -146,17 +156,25 @@ const EventPage = defineComponent({
                 );
                 if (!isEditable) {
                     this.$toasted.error(__('page.event-edit.cannot-be-modified'));
-                    this.$router.replace({ name: 'calendar' });
+                    this.$router.replace({ name: 'schedule' });
                     return;
                 }
 
                 this.event = event;
-                this.help = 'page.event-edit.help-edit';
-                EventStore.commit('init', this.event);
-            } catch (error) {
-                this.error = error;
-            } finally {
+                this.isDirty = false;
                 this.isFetched = true;
+            } catch (error) {
+                if (!axios.isAxiosError(error)) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Error occurred while retrieving event #${this.id} data`, error);
+                    this.criticalError = ERROR.UNKNOWN;
+                } else {
+                    const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
+                    this.criticalError = status === HttpCode.ClientErrorNotFound
+                        ? ERROR.NOT_FOUND
+                        : ERROR.UNKNOWN;
+                }
+            } finally {
                 this.isLoading = false;
             }
         },
@@ -167,21 +185,22 @@ const EventPage = defineComponent({
             event,
             steps,
             currentStep,
-            handleUpdateEvent,
-            handleOpenStep,
-            handleError,
-            help,
             error,
+            isDirty,
             isFetched,
             isLoading,
+            handleError,
+            criticalError,
+            handleOpenStep,
+            handleUpdateEvent,
+            handleStepDataReset,
+            handleStepDataChange,
         } = this;
 
-        if (!isFetched) {
+        if (criticalError || !isFetched) {
             return (
-                <Page ref="page" name="event-edit" title={pageTitle}>
-                    <div class="Event">
-                        <div class="Event__loading"><Loading /></div>
-                    </div>
+                <Page ref="page" name="event-edit" title={pageTitle} centered>
+                    {criticalError ? <CriticalError type={criticalError} /> : <Loading />}
                 </Page>
             );
         }
@@ -192,60 +211,74 @@ const EventPage = defineComponent({
             }
 
             switch (currentStep) {
-                case 1:
+                case 1: {
                     return (
                         <EventStep1
                             event={event}
+                            onDataChange={handleStepDataChange}
+                            onDataReset={handleStepDataReset}
                             onLoading={() => { this.isLoading = true; }}
                             onStopLoading={() => { this.isLoading = false; }}
                             onError={handleError}
                             onUpdateEvent={handleUpdateEvent}
-                            onGotoStep={handleOpenStep}
+                            onGoToStep={handleOpenStep}
                         />
                     );
-                case 2:
+                }
+                case 2: {
                     return (
                         <EventStep2
                             event={event}
+                            onDataChange={handleStepDataChange}
+                            onDataReset={handleStepDataReset}
                             onLoading={() => { this.isLoading = true; }}
                             onStopLoading={() => { this.isLoading = false; }}
                             onError={handleError}
                             onUpdateEvent={handleUpdateEvent}
-                            onGotoStep={handleOpenStep}
+                            onGoToStep={handleOpenStep}
                         />
                     );
-                case 3:
+                }
+                case 3: {
                     return (
                         <EventStep3
                             event={event}
+                            onDataChange={handleStepDataChange}
+                            onDataReset={handleStepDataReset}
                             onLoading={() => { this.isLoading = true; }}
                             onStopLoading={() => { this.isLoading = false; }}
                             onError={handleError}
                             onUpdateEvent={handleUpdateEvent}
-                            onGotoStep={handleOpenStep}
+                            onGoToStep={handleOpenStep}
                         />
                     );
-                case 4:
+                }
+                case 4: {
                     return (
                         <EventStep4
                             event={event}
+                            onDataChange={handleStepDataChange}
+                            onDataReset={handleStepDataReset}
                             onLoading={() => { this.isLoading = true; }}
                             onError={handleError}
                             onUpdateEvent={handleUpdateEvent}
-                            onGotoStep={handleOpenStep}
+                            onGoToStep={handleOpenStep}
                         />
                     );
-                case 5:
+                }
+                case 5: {
                     return (
                         <EventStep5
                             event={event}
                             onError={handleError}
                             onUpdateEvent={handleUpdateEvent}
-                            onGotoStep={handleOpenStep}
+                            onGoToStep={handleOpenStep}
                         />
                     );
-                default:
+                }
+                default: {
                     return null;
+                }
             }
         };
 
@@ -259,9 +292,12 @@ const EventPage = defineComponent({
                             currentStep={currentStep}
                             onOpenStep={handleOpenStep}
                         />
-                        <MiniSummary />
+                        <MiniSummary
+                            event={event}
+                            isDirty={isDirty}
+                        />
                         <div class="Event__sidebar__help">
-                            <Help message={help} error={error} isLoading={isLoading} />
+                            <Help error={error} isLoading={isLoading} />
                         </div>
                     </div>
                     <div class="Event__body">

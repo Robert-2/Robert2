@@ -138,7 +138,7 @@ trait Serializer
 
         if ($value instanceof Collection) {
             return $value
-                ->map(fn($value) => $serialize($value))
+                ->map(static fn ($value) => $serialize($value))
                 ->all();
         }
 

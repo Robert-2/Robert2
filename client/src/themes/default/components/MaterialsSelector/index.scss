@@ -19,10 +19,6 @@
         &__actions {
             display: flex;
             gap: globals.$spacing-small;
-
-            .Button + .Button {
-                margin-left: 0;
-            }
         }
     }
 

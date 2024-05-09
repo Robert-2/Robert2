@@ -1,17 +1,18 @@
 import './index.scss';
+import Day, { DayReadableFormat } from '@/utils/day';
+import { DateTimeReadableFormat } from '@/utils/datetime';
 import { defineComponent } from '@vue/composition-api';
-import moment from 'moment';
 import MultiSwitch from '@/themes/default/components/MultiSwitch';
 import { DisplayGroup } from '../Inventory';
 
-import type { Moment } from 'moment';
+import type DateTime from '@/utils/datetime';
 import type { PropType } from '@vue/composition-api';
-import type { Event } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
 
 type Props = {
     /** L'événement concerné par l'inventaire de retour. */
-    event: Event,
+    event: EventDetails,
 
     /** L'affichage par groupe actuellement utilisé. */
     displayGroup: DisplayGroup,
@@ -47,10 +48,10 @@ const EventReturnHeader = defineComponent({
         //     return this.$store.state.parks.list.length > 1;
         // },
 
-        returnDate(): Moment {
+        endDate(): DateTime | Day {
             // NOTE: On utilise la date de fin d'événement pour la date de
-            //       retour prévue (et non la date de fin de mobilisation).
-            return moment(this.event.end_date);
+            //       fin prévue (et non la date de fin de mobilisation).
+            return this.event.operation_period.end;
         },
 
         mainBeneficiary(): Beneficiary | null {
@@ -61,9 +62,9 @@ const EventReturnHeader = defineComponent({
                 : null;
         },
     },
-    // created() {
-    //     this.$store.dispatch('parks/fetch');
-    // },
+    created() {
+        // this.$store.dispatch('parks/fetch');
+    },
     methods: {
         // ------------------------------------------------------
         // -
@@ -96,7 +97,7 @@ const EventReturnHeader = defineComponent({
         const {
             __,
             event,
-            returnDate,
+            endDate,
             mainBeneficiary,
             displayGroup,
             showDisplayGroupSelector,
@@ -109,10 +110,14 @@ const EventReturnHeader = defineComponent({
                 <dl class="EventReturnHeader__infos">
                     <div class="EventReturnHeader__infos__item">
                         <dt class="EventReturnHeader__infos__item__name">
-                            {__('global.return-scheduled-on')}
+                            {__('global.expected-end-on')}
                         </dt>
                         <dd class="EventReturnHeader__infos__item__value">
-                            {returnDate.format('LL')}
+                            {(
+                                endDate instanceof Day
+                                    ? endDate.toReadable(DayReadableFormat.LONG)
+                                    : endDate.toReadable(DateTimeReadableFormat.LONG)
+                            )}
                         </dd>
                     </div>
                     {mainBeneficiary !== null && (

@@ -51,4 +51,15 @@ confirm-terminate-text-with-broken: >-
     This will update all the "out of order" quantities for the concerned
     materials, and it will no longer be possible to modify this inventory.
 
+put-back-on-hold: Put inventory back on hold
+put-back-on-hold-and-restore-stock: Put inventory back on hold and restore stock
+confirm-rollback-title: "Do you really want to put this return inventory back on hold?"
+confirm-rollback-text: |
+    This will result in the cancellation of the submission, as if the inventory had never been finalized.
+confirm-rollback-with-broken-text: |
+    This will result in the cancellation of the submission, as if the inventory had never been finalized.
+
+    Please note that material quantities that had been marked as broken will also be returned to stock, if the available quantities allow it.
+    Please be sure to edit these materials to adjust the quantities of broken items if necessary.
+
 saved: Inventory saved

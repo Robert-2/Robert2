@@ -6,14 +6,14 @@ namespace Loxya\Models;
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Support\Assert;
+use Respect\Validation\Validator as V;
 
 /**
  * Bénéficiaire / emprunteur.
@@ -37,16 +37,17 @@ use Loxya\Models\Traits\SoftDeletable;
  * @property-read int|null $country_id
  * @property-read Country|null $country
  * @property-read string|null $full_address
- * @property bool $can_make_reservation
  * @property string|null $note
  * @property-read array $stats
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
- * @property-read Collection|Event[] $events
- * @property-read Collection|Estimate[] $estimates
- * @property-read Collection|Invoice[] $invoices
+ * @property-read Collection<array-key, Event> $events
+ * @property-read Collection<array-key, Estimate> $estimates
+ * @property-read Collection<array-key, Invoice> $invoices
+ *
+ * @method static Builder|static search(string $term)
  */
 final class Beneficiary extends BaseModel implements Serializable
 {
@@ -59,8 +60,6 @@ final class Beneficiary extends BaseModel implements Serializable
 
     protected $table = 'beneficiaries';
 
-    protected $orderField = 'full_name';
-
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
@@ -69,7 +68,6 @@ final class Beneficiary extends BaseModel implements Serializable
             'person_id' => V::custom([$this, 'checkPersonId']),
             'reference' => V::custom([$this, 'checkReference']),
             'company_id' => V::custom([$this, 'checkCompanyId']),
-            'can_make_reservation' => V::optional(V::boolType()),
         ];
     }
 
@@ -86,16 +84,19 @@ final class Beneficiary extends BaseModel implements Serializable
             return true;
         }
 
-        $query = static::where('person_id', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
+        if (!Person::staticExists($value)) {
+            return false;
         }
 
-        if ($query->withTrashed()->exists()) {
-            return 'person-already-a-beneficiary';
-        }
+        $alreadyExists = static::query()
+            ->where('person_id', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        return Person::staticExists($value);
+        return !$alreadyExists ?: 'person-already-a-beneficiary';
     }
 
     public function checkReference($value)
@@ -107,16 +108,15 @@ final class Beneficiary extends BaseModel implements Serializable
             return true;
         }
 
-        $query = static::where('reference', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('reference', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        if ($query->withTrashed()->exists()) {
-            return 'reference-already-in-use';
-        }
-
-        return true;
+        return !$alreadyExists ?: 'reference-already-in-use';
     }
 
     public function checkCompanyId($value)
@@ -127,7 +127,7 @@ final class Beneficiary extends BaseModel implements Serializable
             return true;
         }
 
-        $company = Company::find($value);
+        $company = Company::withTrashed()->find($value);
         if (!$company) {
             return false;
         }
@@ -186,8 +186,6 @@ final class Beneficiary extends BaseModel implements Serializable
         'postal_code',
         'locality',
         'full_address',
-        'company',
-        'country',
         'country_id',
         'user_id',
     ];
@@ -196,7 +194,6 @@ final class Beneficiary extends BaseModel implements Serializable
         'reference' => 'string',
         'person_id' => 'integer',
         'company_id' => 'integer',
-        'can_make_reservation' => 'boolean',
         'note' => 'string',
         'created_at' => 'immutable_datetime',
         'updated_at' => 'immutable_datetime',
@@ -208,7 +205,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->first_name;
@@ -219,7 +216,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->last_name;
@@ -230,7 +227,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->full_name;
@@ -246,10 +243,10 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
-        return $this->person->email;
+        return $this->user?->email ?? $this->person->email;
     }
 
     public function getPhoneAttribute()
@@ -257,7 +254,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->phone;
@@ -268,7 +265,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->street;
@@ -279,7 +276,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->postal_code;
@@ -290,7 +287,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->locality;
@@ -301,7 +298,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->country_id;
@@ -312,7 +309,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->country;
@@ -323,7 +320,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->full_address;
@@ -334,7 +331,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->user_id;
@@ -345,7 +342,7 @@ final class Beneficiary extends BaseModel implements Serializable
         if (!$this->person) {
             throw new \LogicException(
                 'The beneficiary\'s related person is missing, ' .
-                'this relation should always be defined.'
+                'this relation should always be defined.',
             );
         }
         return $this->person->user;
@@ -380,7 +377,6 @@ final class Beneficiary extends BaseModel implements Serializable
         'reference',
         'person_id',
         'company_id',
-        'can_make_reservation',
         'note',
     ];
 
@@ -390,20 +386,24 @@ final class Beneficiary extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
+    protected $orderable = [
+        'full_name',
+        'reference',
+        'company',
+        'email',
+    ];
+
     public function scopeSearch(Builder $query, string $term): Builder
     {
-        $term = trim($term);
-        if (strlen($term) < 2) {
-            throw new \InvalidArgumentException("The term must contain more than two characters.");
-        }
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));
-        return $query->where(function (Builder $query) use ($term) {
+        return $query->where(static function (Builder $query) use ($term) {
             $query
-                ->orWhere(function (Builder $subQuery) use ($term) {
+                ->orWhere(static function (Builder $subQuery) use ($term) {
                     $subQuery->where('reference', 'LIKE', $term);
                 })
-                ->orWhereHas('person', function (Builder $subQuery) use ($term) {
+                ->orWhereHas('person', static function (Builder $subQuery) use ($term) {
                     $subQuery
                         ->where('first_name', 'LIKE', $term)
                         ->orWhere('last_name', 'LIKE', $term)
@@ -449,12 +449,12 @@ final class Beneficiary extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public static function staticEdit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): static
     {
         $personId = null;
         if ($id) {
             if (!static::staticExists($id)) {
-                throw (new ModelNotFoundException)
+                throw (new ModelNotFoundException())
                     ->setModel(self::class, $id);
             }
             $personId = static::find($id)->person_id;
@@ -463,39 +463,19 @@ final class Beneficiary extends BaseModel implements Serializable
         $personData = $data['person'] ?? [];
         unset($data['person']);
 
-        $userData = $data['user'] ?? [];
         unset($data['user']);
 
         $beneficiary = static::firstOrNew(compact('id'))->fill($data);
         $person = Person::firstOrNew(['id' => $personId])->fill($personData);
 
-        $user = null;
-        if ($beneficiary->can_make_reservation === true && !$beneficiary->person?->user) {
-            $user = (new User)->fill(array_merge($userData, [
-                'group' => Group::EXTERNAL,
-                'language' => Config::get('defaultLang'),
-                'password' => !empty($userData['password'])
-                    ? password_hash($userData['password'], PASSWORD_DEFAULT)
-                    : null,
-            ]));
-        }
-
-        if (!$beneficiary->isValid() || !$person->isValid() || ($user && !$user->isValid())) {
+        if (!$beneficiary->isValid() || !$person->isValid()) {
             throw new ValidationException(array_merge(
                 $beneficiary->validationErrors(),
                 ['person' => $person->validationErrors()],
-                ['user' => $user?->validationErrors() ?? null],
             ));
         }
 
-        return dbTransaction(function () use ($person, $user, $beneficiary) {
-            if ($user && !$user->exists) {
-                if (!$user->save()) {
-                    throw new \RuntimeException("Unable to create the beneficiary's related user.");
-                }
-                $person->user()->associate($user);
-            }
-
+        return dbTransaction(static function () use ($person, $beneficiary) {
             if (!$person->save()) {
                 throw new \RuntimeException("Unable to save the beneficiary's related person.");
             }
@@ -517,22 +497,24 @@ final class Beneficiary extends BaseModel implements Serializable
 
     public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        $beneficiary = tap(clone $this, function (Beneficiary $beneficiary) use ($format) {
+        /** @var Beneficiary $beneficiary */
+        $beneficiary = tap(clone $this, static function (Beneficiary $beneficiary) use ($format) {
+            $beneficiary->append(['country', 'company']);
+
             if ($format === self::SERIALIZE_DETAILS) {
                 $beneficiary->append(['user', 'stats']);
             }
         });
 
-        $data = $beneficiary->attributesForSerialization();
-
-        unset(
-            $data['person_id'],
-            $data['created_at'],
-            $data['updated_at'],
-            $data['deleted_at'],
-        );
-
-        return $data;
+        return (new DotArray($beneficiary->attributesForSerialization()))
+            ->delete([
+                'can_make_reservation',
+                'person_id',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ])
+            ->all();
     }
 
     public static function serializeValidation(array $data): array

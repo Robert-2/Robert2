@@ -2,17 +2,18 @@ import { defineComponent } from '@vue/composition-api';
 
 import type { PropType } from '@vue/composition-api';
 
-const VARIANT_MAP = {
-    'regular': 'far',
-    'solid': 'fas',
-    'brands': 'fab',
-} as const;
-
-/** Représente le nom d'une variante d'icône. */
-export type Variant = keyof typeof VARIANT_MAP;
-
 /** Les différentes variantes disponibles pour les icônes. */
-export const VARIANTS = Object.keys(VARIANT_MAP) as unknown as Variant;
+export enum Variant {
+    REGULAR = 'regular',
+    SOLID = 'solid',
+    BRANDS = 'brands',
+}
+
+const VARIANT_MAP = {
+    [Variant.REGULAR]: 'far',
+    [Variant.SOLID]: 'fas',
+    [Variant.BRANDS]: 'fab',
+} as const;
 
 export type Props = {
     /**
@@ -39,10 +40,10 @@ const Icon = defineComponent({
         },
         variant: {
             type: String as PropType<Required<Props>['variant']>,
-            default: 'solid',
+            default: Variant.SOLID,
             validator: (value: unknown) => (
                 typeof value === 'string' &&
-                VARIANTS.includes(value)
+                Object.values(Variant).includes(value as any)
             ),
         },
         spin: {

@@ -1,0 +1,15 @@
+.MaterialPopoverTransition {
+    &--enter-active {
+        opacity: 1;
+        transform: none;
+        transition:
+            transform 300ms ease-in-out,
+            opacity 300ms ease;
+    }
+
+    &--enter {
+        transform-origin: 50% 0%;
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+}

@@ -1,17 +1,11 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import { mapState, mapActions } from 'vuex';
 import Dropdown from './Dropdown';
 
 // @vue/component
 const DefaultLayoutHeaderMenu = defineComponent({
     name: 'DefaultLayoutHeaderMenu',
-    computed: {
-        ...mapState('auth', ['user']),
-    },
     methods: {
-        ...mapActions('auth', ['logout']),
-
         // ------------------------------------------------------
         // -
         // -    Handlers
@@ -19,12 +13,13 @@ const DefaultLayoutHeaderMenu = defineComponent({
         // ------------------------------------------------------
 
         async handleLogout() {
-            await this.logout();
+            await this.$store.dispatch('auth/logout');
             this.$router.replace({ name: 'login', hash: '#bye' });
         },
     },
     render() {
-        const { $t: __, user, handleLogout } = this;
+        const { $t: __, handleLogout } = this;
+        const { user } = this.$store.state.auth;
         const { first_name: name } = user;
 
         return (

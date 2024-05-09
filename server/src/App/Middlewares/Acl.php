@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Loxya\Middlewares;
 
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Loxya\Config;
 use Loxya\Models\User;
 use Loxya\Services\Auth;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Interfaces\RouteInterface;
@@ -58,7 +58,7 @@ final class Acl implements MiddlewareInterface
             if (empty($name)) {
                 throw new \LogicException(
                     "All routes must either contain a callable in text form (= FQN) or contain a name.\n" .
-                    "Otherwise, these routes will always be blocked by the ACL."
+                    "Otherwise, these routes will always be blocked by the ACL.",
                 );
             }
             return in_array($name, $allowList, true);
@@ -70,7 +70,7 @@ final class Acl implements MiddlewareInterface
         if (!preg_match($callablePattern, $fqn, $matches)) {
             throw new \LogicException(
                 "Unable to retrieve the Controller + Action from the route FQN.\n" .
-                "Make sure you define the routes with the format `[Name]Controller:action`."
+                "Make sure you define the routes with the format `[Name]Controller:action`.",
             );
         }
         [$controller, $action] = [class_basename($matches[1]), $matches[2] ?? '__invoke'];

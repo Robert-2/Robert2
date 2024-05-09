@@ -1,8 +1,10 @@
-import type { Event, EventMaterial } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 import type { SelectedMaterial } from '../_types';
 
-const getEventMaterialsQuantities = (materials: Event['materials']): SelectedMaterial[] => (
-    materials.map(({ id, pivot }: EventMaterial) => (
+type Material = EventDetails['materials'][number];
+
+const getEventMaterialsQuantities = (materials: Material[]): SelectedMaterial[] => (
+    materials.map(({ id, pivot }: Material) => (
         { id, quantity: pivot?.quantity ?? 0 }
     ))
 );

@@ -10,14 +10,14 @@ final class ParkTest extends TestCase
 {
     public function testGetTotalItems(): void
     {
-        $Park = Park::find(1);
-        $this->assertEquals(7, $Park->total_items);
+        $park = Park::findOrFail(1);
+        $this->assertEquals(7, $park->total_items);
     }
 
     public function testGetTotalAmount(): void
     {
-        $Park = Park::find(1);
-        $this->assertEquals(119480.80, $Park->total_amount);
+        $park = Park::findOrFail(1);
+        $this->assertEquals(11_9480.80, $park->total_amount);
     }
 
     public function testRemoveNotEmptyPark(): void

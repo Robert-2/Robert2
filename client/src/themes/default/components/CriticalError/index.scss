@@ -6,7 +6,7 @@
 
     &__illustration {
         width: 80%;
-        max-width: 25em;
+        max-width: 25rem;
         fill: currentColor;
         opacity: 0.2;
     }
@@ -16,7 +16,7 @@
         white-space: pre-line;
     }
 
-    &__back-to-calendar,
+    &__back-to-home,
     &__refresh {
         padding: 0.5rem 1rem;
         font-size: 1.1rem;
@@ -31,14 +31,14 @@
     }
 
     @media (min-width: globals.$screen-desktop) {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
 
         &__message {
             margin: globals.$spacing-large 0 globals.$spacing-medium;
             white-space: pre-line;
         }
 
-        &__back-to-calendar,
+        &__back-to-home,
         &__refresh {
             padding: 0.75rem 1.5rem;
             font-size: 1.2rem;

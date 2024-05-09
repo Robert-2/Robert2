@@ -1,61 +1,94 @@
-{% for listMaterials in materialsSorted %}
-<h2>{{ translate('materials') }}</h2>
+{% for listName, listMaterials in materialsSorted -%}
+{% if materialsSorted|length > 1 -%}
+<h2>
+    {{-
+        not listName
+            ? __('materials-list-global')
+            : __('materials-list-name', listName)
+    -}}
+</h2>
+{% else -%}
+<h2>{{ __('materials') }}</h2>
+{% endif -%}
+{%
+    set colspan = 4
+        + (showPictures ? 1 : 0)
+        + ((showReplacementPrices ? 1 : 0) * 2)
+        + (showDescriptions ? 1 : 0)
+        + (showTags ? 1 : 0)
+%}
 <table class="listing-table">
     <thead>
         <tr>
-            <th>{{ translate('ref') }}</th>
-            <th>{{ translate('designation') }}</th>
-            <th>{{ translate('qty') }}</th>
-            <th>{{ translate('replacement-value') }}</th>
-            <th>{{ translate('total-replacement-value') }}</th>
-            <th>{{ translate('qty-returned') }}</th>
+            {% if showPictures -%}
+            <th>{{ __('picture') }}</th>
+            {% endif -%}
+            <th>{{ __('ref') }}</th>
+            <th>{{ __('designation') }}</th>
+            {% if showDescriptions -%}
+            <th>{{ __('description') }}</th>
+            {% endif -%}
+            {% if showTags -%}
+            <th>{{ __('tags') }}</th>
+            {% endif -%}
+            {% if showReplacementPrices -%}
+            <th>{{ __('replacement-value') }}</th>
+            <th>{{ __('total-replacement-value') }}</th>
+            {% endif -%}
+            <th>{{ __('qty') }}</th>
+            <th>{{ __('qty-returned') }}</th>
         </tr>
     </thead>
     <tbody>
         {% if materialDisplayMode == 'categories' %}
             {%- for category, materials in listMaterials -%}
                 <tr>
-                    <td class="section-title" colspan="6">
-                        {{- category|replace({ '__other': translate('not-categorized') }) -}}
+                    <td class="section-title" colspan="{{ colspan }}">
+                        {{- category|replace({ '__other': __('not-categorized') }) -}}
                     </td>
                 </tr>
                 {% for material in materials %}
-                    {{- include('blocks/materials/line-event-summary.twig', { material: material }) -}}
+                    {{- include('blocks/materials/line-event-summary.twig', { material }) -}}
                 {% endfor %}
             {%- endfor -%}
         {%- elseif materialDisplayMode == 'sub-categories' -%}
             {%- for subCategory, materials in listMaterials -%}
                 <tr>
-                    <td class="section-title" colspan="6">
+                    <td class="section-title" colspan="{{ colspan }}">
                         {%- if subCategory == '--' -%}
-                            {{- translate('not-categorized') -}}
+                            {{- __('not-categorized') -}}
                         {%- else -%}
-                            {{- subCategory|replace({ '__other': translate('other-materials') }) -}}
+                            {{- subCategory|replace({ '__other': __('other-materials') }) -}}
                         {%- endif -%}
                     </td>
                 </tr>
                 {% for material in materials %}
-                    {{- include('blocks/materials/line-event-summary.twig', { material: material }) -}}
+                    {{- include('blocks/materials/line-event-summary.twig', { material }) -}}
                 {% endfor %}
             {%- endfor -%}
         {%- elseif materialDisplayMode == 'parks' -%}
             {%- for park, materials in listMaterials -%}
                 <tr>
-                    <td class="section-title" colspan="6">
+                    <td class="section-title" colspan="{{ colspan }}">
                         {%- if park is not empty -%}
                             {{- park -}}
                         {%- else -%}
-                            ({{ translate('unknown-park') }})
+                            ({{ __('unknown-park') }})
                         {%- endif -%}
                     </td>
                 </tr>
                 {% for material in materials %}
-                    {{- include('blocks/materials/line-event-summary.twig', { material: material, withoutPark: true }) -}}
+                    {{-
+                        include('blocks/materials/line-event-summary.twig', {
+                            withoutPark: true,
+                            material,
+                        })
+                    -}}
                 {% endfor %}
             {%- endfor -%}
         {%- else -%}
             {% for material in listMaterials %}
-                {{- include('blocks/materials/line-event-summary.twig', { material: material }) -}}
+                {{- include('blocks/materials/line-event-summary.twig', { material }) -}}
             {% endfor %}
         {%- endif %}
     </tbody>

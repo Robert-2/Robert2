@@ -47,5 +47,7 @@
 
     &__actions {
         flex: 0 0 auto;
+        display: flex;
+        gap: globals.$spacing-thin;
     }
 }

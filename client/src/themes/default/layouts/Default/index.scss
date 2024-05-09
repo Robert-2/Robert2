@@ -14,5 +14,9 @@
         align-items: stretch;
         overflow: auto;
         height: 100%;
+
+        &__content {
+            flex: 1;
+        }
     }
 }

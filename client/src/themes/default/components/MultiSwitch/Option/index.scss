@@ -1,24 +1,53 @@
 @use '~@/themes/default/style/globals';
 
 .MultiSwitchOption {
-    padding: 5px 10px;
-    border-radius: globals.$border-radius-normal;
+    $block: &;
+
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 0;
+    background-color: rgba(97, 97, 97, 0.5);
+    color: globals.$text-base-color;
     cursor: pointer;
     transition: all 300ms;
     user-select: none;
+    gap: globals.$spacing-thin;
+
+    box-shadow:
+        0 1px 2px 0 rgba(0, 0, 0, 0.03),
+        0 1px 6px -1px rgba(0, 0, 0, 0.02),
+        0 2px 4px 0 rgba(0, 0, 0, 0.02);
 
     &__input {
         display: none;
     }
 
-    &--active {
-        background-color: rgba(97, 97, 97, 0.6);
-        color: globals.$text-base-color;
-        cursor: auto;
+    &__icon {
+        width: 1.1em;
+        height: 1.1em;
+        font-size: 1.1em;
+        line-height: 1.15;
+    }
 
-        box-shadow:
-            0 1px 2px 0 rgba(0, 0, 0, 0.03),
-            0 1px 6px -1px rgba(0, 0, 0, 0.02),
-            0 2px 4px 0 rgba(0, 0, 0, 0.02);
+    &:first-of-type {
+        border-top-left-radius: globals.$border-radius-normal;
+        border-bottom-left-radius: globals.$border-radius-normal;
+    }
+
+    &:last-of-type {
+        border-top-right-radius: globals.$border-radius-normal;
+        border-bottom-right-radius: globals.$border-radius-normal;
+    }
+
+    &:not(#{$block}--active):hover {
+        background-color: rgba(97, 97, 97, 0.7);
+    }
+
+    &--active {
+        background-color: rgba(97, 97, 97, 0.2);
+        color: globals.$text-soft-color;
+        cursor: auto;
+        box-shadow: none;
     }
 }

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Cake\Database\Query;
+use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
@@ -18,7 +20,9 @@ final class ReOrderUnitStates extends AbstractMigration
 
         $prefix = Config::get('db.prefix');
         foreach ($states as $id => $order) {
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%smaterial_unit_states', $prefix))
                 ->set('order', $order)
                 ->where(['id' => $id])
@@ -38,7 +42,9 @@ final class ReOrderUnitStates extends AbstractMigration
 
         $prefix = Config::get('db.prefix');
         foreach ($states as $id => $order) {
-            $this->getQueryBuilder()
+            /** @var UpdateQuery $qb */
+            $qb = $this->getQueryBuilder(Query::TYPE_UPDATE);
+            $qb
                 ->update(sprintf('%smaterial_unit_states', $prefix))
                 ->set('order', $order)
                 ->where(['id' => $id])

@@ -1,34 +1,51 @@
+import { z } from '@/utils/validation';
+import { withPaginationEnvelope } from './@schema';
+import { CountrySchema } from './countries';
 import requester from '@/globals/requester';
 
-import type { Country } from '@/stores/api/countries';
+import type { SchemaInfer } from '@/utils/validation';
 import type { PaginatedData, ListingParams } from './@types';
 
-//
-// - Types
-//
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
 
-export type Person = {
-    id: number,
-    first_name: string,
-    last_name: string,
-    full_name: string,
-    email: string | null,
-    phone: string | null,
-    street: string | null,
-    postal_code: string | null,
-    locality: string | null,
-    country_id: number | null,
-    country: Country | null,
-    full_address: string | null,
-    user_id: number | null,
+export const PersonSchema = z.strictObject({
+    id: z.number(),
+    user_id: z.number().nullable(),
+    first_name: z.string(),
+    last_name: z.string(),
+    full_name: z.string(),
+    // TODO [zod@>3.22.4]: Remettre `email()`.
+    email: z.string().nullable(),
+    phone: z.string().nullable(),
+    street: z.string().nullable(),
+    postal_code: z.string().nullable(),
+    locality: z.string().nullable(),
+    country_id: z.number().nullable(),
+    country: z.lazy(() => CountrySchema).nullable(),
+    full_address: z.string().nullable(),
+});
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type Person = SchemaInfer<typeof PersonSchema>;
+
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
+
+const all = async (params: ListingParams = {}): Promise<PaginatedData<Person[]>> => {
+    const response = await requester.get('/persons', { params });
+    return withPaginationEnvelope(PersonSchema).parse(response.data);
 };
-
-//
-// - Fonctions
-//
-
-const all = async (params: ListingParams): Promise<PaginatedData<Person[]>> => (
-    (await requester.get('/persons', { params })).data
-);
 
 export default { all };

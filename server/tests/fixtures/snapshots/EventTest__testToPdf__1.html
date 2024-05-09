@@ -111,6 +111,7 @@
         .half { width: 50%; }
         .third { width: 33.33%; }
         .two-third { width: 66.66%; }
+        .max50mm { max-width: 50mm; }
         .left { text-align: left; }
         .center { text-align: center; }
         .right { text-align: right; }
@@ -137,6 +138,8 @@
         .lighter { color: #666; }
         .lightest { color: #aaa; }
         .changePage { page-break-before: always; }
+        .picture-cell { width: 20mm; text-align: center; }
+        .material-picture { max-width: 18mm; max-height: 12mm; }
 
             </style>
 </head>
@@ -144,7 +147,12 @@
     <table class="layout-table">
     <tr>
         <td class="half">
-<p class="size12 strong">Testing corp.<br>5 rue des tests<br>05555 Testville<br>France</p>
+<p class="size12 strong">
+    Testing corp.<br>
+    5 rue des tests<br>
+    05555 Testville<br>
+    France
+</p>
 <p>SIRET: 543 210 080 20145<br>APE: 947A<br></p>
 <p>T&eacute;l.&nbsp;: +33123456789<br>E-mail&nbsp;: jean@testing-corp.dev</p>
 <p>N&deg; TVA Intracom.&nbsp;: FR11223344556600</p>
@@ -152,7 +160,7 @@
         <td class="half">
             <h1 class="box center spaceBottom5">Fiche de sortie</h1>
             <h2>Premier &eacute;v&eacute;nement</h2>
-            <h3>Du 17.12.18 au 18.12.18</h3>
+            <h3>Du 17.12.18 - 10:00 au 18.12.18 - 18:00</h3>
             <table class="layout-table">
                 <tr>
                     <td class="third">
@@ -182,11 +190,11 @@
                 <ul class="spaceBottom5">
                     <li class="spaceBottom2">
                         Roger Rabbit<br>
-                            <span class="lighter size8">17 d&eacute;c. 09:00 &gt; 18 d&eacute;c. 22:00</span><span class="lighter size8"> - R&eacute;gisseur</span>
+                            <span class="lighter size8">17 d&eacute;c. - 09:00 &rArr; 18 d&eacute;c. - 22:00</span><span class="lighter size8"> - R&eacute;gisseur</span>
 </li>
                     <li class="spaceBottom2">
                         Jean Technicien<span class="lighter"> - +33645698520</span><br>
-                            <span class="lighter size8">18 d&eacute;c. 14:00 &gt; 18 d&eacute;c. 18:00</span><span class="lighter size8"> - Technicien plateau</span>
+                            <span class="lighter size8">18 d&eacute;c. - 14:00 &rArr; 18 d&eacute;c. - 18:00</span><span class="lighter size8"> - Technicien plateau</span>
 </li>
                     </ul>
 </td>
@@ -200,9 +208,9 @@
         <tr>
             <th>R&eacute;f.</th>
             <th>D&eacute;signation</th>
-            <th>Qt&eacute;</th>
             <th>Val. Remp.</th>
             <th>Val. Remp. Totale</th>
+            <th>Qt&eacute;</th>
             <th>Qt&eacute; Retour</th>
         </tr>
     </thead>
@@ -216,9 +224,9 @@
 <span class="lighter">Puissance&nbsp;:&nbsp;60&nbsp;W.</span>
 <span class="lighter">Conforme&nbsp;:&nbsp;Oui.</span>
 </td>
+    <td class="right lighter">59.00&nbsp;&euro;</td>
+    <td class="right lighter">59.00&nbsp;&euro;</td>
     <td class="center">1</td>
-    <td class="right lighter">59.00&nbsp;&euro;</td>
-    <td class="right lighter">59.00&nbsp;&euro;</td>
     <td></td>
 </tr>
 <tr>
@@ -230,9 +238,9 @@
 <span class="lighter">Couleur&nbsp;:&nbsp;Grise</span>
 <span class="lighter">Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
 </td>
+    <td class="right lighter">19&#8239;400.00&nbsp;&euro;</td>
+    <td class="right lighter">19&#8239;400.00&nbsp;&euro;</td>
     <td class="center">1</td>
-    <td class="right lighter">19&#8239;400.00&nbsp;&euro;</td>
-    <td class="right lighter">19&#8239;400.00&nbsp;&euro;</td>
     <td></td>
 </tr>
 <tr>
@@ -240,9 +248,9 @@
     <td>Processeur DBX PA2 <em class="lighter">(default)</em><br><span class="lighter">Poids&nbsp;:&nbsp;2.2&nbsp;kg.</span>
 <span class="lighter">Puissance&nbsp;:&nbsp;35&nbsp;W.</span>
 </td>
+    <td class="right lighter">349.90&nbsp;&euro;</td>
+    <td class="right lighter">349.90&nbsp;&euro;</td>
     <td class="center">1</td>
-    <td class="right lighter">349.90&nbsp;&euro;</td>
-    <td class="right lighter">349.90&nbsp;&euro;</td>
     <td></td>
 </tr>
     </tbody>
@@ -272,14 +280,12 @@
     <tr>
         <td class="half inset">
             <h3 class="center">Sortie</h3>
-            <p class="strong">Pr&eacute;vue le&nbsp;: 17 d&eacute;cembre 2018</p>
-            <p>Date effective&nbsp;:</p>
+            <p>Date&nbsp;:</p>
             <p class="strong vspace5 spaceBottom5">Signature&nbsp;:</p>
         </td>
         <td class="inset">
             <h3 class="center">Retour</h3>
-            <p class="strong">Pr&eacute;vu le&nbsp;: 18 d&eacute;cembre 2018</p>
-            <p>Date effective&nbsp;:</p>
+            <p>Date&nbsp;:</p>
             <p class="strong vspace5 spaceBottom5">Signature&nbsp;:</p>
         </td>
     </tr>

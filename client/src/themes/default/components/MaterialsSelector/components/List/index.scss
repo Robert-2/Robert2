@@ -66,8 +66,13 @@
 
         &--actions {
             width: 1%;
+            min-width: 48px;
             text-align: right;
             white-space: nowrap;
+
+            .Button + .Button {
+                margin-left: globals.$spacing-thin;
+            }
         }
     }
 

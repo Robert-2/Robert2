@@ -5,16 +5,19 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Enums\BookingViewMode;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
-use Respect\Validation\Validator as V;
 use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Support\Arr;
+use Loxya\Support\Assert;
+use Respect\Validation\Validator as V;
 
 /**
  * Utilisateur de l'application.
@@ -29,6 +32,7 @@ use Loxya\Support\Arr;
  * @property string $group
  * @property string $password
  * @property string $language
+ * @property string $default_bookings_view
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
@@ -36,7 +40,10 @@ use Loxya\Support\Arr;
  * @property-read Person $person
  * @property-read Beneficiary $beneficiary
  * @property-read Technician $technician
- * @property-read Collection|Event[] $events
+ * @property-read Collection<array-key, Event> $events
+ * @property-read array<string, mixed> $settings
+ *
+ * @method static Builder|static search(string $term)
  */
 final class User extends BaseModel implements Serializable
 {
@@ -46,12 +53,14 @@ final class User extends BaseModel implements Serializable
     // - Types de sérialisation.
     public const SERIALIZE_DEFAULT = 'default';
     public const SERIALIZE_DETAILS = 'details';
+    public const SERIALIZE_SETTINGS = 'settings';
+    public const SERIALIZE_SESSION = 'session';
 
-    // - Champs spécifiques aux settings utilisateur
-    public const SETTINGS_ATTRIBUTES = ['language'];
-
-    protected $searchField = ['pseudo', 'email'];
-    protected $orderField = 'pseudo';
+    // - Champs spécifiques aux settings utilisateur.
+    public const SETTINGS_ATTRIBUTES = [
+        'language',
+        'default_bookings_view',
+    ];
 
     public function __construct(array $attributes = [])
     {
@@ -64,12 +73,15 @@ final class User extends BaseModel implements Serializable
                 V::equals(Group::ADMIN),
                 V::equals(Group::MEMBER),
                 V::equals(Group::VISITOR),
-                V::equals(Group::EXTERNAL),
             ),
             'password' => V::notEmpty()->length(4, 191),
             'language' => V::optional(V::anyOf(
                 V::equals('en'),
-                V::equals('fr')
+                V::equals('fr'),
+            )),
+            'default_bookings_view' => V::optional(V::anyOf(
+                V::equals(BookingViewMode::CALENDAR->value),
+                V::equals(BookingViewMode::LISTING->value),
             )),
         ];
     }
@@ -87,16 +99,15 @@ final class User extends BaseModel implements Serializable
             ->length(4, 100)
             ->check($value);
 
-        $query = static::where('pseudo', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('pseudo', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        if ($query->withTrashed()->exists()) {
-            return 'user-pseudo-already-in-use';
-        }
-
-        return true;
+        return !$alreadyExists ?: 'user-pseudo-already-in-use';
     }
 
     public function checkEmail($value)
@@ -106,16 +117,15 @@ final class User extends BaseModel implements Serializable
             ->length(5, 191)
             ->check($value);
 
-        $query = static::where('email', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('email', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        if ($query->withTrashed()->exists()) {
-            return 'user-email-already-in-use';
-        }
-
-        return true;
+        return !$alreadyExists ?: 'user-email-already-in-use';
     }
 
     // ------------------------------------------------------
@@ -131,17 +141,8 @@ final class User extends BaseModel implements Serializable
 
     public function events()
     {
-        $selectFields = [
-            'events.id',
-            'title',
-            'start_date',
-            'end_date',
-            'is_confirmed',
-            'is_archived',
-        ];
         return $this->hasMany(Event::class)
-            ->select($selectFields)
-            ->orderBy('start_date');
+            ->orderBy('mobilization_start_date');
     }
 
     // ------------------------------------------------------
@@ -158,8 +159,6 @@ final class User extends BaseModel implements Serializable
     ];
 
     protected $hidden = [
-        'cas_identifier',
-        'saml2_identifier',
         'password',
     ];
 
@@ -169,7 +168,7 @@ final class User extends BaseModel implements Serializable
         'group' => 'string',
         'password' => 'string',
         'language' => 'string',
-        'notifications_enabled' => 'boolean',
+        'default_bookings_view' => 'string',
         'created_at' => 'immutable_datetime',
         'updated_at' => 'immutable_datetime',
         'deleted_at' => 'immutable_datetime',
@@ -223,11 +222,6 @@ final class User extends BaseModel implements Serializable
         return $this->person->technician;
     }
 
-    public function getSettingsAttribute(): array
-    {
-        return Arr::only($this->toArray(), self::SETTINGS_ATTRIBUTES);
-    }
-
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -240,7 +234,53 @@ final class User extends BaseModel implements Serializable
         'group',
         'password',
         'language',
+        'default_bookings_view',
     ];
+
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    protected $orderable = [
+        'pseudo',
+        'email',
+        'group',
+    ];
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where(static function (Builder $query) use ($term) {
+            $query
+                ->orWhere(static function (Builder $subQuery) use ($term) {
+                    $subQuery
+                        ->orWhere('pseudo', 'LIKE', $term)
+                        ->orWhere('email', 'LIKE', $term);
+                })
+                ->orWhereHas('person', static function (Builder $subQuery) use ($term) {
+                    $subQuery
+                        ->where('first_name', 'LIKE', $term)
+                        ->orWhere('last_name', 'LIKE', $term)
+                        ->orWhereRaw('CONCAT(last_name, \' \', first_name) LIKE ?', [$term])
+                        ->orWhereRaw('CONCAT(first_name, \' \', last_name) LIKE ?', [$term]);
+                });
+        });
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes liées à une "entity"
+    // -
+    // ------------------------------------------------------
+
+    public function hasAccessToPark(int $parkId): bool
+    {
+        return true;
+    }
 
     // ------------------------------------------------------
     // -
@@ -266,10 +306,10 @@ final class User extends BaseModel implements Serializable
         return static::where('email', $email)->first();
     }
 
-    public static function staticEdit($id = null, array $data = []): BaseModel
+    public static function staticEdit($id = null, array $data = []): static
     {
         if ($id && !static::staticExists($id)) {
-            throw (new ModelNotFoundException)
+            throw (new ModelNotFoundException())
                 ->setModel(self::class, $id);
         }
 
@@ -286,7 +326,7 @@ final class User extends BaseModel implements Serializable
         $personData = $data['person'] ?? [];
         unset($data['person']);
 
-        return dbTransaction(function () use ($id, $data, $personData) {
+        return dbTransaction(static function () use ($id, $data, $personData) {
             $user = null;
             $userId = $id;
             $hasFailed = false;
@@ -327,9 +367,24 @@ final class User extends BaseModel implements Serializable
     {
         $user = clone $this;
 
-        return (new DotArray($user->attributesForSerialization()))
-            ->delete(['created_at', 'updated_at', 'deleted_at'])
+        $data = (new DotArray($user->attributesForSerialization()))
+            ->delete([
+                'cas_identifier',
+                'saml2_identifier',
+                'notifications_enabled',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ])
             ->all();
+
+        if ($format === self::SERIALIZE_SESSION) {
+            return $data;
+        }
+
+        return $format === self::SERIALIZE_SETTINGS
+            ? Arr::only($data, self::SETTINGS_ATTRIBUTES)
+            : Arr::except($data, self::SETTINGS_ATTRIBUTES);
     }
 
     public static function serializeValidation(array $data): array

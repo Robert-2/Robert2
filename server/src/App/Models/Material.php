@@ -7,8 +7,6 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as CoreCollection;
-use Psr\Http\Message\UploadedFileInterface;
-use Respect\Validation\Validator as V;
 use Loxya\Config\Config;
 use Loxya\Contracts\PeriodInterface;
 use Loxya\Contracts\Serializable;
@@ -16,8 +14,11 @@ use Loxya\Models\Traits\Serializer;
 use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Models\Traits\TransientAttributes;
 use Loxya\Support\Arr;
+use Loxya\Support\Assert;
 use Loxya\Support\Period;
 use Loxya\Support\Str;
+use Psr\Http\Message\UploadedFileInterface;
+use Respect\Validation\Validator as V;
 
 /**
  * Matériel.
@@ -25,7 +26,7 @@ use Loxya\Support\Str;
  * @property-read ?int $id
  * @property string $name
  * @property UploadedFileInterface|string|null $picture
- * @property-read string|null picture_real_path
+ * @property-read string|null $picture_real_path
  * @property string|null $description
  * @property string $reference
  * @property int|null $park_id
@@ -38,20 +39,21 @@ use Loxya\Support\Str;
  * @property float|null $replacement_price
  * @property int $stock_quantity
  * @property int $out_of_order_quantity
- * @property-read int $available_quantity
+ * @property int $available_quantity
  * @property bool $is_hidden_on_bill
  * @property bool $is_discountable
  * @property bool $is_reservable
  * @property string|null $note
- * @property-read Collection $attributes
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
- * @property-read Collection|Event[] $events
- * @property-read Collection|Document[] $documents
- * @property-read Collection|Tag[] $tags
+ * @property-read Collection<array-key, Attribute> $attributes
+ * @property-read Collection<array-key, Event> $events
+ * @property-read Collection<array-key, Document> $documents
+ * @property-read Collection<array-key, Tag> $tags
  *
+ * @method static Builder|static search(string $term)
  * @method static Builder|static inPark(int $parkId)
  */
 final class Material extends BaseModel implements Serializable
@@ -65,14 +67,13 @@ final class Material extends BaseModel implements Serializable
 
     // - Types de sérialisation.
     public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_WITH_AVAILABILITY = 'with-availability';
     public const SERIALIZE_DETAILS = 'details';
     public const SERIALIZE_PUBLIC = 'public';
 
     private const PICTURE_BASEPATH = (
         DATA_FOLDER . DS . 'materials' . DS . 'picture'
     );
-
-    protected $searchField = ['name', 'reference'];
 
     protected $attributes = [
         'name' => null,
@@ -126,16 +127,15 @@ final class Material extends BaseModel implements Serializable
             ->length(2, 64)
             ->check($value);
 
-        $query = static::where('reference', $value);
-        if ($this->exists) {
-            $query->where('id', '!=', $this->id);
-        }
+        $alreadyExists = static::query()
+            ->where('reference', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
 
-        if ($query->withTrashed()->exists()) {
-            return 'reference-already-in-use';
-        }
-
-        return true;
+        return !$alreadyExists ?: 'reference-already-in-use';
     }
 
     public function checkPicture($picture)
@@ -182,7 +182,7 @@ final class Material extends BaseModel implements Serializable
     {
         V::notEmpty()->numericVal()->check($value);
 
-        $park = Park::find($value);
+        $park = Park::withTrashed()->find($value);
         if (!$park) {
             return false;
         }
@@ -263,7 +263,7 @@ final class Material extends BaseModel implements Serializable
         return $this->belongsToMany(Event::class, 'event_materials')
             ->using(EventMaterial::class)
             ->withPivot('id', 'quantity')
-            ->orderBy('start_date', 'desc');
+            ->orderBy('mobilization_start_date', 'desc');
     }
 
     public function documents()
@@ -283,16 +283,10 @@ final class Material extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    protected $appends = [
-        'tags',
-        'attributes',
-    ];
-
     protected $casts = [
         'name' => 'string',
         'reference' => 'string',
         'description' => 'string',
-        'is_unitary' => 'boolean',
         'park_id' => 'integer',
         'category_id' => 'integer',
         'sub_category_id' => 'integer',
@@ -342,11 +336,17 @@ final class Material extends BaseModel implements Serializable
         }
 
         return $attributes
-            ->filter(fn ($attribute) => (
-                $attribute->categories->isEmpty()
-                || $attribute->categories->contains('id', $this->category->id)
-            ))
-            ->map(function ($attribute) {
+            ->filter(function ($attribute) {
+                if ($attribute->categories->isEmpty()) {
+                    return true;
+                }
+
+                return (
+                    $this->category !== null &&
+                    $attribute->categories->contains('id', $this->category->id)
+                );
+            })
+            ->map(static function ($attribute) {
                 $attribute->value = $attribute->pivot->value;
                 return $attribute->append(['value']);
             })
@@ -365,7 +365,7 @@ final class Material extends BaseModel implements Serializable
         }
 
         return (string) Config::getBaseUri()
-            ->withPath(sprintf('/materials/%s/picture', $this->id));
+            ->withPath(sprintf('/static/materials/%s/picture', $this->id));
     }
 
     public function getPictureRealPathAttribute()
@@ -377,7 +377,7 @@ final class Material extends BaseModel implements Serializable
 
         // - Dans le cas d'un fichier tout juste uploadé...
         if ($picture instanceof UploadedFileInterface) {
-            throw new \LogicException("Impossible de récupérer le chemin de l'image avant de l'avoir persisté.");
+            throw new \LogicException("Unable to retrieve image path before having persisted it.");
         }
 
         return static::PICTURE_BASEPATH . DS . $picture;
@@ -450,14 +450,14 @@ final class Material extends BaseModel implements Serializable
             if (!is_string($newPicture)) {
                 throw new \Exception(
                     "Une erreur est survenue lors de l'upload de l'image: " .
-                    "Le format de l'image à uploader n'est pas pris en charge."
+                    "Le format de l'image à uploader n'est pas pris en charge.",
                 );
             }
 
             if (!@file_exists(static::PICTURE_BASEPATH . DS . $newPicture)) {
                 throw new \Exception(
                     "Une erreur est survenue lors de l'upload de l'image: " .
-                    "La chaîne passée ne correspond pas à un fichier existant dans le dossier de destination."
+                    "La chaîne passée ne correspond pas à un fichier existant dans le dossier de destination.",
                 );
             }
         }
@@ -474,10 +474,10 @@ final class Material extends BaseModel implements Serializable
 
             try {
                 $newPicture->moveTo(static::PICTURE_BASEPATH . DS . $filename);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 throw new \Exception(
                     "Une erreur est survenue lors de l'upload de l'image: " .
-                    "L'image n'a pas pû être déplacée dans le dossier de destination."
+                    "L'image n'a pas pû être déplacée dans le dossier de destination.",
                 );
             }
 
@@ -492,7 +492,7 @@ final class Material extends BaseModel implements Serializable
             try {
                 $filename = $this->getAttributeFromArray('picture');
                 @unlink(static::PICTURE_BASEPATH . DS . $filename);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 // NOTE: On ne fait rien si la suppression plante car de toute
                 //       façon on est déjà dans un contexte d'erreur...
             }
@@ -517,7 +517,7 @@ final class Material extends BaseModel implements Serializable
         if ($previousPicture !== null) {
             try {
                 @unlink(static::PICTURE_BASEPATH . DS . $previousPicture);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 // NOTE: On ne fait rien si la suppression plante, le fichier sera orphelin mais le
                 //       plantage de sa suppression ne justifie pas qu'on unsave le matériel, etc.
             }
@@ -537,7 +537,7 @@ final class Material extends BaseModel implements Serializable
         if ($this->forceDeleting && $deleted && !empty($filename)) {
             try {
                 @unlink(static::PICTURE_BASEPATH . DS . $filename);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 // NOTE: On ne fait rien si la suppression plante, le fichier sera orphelin mais le
                 //       plantage de sa suppression ne justifie pas qu'on undelete le matériel.
             }
@@ -566,7 +566,7 @@ final class Material extends BaseModel implements Serializable
     /**
      * @param int $parkId
      *
-     * @return Collection|Material[]
+     * @return Collection<array-key, Material>
      */
     public static function getParkAll(int $parkId)
     {
@@ -580,6 +580,26 @@ final class Material extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
+    protected $orderable = [
+        'name',
+        'reference',
+        'rental_price',
+        'stock_quantity',
+        'out_of_order_quantity',
+    ];
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where(static fn (Builder $subQuery) => (
+            $subQuery
+                ->orWhere('name', 'LIKE', $term)
+                ->orWhere('reference', 'LIKE', $term)
+        ));
+    }
+
     /**
      * Permet de récupérer uniquement le matériel lié à un parc donné.
      *
@@ -588,8 +608,8 @@ final class Material extends BaseModel implements Serializable
      */
     public function scopeInPark(Builder $query, int $parkId): Builder
     {
-        return $query->where(function (Builder $query) use ($parkId) {
-            $query->where(function ($subQuery) use ($parkId) {
+        return $query->where(static function (Builder $query) use ($parkId) {
+            $query->where(static function ($subQuery) use ($parkId) {
                 $subQuery
                     ->where('park_id', $parkId);
             });
@@ -605,7 +625,7 @@ final class Material extends BaseModel implements Serializable
         if ($column === 'stock_quantity') {
             return $query
                 ->orderBy(
-                    $query->raw('IF(stock_quantity)'),
+                    $query->raw('stock_quantity'),
                     $direction,
                 );
         }
@@ -613,7 +633,7 @@ final class Material extends BaseModel implements Serializable
         if ($column === 'out_of_order_quantity') {
             return $query
                 ->orderBy(
-                    $query->raw('IF(out_of_order_quantity)'),
+                    $query->raw('out_of_order_quantity'),
                     $direction,
                 );
         }
@@ -628,7 +648,8 @@ final class Material extends BaseModel implements Serializable
     // ------------------------------------------------------
 
     /**
-     * Permet de récupérer la collection de matériel passé en argument, avec des données de disponibilités.
+     * Permet de récupérer la collection de matériel passée en argument, dans laquelle
+     * sont injectées les données de disponibilités, pour une période donnée.
      *
      * Si un événement, une réservation ou un panier est fourni en tant que `$period`, son propre
      * matériel sera exclu du calcul des disponibilités.
@@ -637,16 +658,16 @@ final class Material extends BaseModel implements Serializable
      * - Soit une instance implémentant `PeriodInterface` dont les dates seront utilisées pour les dispos.
      * - Soit `null` si les disponibilités doivent être récupérées sans prendre en compte de période.
      *
-     * @param Collection|Material[] $data
-     * @param PeriodInterface|null $period
-     * @param ?bool $strict
+     * @param Collection<array-key, Material> $materials La liste du matériel.
+     * @param PeriodInterface|null $period Le booking (ou simple Period) à utiliser comme limite de temps.
+     * @param bool $strict Passer à `true` pour prendre en compte le matériel en panne.
      *
-     * @return Collection|Material[]
+     * @return Collection<array-key, Material>
      */
     public static function allWithAvailabilities(
         Collection $materials,
         ?PeriodInterface $period = null,
-        bool $strict = false
+        bool $strict = false,
     ): Collection {
         if ($materials->isEmpty()) {
             return new Collection([]);
@@ -665,17 +686,18 @@ final class Material extends BaseModel implements Serializable
                         Event::inPeriod($period)
                             ->when(
                                 $period instanceof Event && $period->exists,
-                                function (Builder $query) use ($period) {
+                                static function (Builder $query) use ($period) {
+                                    /** @var Event $period */
                                     $query->where('id', '!=', $period->id);
                                 },
                             )
-                            ->get()
+                            ->get(),
                     );
             }
 
             /** @var Collection $otherBorrowings */
             $otherBorrowings = $otherBorrowings
-                ->sortBy(fn(PeriodInterface $otherBorrowing) => $otherBorrowing->getStartDate())
+                ->sortBy(static fn (PeriodInterface $otherBorrowing) => $otherBorrowing->getStartDate())
                 ->values();
         }
 
@@ -683,14 +705,14 @@ final class Material extends BaseModel implements Serializable
         //   ensuite récupérer les périodes de sortie des matériels.
         $otherBorrowingsByPeriods = $otherBorrowings
             ->reduce(
-                fn ($dates, $otherBorrowing) => $dates->push(
+                static fn ($dates, $otherBorrowing) => $dates->push(
                     $otherBorrowing->getStartDate()->format('Y-m-d H:i:s'),
                     $otherBorrowing->getEndDate()->format('Y-m-d H:i:s'),
                 ),
                 new CoreCollection(),
             )
             ->unique()
-            ->sort(function ($a, $b) {
+            ->sort(static function ($a, $b) {
                 if ($a === $b) {
                     return 0;
                 }
@@ -698,11 +720,10 @@ final class Material extends BaseModel implements Serializable
             })
             ->values()
             ->sliding(2)
-            ->mapSpread(function ($startDate, $endDate) use ($otherBorrowings) {
+            ->mapSpread(static function ($startDate, $endDate) use ($otherBorrowings) {
                 $period = new Period($startDate, $endDate);
-                return $otherBorrowings->filter(fn ($otherBorrowing) => (
-                    $otherBorrowing->getStartDate() < $period->getEndDate() &&
-                    $otherBorrowing->getEndDate() > $period->getStartDate()
+                return $otherBorrowings->filter(static fn ($otherBorrowing) => (
+                    $period->overlaps($otherBorrowing)
                 ));
             });
 
@@ -719,11 +740,7 @@ final class Material extends BaseModel implements Serializable
                     : $otherBorrowing->materials->keyBy('material_id')->all();
 
                 foreach ($borrowingMaterials as $materialId => $borrowingMaterial) {
-                    $quantity = (
-                        $otherBorrowing instanceof Event
-                            ? $borrowingMaterial->pivot->quantity
-                            : $borrowingMaterial->quantity
-                    );
+                    $quantity = $borrowingMaterial->pivot->quantity;
 
                     // - Si le matériel était déjà présent dans une autre période.
                     $existingUsage = $materialsUsage->get($materialId);
@@ -742,7 +759,7 @@ final class Material extends BaseModel implements Serializable
         // - Optimisation: Plus utilisé après et potentiellement volumineux.
         unset($otherBorrowingsByPeriods);
 
-        return $materials->map(function ($material) use ($materialsUsage) {
+        return $materials->map(static function ($material) use ($materialsUsage) {
             $material = clone $material;
             $materialUsage = $materialsUsage->get($material->id, [
                 'quantities' => [0],
@@ -766,21 +783,28 @@ final class Material extends BaseModel implements Serializable
 
     public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        $material = clone $this;
+        /** @var Material $material */
+        $material = tap(clone $this, static function (Material $material) use ($format) {
+            $material->append(['tags', 'attributes']);
+
+            if (in_array($format, [self::SERIALIZE_WITH_AVAILABILITY, self::SERIALIZE_PUBLIC], true)) {
+                $material->append('available_quantity');
+            }
+        });
 
         $data = $material->attributesForSerialization();
-        return match ($format) {
-            self::SERIALIZE_DEFAULT => $data,
-            self::SERIALIZE_DETAILS => $data,
-            self::SERIALIZE_PUBLIC => Arr::only($data, [
+
+        if ($format === self::SERIALIZE_PUBLIC) {
+            return Arr::only($data, [
                 'id',
                 'name',
                 'description',
                 'picture',
                 'available_quantity',
                 'rental_price',
-            ]),
-            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
-        };
+            ]);
+        }
+
+        return Arr::except($data, ['is_unitary', 'park_location_id', 'deleted_at']);
     }
 }

@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+use Cake\Database\Query;
+use Cake\Database\Query\DeleteQuery;
+use Cake\Database\Query\InsertQuery;
+use Cake\Database\Query\SelectQuery;
 use Loxya\Config\Config;
 use Phinx\Migration\AbstractMigration;
 
@@ -9,8 +13,10 @@ final class RemovesTagsFromCompanies extends AbstractMigration
     public function up(): void
     {
         $prefix = Config::get('db.prefix');
-        $builder = $this->getQueryBuilder();
-        $builder
+
+        /** @var DeleteQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_DELETE);
+        $qb
             ->delete(sprintf('%staggables', $prefix))
             ->where(['taggable_type' => 'Loxya\Models\Company'])
             ->execute();
@@ -22,8 +28,9 @@ final class RemovesTagsFromCompanies extends AbstractMigration
         $defaultTags = Config::get('defaultTags', []);
 
         // - Récupère toutes les sociétés déjà en base.
-        $builder = $this->getQueryBuilder();
-        $companies = $builder
+        /** @var SelectQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_SELECT);
+        $companies = $qb
             ->select(['id'])
             ->from(sprintf('%scompanies', $prefix))
             ->execute()->fetchAll('assoc');
@@ -33,8 +40,9 @@ final class RemovesTagsFromCompanies extends AbstractMigration
         }
 
         // - Id du tag "Bénéficiaire".
-        $builder = $this->getQueryBuilder();
-        $beneficiaryTag = $builder
+        /** @var SelectQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_SELECT);
+        $beneficiaryTag = $qb
             ->select(['id'])
             ->from(sprintf('%stags', $prefix))
             ->where(['name' => $defaultTags['beneficiary'] ?? 'Bénéficiaire'])
@@ -44,19 +52,20 @@ final class RemovesTagsFromCompanies extends AbstractMigration
             return;
         }
 
-        $builder = $this->getQueryBuilder();
-        $builder
+        /** @var InsertQuery $qb */
+        $qb = $this->getQueryBuilder(Query::TYPE_INSERT);
+        $qb
             ->insert(['tag_id', 'taggable_type', 'taggable_id'])
             ->into(sprintf('%staggables', $prefix));
 
         foreach ($companies as $company) {
-            $builder->values([
+            $qb->values([
                 'tag_id' => $beneficiaryTag['id'],
                 'taggable_type' => 'Loxya\Models\Company',
                 'taggable_id' => $company['id'],
             ]);
         }
 
-        $builder->execute();
+        $qb->execute();
     }
 }

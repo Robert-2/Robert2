@@ -265,7 +265,7 @@ const Tags = defineComponent({
         // - Actions de la page.
         const actions = !isTrashDisplayed
             ? [
-                <Button type="add" onClick={handleCreate}>
+                <Button type="add" onClick={handleCreate} collapsible>
                     {__('page.tags.action-add')}
                 </Button>,
                 <Dropdown>
@@ -286,7 +286,8 @@ const Tags = defineComponent({
                     name="tags"
                     title={title}
                     help={help}
-                    isLoading={displayLoading}
+                    loading={displayLoading}
+                    centered
                 >
                     {hasCriticalError ? <CriticalError /> : <Loading />}
                 </Page>
@@ -299,7 +300,7 @@ const Tags = defineComponent({
                     name="tags"
                     title={title}
                     help={help}
-                    isLoading={displayLoading}
+                    loading={displayLoading}
                     actions={actions}
                 >
                     <div class="Tags">
@@ -333,7 +334,7 @@ const Tags = defineComponent({
                 name="tags"
                 title={title}
                 help={help}
-                isLoading={displayLoading}
+                loading={displayLoading}
                 actions={actions}
             >
                 <div class="Tags">

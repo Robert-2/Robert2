@@ -24,9 +24,28 @@
 
     &__input {
         width: 100%;
+
         padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
-        border: globals.$input-border-size solid globals.$bg-color-input-normal;
+        outline: 0;
+        border: globals.$input-border-width solid globals.$input-border-color;
         border-radius: globals.$input-border-radius;
+        background-color: globals.$input-background-color;
+        color: globals.$input-text-color;
+        font-family: globals.$base-font-family;
+        font-size: globals.$input-font-size;
+        line-height: globals.$input-line-height;
+
+        &::placeholder {
+            color: globals.$input-placeholder-color;
+        }
+
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus {
+            -webkit-text-fill-color: globals.$input-autofill-text-color;
+            box-shadow: 0 0 0 1000px globals.$input-autofill-background-color inset;
+            transition: background-color 50000ms ease-in-out 0;
+        }
     }
 
     &__addon {
@@ -34,22 +53,39 @@
         display: inline-block;
         min-width: 2.7rem;
         padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
-        border: globals.$input-border-size solid globals.$bg-color-input-normal;
+        border: globals.$input-border-width solid globals.$input-border-color;
         border-left: 0;
         border-radius: 0 globals.$input-border-radius globals.$input-border-radius 0;
-        background-color: globals.$bg-color-input-normal;
-        color: globals.$color-input;
+        background-color: globals.$input-background-color;
+        color: globals.$input-text-color;
         text-align: center;
     }
 
     //
-    // - Focused
+    // - États
     //
+
+    &--disabled {
+        #{$block}__input,
+        #{$block}__addon {
+            border-color: globals.$input-disabled-border-color;
+            background-color: globals.$input-disabled-background-color;
+            color: globals.$input-disabled-text-color;
+        }
+
+        #{$block}__input {
+            &::placeholder {
+                color: globals.$input-disabled-placeholder-color;
+            }
+        }
+    }
 
     &--focused {
         #{$block}__input,
         #{$block}__addon {
             border-color: globals.$input-focus-border-color;
+            background-color: globals.$input-focus-background-color;
+            color: globals.$input-focus-text-color;
         }
     }
 
@@ -76,6 +112,8 @@
             #{$block}__input,
             #{$block}__addon {
                 border-color: globals.$input-error-border-color;
+                background-color: globals.$input-error-background-color;
+                color: globals.$input-error-text-color;
             }
             /* stylelint-enable selector-class-pattern */
         }

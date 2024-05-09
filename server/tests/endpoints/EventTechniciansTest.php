@@ -10,15 +10,18 @@ use Loxya\Support\Arr;
 
 final class EventTechniciansTest extends ApiTestCase
 {
-    public static function data(int $id, string $format = EventTechnician::SERIALIZE_DEFAULT)
+    public static function data(?int $id = null, string $format = EventTechnician::SERIALIZE_FOR_EVENT)
     {
         $eventTechnicians = new Collection([
             [
                 'id' => 1,
                 'event_id' => 1,
                 'technician_id' => 1,
-                'start_time' => '2018-12-17 09:00:00',
-                'end_time' => '2018-12-18 22:00:00',
+                'period' => [
+                    'start' => '2018-12-17 09:00:00',
+                    'end' => '2018-12-18 22:00:00',
+                    'isFullDays' => false,
+                ],
                 'position' => 'Régisseur',
                 'technician' => TechniciansTest::data(1),
                 'event' => EventsTest::data(1),
@@ -27,8 +30,11 @@ final class EventTechniciansTest extends ApiTestCase
                 'id' => 2,
                 'event_id' => 1,
                 'technician_id' => 2,
-                'start_time' => '2018-12-18 14:00:00',
-                'end_time' => '2018-12-18 18:00:00',
+                'period' => [
+                    'start' => '2018-12-18 14:00:00',
+                    'end' => '2018-12-18 18:00:00',
+                    'isFullDays' => false,
+                ],
                 'position' => 'Technicien plateau',
                 'technician' => TechniciansTest::data(2),
                 'event' => EventsTest::data(1),
@@ -37,8 +43,11 @@ final class EventTechniciansTest extends ApiTestCase
                 'id' => 3,
                 'event_id' => 7,
                 'technician_id' => 2,
-                'start_time' => '2023-05-25 00:00:00',
-                'end_time' => '2023-05-28 23:59:59',
+                'period' => [
+                    'start' => '2023-05-25 00:00:00',
+                    'end' => '2023-05-29 00:00:00',
+                    'isFullDays' => false,
+                ],
                 'position' => 'Ingénieur du son',
                 'technician' => TechniciansTest::data(2),
                 'event' => EventsTest::data(7),
@@ -46,14 +55,20 @@ final class EventTechniciansTest extends ApiTestCase
         ]);
 
         $eventTechnicians = match ($format) {
-            EventTechnician::SERIALIZE_DEFAULT => $eventTechnicians->map(fn($event) => (
-                Arr::except($event, ['event'])
-            )),
-            EventTechnician::SERIALIZE_DETAILS => $eventTechnicians,
+            EventTechnician::SERIALIZE_FOR_EVENT => (
+                $eventTechnicians->map(static fn ($event) => (
+                    Arr::except($event, ['event'])
+                ))
+            ),
+            EventTechnician::SERIALIZE_FOR_TECHNICIAN => (
+                $eventTechnicians->map(static fn ($event) => (
+                    Arr::except($event, ['technician'])
+                ))
+            ),
             default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
         };
 
-        return static::_dataFactory($id, $eventTechnicians->all());
+        return static::dataFactory($id, $eventTechnicians->all());
     }
 
     public function testGetOneEventTechnician(): void
@@ -68,8 +83,11 @@ final class EventTechniciansTest extends ApiTestCase
         $data = [
             'event_id' => 1,
             'technician_id' => 2,
-            'start_time' => '2018-12-17 10:00:00',
-            'end_time' => '2018-12-17 20:30:00',
+            'period' => [
+                'start' => '2018-12-17 10:00:00',
+                'end' => '2018-12-17 20:30:00',
+                'isFullDays' => false,
+            ],
             'position' => 'Testeur',
         ];
         $this->client->post('/api/event-technicians', $data);
@@ -78,8 +96,11 @@ final class EventTechniciansTest extends ApiTestCase
             'id' => 4,
             'event_id' => 1,
             'technician_id' => 2,
-            'start_time' => '2018-12-17 10:00:00',
-            'end_time' => '2018-12-17 20:30:00',
+            'period' => [
+                'start' => '2018-12-17 10:00:00',
+                'end' => '2018-12-17 20:30:00',
+                'isFullDays' => false,
+            ],
             'position' => 'Testeur',
             'technician' => TechniciansTest::data(2),
         ]);
@@ -95,16 +116,22 @@ final class EventTechniciansTest extends ApiTestCase
     public function testUpdateEventTechnician(): void
     {
         $data = [
-            'start_time' => '2018-12-17 10:00:00',
-            'end_time' => '2018-12-18 20:00:00',
             'position' => 'Régisseur général',
+            'period' => [
+                'start' => '2018-12-17 10:00:00',
+                'end' => '2018-12-18 20:00:00',
+                'isFullDays' => false,
+            ],
         ];
         $this->client->put('/api/event-technicians/1', $data);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(array_replace(self::data(1), [
-            'start_time' => '2018-12-17 10:00:00',
-            'end_time' => '2018-12-18 20:00:00',
             'position' => 'Régisseur général',
+            'period' => [
+                'start' => '2018-12-17 10:00:00',
+                'end' => '2018-12-18 20:00:00',
+                'isFullDays' => false,
+            ],
         ]));
     }
 

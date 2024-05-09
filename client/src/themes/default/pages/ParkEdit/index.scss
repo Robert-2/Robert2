@@ -1,18 +1,5 @@
-@use '~@/themes/default/style/globals';
-
-.Page--park-edit {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    .ParkEdit {
-        flex: 1;
-        align-self: center;
-    }
-}
-
 .ParkEdit {
-    width: 600px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
 }

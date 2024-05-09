@@ -24,7 +24,7 @@ type Data = {
     documents: Document[],
 };
 
-// @vue/component
+/** Onglet des documents dans la visualisation d'un matériel. */
 const MaterialViewDocuments = defineComponent({
     name: 'MaterialViewDocuments',
     props: {

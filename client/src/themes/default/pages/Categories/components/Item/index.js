@@ -11,6 +11,11 @@ const CategoriesItem = {
     props: {
         category: { type: Object, required: true },
     },
+    emits: [
+        'editCategory',
+        'deleteCategory',
+        'subCategoryChange',
+    ],
     data() {
         return {
             isSaving: false,
@@ -33,23 +38,23 @@ const CategoriesItem = {
             this.$emit('deleteCategory', id);
         },
 
-        async handleCreateSubcategory() {
+        async handleCreateSubCategory() {
             const name = await this.askForName(null);
             if (!name) {
                 return;
             }
-            this.saveSubcategory(null, name);
+            this.saveSubCategory(null, name);
         },
 
-        async handleEditSubcategory(id, previousName) {
+        async handleEditSubCategory(id, previousName) {
             const name = await this.askForName(previousName, previousName);
             if (!name) {
                 return;
             }
-            this.saveSubcategory(id, name);
+            this.saveSubCategory(id, name);
         },
 
-        async handleRemoveSubcategory(id) {
+        async handleRemoveSubCategory(id) {
             const { $t: __, isSaving } = this;
             if (isSaving) {
                 return;
@@ -67,7 +72,7 @@ const CategoriesItem = {
             this.isSaving = true;
             try {
                 await apiSubcategories.remove(id);
-                this.$emit('subcategoryChange');
+                this.$emit('subCategoryChange');
                 this.$toasted.success(__('page.categories.subcategory-deleted'));
                 this.$store.dispatch('categories/refresh');
             } catch {
@@ -105,7 +110,7 @@ const CategoriesItem = {
                 return this.askForName(value, categoryName);
             }
 
-            if (subCategories.some((subcategory) => subcategory.name === value)) {
+            if (subCategories.some((subCategory) => subCategory.name === value)) {
                 this.$toasted.error(__('page.categories.subcategory-name-already-exists'));
                 return this.askForName(value);
             }
@@ -113,7 +118,7 @@ const CategoriesItem = {
             return value;
         },
 
-        async saveSubcategory(id, name) {
+        async saveSubCategory(id, name) {
             const { $t: __, isSaving, category } = this;
             if (isSaving) {
                 return;
@@ -125,14 +130,14 @@ const CategoriesItem = {
                 if (id) {
                     await apiSubcategories.update(id, { name });
                 } else {
-                    await apiSubcategories.create({ name, categoryId });
+                    await apiSubcategories.create({ name, category_id: categoryId });
                 }
             };
 
             this.isSaving = true;
             try {
                 await request();
-                this.$emit('subcategoryChange');
+                this.$emit('subCategoryChange');
                 this.$toasted.success(__('page.categories.subcategory-saved'));
                 this.$store.dispatch('categories/refresh');
             } catch {
@@ -148,9 +153,9 @@ const CategoriesItem = {
             category,
             handleEditCategory,
             handleRemoveCategory,
-            handleCreateSubcategory,
-            handleEditSubcategory,
-            handleRemoveSubcategory,
+            handleCreateSubCategory,
+            handleEditSubCategory,
+            handleRemoveSubCategory,
         } = this;
 
         const { id, name, sub_categories: subCategories } = category;
@@ -163,10 +168,10 @@ const CategoriesItem = {
                     </div>
                     <div class="CategoriesItem__category__actions">
                         <Button
-                            type="success"
-                            onClick={() => { handleCreateSubcategory(id, name); }}
-                            v-tooltip={__('page.categories.add-a-subcategory')}
+                            type="add"
                             icon="folder-plus"
+                            onClick={() => { handleCreateSubCategory(id, name); }}
+                            v-tooltip={__('page.categories.add-a-subcategory')}
                         />
                         <Dropdown>
                             <Button
@@ -177,7 +182,7 @@ const CategoriesItem = {
                             </Button>
                             <Button
                                 icon="edit"
-                                type="primary"
+                                type="default"
                                 onClick={() => { handleEditCategory(name); }}
                             >
                                 {__('page.categories.modify')}
@@ -212,14 +217,14 @@ const CategoriesItem = {
                                         type="primary"
                                         icon="edit"
                                         onClick={() => {
-                                            handleEditSubcategory(subCategoryId, subCategoryName);
+                                            handleEditSubCategory(subCategoryId, subCategoryName);
                                         }}
                                     >
                                         {__('page.categories.modify-subcategory')}
                                     </Button>
                                     <Button
                                         type="delete"
-                                        onClick={() => { handleRemoveSubcategory(subCategoryId); }}
+                                        onClick={() => { handleRemoveSubCategory(subCategoryId); }}
                                     >
                                         {__('page.categories.delete-subcategory')}
                                     </Button>

@@ -25,7 +25,7 @@ type Data = {
     ),
 };
 
-/** Page des paramètres des fiches de sortie des événements / réservations. */
+/** Page des paramètres des fiches de sortie des événements. */
 const EventSummaryGlobalSettings = defineComponent({
     name: 'EventSummaryGlobalSettings',
     data(): Data {
@@ -134,6 +134,34 @@ const EventSummaryGlobalSettings = defineComponent({
                             v-model={values.materialDisplayMode}
                             placeholder={false}
                         />
+                        <FormField
+                            type="switch"
+                            class="EventSummaryGlobalSettings__switch"
+                            label="page.settings.event-summary.display-pictures"
+                            errors={validationErrors?.['eventSummary.showPictures']}
+                            v-model={values.showPictures}
+                        />
+                        <FormField
+                            type="switch"
+                            class="EventSummaryGlobalSettings__switch"
+                            label="page.settings.event-summary.display-replacement-prices"
+                            errors={validationErrors?.['eventSummary.showReplacementPrices']}
+                            v-model={values.showReplacementPrices}
+                        />
+                        <FormField
+                            type="switch"
+                            class="EventSummaryGlobalSettings__switch"
+                            label="page.settings.event-summary.display-descriptions"
+                            errors={validationErrors?.['eventSummary.showDescriptions']}
+                            v-model={values.showDescriptions}
+                        />
+                        <FormField
+                            type="switch"
+                            class="EventSummaryGlobalSettings__switch"
+                            label="page.settings.event-summary.display-tags"
+                            errors={validationErrors?.['eventSummary.showTags']}
+                            v-model={values.showTags}
+                        />
                     </Fieldset>
                     <Fieldset title={__('page.settings.event-summary.custom-text')}>
                         <FormField
@@ -151,12 +179,7 @@ const EventSummaryGlobalSettings = defineComponent({
                         />
                     </Fieldset>
                     <section class="EventSummaryGlobalSettings__actions">
-                        <Button
-                            icon="save"
-                            htmlType="submit"
-                            type="success"
-                            loading={isSaving}
-                        >
+                        <Button icon="save" htmlType="submit" type="primary" loading={isSaving}>
                             {isSaving ? __('saving') : __('save')}
                         </Button>
                     </section>

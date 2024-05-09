@@ -4,12 +4,13 @@ declare(strict_types=1);
 namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Loxya\Support\Arr;
 use Illuminate\Support\Collection;
+use Loxya\Models\Attribute;
+use Loxya\Support\Arr;
 
 final class AttributesTest extends ApiTestCase
 {
-    public static function data(int $id, $details = false)
+    public static function data(?int $id = null, string $format = Attribute::SERIALIZE_DEFAULT)
     {
         $attributes = new Collection([
             [
@@ -17,17 +18,17 @@ final class AttributesTest extends ApiTestCase
                 'name' => "Poids",
                 'type' => "float",
                 'unit' => "kg",
+                'is_totalisable' => true,
                 'categories' => [
                     CategoriesTest::data(2),
                     CategoriesTest::data(1),
                 ],
-                'isTotalisable' => true,
             ],
             [
                 'id' => 2,
                 'name' => "Couleur",
                 'type' => "string",
-                'maxLength' => null,
+                'max_length' => null,
                 'categories' => [],
             ],
             [
@@ -35,11 +36,11 @@ final class AttributesTest extends ApiTestCase
                 'name' => "Puissance",
                 'type' => "integer",
                 'unit' => "W",
+                'is_totalisable' => true,
                 'categories' => [
                     CategoriesTest::data(2),
                     CategoriesTest::data(1),
                 ],
-                'isTotalisable' => true,
             ],
             [
                 'id' => 4,
@@ -55,13 +56,15 @@ final class AttributesTest extends ApiTestCase
             ],
         ]);
 
-        if (!$details) {
-            $attributes = $attributes->map(fn($attribute) => (
+        $attributes = match ($format) {
+            Attribute::SERIALIZE_DEFAULT => $attributes->map(static fn ($attribute) => (
                 Arr::except($attribute, ['categories'])
-            ));
-        }
+            )),
+            Attribute::SERIALIZE_DETAILS => $attributes,
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
 
-        return static::_dataFactory($id, $attributes->all());
+        return static::dataFactory($id, $attributes->all());
     }
 
     public function testGetAll(): void
@@ -70,11 +73,11 @@ final class AttributesTest extends ApiTestCase
         $this->client->get('/api/attributes');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            self::data(4, true),
-            self::data(2, true),
-            self::data(5, true),
-            self::data(1, true),
-            self::data(3, true),
+            self::data(4, Attribute::SERIALIZE_DETAILS),
+            self::data(2, Attribute::SERIALIZE_DETAILS),
+            self::data(5, Attribute::SERIALIZE_DETAILS),
+            self::data(1, Attribute::SERIALIZE_DETAILS),
+            self::data(3, Attribute::SERIALIZE_DETAILS),
         ]);
     }
 
@@ -82,7 +85,7 @@ final class AttributesTest extends ApiTestCase
     {
         $this->client->get('/api/attributes/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(self::data(1, true));
+        $this->assertResponseData(self::data(1, Attribute::SERIALIZE_DETAILS));
     }
 
     public function testGetAllForCategory(): void
@@ -92,9 +95,9 @@ final class AttributesTest extends ApiTestCase
         $this->client->get('/api/attributes?category=3');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            self::data(4, true),
-            self::data(2, true),
-            self::data(5, true),
+            self::data(4, Attribute::SERIALIZE_DETAILS),
+            self::data(2, Attribute::SERIALIZE_DETAILS),
+            self::data(5, Attribute::SERIALIZE_DETAILS),
         ]);
 
         // - Récupère les caractéristiques spéciales qui n'ont
@@ -102,11 +105,11 @@ final class AttributesTest extends ApiTestCase
         $this->client->get('/api/attributes?category=2');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            self::data(4, true),
-            self::data(2, true),
-            self::data(5, true),
-            self::data(1, true),
-            self::data(3, true),
+            self::data(4, Attribute::SERIALIZE_DETAILS),
+            self::data(2, Attribute::SERIALIZE_DETAILS),
+            self::data(5, Attribute::SERIALIZE_DETAILS),
+            self::data(1, Attribute::SERIALIZE_DETAILS),
+            self::data(3, Attribute::SERIALIZE_DETAILS),
         ]);
     }
 
@@ -116,9 +119,9 @@ final class AttributesTest extends ApiTestCase
         $this->client->get('/api/attributes?category=none');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            self::data(4, true),
-            self::data(2, true),
-            self::data(5, true),
+            self::data(4, Attribute::SERIALIZE_DETAILS),
+            self::data(2, Attribute::SERIALIZE_DETAILS),
+            self::data(5, Attribute::SERIALIZE_DETAILS),
         ]);
     }
 
@@ -129,7 +132,7 @@ final class AttributesTest extends ApiTestCase
             'type' => 'float',
             'unit' => 'km/h',
             'categories' => [2, 3],
-            'isTotalisable' => false,
+            'is_totalisable' => false,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
@@ -141,7 +144,7 @@ final class AttributesTest extends ApiTestCase
                 CategoriesTest::data(2),
                 CategoriesTest::data(3),
             ],
-            'isTotalisable' => false,
+            'is_totalisable' => false,
         ]);
     }
 
@@ -152,19 +155,20 @@ final class AttributesTest extends ApiTestCase
             'type' => 'integer',
             'unit' => 'g',
             'categories' => [3, 4],
-            'isTotalisable' => false,
+            'is_totalisable' => false,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(
-            array_replace(self::data(1, true), [
+        $this->assertResponseData(array_replace(
+            self::data(1, Attribute::SERIALIZE_DETAILS),
+            [
                 'name' => 'Masse',
                 'unit' => 'g',
+                'is_totalisable' => false,
                 'categories' => [
                     CategoriesTest::data(4),
                     CategoriesTest::data(3),
                 ],
-                'isTotalisable' => false,
-            ])
-        );
+            ],
+        ));
     }
 }

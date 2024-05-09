@@ -10,16 +10,14 @@
     &__name {
         flex: 1;
 
-        /* stylelint-disable selector-max-type */
-        a:not(button),
-        a:not(button):active {
+        &__link,
+        &__link:active {
             color: globals.$text-base-color;
         }
 
-        a:not(button):hover {
+        &__link:hover {
             color: globals.$link-hover-color;
         }
-        /* stylelint-enable selector-max-type */
     }
 
     &__missing {

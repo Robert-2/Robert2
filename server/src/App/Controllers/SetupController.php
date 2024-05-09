@@ -7,16 +7,16 @@ use DI\Container;
 use Loxya\Config\Config;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
+use Loxya\Install\Install;
 use Loxya\Models\Category;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\User;
 use Loxya\Services\I18n;
 use Loxya\Services\View;
-use Loxya\Install\Install;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
-class SetupController extends BaseController
+final class SetupController extends BaseController
 {
     private View $view;
 
@@ -49,7 +49,7 @@ class SetupController extends BaseController
                 return $this->view->render(
                     $response,
                     'install.twig',
-                    $this->_getCheckRequirementsData() + ['lang' => $lang]
+                    $this->_getCheckRequirementsData() + ['lang' => $lang],
                 );
             }
 
@@ -71,6 +71,13 @@ class SetupController extends BaseController
 
             if ($currentStep === 'settings') {
                 $installData['currency'] = $allCurrencies[$installData['currency']];
+
+                // - Pré-remplissage des données spécifiques à la Premium qui ne sont pas demandées
+                //   dans le wizard d'installation avec les valeurs par défaut, afin de les avoir
+                //   sous la main dans le fichier settings.json, le jour où on veut les renseigner.
+                foreach (['handScanner', 'email', 'notifications'] as $premiumSetting) {
+                    $installData[$premiumSetting] = Config::DEFAULT_SETTINGS[$premiumSetting];
+                }
             }
 
             if ($currentStep === 'company') {
@@ -98,7 +105,7 @@ class SetupController extends BaseController
                 if ($currentStep === 'adminUser') {
                     if ($stepSkipped && !User::where('group', Group::ADMIN)->exists()) {
                         throw new \InvalidArgumentException(
-                            "At least one user must exists. Please create an administrator."
+                            "At least one user must exists. Please create an administrator.",
                         );
                     }
 
@@ -114,7 +121,7 @@ class SetupController extends BaseController
                 }
 
                 return $response->withRedirect('/install');
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 Install::setInstallProgress($currentStep);
 
                 $stepData = $installData;
@@ -144,7 +151,7 @@ class SetupController extends BaseController
                     'migrationStatus' => Install::getMigrationsStatus(),
                     'canProcess' => true,
                 ];
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $stepData = [
                     'migrationStatus' => [],
                     'errorCode' => $e->getCode(),
@@ -200,17 +207,34 @@ class SetupController extends BaseController
             $phpVersion = substr(PHP_VERSION, 0, strpos(PHP_VERSION, '+'));
         }
 
-        $phpversionOK = version_compare(PHP_VERSION, '8.0.0') >= 0;
-        $loadedExtensions = get_loaded_extensions();
+        $phpVersionMin = Install::MIN_PHP_VERSION;
+        $phpVersionMax = Install::MAX_PHP_VERSION;
         $neededExtensions = Install::REQUIRED_EXTENSIONS;
+
+        $loadedExtensions = get_loaded_extensions();
+        $phpversionIsAboveMin = version_compare(PHP_VERSION, $phpVersionMin, '>=');
+        $phpversionIsAboveMax = version_compare(
+            // - Réduit la version de PHP courante à la même précision que la contrainte max.
+            //   (e.g. Version de PHP : `8.3.4` / Contrainte : `8.4` => `8.3`)
+            implode('.', array_slice(
+                explode('.', $phpVersion),
+                0,
+                count(explode('.', $phpVersionMax)),
+            )),
+            $phpVersionMax,
+            '>',
+        );
+
         $missingExtensions = array_diff($neededExtensions, $loadedExtensions);
 
         return [
             'step' => 'welcome',
             'phpVersion' => $phpVersion,
-            'phpVersionOK' => $phpversionOK,
+            'phpVersionMin' => $phpVersionMin,
+            'phpVersionMax' => $phpVersionMax,
+            'phpversionIsAboveMin' => $phpversionIsAboveMin,
+            'phpversionIsAboveMax' => $phpversionIsAboveMax,
             'missingExtensions' => $missingExtensions,
-            'requirementsOK' => $phpversionOK && empty($missingExtensions),
         ];
     }
 
@@ -219,7 +243,7 @@ class SetupController extends BaseController
         $errors = [];
         foreach (['name', 'street', 'zipCode', 'locality'] as $mandatoryField) {
             if (empty($companyData[$mandatoryField])) {
-                $errors[$mandatoryField] = "Missing value";
+                $errors[$mandatoryField] = 'mandatory-field';
                 continue;
             }
         }

@@ -2,22 +2,12 @@
 @use 'sass:math';
 @use 'sass:color';
 
-.Page--technicians {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    .Technicians {
-        flex: 1;
-    }
-}
-
 .Technicians {
     $block: &;
 
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     &__filters {
         position: absolute;
@@ -31,7 +21,7 @@
         margin-left: math.div(globals.$spacing-medium, 2);
 
         &__period {
-            width: 220px;
+            width: 235px;
         }
 
         &__clear-button {
@@ -54,8 +44,14 @@
     }
 
     &__cell {
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
+        }
+
         &--nickname,
         &--email,
+        &--is-preparer,
         &--address,
         &--note {
             display: none;
@@ -65,15 +61,15 @@
             white-space: pre-line;
         }
 
+        &--is-preparer {
+            // - Important pour surcharger la définition du <th> de `.VueTables`.
+            // stylelint-disable-next-line declaration-no-important
+            text-align: center !important;
+        }
+
         &--note {
             max-width: 200px;
             white-space: pre-line;
-        }
-
-        &--actions {
-            width: 1%;
-            text-align: right;
-            white-space: nowrap;
         }
 
         //
@@ -87,7 +83,8 @@
         }
 
         @media (min-width: globals.$screen-desktop) {
-            &--nickname {
+            &--nickname,
+            &--is-preparer {
                 display: table-cell;
             }
         }

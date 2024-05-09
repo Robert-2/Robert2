@@ -5,13 +5,14 @@ namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
+use Loxya\Models\Park;
 use Loxya\Support\Arr;
 
 final class ParksTest extends ApiTestCase
 {
-    public static function data(int $id, $details = false)
+    public static function data(?int $id = null, string $format = Park::SERIALIZE_DEFAULT)
     {
-        $attributes = new Collection([
+        $parks = new Collection([
             [
                 'id' => 1,
                 'name' => 'default',
@@ -40,15 +41,20 @@ final class ParksTest extends ApiTestCase
             ],
         ]);
 
-        if (!$details) {
-            $attributes = $attributes->map(fn($attribute) => (
-                Arr::except($attribute, [
+        $parks = match ($format) {
+            Park::SERIALIZE_SUMMARY => $parks->map(static fn ($park) => (
+                Arr::only($park, ['id', 'name'])
+            )),
+            Park::SERIALIZE_DEFAULT => $parks->map(static fn ($park) => (
+                Arr::except($park, [
                     'has_ongoing_booking',
                 ])
-            ));
-        }
+            )),
+            Park::SERIALIZE_DETAILS => $parks,
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
 
-        return static::_dataFactory($id, $attributes->all());
+        return static::dataFactory($id, $parks->all());
     }
 
     public function testGetAll(): void
@@ -69,24 +75,19 @@ final class ParksTest extends ApiTestCase
     {
         $this->client->get('/api/parks/list');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(
-            (new Collection([self::data(1), self::data(2)]))
-                ->map(fn($park) => Arr::only($park, ['id', 'name']))
-                ->all()
-        );
-    }
-
-    public function testGetOneNotFound(): void
-    {
-        $this->client->get('/api/parks/999');
-        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+        $this->assertResponseData(self::data(null, Park::SERIALIZE_SUMMARY));
     }
 
     public function testGetOne(): void
     {
+        // - Avec un enregistrement inexistant.
+        $this->client->get('/api/parks/999');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Test valide.
         $this->client->get('/api/parks/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(self::data(1, true));
+        $this->assertResponseData(self::data(1, Park::SERIALIZE_DETAILS));
     }
 
     public function testGetOneMaterials(): void
@@ -98,20 +99,16 @@ final class ParksTest extends ApiTestCase
         ]);
     }
 
-    public function testGetOneTotalAmountNotFound(): void
-    {
-        $this->client->get('/api/parks/999/total-amount');
-        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-    }
-
     public function testGetOneTotalAmount(): void
     {
+        // - Avec un enregistrement inexistant.
+        $this->client->get('/api/parks/999/total-amount');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Test valide.
         $this->client->get('/api/parks/1/total-amount');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
-            'id' => 1,
-            'totalAmount' => 119480.80,
-        ]);
+        $this->assertResponseData(11_9480.80);
     }
 
     public function testCreate(): void
@@ -141,11 +138,12 @@ final class ParksTest extends ApiTestCase
             'name' => 'Mon parc',
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(
-            array_replace(self::data(1, true), [
+        $this->assertResponseData(array_replace(
+            self::data(1, Park::SERIALIZE_DETAILS),
+            [
                 // - Uniquement le nom a été modifié.
                 'name' => 'Mon parc',
-            ])
-        );
+            ],
+        ));
     }
 }

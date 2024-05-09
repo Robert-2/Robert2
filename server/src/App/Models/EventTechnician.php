@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
-use Carbon\Carbon;
-use Carbon\CarbonInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Adbar\Dot as DotArray;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Loxya\Contracts\PeriodInterface;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
+use Loxya\Support\Period;
 use Respect\Validation\Validator as V;
 
 /**
@@ -19,17 +20,22 @@ use Respect\Validation\Validator as V;
  * @property-read Event $event
  * @property-read int $technician_id
  * @property-read Technician $technician
- * @property string $start_time
- * @property string $end_time
+ * @property string $start_date
+ * @property string $end_date
+ * @property Period $period
  * @property string|null $position
+ *
+ * @method static Builder|static inPeriod(PeriodInterface $period)
+ * @method static Builder|static inPeriod(string|\DateTimeInterface $start, string|\DateTimeInterface|null $end)
+ * @method static Builder|static inPeriod(string|\DateTimeInterface|PeriodInterface $start, string|\DateTimeInterface|null $end = null)
  */
 final class EventTechnician extends BaseModel implements Serializable
 {
     use Serializer;
 
     // - Types de sérialisation.
-    public const SERIALIZE_DEFAULT = 'default';
-    public const SERIALIZE_DETAILS = 'details';
+    public const SERIALIZE_FOR_EVENT = 'default-for-event';
+    public const SERIALIZE_FOR_TECHNICIAN = 'default-for-technician';
 
     public $timestamps = false;
 
@@ -40,8 +46,8 @@ final class EventTechnician extends BaseModel implements Serializable
         $this->validation = [
             'event_id' => V::custom([$this, 'checkEventId']),
             'technician_id' => V::custom([$this, 'checkTechnicianId']),
-            'start_time' => V::custom([$this, 'checkDates']),
-            'end_time' => V::custom([$this, 'checkDates']),
+            'start_date' => V::custom([$this, 'checkDates']),
+            'end_date' => V::custom([$this, 'checkDates']),
             'position' => V::optional(V::length(2, 191)),
         ];
     }
@@ -65,7 +71,7 @@ final class EventTechnician extends BaseModel implements Serializable
     {
         V::notEmpty()->numericVal()->check($value);
 
-        $technician = Technician::find($value);
+        $technician = Technician::withTrashed()->find($value);
         if (!$technician) {
             return false;
         }
@@ -78,54 +84,47 @@ final class EventTechnician extends BaseModel implements Serializable
     public function checkDates()
     {
         $dateChecker = V::notEmpty()->dateTime();
-        if (!$dateChecker->validate($this->start_time)) {
-            return 'invalid-date';
+
+        $startDateRaw = $this->getAttributeUnsafeValue('start_date');
+        if (!$dateChecker->validate($startDateRaw)) {
+            return false;
         }
 
-        if (!$dateChecker->validate($this->end_time)) {
-            return 'invalid-date';
+        $endDateRaw = $this->getAttributeUnsafeValue('end_date');
+        if (!$dateChecker->validate($endDateRaw)) {
+            return false;
         }
 
-        $start = new \DateTimeImmutable($this->start_time);
-        $end = new \DateTimeImmutable($this->end_time);
+        $start = new CarbonImmutable($startDateRaw);
+        $end = new CarbonImmutable($endDateRaw);
+        if ($start >= $end) {
+            return 'end-date-must-be-after-start-date';
+        }
+        $period = new Period($start, $end);
 
-        if ($start > $end) {
-            return 'end-date-must-be-later';
+        // - La période d'assignation est comprise dans l'intervalle des
+        //   périodes de mobilisations et d'opération de l'événement.
+        $maxAssignationPeriod = $this->event->mobilization_period
+            ->merge($this->event->operation_period);
+
+        if (!$maxAssignationPeriod->contain($period)) {
+            return 'technician-assignation-period-outside-event-period';
         }
 
-        $eventStart = $this->event->getStartDate();
-        $eventEnd = $this->event->getEndDate();
-        if ($start < $eventStart || $end < $eventStart) {
-            return 'technician-assignation-before-event';
-        }
-
-        // - On utilise le début de la journée suivante comme limite car les techniciens
-        //   utilisent des heures pleines tandis que les événements utilisent `23:59:59`
-        //   comme fin de journée.
-        $normalizedEventEnd = $eventEnd
-            ->add(new \DateInterval('P1D'))
-            ->startOfDay();
-        if ($start > $eventEnd || $end > $normalizedEventEnd) {
-            return 'technician-assignation-after-event';
-        }
-
-        $precision = [0, 15, 30, 45];
-        $startMinutes = (int) $start->format('i');
-        $endMinutes = (int) $end->format('i');
-        if (!in_array($startMinutes, $precision, true) || !in_array($endMinutes, $precision, true)) {
+        // - Les dates doivent être arrondis aux quart d'heure le plus proche.
+        if (
+            !$start->roundMinutes(15)->eq($start) ||
+            !$end->roundMinutes(15)->eq($end)
+        ) {
             return 'date-precision-must-be-quarter';
         }
 
         $isAlreadyBusy = static::query()
-            ->when($this->exists, fn ($query) => (
-                $query->where('id', '!=', $this->id)
-            ))
             ->where('technician_id', $this->technician_id)
-            ->where([
-                ['end_time', '>', $this->start_time],
-                ['start_time', '<', $this->end_time],
-            ])
-            ->whereRelation('event', 'deleted_at', null)
+            ->inPeriod($period)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
             ->exists();
 
         return !$isAlreadyBusy ?: 'technician-already-busy-for-this-period';
@@ -155,24 +154,25 @@ final class EventTechnician extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    protected $appends = [
-        'technician',
-    ];
-
     protected $casts = [
         'event_id' => 'integer',
         'technician_id' => 'integer',
-        'start_time' => 'string',
-        'end_time' => 'string',
+        'start_date' => 'string',
+        'end_date' => 'string',
         'position' => 'string',
     ];
 
-    public function getTechnicianAttribute()
+    public function getPeriodAttribute(): Period
+    {
+        return new Period($this->start_date, $this->end_date);
+    }
+
+    public function getTechnicianAttribute(): Technician
     {
         return $this->getRelationValue('technician');
     }
 
-    public function getEventAttribute()
+    public function getEventAttribute(): Event
     {
         return $this->getRelationValue('event');
     }
@@ -186,10 +186,19 @@ final class EventTechnician extends BaseModel implements Serializable
     protected $fillable = [
         'event_id',
         'technician_id',
-        'start_time',
-        'end_time',
+        'start_date',
+        'end_date',
+        'period',
         'position',
     ];
+
+    public function setPeriodAttribute(mixed $rawPeriod): void
+    {
+        $period = Period::tryFrom($rawPeriod);
+
+        $this->start_date = $period?->getStartDate()->format('Y-m-d H:i:s');
+        $this->end_date = $period?->getEndDate()->format('Y-m-d H:i:s');
+    }
 
     public function setPositionAttribute($value): void
     {
@@ -199,64 +208,58 @@ final class EventTechnician extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    Méthodes de "repository"
+    // -    Méthodes liées à une "entity"
     // -
     // ------------------------------------------------------
 
     /**
-     * @param Collection<array-key, EventTechnician> $eventTechnicians
-     * @param CarbonInterface $prevStartDate
-     * @param PeriodInterface $newPeriod
+     * Permet de calculer, à partir d'une nouvelle période de référence, la nouvelle
+     * période d'assignation du présent technicien.
      *
-     * @return array
+     * Si l'assignation pendant la nouvelle période de référence n'est pas possible, `null` sera retourné.
+     *
+     * @param Period $newRefPeriod La nouvelle période référence (dans laquelle l'assignation doit être contenue).
+     *
+     * @return Period|null La nouvelle période d'assignation si elle est possible, `null` sinon.
      */
-    public static function getForNewDates(
-        Collection $eventTechnicians,
-        CarbonInterface $prevStartDate,
-        PeriodInterface $newPeriod,
-    ): array {
-        $eventStart = $newPeriod->getStartDate();
-        $eventEnd = $newPeriod->getEndDate();
-        $offsetInterval = $prevStartDate->diff($eventStart);
+    public function computeNewPeriod(Period $newRefPeriod): Period|null
+    {
+        $newRefPeriodStart = $newRefPeriod->getStartDate();
+        $newRefPeriodEnd = $newRefPeriod->getEndDate();
 
-        $technicians = [];
-        foreach ($eventTechnicians as $eventTechnician) {
-            $technicianStartTime = (new Carbon($eventTechnician->start_time))
-                ->add($offsetInterval)
-                ->roundMinutes(15);
+        $periodStart = $this->period->getStartDate()->roundMinutes(15);
+        $periodEnd = $this->period->getEndDate()->roundMinutes(15);
 
-            $technicianEndTime = (new Carbon($eventTechnician->end_time))
-                ->add($offsetInterval)
-                ->roundMinutes(15);
-
-            if ($technicianStartTime > $eventEnd) {
-                continue;
-            }
-            if ($technicianEndTime < $eventStart) {
-                continue;
-            }
-            if ($technicianStartTime < $eventStart) {
-                $technicianStartTime = $eventStart;
-            }
-            if ($technicianEndTime >= $eventEnd) {
-                // - On utilise le début de la journée car les techniciens utilisent
-                //   des heures pleines tandis que les événements utilisent `23:59:59`
-                //   comme fin de journée.
-                $technicianEndTime = clone($eventEnd)
-                    ->add(new \DateInterval('P1D'))
-                    ->startOfDay();
-            }
-
-            $technicians[] = [
-                'id' => $eventTechnician->technician_id,
-                'start_time' => $technicianStartTime->format('Y-m-d H:i:s'),
-                'end_time' => $technicianEndTime->format('Y-m-d H:i:s'),
-                'position' => $eventTechnician->position,
-            ];
+        // - Si l'assignation se retrouve en dehors de la nouvelle période
+        //   => Il n'y a pas de nouvelle période (et donc théoriquement plus d'assignation).
+        if ($periodStart >= $newRefPeriodEnd) {
+            return null;
+        }
+        if ($periodEnd <= $newRefPeriodStart) {
+            return null;
         }
 
-        return $technicians;
+        // - Sinon on ajuste pour rester dans le nouvel intervalle.
+        if ($periodStart < $newRefPeriodStart) {
+            $periodStart = $newRefPeriodStart
+                ->roundMinutes(15, 'ceil');
+        }
+        if ($periodEnd > $newRefPeriodEnd) {
+            $periodEnd = $newRefPeriodEnd
+                ->roundMinutes(15, 'floor');
+        }
+        if ($periodStart >= $periodEnd) {
+            return null;
+        }
+
+        return new Period($periodStart, $periodEnd);
     }
+
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes de "repository"
+    // -
+    // ------------------------------------------------------
 
     public static function flushForEvent(int $eventId): void
     {
@@ -265,18 +268,74 @@ final class EventTechnician extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * @param Builder $query
+     * @param string|\DateTimeInterface|PeriodInterface $start
+     * @param string|\DateTimeInterface|null $end (optional)
+     */
+    public function scopeInPeriod(Builder $query, $start, $end = null): Builder
+    {
+        if ($start instanceof PeriodInterface) {
+            $end = $start->getEndDate();
+            $start = $start->getStartDate();
+        }
+
+        // - Si pas de date de fin: Période de 24 heures.
+        $start = new CarbonImmutable($start);
+        $end = new CarbonImmutable($end ?? $start->addDay());
+
+        return $query
+            ->whereRelation('event', 'deleted_at', null)
+            ->where([
+                ['start_date', '<', $end],
+                ['end_date', '>', $start],
+            ]);
+    }
+
+    // ------------------------------------------------------
+    // -
     // -    Serialization
     // -
     // ------------------------------------------------------
 
-    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
+    public function serialize(string $format = self::SERIALIZE_FOR_EVENT): array
     {
-        $eventTechnician = tap(clone $this, function (EventTechnician $eventTechnician) use ($format) {
-            if ($format === self::SERIALIZE_DETAILS) {
+        /** @var EventTechnician $eventTechnician */
+        $eventTechnician = tap(clone $this, static function (EventTechnician $eventTechnician) use ($format) {
+            $eventTechnician->append(['period']);
+
+            if ($format === self::SERIALIZE_FOR_EVENT) {
+                $eventTechnician->append('technician');
+            }
+            if ($format === self::SERIALIZE_FOR_TECHNICIAN) {
                 $eventTechnician->append('event');
             }
         });
 
-        return $eventTechnician->attributesForSerialization();
+        return (new DotArray($eventTechnician->attributesForSerialization()))
+            ->delete(['start_date', 'end_date'])
+            ->all();
+    }
+
+    public static function serializeValidation(array $data): array
+    {
+        $data = new DotArray($data);
+
+        // - Période d'assignation.
+        $periodErrors = array_unique(array_merge(
+            $data->get('start_date', []),
+            $data->get('end_date', []),
+        ));
+        if (!empty($periodErrors)) {
+            $data->set('period', $periodErrors);
+        }
+        $data->delete('start_date');
+        $data->delete('end_date');
+
+        return $data->all();
     }
 }

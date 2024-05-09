@@ -1,25 +1,22 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import moment from 'moment';
 import formatAmount from '@/utils/formatAmount';
+import { DateTimeReadableFormat } from '@/utils/datetime';
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
+import { ClientTable } from '@/themes/default/components/Table';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
 import type { CreateElement } from 'vue';
 import type { Estimate } from '@/stores/api/estimates';
+import type { Columns } from '@/themes/default/components/Table/Client';
 
 type Props = {
-    /* Liste de devis. */
+    /** Liste de devis. */
     estimates: Estimate[],
 };
 
-type Data = {
-    columns: string[],
-    tableOptions: any,
-};
-
-/* Affiche une liste de devis. */
+/** Affiche une liste de devis. */
 const BeneficiaryViewBillingEstimates = defineComponent({
     name: 'BeneficiaryViewBillingEstimates',
     props: {
@@ -28,57 +25,102 @@ const BeneficiaryViewBillingEstimates = defineComponent({
             required: true,
         },
     },
-    data(): Data {
-        const { $t: __ } = this;
-
-        return {
-            columns: ['date', 'amount', 'discount', 'actions'],
-            tableOptions: {
-                filterable: false,
-                columnsDropdown: false,
-                preserveState: false,
-                filterByColumn: false,
-                orderBy: { column: 'date', ascending: false },
-                sortable: ['date', 'amount'],
-                headings: {
-                    date: __('date'),
-                    amount: __('total-amount'),
-                    discount: __('discount'),
-                    actions: null,
-                },
-                columnsClasses: {
-                    date: 'BeneficiaryViewBillingEstimates__col BeneficiaryViewBillingEstimates__col--date ',
-                    amount: 'BeneficiaryViewBillingEstimates__col BeneficiaryViewBillingEstimates__col--amount ',
-                    discount: 'BeneficiaryViewBillingEstimates__col BeneficiaryViewBillingEstimates__col--discount ',
-                    actions: 'BeneficiaryViewBillingEstimates__col BeneficiaryViewBillingEstimates__col--actions ',
-                },
-                templates: {
-                    date: (h: CreateElement, { date }: Estimate) => moment(date).format('LL HH:mm'),
-                    amount: (h: CreateElement, { total_without_taxes: amount, currency }: Estimate) => (
-                        formatAmount(amount, currency)
-                    ),
-                    discount: (h: CreateElement, { discount_rate: discount }: Estimate) => (
-                        discount.isZero() ? __('without-discount') : `${discount.toString()} %`
-                    ),
-                    actions: (h: CreateElement, { url }: Estimate) => (
-                        <Button
-                            icon="download"
-                            to={url}
-                            external
-                            download
-                        />
-                    ),
-                },
-            },
-        };
-    },
     computed: {
         isEmpty(): boolean {
             return this.estimates.length === 0;
         },
+
+        columns(): Columns<Estimate> {
+            const { $t: __ } = this;
+
+            return [
+                {
+                    key: 'date',
+                    title: __('date'),
+                    sortable: true,
+                    class: [
+                        'BeneficiaryViewBillingEstimates__col',
+                        'BeneficiaryViewBillingEstimates__col--date',
+                    ],
+                    sorter: (ascending: boolean) => (
+                        (a: Estimate, b: Estimate): number => {
+                            const result = a.date.compare(b.date);
+                            return ascending ? result : -result;
+                        }
+                    ),
+                    render: (h: CreateElement, estimate: Estimate) => (
+                        estimate.date.toReadable(DateTimeReadableFormat.LONG)
+                    ),
+                },
+                {
+                    key: 'amount',
+                    title: __('total-amount'),
+                    sortable: true,
+                    class: [
+                        'BeneficiaryViewBillingEstimates__col',
+                        'BeneficiaryViewBillingEstimates__col--amount',
+                    ],
+                    sorter: (ascending: boolean) => (
+                        (a: Estimate, b: Estimate): number => {
+                            const result = a.total_without_taxes.cmp(b.total_without_taxes);
+                            return ascending ? result : -result;
+                        }
+                    ),
+                    render: (h: CreateElement, estimate: Estimate) => (
+                        formatAmount(estimate.total_without_taxes, estimate.currency)
+                    ),
+                },
+                {
+                    key: 'discount',
+                    title: __('discount'),
+                    class: [
+                        'BeneficiaryViewBillingEstimates__col',
+                        'BeneficiaryViewBillingEstimates__col--discount',
+                    ],
+                    render: (h: CreateElement, { discount_rate: discount }: Estimate) => (
+                        discount.isZero() ? __('without-discount') : `${discount.toString()} %`
+                    ),
+                },
+                {
+                    key: 'actions',
+                    title: '',
+                    class: [
+                        'BeneficiaryViewBillingEstimates__col',
+                        'BeneficiaryViewBillingEstimates__col--actions',
+                    ],
+                    render: (h: CreateElement, { url }: Estimate) => (
+                        <Button icon="download" to={url} external download />
+                    ),
+                },
+            ];
+        },
     },
     render() {
-        const { $t: __, isEmpty, estimates, columns, tableOptions } = this;
+        const { $t: __, isEmpty, estimates, columns } = this;
+
+        const renderContent = (): JSX.Element => {
+            if (isEmpty) {
+                return (
+                    <EmptyMessage
+                        message={__('page.beneficiary-view.billing.no-estimates')}
+                        size="small"
+                    />
+                );
+            }
+
+            return (
+                <ClientTable
+                    columns={columns}
+                    data={estimates}
+                    filterable={false}
+                    withColumnsSelector={false}
+                    defaultOrderBy={{
+                        column: 'date',
+                        ascending: false,
+                    }}
+                />
+            );
+        };
 
         return (
             <div class="BeneficiaryViewBillingEstimates">
@@ -92,17 +134,7 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                         </div>
                     )}
                 </div>
-                {isEmpty && (
-                    <EmptyMessage message={__('page.beneficiary-view.billing.no-estimates')} size="small" />
-                )}
-                {!isEmpty && (
-                    <v-client-table
-                        name="beneficiaryEstimatesTable"
-                        data={estimates}
-                        columns={columns}
-                        options={tableOptions}
-                    />
-                )}
+                {renderContent()}
             </div>
         );
     },

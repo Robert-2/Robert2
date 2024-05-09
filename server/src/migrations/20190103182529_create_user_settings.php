@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
 use Loxya\Config\Config;
+use Phinx\Migration\AbstractMigration;
 
 final class CreateUserSettings extends AbstractMigration
 {

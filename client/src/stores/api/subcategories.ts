@@ -1,38 +1,57 @@
+import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
 
-import type { Category } from '@/stores/api/categories';
+import type { Category } from './categories';
+import type { SchemaInfer } from '@/utils/validation';
+
+// ------------------------------------------------------
+// -
+// -    Schema / Enums
+// -
+// ------------------------------------------------------
+
+export const SubCategorySchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    category_id: z.number(),
+});
+
+// ------------------------------------------------------
+// -
+// -    Types
+// -
+// ------------------------------------------------------
+
+export type SubCategory = SchemaInfer<typeof SubCategorySchema>;
 
 //
-// - Types
+// - Edition
 //
 
-export type Subcategory = {
-    id: number,
+export type SubCategoryCreate = {
     name: string,
     category_id: Category['id'],
 };
 
-export type SubcategoryEdit = {
-    name: string,
+export type SubCategoryEdit = Omit<SubCategoryCreate, 'category_id'>;
+
+// ------------------------------------------------------
+// -
+// -    Fonctions
+// -
+// ------------------------------------------------------
+
+const create = async (data: SubCategoryCreate): Promise<SubCategory> => {
+    const response = await requester.post('/subcategories', data);
+    return SubCategorySchema.parse(response.data);
 };
 
-export type SubcategoryCreate = SubcategoryEdit & {
-    categoryId: Category['id'],
+const update = async (id: SubCategory['id'], data: SubCategoryEdit): Promise<SubCategory> => {
+    const response = await requester.put(`/subcategories/${id}`, data);
+    return SubCategorySchema.parse(response.data);
 };
 
-//
-// - Fonctions
-//
-
-const create = async ({ name, categoryId }: SubcategoryCreate): Promise<Subcategory> => (
-    (await requester.post('/subcategories', { name, category_id: categoryId })).data
-);
-
-const update = async (id: Subcategory['id'], data: SubcategoryEdit): Promise<Subcategory> => (
-    (await requester.put(`/subcategories/${id}`, data)).data
-);
-
-const remove = async (id: Subcategory['id']): Promise<void> => {
+const remove = async (id: SubCategory['id']): Promise<void> => {
     await requester.delete(`/subcategories/${id}`);
 };
 

@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "weekday": 0,
+        "start_time": "09:00:00",
+        "end_time":"18:00:00"
+    },
+    {
+        "id": 2,
+        "weekday": 1,
+        "start_time": "09:00:00",
+        "end_time": "18:00:00"
+    },
+    {
+        "id": 3,
+        "weekday": 3,
+        "start_time": "09:00:00",
+        "end_time": "12:00:00"
+    },
+    {
+        "id": 4,
+        "weekday": 3,
+        "start_time": "14:00:00",
+        "end_time": "18:00:00"
+    },
+    {
+        "id": 5,
+        "weekday": 4,
+        "start_time": "09:00:00",
+        "end_time": "24:00:00"
+    },
+    {
+        "id": 6,
+        "weekday": 5,
+        "start_time": "09:00:00",
+        "end_time": "18:00:00"
+    },
+    {
+        "id": 7,
+        "weekday": 6,
+        "start_time": "09:45:00",
+        "end_time": "12:30:00"
+    }
+]

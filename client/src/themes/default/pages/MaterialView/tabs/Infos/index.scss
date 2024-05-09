@@ -59,34 +59,53 @@
         }
     }
 
+    &__attribute {
+        display: flex;
+        margin: 0 0 globals.$spacing-small;
+        gap: globals.$spacing-thin;
+
+        &__name {
+            @extend %reset-dl;
+
+            @include globals.icon('cog') {
+                margin-right: globals.$spacing-thin;
+            }
+        }
+
+        &__value {
+            @extend %reset-dd;
+
+            flex: 1;
+            font-weight: 600;
+        }
+    }
+
     &__notes {
         white-space: pre-wrap;
     }
 
     &__extras {
         flex: 1;
+        display: flex;
+        flex-direction: column;
         max-width: 300px;
+        gap: globals.$spacing-medium;
     }
 
     &__extra {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-small;
+
         &__item {
             margin: 0;
-
-            & + & {
-                margin-top: globals.$spacing-small;
-            }
         }
 
         //
         // - Types
         //
 
-        &--categories {
-            margin-bottom: globals.$spacing-medium;
-        }
-
         &--dates {
-            margin-top: globals.$spacing-medium;
             color: globals.$text-soft-color;
         }
     }

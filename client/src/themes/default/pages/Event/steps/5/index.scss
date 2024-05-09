@@ -7,33 +7,23 @@
     min-width: 500px;
     margin: 0 auto;
 
-    .EventStep5Overview {
-        margin-bottom: $spacing;
-    }
-
-    .EventMissingMaterials {
-        border-bottom: 1px solid globals.$list-left-border-color;
-    }
-
     &__confirmation {
-        margin-bottom: $spacing;
-        padding-bottom: $spacing;
-        border-bottom: 1px solid globals.$list-left-border-color;
-
-        &__icon {
-            margin-right: globals.$spacing-small;
-        }
+        margin-top: globals.$spacing-large;
+        padding: globals.$spacing-large;
+        border-radius: globals.$border-radius-normal;
+        background: globals.$bg-color-emphasis-light;
 
         &__title {
-            margin: 0 0 $spacing;
+            margin: 0 0 globals.$spacing-small;
             color: globals.$text-base-color;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 600;
         }
 
         &__help {
-            margin-bottom: $spacing;
+            margin-bottom: globals.$spacing-medium;
             color: globals.$text-warning-color;
+            font-size: 1.1rem;
 
             &--confirmed {
                 color: globals.$text-success-color;
@@ -44,5 +34,14 @@
     &__actions {
         display: flex;
         justify-content: space-between;
+        margin-top: globals.$spacing-large;
+        padding-top: globals.$spacing-large;
+        border-top: 1px solid globals.$divider-color;
+        gap: globals.$spacing-small;
+
+        &__right {
+            display: flex;
+            gap: globals.$spacing-small;
+        }
     }
 }
