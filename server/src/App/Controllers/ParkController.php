@@ -32,7 +32,7 @@ final class ParkController extends BaseController
 
         $query = Park::query()
             ->when(
-                $search !== null && strlen($search) >= 2,
+                $search !== null && mb_strlen($search) >= 2,
                 static fn (Builder $subQuery) => $subQuery->search($search),
             )
             ->when($onlyDeleted, static fn (Builder $subQuery) => (

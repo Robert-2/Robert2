@@ -144,7 +144,12 @@ const Dropdown = defineComponent({
             this.isOpen = !this.isOpen;
         },
 
-        handleClickOutside() {
+        handleClickOutside(e: Event) {
+            // - Si c'est un click dans le dropdown, on ne fait rien.
+            const $dropdown = this.$refs.dropdown as HTMLElement | undefined;
+            if (e.target !== null && $dropdown?.contains(e.target as Node)) {
+                return;
+            }
             this.isOpen = false;
         },
 

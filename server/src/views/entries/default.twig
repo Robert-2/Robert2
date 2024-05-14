@@ -7,7 +7,6 @@
     {% endif -%}
 
     <link href="{{ client_asset('/js/chunk-vendors.js') }}" rel="preload" as="script">
-    <link href="{{ client_asset('/js/chunk-common.js') }}" rel="preload" as="script">
     <link href="{{ client_asset('/js/default.js') }}" rel="preload" as="script">
 
     {% if env is not same as('development') -%}
@@ -38,6 +37,5 @@
         //]]>
     </script>
     <script src="{{ client_asset('/js/chunk-vendors.js') }}"></script>
-    <script src="{{ client_asset('/js/chunk-common.js') }}"></script>
     <script src="{{ client_asset('/js/default.js') }}"></script>
 {% endblock %}

@@ -25,7 +25,7 @@ trait GetAll
         // @phpstan-ignore-next-line
         $query = $this->getModelClass()::query()
             ->when(
-                $search !== null && strlen($search) >= 2,
+                $search !== null && mb_strlen($search) >= 2,
                 static fn (Builder $subQuery) => $subQuery->search($search),
             )
             ->when($onlyDeleted, static fn (Builder $subQuery) => (
