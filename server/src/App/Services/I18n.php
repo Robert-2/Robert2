@@ -252,7 +252,7 @@ final class I18n
         $code = $language;
         $region = null;
 
-        if (strlen($language) > 2) {
+        if (mb_strlen($language) > 2) {
             if (str_contains($language, '-')) {
                 [$code, $region] = explode('-', $language, 2);
             } elseif (str_contains($language, '_')) {

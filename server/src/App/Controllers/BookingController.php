@@ -143,7 +143,7 @@ final class BookingController extends BaseController
         foreach ($queries as $modelClass => $modelQuery) {
             $modelQuery
                 ->when(
-                    $search !== null && strlen($search) >= 2,
+                    $search !== null && mb_strlen($search) >= 2,
                     static fn ($builder) => $builder->search($search),
                 )
                 ->when($period, static fn (Builder $builder) => (
