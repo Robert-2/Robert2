@@ -61,7 +61,7 @@ final class EventController extends BaseController
 
         $query = Event::query()
             ->when(
-                $search !== null && strlen($search) >= 2,
+                $search !== null && mb_strlen($search) >= 2,
                 static fn ($builder) => $builder->search($search),
             )
             ->when($exclude !== null, static fn ($builder) => (

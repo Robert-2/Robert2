@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.1 (2024-05-14)
+
+- Corrige le click sur les éléments déroulant sur mobile / tablette.
+- Corrige la recherche dans les listings quand des caractères spéciaux sont utilisés.
+
 ## 0.24.0 (2024-05-09)
 
 - __[CHANGEMENT CRITIQUE]__ Loxya requiert maintenant au minimum PHP 8.1 pour fonctionner.

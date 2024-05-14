@@ -32,7 +32,7 @@ final class BeneficiaryController extends BaseController
 
         $query = Beneficiary::query()
             ->when(
-                $search !== null && strlen($search) >= 2,
+                $search !== null && mb_strlen($search) >= 2,
                 static fn (Builder $query) => $query->search($search),
             )
             ->when($onlyDeleted, static fn (Builder $builder) => (
