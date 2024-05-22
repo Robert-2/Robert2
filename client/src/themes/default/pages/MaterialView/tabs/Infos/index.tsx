@@ -87,6 +87,8 @@ const MaterialViewInfos = defineComponent({
             rentalPrice,
             replacementPrice,
             material,
+            hasMultipleParks,
+            parkName,
         } = this;
 
         const {
@@ -217,6 +219,13 @@ const MaterialViewInfos = defineComponent({
                         </section>
                     )}
                     <section class="MaterialViewInfos__extras">
+                        {hasMultipleParks && (
+                            <div class="MaterialViewInfos__extra MaterialViewInfos__extra--park">
+                                <p class="MaterialViewInfos__extra__item">
+                                    {__('page.material-view.infos.park-name', { name: parkName })}
+                                </p>
+                            </div>
+                        )}
                         <div class="MaterialViewInfos__extra MaterialViewInfos__extra--categories">
                             <p class="MaterialViewInfos__extra__item">
                                 {__('category')}: <strong>{categoryName}</strong>
