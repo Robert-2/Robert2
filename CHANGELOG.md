@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.2 (2024-05-22)
+
+- Rétablit l'information du parc, qui avait disparu de la fiche matériel.
+
 ## 0.24.1 (2024-05-14)
 
 - Corrige le click sur les éléments déroulant sur mobile / tablette.
