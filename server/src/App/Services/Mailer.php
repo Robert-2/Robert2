@@ -88,8 +88,13 @@ final class Mailer
         string $message,
         ?array $attachments = null,
     ): void {
+        if (!$this->fromEmail) {
+            throw new \Exception("Cannot send message with Loxya: missing 'from:' e-mail address.");
+        }
+
         $data = [
             'instanceId' => Config::get('instanceId'),
+            'replyTo' => $this->fromEmail,
             'recipients' => $recipients,
             'subject' => $subject,
             'content' => $message,
