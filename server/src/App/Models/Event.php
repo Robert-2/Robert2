@@ -1968,7 +1968,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 [],
             );
         }
-        if ($technicians) {
+        if ($technicians !== null) {
             $event->syncTechnicians($technicians);
         }
 
