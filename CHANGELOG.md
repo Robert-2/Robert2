@@ -4,6 +4,12 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.3 (2024-05-23)
+
+- Résolution d'un problème de suppression des assignations des techniciens lorsque la 
+  nouvelle période ne permet plus de garantir au moins une assignation.
+- Utilise la valeur de la configuration d'email `from` pour le champ `reply-to` lors de l'envoi des e-mails avec Loxya.
+
 ## 0.24.2 (2024-05-22)
 
 - Rétablit l'information du parc, qui avait disparu de la fiche matériel.
