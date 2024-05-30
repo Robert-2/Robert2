@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.4 (2024-05-30)
+
+- Correction d'un bug dans la fonctionnalité de recherche des tableaux lorsque ceux-ci contiennent des dates.
+
 ## 0.24.3 (2024-05-23)
 
 - Résolution d'un problème de suppression des assignations des techniciens lorsque la 

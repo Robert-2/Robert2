@@ -8,14 +8,8 @@ import { initColumnsDisplay } from '../@utils';
 import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
 import type { PropType } from '@vue/composition-api';
+import type { Column, Columns } from './_types';
 import type { ColumnsDisplay } from '../@utils';
-import type {
-    Column,
-    Columns,
-    OrderBy,
-    RenderFunction,
-    RenderedColumn,
-} from '../@types';
 import type {
     RequestFunction,
     ColumnsVisibility,
@@ -23,6 +17,11 @@ import type {
     ServerTableInstance,
     RowClickEventPayload,
 } from 'vue-tables-2-premium';
+import type {
+    OrderBy,
+    RenderFunction,
+    RenderedColumn,
+} from '../@types';
 
 export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>> = {
     /**

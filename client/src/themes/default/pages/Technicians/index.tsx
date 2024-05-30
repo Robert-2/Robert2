@@ -18,7 +18,7 @@ import type Period from '@/utils/period';
 import type { ComponentRef, CreateElement } from 'vue';
 import type { PaginationParams } from '@/stores/api/@types';
 import type { Filters, Technician } from '@/stores/api/technicians';
-import type { Columns } from '@/themes/default/components/Table';
+import type { Columns } from '@/themes/default/components/Table/Server';
 
 type Data = {
     isLoading: boolean,

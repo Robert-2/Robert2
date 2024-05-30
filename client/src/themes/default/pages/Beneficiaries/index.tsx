@@ -15,7 +15,7 @@ import Link from '@/themes/default/components/Link';
 
 import type { ComponentRef, CreateElement } from 'vue';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
-import type { Columns } from '@/themes/default/components/Table';
+import type { Columns } from '@/themes/default/components/Table/Server';
 import type { ListingParams } from '@/stores/api/@types';
 
 type Data = {
