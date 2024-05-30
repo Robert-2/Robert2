@@ -29,9 +29,6 @@ export type Column<Data = any> = {
      */
     render?: RenderFunction<Data>,
 
-    /** Le tri doit-il être activé sur cette colonne ? */
-    sortable?: boolean,
-
     /** Une ou plusieurs classes à ajouter à la colonne. */
     class?: ClassValue,
 

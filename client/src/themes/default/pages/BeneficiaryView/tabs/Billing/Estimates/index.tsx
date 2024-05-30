@@ -37,12 +37,11 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                 {
                     key: 'date',
                     title: __('date'),
-                    sortable: true,
                     class: [
                         'BeneficiaryViewBillingEstimates__col',
                         'BeneficiaryViewBillingEstimates__col--date',
                     ],
-                    sorter: (ascending: boolean) => (
+                    sortable: (ascending: boolean) => (
                         (a: Estimate, b: Estimate): number => {
                             const result = a.date.compare(b.date);
                             return ascending ? result : -result;
@@ -55,12 +54,11 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                 {
                     key: 'amount',
                     title: __('total-amount'),
-                    sortable: true,
                     class: [
                         'BeneficiaryViewBillingEstimates__col',
                         'BeneficiaryViewBillingEstimates__col--amount',
                     ],
-                    sorter: (ascending: boolean) => (
+                    sortable: (ascending: boolean) => (
                         (a: Estimate, b: Estimate): number => {
                             const result = a.total_without_taxes.cmp(b.total_without_taxes);
                             return ascending ? result : -result;
@@ -112,7 +110,6 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                 <ClientTable
                     columns={columns}
                     data={estimates}
-                    filterable={false}
                     withColumnsSelector={false}
                     defaultOrderBy={{
                         column: 'date',

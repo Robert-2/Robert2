@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { defineComponent } from '@vue/composition-api';
 import generateUniqueId from 'lodash/uniqueId';
 import { initColumnsDisplay } from '../@utils';
+import { defaultSearcher } from './_utils';
 
 import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
@@ -11,6 +12,7 @@ import type { Column, Columns } from './_types';
 import type { ColumnsDisplay } from '../@utils';
 import type {
     ColumnSorter,
+    ColumnSearcher,
     ClientTableOptions,
     ClientTableInstance,
     ColumnsVisibility,
@@ -45,9 +47,6 @@ export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>>
 
     /** Les données du tableau. */
     data: Datum[],
-
-    /** Permet d'activer ou de désactiver le champ de filtrage du tableau. */
-    filterable?: boolean,
 
     /**
      * L'ordre dans lequel le tableau doit être triée initialement.
@@ -108,10 +107,6 @@ const ClientTable = defineComponent({
         data: {
             type: Array as PropType<Props['data']>,
             required: true,
-        },
-        filterable: {
-            type: Boolean as PropType<Required<Props>['filterable']>,
-            default: true,
         },
         defaultOrderBy: {
             type: [Object, String] as PropType<Props['defaultOrderBy']>,
@@ -188,19 +183,49 @@ const ClientTable = defineComponent({
 
         columnsSortable(): Array<Column['key']> {
             return this.columns
-                .filter(({ sortable }: Column) => sortable)
+                .filter(({ sortable }: Column) => !!sortable)
                 .map(({ key }: Column) => key);
         },
 
         columnsSorting(): Record<string, ColumnSorter> {
             return this.columns
-                .filter(({ sortable }: Column) => sortable)
+                .filter(({ sortable }: Column) => !!sortable)
                 .reduce(
                     (acc: Record<Column['key'], ColumnSorter>, column: Column) => {
-                        const columnSorter = column.sorter;
-                        return undefined !== columnSorter
+                        const columnSorter = typeof column.sortable === 'function'
+                            ? column.sortable
+                            : undefined;
+
+                        return columnSorter !== undefined
                             ? { ...acc, [column.key]: columnSorter }
                             : acc;
+                    },
+                    {},
+                );
+        },
+
+        columnsSearchable(): Array<Column['key']> {
+            return this.columns
+                .filter(({ searchable }: Column) => !!searchable)
+                .map(({ key }: Column) => key);
+        },
+
+        columnsSearches(): Record<string, ColumnSearcher> {
+            return this.columns
+                .filter(({ searchable }: Column) => !!searchable)
+                .reduce(
+                    (acc: Record<Column['key'], ColumnSearcher>, column: Column) => {
+                        const columnSearcher = typeof column.searchable === 'function'
+                            ? column.searchable
+                            : defaultSearcher(column.key);
+
+                        const searcher = (row: unknown, query: unknown): boolean => {
+                            if (typeof query !== 'string' || query.length < 1) {
+                                return false;
+                            }
+                            return columnSearcher(row, query);
+                        };
+                        return { ...acc, [column.key]: searcher };
                     },
                     {},
                 );
@@ -221,12 +246,13 @@ const ClientTable = defineComponent({
             const {
                 name,
                 rowClass,
-                filterable,
                 defaultOrderBy,
                 columnsHeadings,
                 columnsClasses,
                 columnsDisplay,
                 columnsSortable,
+                columnsSearchable,
+                columnsSearches,
                 columnsSorting,
                 columnsRenders,
                 withColumnsSelector,
@@ -238,11 +264,16 @@ const ClientTable = defineComponent({
                 preserveState: persistState,
                 saveState: persistState,
                 sortable: columnsSortable,
+                filterable: (
+                    columnsSearchable.length > 0
+                        ? columnsSearchable
+                        : false
+                ),
                 headings: columnsHeadings,
                 templates: columnsRenders,
                 customSorting: columnsSorting,
                 filterByColumn: false,
-                filterable,
+                filterAlgorithm: columnsSearches,
                 columnsDisplay,
                 columnsClasses,
                 rowClassCallback: (row: any): ClassValue => (
@@ -312,14 +343,14 @@ const ClientTable = defineComponent({
             name,
             data,
             uniqueId,
-            filterable,
             columnsKeys,
+            columnsSearchable,
             options,
             handleRowClick,
         } = this;
 
         const className = ['Table', {
-            'Table--filterable': filterable,
+            'Table--filterable': columnsSearchable.length > 0,
         }];
 
         return (
