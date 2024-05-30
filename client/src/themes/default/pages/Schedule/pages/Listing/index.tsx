@@ -25,7 +25,7 @@ import ListFilters from './components/Filters';
 
 import type { ComponentRef, CreateElement, VNodeClass } from 'vue';
 import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
-import type { Column } from '@/themes/default/components/Table';
+import type { Column } from '@/themes/default/components/Table/Server';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
 import type { Filters, StateFilters } from './components/Filters';
 import type { BookingExcerpt, BookingSummary } from '@/stores/api/bookings';

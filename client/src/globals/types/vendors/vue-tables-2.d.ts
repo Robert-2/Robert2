@@ -31,9 +31,9 @@ declare module 'vue-tables-2-premium' {
         perPage?: number,
         orderBy?: { column: string, ascending: boolean },
         sortable?: string[],
+        filterable?: boolean | string[],
         multiSorting?: Record<string, Array<{ column: string, matchDir: boolean }>>,
         filterByColumn?: boolean,
-        filterable?: boolean,
         columnsDropdown?: boolean,
         preserveState?: boolean,
         saveState?: boolean,
@@ -82,7 +82,7 @@ declare module 'vue-tables-2-premium' {
     };
 
     /**
-     * Fonction personnalisé de tri de la colonne.
+     * Fonction personnalisée de tri de colonne.
      *
      * Cette fonction, à qui la direction de tri souhaité est passé (via `ascending`),
      * doit renvoyer une autre fonction qui s'occupera de comparer deux éléments de
@@ -100,9 +100,23 @@ declare module 'vue-tables-2-premium' {
         (a: Datum, b: Datum) => number
     );
 
+    /**
+     * Fonction personnalisée de recherche de colonne.
+     *
+     * Cette fonction doit retourner un booléen en fonction de si oui ou non la colonne
+     * est satisfaisante pour la recherche passée en paramètre (`query`).
+     *
+     * Si non spécifié, une fonction de recherche "universelle" sera utilisée.
+     *
+     * @param row - Les données de la ligne en question.
+     * @param query - La recherche actuelle.
+     */
+    export type ColumnSearcher<Datum = any> = (row: Datum, query: string) => boolean;
+
     export type ClientTableOptions<Datum = any, Filters = any> = BaseTableOptions<Datum> & {
         initFilters?: Filters,
         customSorting?: Record<string, ColumnSorter<Datum>>,
+        filterAlgorithm?: Record<string, ColumnSearcher<Datum>>,
         customFilters?: Array<ClientCustomFilter<Datum>>,
     };
 

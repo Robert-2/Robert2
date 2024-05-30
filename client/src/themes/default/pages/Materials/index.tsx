@@ -27,7 +27,7 @@ import Quantities from './components/Quantities';
 
 import type { ComponentRef, CreateElement } from 'vue';
 import type { PaginationParams } from '@/stores/api/@types';
-import type { Columns } from '@/themes/default/components/Table';
+import type { Columns } from '@/themes/default/components/Table/Server';
 import type { Filters as CoreFilters } from '@/themes/default/components/MaterialsFilters';
 import type { Filters, MaterialWithAvailability as Material } from '@/stores/api/materials';
 import type { Tag } from '@/stores/api/tags';

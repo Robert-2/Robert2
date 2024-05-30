@@ -39,6 +39,7 @@ const Attributes = defineComponent({
                     key: 'name',
                     title: __('page.attributes.name'),
                     sortable: true,
+                    searchable: true,
                     class: [
                         'Attributes__table__cell',
                         'Attributes__table__cell--name',
@@ -68,6 +69,7 @@ const Attributes = defineComponent({
                         'Attributes__table__cell',
                         'Attributes__table__cell--unit',
                     ],
+                    searchable: true,
                     render: (h: CreateElement, attribute: Attribute) => (
                         attribute.type === AttributeType.INTEGER || attribute.type === AttributeType.FLOAT
                             ? attribute.unit
