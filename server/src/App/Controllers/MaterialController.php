@@ -130,14 +130,14 @@ final class MaterialController extends BaseController
             if ($orderBy === 'stock_quantity') {
                 $query
                     ->reorder(
-                        $query->raw('stock_quantity'),
+                        'stock_quantity',
                         $ascending ? 'asc' : 'desc',
                     );
             }
             if ($orderBy === 'out_of_order_quantity') {
                 $query
                     ->reorder(
-                        $query->raw('out_of_order_quantity'),
+                        'out_of_order_quantity',
                         $ascending ? 'asc' : 'desc',
                     );
             }

@@ -103,6 +103,10 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Il est maintenant possible de remettre les inventaires de départ et de retour en attente.
   Cela revient à annuler leur état "terminé" et à rétablir le stock en réintégrant les quantités cassés.
 
+## 0.23.4 (2024-06-10)
+
+- Corrige le tri du matériel selon la quantité.
+
 ## 0.23.3 (2024-04-11)
 
 - Limite le nombre de vérifications différées simultanées du matériel manquant (2 par défaut).

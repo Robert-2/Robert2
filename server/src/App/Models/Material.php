@@ -625,7 +625,7 @@ final class Material extends BaseModel implements Serializable
         if ($column === 'stock_quantity') {
             return $query
                 ->orderBy(
-                    $query->raw('stock_quantity'),
+                    'stock_quantity',
                     $direction,
                 );
         }
@@ -633,7 +633,7 @@ final class Material extends BaseModel implements Serializable
         if ($column === 'out_of_order_quantity') {
             return $query
                 ->orderBy(
-                    $query->raw('out_of_order_quantity'),
+                    'out_of_order_quantity',
                     $direction,
                 );
         }
