@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.23.4 (2024-06-10)
+
+- Corrige le tri du matériel selon la quantité.
+
 ## 0.23.3 (2024-04-11)
 
 - Limite le nombre de vérifications différées simultanées du matériel manquant (2 par défaut).
