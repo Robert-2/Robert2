@@ -13,14 +13,20 @@ const data = [
         park_id: 1,
         category_id: 1,
         sub_category_id: 1,
-        rental_price: 300,
+        rental_price: '300',
+        degressive_rate_id: 3,
+        degressive_rate: '6.00',
+        rental_price_period: '1800',
+        tax_id: 1,
         stock_quantity: 5,
         out_of_order_quantity: 1,
         available_quantity: 4,
-        replacement_price: 19_400,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '19400',
         is_hidden_on_bill: false,
         is_discountable: false,
-        is_reservable: true,
+        is_deleted: false,
         picture: 'http://loxya.test/materials/1/picture',
         note: null,
         attributes: [
@@ -42,14 +48,20 @@ const data = [
         park_id: 1,
         category_id: 1,
         sub_category_id: 2,
-        rental_price: 25.5,
+        rental_price: '25.5',
+        degressive_rate_id: null,
+        degressive_rate: '1.00',
+        rental_price_period: '25.5',
+        tax_id: 1,
         stock_quantity: 2,
         out_of_order_quantity: 0,
         available_quantity: 2,
-        replacement_price: 349.9,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '349.9',
         is_hidden_on_bill: false,
         is_discountable: true,
-        is_reservable: false,
+        is_deleted: false,
         picture: null,
         note: null,
         attributes: [
@@ -70,14 +82,20 @@ const data = [
         park_id: 1,
         category_id: 2,
         sub_category_id: 3,
-        rental_price: 3.5,
+        rental_price: '3.5',
+        degressive_rate_id: 1,
+        degressive_rate: '1.00',
+        rental_price_period: '3.5',
+        tax_id: null,
         stock_quantity: 34,
         out_of_order_quantity: 4,
         available_quantity: 30,
-        replacement_price: 89,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '89',
         is_hidden_on_bill: false,
         is_discountable: true,
-        is_reservable: true,
+        is_deleted: false,
         picture: null,
         note: 'Soyez délicats avec ces projos !',
         attributes: [
@@ -98,14 +116,20 @@ const data = [
         park_id: 1,
         category_id: 2,
         sub_category_id: 4,
-        rental_price: 15.95,
+        rental_price: '15.95',
+        degressive_rate_id: 1,
+        degressive_rate: '1.25',
+        rental_price_period: '19.94',
+        tax_id: 1,
         stock_quantity: 2,
         out_of_order_quantity: 0,
         available_quantity: 2,
-        replacement_price: 59,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '59',
         is_hidden_on_bill: false,
         is_discountable: true,
-        is_reservable: true,
+        is_deleted: false,
         picture: null,
         note: null,
         attributes: [
@@ -125,14 +149,20 @@ const data = [
         park_id: 1,
         category_id: 1,
         sub_category_id: null,
-        rental_price: 0.5,
+        rental_price: '0.5',
+        degressive_rate_id: 3,
+        degressive_rate: '1.00',
+        rental_price_period: '0.5',
+        tax_id: 2,
         stock_quantity: 40,
         out_of_order_quantity: 8,
         available_quantity: 32,
-        replacement_price: 9.5,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '9.5',
         is_hidden_on_bill: true,
         is_discountable: true,
-        is_reservable: true,
+        is_deleted: false,
         picture: null,
         note: null,
         attributes: [],
@@ -148,14 +178,20 @@ const data = [
         park_id: 1,
         category_id: 1,
         sub_category_id: 1,
-        rental_price: 49.99,
+        rental_price: '49.99',
+        degressive_rate_id: 1,
+        degressive_rate: '1.50',
+        rental_price_period: '74.99',
+        tax_id: 1,
         stock_quantity: 3,
         out_of_order_quantity: 1,
         available_quantity: 2,
-        replacement_price: 419,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '419',
         is_hidden_on_bill: false,
         is_discountable: false,
-        is_reservable: true,
+        is_deleted: false,
         picture: null,
         note: null,
         tags: [],
@@ -170,17 +206,23 @@ const data = [
         name: 'Volkswagen Transporter',
         description: 'Volume utile: 9.3 m3',
         reference: 'Transporter',
-        park_id: 1,
+        park_id: 2,
         category_id: 3,
         sub_category_id: null,
-        rental_price: 300,
+        rental_price: '300',
+        degressive_rate_id: 2,
+        degressive_rate: '3.00',
+        rental_price_period: '900.00',
+        tax_id: null,
         stock_quantity: 2,
         out_of_order_quantity: 0,
         available_quantity: 2,
-        replacement_price: 32_000,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '32000',
         is_hidden_on_bill: false,
         is_discountable: false,
-        is_reservable: true,
+        is_deleted: false,
         picture: null,
         note: null,
         tags: [],
@@ -196,14 +238,20 @@ const data = [
         park_id: 1,
         category_id: 4,
         sub_category_id: null,
-        rental_price: 1500,
+        rental_price: '1500',
+        degressive_rate_id: 3,
+        degressive_rate: '1.00',
+        rental_price_period: '1500.00',
+        tax_id: 4,
         stock_quantity: 2,
         out_of_order_quantity: 0,
         available_quantity: 2,
-        replacement_price: 8500,
+        departure_inventory_todo: null,
+        return_inventory_todo: null,
+        replacement_price: '8500',
         is_hidden_on_bill: false,
         is_discountable: true,
-        is_reservable: true,
+        is_deleted: false,
         picture: null,
         note: null,
         tags: [],
@@ -218,17 +266,77 @@ const data = [
 //
 
 /** @type {import('./@utils').FactoryReturnType} */
-const asDefault = dataFactory(data, (material) => (
-    omit(material, ['available_quantity'])
-));
+const asDefault = dataFactory(data, (material) => {
+    if (material.is_unitary) {
+        material.units = material.units.map(
+            (lazyUnit) => lazyUnit(),
+        );
+    }
+    return omit(material, [
+        'degressive_rate',
+        'rental_price_period',
+        'available_quantity',
+        'departure_inventory_todo',
+        'return_inventory_todo',
+        'is_deleted',
+    ]);
+});
 
 /** @type {import('./@utils').FactoryReturnType} */
-const withAvailability = dataFactory(data, (material) => material);
+const withAvailability = dataFactory(data, (material) => {
+    if (material.is_unitary) {
+        material.units = material.units.map((lazyUnit) => (
+            units.withAvailability(lazyUnit().id)
+        ));
+    }
+    return omit(material, [
+        'degressive_rate',
+        'rental_price_period',
+        'departure_inventory_todo',
+        'return_inventory_todo',
+    ]);
+});
 
 /** @type {import('./@utils').FactoryReturnType} */
-const asDetails = dataFactory(data, (material) => (
-    omit(material, ['available_quantity'])
-));
+const withContext = dataFactory(data, (material) => {
+    if (material.is_unitary) {
+        material.units = material.units.map((lazyUnit) => (
+            units.withAvailability(lazyUnit().id)
+        ));
+    }
+    return omit(material, [
+        'departure_inventory_todo',
+        'return_inventory_todo',
+    ]);
+});
+
+/** @type {import('./@utils').FactoryReturnType} */
+const withContextExcerpt = dataFactory(data, (material) => {
+    if (material.is_unitary) {
+        material.units = material.units.map(
+            (lazyUnit) => lazyUnit(),
+        );
+    }
+    return omit(material, [
+        'available_quantity',
+        'departure_inventory_todo',
+        'return_inventory_todo',
+    ]);
+});
+
+/** @type {import('./@utils').FactoryReturnType} */
+const asDetails = dataFactory(data, (material) => {
+    if (material.is_unitary) {
+        material.units = material.units.map((lazyUnit) => (
+            units.withStats(lazyUnit().id)
+        ));
+    }
+    return omit(material, [
+        'degressive_rate',
+        'rental_price_period',
+        'is_deleted',
+    ]);
+});
 
 /** @type {import('./@utils').FactoryReturnType} */
 const asPublic = dataFactory(data, (material) => (
@@ -237,8 +345,10 @@ const asPublic = dataFactory(data, (material) => (
         'name',
         'description',
         'picture',
+        'degressive_rate',
         'available_quantity',
         'rental_price',
+        'rental_price_period',
     ])
 ));
 
@@ -247,4 +357,6 @@ export default {
     details: asDetails,
     public: asPublic,
     withAvailability,
+    withContext,
+    withContextExcerpt,
 };

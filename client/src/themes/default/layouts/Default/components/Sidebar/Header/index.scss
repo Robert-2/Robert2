@@ -1,0 +1,62 @@
+@use '~@/themes/default/style/globals';
+
+.DefaultLayoutSidebarHeader {
+    $block: &;
+
+    position: relative;
+    padding: 0 globals.$spacing-medium;
+
+    &__main {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: globals.$main-header-height;
+        gap: globals.$spacing-medium;
+
+        &__logo {
+            &--large {
+                flex: 1;
+                display: block;
+                max-width: 110px;
+            }
+        }
+
+        &::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 0 3px;
+
+            // stylelint-disable-next-line declaration-no-important, order/properties-order
+            display: flex !important;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-mobile) and (max-width: globals.$screen-desktop) {
+        &__main {
+            flex-direction: column;
+            justify-content: center;
+            gap: globals.$spacing-thin;
+
+            &__logo {
+                &--large {
+                    display: none;
+                }
+            }
+
+            &::after {
+                position: static;
+                height: auto;
+            }
+        }
+    }
+}

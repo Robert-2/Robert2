@@ -4,7 +4,7 @@ import apiParks from '@/stores/api/parks';
 export default createEntityStore(
     () => apiParks.list(),
     {
-        parkName: (state) => (parkId) => {
+        getName: (state) => (parkId) => {
             const park = state.list.find((_park) => _park.id === parkId);
             return park ? park.name : null;
         },

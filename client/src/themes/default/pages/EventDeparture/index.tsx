@@ -2,6 +2,7 @@ import './index.scss';
 import axios from 'axios';
 import DateTime, { DateTimeRoundingMethod } from '@/utils/datetime';
 import { defineComponent } from '@vue/composition-api';
+import parseInteger from '@/utils/parseInteger';
 import HttpCode from 'status-code-enum';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import apiEvents from '@/stores/api/events';
@@ -11,7 +12,7 @@ import showModal from '@/utils/showModal';
 import UpdateBookingMaterials from '@/themes/default/modals/UpdateBookingMaterials';
 import Page from '@/themes/default/components/Page';
 import Loading from '@/themes/default/components/Loading';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Unavailable, { UnavailabilityReason } from './components/Unavailable';
 import Inventory, { InventoryErrorsSchema, DisplayGroup } from './components/Inventory';
 import Header from './components/Header';
@@ -61,7 +62,7 @@ const EventDeparture = defineComponent({
     }),
     data(): Data {
         return {
-            id: parseInt(this.$route.params.id, 10),
+            id: parseInteger(this.$route.params.id)!,
             event: null,
             inventoryRaw: [],
             displayGroup: DisplayGroup.CATEGORIES,
@@ -102,8 +103,8 @@ const EventDeparture = defineComponent({
             return this.event!.materials.map(
                 (eventMaterial: EventMaterial): InventoryMaterial => ({
                     id: eventMaterial.id,
-                    actual: eventMaterial.pivot.quantity,
-                    comment: eventMaterial.pivot.departure_comment ?? null,
+                    actual: eventMaterial.quantity,
+                    comment: eventMaterial.departure_comment ?? null,
                 }),
             );
         },
@@ -198,7 +199,7 @@ const EventDeparture = defineComponent({
         },
 
         isMaterialEditable(): boolean {
-            if (!this.event || !this.isEditable) {
+            if (!this.event) {
                 return false;
             }
 
@@ -219,9 +220,9 @@ const EventDeparture = defineComponent({
             }
 
             const { event, inventory } = this;
-            return event.materials.every(({ id: materialId, pivot }: EventMaterial) => {
-                const quantities = inventory.find(({ id }: InventoryMaterial) => id === materialId);
-                return quantities ? quantities.actual === pivot.quantity : false;
+            return event.materials.every((material: EventMaterial) => {
+                const quantities = inventory.find(({ id }: InventoryMaterial) => material.id === id);
+                return quantities ? quantities.actual === material.quantity : false;
             });
         },
 
@@ -380,8 +381,9 @@ const EventDeparture = defineComponent({
 
             this.isUpdatingMaterial = true;
 
-            const booking = { ...this.event, entity: BookingEntity.EVENT };
-            await showModal(this.$modal, UpdateBookingMaterials, { booking });
+            await showModal(this.$modal, UpdateBookingMaterials, {
+                defaultBooking: { ...this.event, entity: BookingEntity.EVENT },
+            });
 
             this.isUpdatingMaterial = false;
             this.fetchData();
@@ -401,12 +403,12 @@ const EventDeparture = defineComponent({
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
                     console.error(`Error occurred while retrieving event #${this.id} data`, error);
-                    this.criticalError = ERROR.UNKNOWN;
+                    this.criticalError = ErrorType.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
                     this.criticalError = status === HttpCode.ClientErrorNotFound
-                        ? ERROR.NOT_FOUND
-                        : ERROR.UNKNOWN;
+                        ? ErrorType.NOT_FOUND
+                        : ErrorType.UNKNOWN;
                 }
             }
         },
@@ -458,8 +460,8 @@ const EventDeparture = defineComponent({
             this.inventoryRaw = event.materials.map(
                 (eventMaterial: EventMaterial): InventoryMaterial => ({
                     id: eventMaterial.id,
-                    actual: eventMaterial.pivot.quantity_departed ?? 0,
-                    comment: eventMaterial.pivot.departure_comment ?? null,
+                    actual: eventMaterial.quantity_departed ?? 0,
+                    comment: eventMaterial.departure_comment ?? null,
                 }),
             );
         },
@@ -493,7 +495,6 @@ const EventDeparture = defineComponent({
             hasMaterialShortage,
             isInventoryPeriodOpen,
             isInventoryPeriodClosed,
-            isUpdatingMaterial,
             handleSave,
             handleCancel,
             handleTerminate,
@@ -533,6 +534,7 @@ const EventDeparture = defineComponent({
                     <Unavailable
                         event={event}
                         reason={UnavailabilityReason.NO_MATERIALS}
+                        onUpdateMaterialClick={handleUpdateMaterialClick}
                     />
                 );
             }
@@ -541,6 +543,7 @@ const EventDeparture = defineComponent({
                     <Unavailable
                         event={event}
                         reason={UnavailabilityReason.MATERIAL_SHORTAGE}
+                        onUpdateMaterialClick={handleUpdateMaterialClick}
                     />
                 );
             }
@@ -559,7 +562,6 @@ const EventDeparture = defineComponent({
                     inventory={inventory}
                     errors={inventoryErrors}
                     displayGroup={displayGroup}
-                    paused={isUpdatingMaterial}
                     onChange={handleChangeInventory}
                     onRequestCancel={handleCancel}
                 />

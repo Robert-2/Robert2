@@ -17,6 +17,7 @@
     @extend %reset-link;
 
     display: inline-flex;
+    align-items: baseline;
     color: var(--color);
     touch-action: auto;
     cursor: pointer;

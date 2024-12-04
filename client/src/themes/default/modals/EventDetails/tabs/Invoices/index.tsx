@@ -1,21 +1,17 @@
 import './index.scss';
 import invariant from 'invariant';
-import Decimal from 'decimal.js';
 import { defineComponent } from '@vue/composition-api';
-import getEventDiscountRate from '@/utils/getEventDiscountRate';
 import apiEvents from '@/stores/api/events';
 import { Group } from '@/stores/api/groups';
 import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import Link from '@/themes/default/components/Link';
-import Form from '../../components/BillingForm';
-import Invoice, { InvoiceLayout } from './Invoice';
+import Invoice, { InvoiceLayout } from './components/Invoice';
 
 import type { PropType } from '@vue/composition-api';
 import type { EventDetails } from '@/stores/api/events';
 import type { Invoice as InvoiceType } from '@/stores/api/invoices';
-import type { DiscountPayload } from '../../components/BillingForm';
 
 type Props = {
     /** L'événement dont on souhaite gérer les factures. */
@@ -24,8 +20,6 @@ type Props = {
 
 type Data = {
     isCreating: boolean,
-    hasRequestedForm: boolean,
-    unsavedDiscountRate: Decimal | null,
 };
 
 /** L'onglet "Factures" de la modale de détails d'un événement. */
@@ -44,113 +38,41 @@ const EventDetailsInvoices = defineComponent({
     emits: ['created'],
     data: (): Data => ({
         isCreating: false,
-        unsavedDiscountRate: null,
-        hasRequestedForm: false,
     }),
     computed: {
+        isBillable(): boolean {
+            return (
+                this.event.is_billable &&
+                this.event.materials.length > 0
+            );
+        },
+
         invoice(): InvoiceType | null {
-            return [...this.event.invoices].shift() ?? null;
-        },
-
-        previousInvoices(): InvoiceType[] {
-            return this.event.invoices.slice(1);
-        },
-
-        hasBeneficiary(): boolean {
-            return this.event.beneficiaries.length > 0;
-        },
-
-        hasEstimate(): boolean {
-            return this.event.estimates.length > 0;
+            return [...(this.event.invoices ?? [])].shift() ?? null;
         },
 
         hasInvoice(): boolean {
             return this.invoice !== null;
         },
 
+        previousInvoices(): InvoiceType[] {
+            return (this.event.invoices ?? []).slice(1);
+        },
+
+        hasBeneficiary(): boolean {
+            return this.event.beneficiaries.length > 0;
+        },
+
         userCanEdit(): boolean {
-            return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
-        },
-
-        maxDiscountRate(): Decimal {
-            const {
-                total_without_discount: totalWithoutDiscount,
-                total_discountable: totalDiscountable,
-            } = this.event;
-
-            if (totalWithoutDiscount.greaterThan(0)) {
-                return (totalDiscountable.times(100))
-                    .div(totalWithoutDiscount)
-                    .toDecimalPlaces(4, Decimal.ROUND_UP);
-            }
-
-            return new Decimal(0);
-        },
-
-        minTotalAmount(): Decimal {
-            const {
-                total_without_discount: totalWithoutDiscount,
-                total_discountable: totalDiscountable,
-            } = this.event;
-
-            return totalWithoutDiscount.greaterThan(0)
-                ? totalWithoutDiscount.sub(totalDiscountable)
-                : new Decimal(0);
-        },
-
-        discountRate: {
-            get(): Decimal {
-                const { event, maxDiscountRate } = this;
-                if (this.unsavedDiscountRate !== null) {
-                    return this.unsavedDiscountRate;
-                }
-
-                const eventDiscountRate = getEventDiscountRate(event);
-                return Decimal.min(eventDiscountRate, maxDiscountRate);
-            },
-            set(value: Decimal) {
-                this.unsavedDiscountRate = Decimal.min(value, this.maxDiscountRate);
-            },
-        },
-
-        discountTarget: {
-            get(): Decimal {
-                const { event, minTotalAmount } = this;
-                const { total_without_discount: totalWithoutDiscount } = event;
-
-                const discountRate = this.discountRate.div(100);
-                const discountAmount = totalWithoutDiscount.times(discountRate);
-                const totalAmount = totalWithoutDiscount.sub(discountAmount);
-                return Decimal.max(totalAmount, minTotalAmount);
-            },
-            set(value: Decimal) {
-                const { event, maxDiscountRate } = this;
-                const {
-                    total_without_discount: totalWithoutDiscount,
-                    total_discountable: totalDiscountable,
-                } = event;
-
-                if (totalWithoutDiscount.lessThanOrEqualTo(0) || totalDiscountable.isZero()) {
-                    this.unsavedDiscountRate = new Decimal(0);
-                    return;
-                }
-
-                let discountAmount = totalWithoutDiscount.sub(value);
-                if (discountAmount.greaterThan(totalDiscountable)) {
-                    discountAmount = totalDiscountable;
-                }
-
-                const rate = discountAmount.times(100)
-                    .div(totalWithoutDiscount)
-                    .toDecimalPlaces(4, Decimal.ROUND_UP);
-
-                this.unsavedDiscountRate = Decimal.min(rate, maxDiscountRate);
-            },
+            return this.$store.getters['auth/is']([
+                Group.ADMINISTRATION,
+                Group.MANAGEMENT,
+            ]);
         },
     },
     created() {
         invariant(
-            this.event.is_billable && this.event.materials.length > 0,
+            this.isBillable,
             `A non billable event has been passed to <EventDetailsInvoices />`,
         );
     },
@@ -161,179 +83,134 @@ const EventDetailsInvoices = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleChangeDiscount({ field, value }: DiscountPayload) {
-            if (field === 'amount') {
-                this.discountTarget = value;
-            } else if (field === 'rate') {
-                this.discountRate = value;
-            }
-        },
-
-        async handleSave() {
+        async handleCreate() {
             if (this.isCreating) {
                 return;
             }
 
             this.isCreating = true;
-            const { $t: __, event: { id }, discountRate } = this;
+            const { __, event: { id } } = this;
 
             try {
-                const invoice = await apiEvents.createInvoice(id, discountRate);
-
-                this.hasRequestedForm = false;
-                this.unsavedDiscountRate = null;
+                const invoice = await apiEvents.createInvoice(id);
 
                 this.$emit('created', invoice);
                 this.$toasted.success(__('invoice-created'));
             } catch {
-                this.$toasted.error(__('errors.unexpected-while-saving'));
+                this.$toasted.error(__('error-while-generating'));
             } finally {
                 this.isCreating = false;
             }
         },
 
-        handleRequestForm() {
-            this.hasRequestedForm = true;
-        },
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
 
-        handleCancelForm() {
-            if (this.isCreating) {
-                return;
-            }
+        __(key: string, params?: Record<string, number | string>, count?: number): string {
+            key = !key.startsWith('global.')
+                ? `modal.event-details.invoices.${key}`
+                : key.replace(/^global\./, '');
 
-            this.hasRequestedForm = false;
-            this.unsavedDiscountRate = null;
+            return this.$t(key, params, count);
         },
     },
     render() {
         const {
-            $t: __,
-            event,
+            __,
             invoice,
             previousInvoices,
-            discountRate,
-            discountTarget,
-            maxDiscountRate,
-            minTotalAmount,
             isCreating,
-            hasEstimate,
-            hasRequestedForm,
-            handleSave,
+            isBillable,
             hasInvoice,
             userCanEdit,
             hasBeneficiary,
-            handleRequestForm,
-            handleChangeDiscount,
-            handleCancelForm,
+            handleCreate,
         } = this;
 
-        if (!event.is_billable || event.materials.length <= 0) {
+        if (!isBillable) {
             return null;
         }
-        const { total_without_taxes: totalWithoutTaxes } = event;
 
         const renderContent = (): JSX.Element => {
-            if (!isCreating && !hasRequestedForm) {
-                if (!hasInvoice) {
-                    if (!hasBeneficiary) {
-                        return (
-                            <div class="EventDetailsInvoices__not-billable">
-                                <h3 class="EventDetailsInvoices__not-billable__title">
-                                    <Icon name="exclamation-triangle" /> {__('missing-beneficiary')}
-                                </h3>
-                                <p class="EventDetailsInvoices__not-billable__text">
-                                    {__('not-billable-help')}
-                                </p>
-                            </div>
-                        );
-                    }
-
+            if (!hasInvoice) {
+                if (!hasBeneficiary) {
                     return (
-                        <div class="EventDetailsInvoices__no-invoice">
-                            <p class="EventDetailsInvoices__no-invoice__text">
-                                {__('no-invoice-help')}
+                        <div class="EventDetailsInvoices__not-billable">
+                            <h3 class="EventDetailsInvoices__not-billable__title">
+                                <Icon name="exclamation-triangle" /> {__('global.missing-beneficiary')}
+                            </h3>
+                            <p class="EventDetailsInvoices__not-billable__text">
+                                {__('no-beneficiary-billable-help')}
                             </p>
-                            <p class="EventDetailsInvoices__no-invoice__text">
-                                {userCanEdit && __('create-event-invoice-help')}
-                                {!userCanEdit && __('contact-someone-to-create-invoice')}
-                            </p>
-                            {userCanEdit && (
-                                <Button
-                                    type="add"
-                                    class="EventDetailsInvoices__no-invoice__button"
-                                    onClick={handleRequestForm}
-                                >
-                                    {__('click-here-to-create-invoice')}
-                                </Button>
-                            )}
                         </div>
                     );
                 }
 
                 return (
-                    <Fragment>
-                        <div class="EventDetailsInvoices__current-invoice">
-                            <Invoice invoice={invoice} />
-                        </div>
-                        {(hasBeneficiary && userCanEdit) && (
-                            <div class="EventDetailsInvoices__regenerate">
-                                <p class="EventDetailsInvoices__regenerate__text">
-                                    {__('modal.event-details.invoice.regenerate-help')}
-                                </p>
-                                <Link
-                                    icon="sync"
-                                    class="EventDetailsInvoices__regenerate__link"
-                                    onClick={handleRequestForm}
-                                >
-                                    {__('click-here-to-regenerate-invoice')}
-                                </Link>
-                            </div>
+                    <div class="EventDetailsInvoices__no-invoice">
+                        <p class="EventDetailsInvoices__no-invoice__text">
+                            {__('no-invoice-help')}
+                        </p>
+                        <p class="EventDetailsInvoices__no-invoice__text">
+                            {
+                                userCanEdit
+                                    ? __('create-invoice-help')
+                                    : __('contact-someone-to-create-invoice')
+                            }
+                        </p>
+                        {userCanEdit && (
+                            <Button type="add" loading={isCreating} onClick={handleCreate}>
+                                {__('create-invoice')}
+                            </Button>
                         )}
-                        {previousInvoices.length > 0 && (
-                            <div class="EventDetailsInvoices__previous-invoices">
-                                <h3 class="EventDetailsInvoices__previous-invoices__title">
-                                    {__('previous-invoices')}
-                                </h3>
-                                <ul class="EventDetailsInvoices__previous-invoices__list">
-                                    {previousInvoices.map((previousInvoice: InvoiceType) => (
-                                        <li
-                                            key={previousInvoice.id}
-                                            class="EventDetailsInvoices__previous-invoices__list__item"
-                                        >
-                                            <Invoice
-                                                invoice={previousInvoice}
-                                                layout={InvoiceLayout.HORIZONTAL}
-                                                outdated
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </Fragment>
+                    </div>
                 );
             }
 
             return (
                 <Fragment>
-                    {!hasEstimate && (
-                        <p class="EventDetailsInvoices__warning-no-estimate">
-                            {__('warning-no-estimate-before-billing')}
-                        </p>
+                    <div class="EventDetailsInvoices__current-invoice">
+                        <Invoice invoice={invoice} />
+                    </div>
+                    {(hasBeneficiary && userCanEdit) && (
+                        <div class="EventDetailsInvoices__regenerate">
+                            <p class="EventDetailsInvoices__regenerate__text">
+                                {__('regenerate-help')}
+                            </p>
+                            <Link
+                                icon="sync"
+                                class="EventDetailsInvoices__regenerate__link"
+                                loading={isCreating}
+                                onClick={handleCreate}
+                            >
+                                {__('create-new-invoice')}
+                            </Link>
+                        </div>
                     )}
-                    <Form
-                        discountRate={discountRate}
-                        discountTarget={discountTarget}
-                        minAmount={minTotalAmount}
-                        maxAmount={totalWithoutTaxes}
-                        maxRate={maxDiscountRate}
-                        beneficiary={event.beneficiaries[0]}
-                        saveLabel={__('create-invoice')}
-                        onChange={handleChangeDiscount}
-                        onSubmit={handleSave}
-                        onCancel={handleCancelForm}
-                        loading={isCreating}
-                    />
+                    {previousInvoices.length > 0 && (
+                        <div class="EventDetailsInvoices__previous-invoices">
+                            <h3 class="EventDetailsInvoices__previous-invoices__title">
+                                {__('previous-invoices')}
+                            </h3>
+                            <ul class="EventDetailsInvoices__previous-invoices__list">
+                                {previousInvoices.map((previousInvoice: InvoiceType) => (
+                                    <li
+                                        key={previousInvoice.id}
+                                        class="EventDetailsInvoices__previous-invoices__list__item"
+                                    >
+                                        <Invoice
+                                            invoice={previousInvoice}
+                                            layout={InvoiceLayout.HORIZONTAL}
+                                            outdated
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </Fragment>
             );
         };

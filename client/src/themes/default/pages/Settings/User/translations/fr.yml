@@ -7,7 +7,6 @@ saved: Paramètres sauvegardés.
 
 profile:
     title: Profil
-    help: "Si vous modifiez votre email, votre pseudo ou votre mot de passe, ne les oubliez pas avant de vous déconnecter\_!"
 
     new-password: Nouveau mot de passe
     new-password-help: Ne remplissez cette partie que si vous souhaitez changer de mot de passe.
@@ -26,8 +25,3 @@ interface:
     booking-view-mode:
         calendar: Frise temporelle
         listing: Liste
-
-notifications:
-    title: Notifications
-
-    toggle-email: "Activer les notifications par e-mail ?"

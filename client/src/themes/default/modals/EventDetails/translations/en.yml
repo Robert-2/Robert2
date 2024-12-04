@@ -1,7 +1,7 @@
 edit: Modify event
 archive: Archive event
 unarchive: Unarchive event
-release-sheet-by-lists: Release sheet (material sorted according to parameters)
+release-sheet-by-lists: Release sheet (material sorted by lists)
 release-sheet-by-parks: Release sheet (material sorted by parks)
 copy-url-release-sheet: Copy the permanent link of this release sheet.
 
@@ -63,16 +63,55 @@ materials:
         - "{broken} returned broken!"
 
 estimates:
-    create-new-help: You can create another estimate, if the event has changed, or if you want another discount rate.
+    no-estimate-help: There is no estimate yet.
+    no-beneficiary-billable-help: >-
+        You can't create an estimate for an event without at least one beneficiary.
+    create-estimate-help: >-
+        You can create an estimate for the first beneficiary of the event
+        by clicking on the button below.
+    contact-someone-to-create-estimate: >-
+        If needed, contact a member of the team and ask them to create an estimate.
+    create-estimate: Create an estimate...
+    create-new-help: >-
+        You can create a new estimate by clicking the button below.
+    create-new-estimate: Create a new estimate...
+    error-while-generating: An unexpected error occurred while generating the estimate, please try again.
+    estimate-created: Estimate created.
 
-invoice:
-    regenerate-help: You can regenerate the invoice to change discount, or if the event has been modified.
+    item:
+        title: 'Estimate of {date} at {hour}'
+        deleted: The estimate has been deleted.
+        confirm-delete: Do you really want to delete this estimate?
+
+    modals:
+        create:
+            # warning-event-has-invoice: 'Warning, this event already have an invoice!'
+
+invoices:
+    previous-invoices: Previous invoices
+    no-invoice-help: There is no invoice yet.
+    no-beneficiary-billable-help: >-
+        You can't create an invoice for an event without at least one beneficiary.
+    create-invoice-help: >-
+        You can create a new invoice for the first beneficiary of the event
+        by clicking on the button below.
+    contact-someone-to-create-invoice: >-
+        If needed, contact a member of the team and ask them to edit the invoice.
+    create-invoice: Create an invoice...
+    regenerate-help: >-
+        You can create a new invoice by clicking the button below.
+    create-new-invoice: Create a new invoice...
+    error-while-generating: An unexpected error occurred while generating the invoice, please try again.
+    invoice-created: Invoice created.
+
+    item:
+        title: 'Invoice n° {number}, generated on {date}'
+        download: Download the invoice
+
+    modals:
+        create:
+            # warning-no-estimate-before-billing: 'Warning, this event does not have any estimate!'
 
 documents:
     confirm-permanently-delete: Do you really want to permanently delete this document?
     deleted: Document deleted.
-
-history:
-    reminders-sent: Reminders e-mails sent
-    recipients: Recipient(s)
-    reminder-title: Reminder of {date}

@@ -1,7 +1,7 @@
 import requester from '@/globals/requester';
 import { z } from '@/utils/validation';
 
-import type { OmitDeep, PartialDeep } from 'type-fest';
+import type { PartialDeep } from 'type-fest';
 import type { SchemaInfer } from '@/utils/validation';
 
 // ------------------------------------------------------
@@ -74,6 +74,10 @@ const SettingsSchema = z.strictObject({
     returnInventory: z.strictObject({
         mode: z.nativeEnum(ReturnInventoryMode),
     }),
+    billing: z.strictObject({
+        defaultDegressiveRate: z.number().nullable(),
+        defaultTax: z.number().nullable(),
+    }),
 });
 
 // ------------------------------------------------------
@@ -90,7 +94,7 @@ export type Settings = SchemaInfer<typeof SettingsSchema>;
 // - Edition
 //
 
-export type SettingsEdit = PartialDeep<OmitDeep<Settings, 'calendar.public.url'>>;
+export type SettingsEdit = PartialDeep<Settings>;
 
 // ------------------------------------------------------
 // -

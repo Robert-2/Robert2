@@ -94,18 +94,6 @@ type Props = {
      * - `message`: Un - éventuel - message d'erreur associé.
      */
     errors?: InventoryMaterialError[],
-
-    /**
-     * Quand l'inventaire est en "pause", c'est à dire quand il est affiché
-     * mais qu'il ne devrait pas pouvoir être modifié.
-     *
-     * @default false
-     */
-    paused?: boolean,
-};
-
-type InstanceProperties = {
-    cancelScanObservation: (() => void) | undefined,
 };
 
 /** Inventaire de matériel. */
@@ -150,9 +138,6 @@ const Inventory = defineComponent({
         },
     },
     emits: ['change'],
-    setup: (): InstanceProperties => ({
-        cancelScanObservation: undefined,
-    }),
     computed: {
         isStateLocked(): boolean {
             if (Array.isArray(this.locked)) {

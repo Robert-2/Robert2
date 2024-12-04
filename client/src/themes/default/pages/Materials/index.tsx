@@ -4,13 +4,14 @@ import DateTime from '@/utils/datetime';
 import HttpCode from 'status-code-enum';
 import { defineComponent } from '@vue/composition-api';
 import { isRequestErrorStatusCode } from '@/utils/errors';
-import config from '@/globals/config';
+import config, { BillingMode } from '@/globals/config';
 import { confirm } from '@/utils/alert';
 import isTruthy from '@/utils/isTruthy';
 import formatAmount from '@/utils/formatAmount';
 import isValidInteger from '@/utils/isValidInteger';
 import showModal from '@/utils/showModal';
 import apiMaterials, { UNCATEGORIZED } from '@/stores/api/materials';
+import MaterialPopover from '@/themes/default/components/Popover/Material';
 import AssignTags from '@/themes/default/modals/AssignTags';
 import Fragment from '@/components/Fragment';
 import Dropdown from '@/themes/default/components/Dropdown';
@@ -63,7 +64,7 @@ const Materials = defineComponent({
     }),
     computed: {
         isAdmin(): boolean {
-            return this.$store.getters['auth/is'](Group.ADMIN);
+            return this.$store.getters['auth/is'](Group.ADMINISTRATION);
         },
 
         periodForQuantities(): Period {
@@ -100,7 +101,7 @@ const Materials = defineComponent({
                 filters.subCategory = parseInt(routeQuery.subCategory, 10);
             }
 
-            // - Park.
+            // - Parc.
             if ('park' in routeQuery && isValidInteger(routeQuery.park)) {
                 filters.park = parseInt(routeQuery.park, 10);
             }
@@ -117,11 +118,10 @@ const Materials = defineComponent({
         },
 
         columns(): Columns<Material> {
-            const isBillingEnabled = config.billingMode !== 'none';
+            const isBillingEnabled = config.billingMode !== BillingMode.NONE;
             const {
                 $t: __,
                 $store: store,
-                filters,
                 handleSetTags,
                 isTrashDisplayed,
                 handleRestoreItemClick,
@@ -134,12 +134,22 @@ const Materials = defineComponent({
                     title: __('reference'),
                     class: 'Materials__cell Materials__cell--ref',
                     sortable: true,
+                    render: (h: CreateElement, material: Material) => (
+                        <MaterialPopover material={material}>
+                            {material.reference}
+                        </MaterialPopover>
+                    ),
                 },
                 {
                     key: 'name',
                     title: __('name'),
                     class: 'Materials__cell Materials__cell--name',
                     sortable: true,
+                    render: (h: CreateElement, material: Material) => (
+                        <MaterialPopover material={material}>
+                            {material.name}
+                        </MaterialPopover>
+                    ),
                 },
                 {
                     key: 'description',
@@ -161,7 +171,7 @@ const Materials = defineComponent({
                     class: 'Materials__cell Materials__cell--park',
                     hidden: true,
                     render(h: CreateElement, { park_id: parkId }: Material) {
-                        const parkName = store.getters['parks/parkName'](parkId);
+                        const parkName = store.getters['parks/getName'](parkId);
                         return parkName ?? '--';
                     },
                 },
@@ -228,7 +238,6 @@ const Materials = defineComponent({
                     render: (h: CreateElement, material: Material) => (
                         <Quantities
                             material={material}
-                            parkFilter={filters.park}
                         />
                     ),
                 },
@@ -330,14 +339,14 @@ const Materials = defineComponent({
         },
     },
     created() {
-        // - Binding.
-        this.fetch = this.fetch.bind(this);
-    },
-    mounted() {
         this.$store.dispatch('categories/fetch');
         this.$store.dispatch('parks/fetch');
         this.$store.dispatch('tags/fetch');
 
+        // - Binding.
+        this.fetch = this.fetch.bind(this);
+    },
+    mounted() {
         // - Actualise le timestamp courant toutes les minutes.
         this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 60_000);
     },
@@ -448,7 +457,7 @@ const Materials = defineComponent({
 
                 showModal(this.$modal, AssignTags, {
                     name,
-                    initialTags: tags,
+                    defaultTags: tags,
                     persister: (newTags: Array<Tag['id']>) => (
                         apiMaterials.update(id, { tags: newTags })
                     ),
@@ -479,14 +488,16 @@ const Materials = defineComponent({
 
         async fetch(pagination: PaginationParams) {
             this.isLoading = true;
-            const { filters } = this;
+            const { filters: rawFilters } = this;
+
+            const filters = { ...rawFilters };
 
             try {
                 const data = await apiMaterials.all({
                     paginated: true,
                     ...pagination,
                     ...filters,
-                    deleted: this.shouldDisplayTrashed,
+                    onlyDeleted: this.shouldDisplayTrashed,
                 });
 
                 this.isTrashDisplayed = this.shouldDisplayTrashed;

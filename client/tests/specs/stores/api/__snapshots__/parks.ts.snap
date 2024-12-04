@@ -89,6 +89,9 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -97,6 +100,9 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "value": 36.5,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 2,
         "max_length": null,
         "name": "Couleur",
@@ -104,6 +110,9 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "value": "Grise",
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -114,11 +123,11 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     ],
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+    "degressive_rate_id": 3,
     "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
     "id": 1,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Console Yamaha CL3",
     "note": null,
     "out_of_order_quantity": 1,
@@ -135,11 +144,15 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -148,6 +161,9 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "value": 2.2,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -158,11 +174,11 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     ],
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+    "degressive_rate_id": null,
     "description": "Système de diffusion numérique",
     "id": 2,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": false,
     "name": "Processeur DBX PA2",
     "note": null,
     "out_of_order_quantity": 0,
@@ -179,11 +195,15 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -192,6 +212,9 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "value": 0.85,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -202,11 +225,11 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     ],
     "category_id": 2,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+    "degressive_rate_id": 1,
     "description": "Projecteur PAR64 à LED, avec son set de gélatines",
     "id": 3,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "PAR64 LED",
     "note": "Soyez délicats avec ces projos !",
     "out_of_order_quantity": 4,
@@ -223,11 +246,15 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": null,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -236,6 +263,9 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "value": 3.15,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -244,6 +274,9 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
         "value": 60,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 4,
         "name": "Conforme",
         "type": "boolean",
@@ -252,11 +285,11 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     ],
     "category_id": 2,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+    "degressive_rate_id": 1,
     "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
     "id": 4,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Showtec SDS-6",
     "note": null,
     "out_of_order_quantity": 0,
@@ -268,17 +301,18 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     "stock_quantity": 2,
     "sub_category_id": 4,
     "tags": [],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
   },
   {
     "attributes": [],
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+    "degressive_rate_id": 3,
     "description": "Câble audio XLR 10 mètres, mâle-femelle",
     "id": 5,
     "is_discountable": true,
     "is_hidden_on_bill": true,
-    "is_reservable": true,
     "name": "Câble XLR 10m",
     "note": null,
     "out_of_order_quantity": 8,
@@ -290,11 +324,16 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     "stock_quantity": 40,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": 2,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+          "material",
+        ],
         "id": 5,
         "name": "Date d'achat",
         "type": "date",
@@ -303,11 +342,11 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     ],
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+    "degressive_rate_id": 1,
     "description": "Mélangeur numérique 18 canaux",
     "id": 6,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Behringer X Air XR18",
     "note": null,
     "out_of_order_quantity": 1,
@@ -319,21 +358,22 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     "stock_quantity": 3,
     "sub_category_id": 1,
     "tags": [],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
   },
   {
     "attributes": [],
     "category_id": 3,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+    "degressive_rate_id": 2,
     "description": "Volume utile: 9.3 m3",
     "id": 7,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Volkswagen Transporter",
     "note": null,
     "out_of_order_quantity": 0,
-    "park_id": 1,
+    "park_id": 2,
     "picture": null,
     "reference": "Transporter",
     "rental_price": /* Decimal Instance => */ "300",
@@ -341,17 +381,18 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     "stock_quantity": 2,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": null,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
   },
   {
     "attributes": [],
     "category_id": 4,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+    "degressive_rate_id": 3,
     "description": "Forêt mystique, typique des récits fantastiques.",
     "id": 8,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Décor Thème Forêt",
     "note": null,
     "out_of_order_quantity": 0,
@@ -363,6 +404,7 @@ exports[`Parks Api materials() parse the returned data correctly 1`] = `
     "stock_quantity": 2,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": 4,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
   },
 ]

@@ -59,10 +59,12 @@ const Users = defineComponent({
                 },
                 {
                     key: 'group',
-                    title: __('group'),
+                    title: __('access'),
                     class: 'Users__cell Users__cell--group',
                     sortable: true,
-                    render: (h, user) => __(user.group),
+                    render: (h, user) => (
+                        this.$store.getters['groups/getName'](user.group)
+                    ),
                 },
                 {
                     key: 'email',
@@ -99,7 +101,7 @@ const Users = defineComponent({
                             return null;
                         }
 
-                        const isUserAdmin = user.group === Group.ADMIN;
+                        const isUserAdmin = user.group === Group.ADMINISTRATION;
                         if (isTrashDisplayed) {
                             return (
                                 <Fragment>
@@ -146,6 +148,9 @@ const Users = defineComponent({
     created() {
         // - Binding.
         this.fetch = this.fetch.bind(this);
+    },
+    mounted() {
+        this.$store.dispatch('groups/fetch');
     },
     methods: {
         // ------------------------------------------------------
@@ -219,11 +224,10 @@ const Users = defineComponent({
             this.isLoading = true;
 
             try {
-                const params = {
+                const data = await apiUsers.all({
                     ...pagination,
                     deleted: this.shouldDisplayTrashed,
-                };
-                const data = await apiUsers.all(params);
+                });
                 this.isTrashDisplayed = this.shouldDisplayTrashed;
                 return data;
             } catch (error) {

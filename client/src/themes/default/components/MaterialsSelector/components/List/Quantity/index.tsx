@@ -5,11 +5,11 @@ import QuantityInput from '@/themes/default/components/QuantityInput';
 
 import type { DebouncedMethod } from 'lodash';
 import type { PropType } from '@vue/composition-api';
-import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
+import type { SourceMaterial } from '../../../_types';
 
 type Props = {
     /** Le matériel dont on veut définir les quantités. */
-    material: Material,
+    material: SourceMaterial,
 
     /** La quantité actuelle. */
     quantity: number,
@@ -26,7 +26,7 @@ type InstanceProperties = {
     ),
 };
 
-// @vue/component
+/** Sélecteur de quantité de matériel. */
 const MaterialsSelectorListQuantity = defineComponent({
     name: 'MaterialsSelectorListQuantity',
     props: {
@@ -88,7 +88,13 @@ const MaterialsSelectorListQuantity = defineComponent({
     render() {
         const { bouncedQuantity, handleChange } = this;
 
-        return <QuantityInput value={bouncedQuantity} onChange={handleChange} />;
+        return (
+            <QuantityInput
+                limit={{ min: 0 }}
+                value={bouncedQuantity}
+                onChange={handleChange}
+            />
+        );
     },
 });
 

@@ -1,7 +1,7 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import Fragment from '@/components/Fragment';
-import config from '@/globals/config';
+import config, { BillingMode } from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
 import TagsList from '@/themes/default/components/TagsList';
 import Link from '@/themes/default/components/Link';
@@ -28,7 +28,7 @@ const MaterialViewInfos = defineComponent({
     },
     computed: {
         isBillingEnabled(): boolean {
-            return config.billingMode !== 'none';
+            return config.billingMode !== BillingMode.NONE;
         },
 
         categoryName(): string {
@@ -48,9 +48,19 @@ const MaterialViewInfos = defineComponent({
             return this.$store.state.parks.list.length > 1;
         },
 
-        parkName(): string {
+        parkName(): string | null {
             const { park_id: parkId } = this.material;
-            return this.$store.getters['parks/parkName'](parkId);
+            return this.$store.getters['parks/getName'](parkId);
+        },
+
+        taxName(): string | null {
+            const { tax_id: taxId } = this.material;
+            return this.$store.getters['taxes/getName'](taxId);
+        },
+
+        degressiveRateName(): string | null {
+            const { degressive_rate_id: degressiveRateId } = this.material;
+            return this.$store.getters['degressiveRates/getName'](degressiveRateId);
         },
 
         rentalPrice(): string | null {
@@ -76,6 +86,8 @@ const MaterialViewInfos = defineComponent({
     },
     mounted() {
         this.$store.dispatch('parks/fetch');
+        this.$store.dispatch('taxes/fetch');
+        this.$store.dispatch('degressiveRates/fetch');
     },
     render() {
         const {
@@ -86,9 +98,11 @@ const MaterialViewInfos = defineComponent({
             hasPricingData,
             rentalPrice,
             replacementPrice,
-            material,
             hasMultipleParks,
             parkName,
+            taxName,
+            degressiveRateName,
+            material,
         } = this;
 
         const {
@@ -97,6 +111,7 @@ const MaterialViewInfos = defineComponent({
             description,
             stock_quantity: stockQuantity,
             out_of_order_quantity: outOfOrderQuantity,
+            available_quantity: availableQuantity,
             is_hidden_on_bill: isHiddenOnBill,
             is_discountable: isDiscountable,
             attributes,
@@ -154,23 +169,58 @@ const MaterialViewInfos = defineComponent({
                                 {__('out-of-order-items-count', { count: outOfOrderQuantity })}
                             </li>
                         )}
+                        <li
+                            class={['MaterialViewInfos__available-quantity', {
+                                'MaterialViewInfos__available-quantity--warning': availableQuantity < stockQuantity,
+                            }]}
+                        >
+                            {__('available-items-count', { count: availableQuantity }, availableQuantity)}
+                        </li>
                     </ul>
-                    {(isBillingEnabled && hasPricingData) && (
+                    {isBillingEnabled && (
                         <div class="MaterialViewInfos__billing">
-                            <h3>{__('prices')}</h3>
-                            <ul>
-                                {rentalPrice !== null && (
-                                    <li class="MaterialViewInfos__rental-price">
-                                        {__('value-per-day', { value: rentalPrice })}
-                                    </li>
-                                )}
-                                {replacementPrice !== null && (
-                                    <li>
-                                        {__('replacement-price')} {replacementPrice}
-                                    </li>
-                                )}
-                            </ul>
+                            {hasPricingData && (
+                                <Fragment>
+                                    <h3>{__('prices')}</h3>
+                                    {rentalPrice !== null && (
+                                        <dl class="MaterialViewInfos__info MaterialViewInfos__info--highlight">
+                                            <dt class="MaterialViewInfos__info__label">
+                                                {__('label-colon', { label: __('rental-price') })}
+                                            </dt>
+                                            <dd class="MaterialViewInfos__info__value">
+                                                {__('value-per-day', { value: rentalPrice })}
+                                            </dd>
+                                        </dl>
+                                    )}
+                                    {replacementPrice !== null && (
+                                        <dl class="MaterialViewInfos__info">
+                                            <dt class="MaterialViewInfos__info__label">
+                                                {__('label-colon', { label: __('replacement-price') })}
+                                            </dt>
+                                            <dd class="MaterialViewInfos__info__value">
+                                                {replacementPrice}
+                                            </dd>
+                                        </dl>
+                                    )}
+                                </Fragment>
+                            )}
                             <h3>{__('billing')}</h3>
+                            <dl class="MaterialViewInfos__info">
+                                <dt class="MaterialViewInfos__info__label">
+                                    {__('label-colon', { label: __('page.material-view.infos.tax') })}
+                                </dt>
+                                <dd class="MaterialViewInfos__info__value">
+                                    {taxName ?? __('page.material-view.infos.no-tax')}
+                                </dd>
+                            </dl>
+                            <dl class="MaterialViewInfos__info">
+                                <dt class="MaterialViewInfos__info__label">
+                                    {__('label-colon', { label: __('page.material-view.infos.degressive-rate') })}
+                                </dt>
+                                <dd class="MaterialViewInfos__info__value">
+                                    {degressiveRateName ?? __('page.material-view.infos.no-degressive-rate')}
+                                </dd>
+                            </dl>
                             {isHiddenOnBill && (
                                 <p>{__('material-not-displayed-on-invoice')}</p>
                             )}
@@ -219,13 +269,6 @@ const MaterialViewInfos = defineComponent({
                         </section>
                     )}
                     <section class="MaterialViewInfos__extras">
-                        {hasMultipleParks && (
-                            <div class="MaterialViewInfos__extra MaterialViewInfos__extra--park">
-                                <p class="MaterialViewInfos__extra__item">
-                                    {__('page.material-view.infos.park-name', { name: parkName })}
-                                </p>
-                            </div>
-                        )}
                         <div class="MaterialViewInfos__extra MaterialViewInfos__extra--categories">
                             <p class="MaterialViewInfos__extra__item">
                                 {__('category')}: <strong>{categoryName}</strong>
@@ -236,6 +279,13 @@ const MaterialViewInfos = defineComponent({
                                 </p>
                             )}
                         </div>
+                        {hasMultipleParks && (
+                            <div class="MaterialViewInfos__extra MaterialViewInfos__extra--park">
+                                <p class="MaterialViewInfos__extra__item">
+                                    {__('page.material-view.infos.park-name', { name: parkName })}
+                                </p>
+                            </div>
+                        )}
                         {!!(tags && tags.length > 0) && <TagsList tags={tags} />}
                         <div class="MaterialViewInfos__extra MaterialViewInfos__extra--dates">
                             <p class="MaterialViewInfos__extra__item">

@@ -1,0 +1,360 @@
+hello-name: "Bonjour {name}\_!"
+action-add: Ajouter
+action-edit: Modifier
+action-view: Afficher en détail
+action-view-schedule: Afficher le calendrier
+action-trash: Corbeille
+action-restore: Restaurer
+action-delete: Supprimer
+action-remove: Enlever
+action-rename: Renommer
+action-duplicate: Dupliquer
+action-enable: Activer
+action-disable: Désactiver
+action-refresh: Rafraîchir les données
+'yes': Oui
+'no': Non
+warning: "Attention\_!"
+loading: Chargement en cours...
+please-confirm: Veuillez confirmer...
+yes-delete: 'Oui, supprimer'
+yes-trash: 'Oui, mettre à la corbeille'
+yes-permanently-delete: 'Oui, supprimer définitivement'
+yes-regenerate-link: 'Oui, re-générer le lien'
+yes-restore: 'Oui, restaurer'
+changes-exists-really-cancel: "Des modifications n'ont pas été enregistrées. Êtes-vous sûr de vouloir quitter cette page\_?"
+yes-leave-page: 'Oui, quitter la page'
+cancel: Annuler
+close: Fermer
+confirm: Confirmer
+copy-to-clipboard: Copier dans le presse-papier
+copied-to-clipboard: "Copié dans le presse-papiers\_!"
+copy: Copier
+copied: "Copié\_!"
+almost-done: Presque terminé...
+done: Terminé
+refresh-page: Actualiser la page
+take-control: Prendre la main
+update-in-progress: Modification en cours
+regenerate-link: Re-générer le lien
+please-choose: Veuillez choisir...
+start-typing-to-search: Commencez à écrire pour rechercher...
+type-at-least-count-chars-to-search:
+    - 'Entrez au moins {count} lettre de plus pour rechercher...'
+    - 'Entrez au moins {count} lettres de plus pour rechercher...'
+count-chars:
+    - '{count} caractère'
+    - '{count} caractères'
+empty-state: Il n'y a aucun enregistrement à afficher pour le moment.
+search-term: Recherche
+no-result-found-try-another-search: Aucun résultat. Essayez avec une autre recherche.
+locked-reason: 'Verrouillé: {reason}'
+clear-filters: Réinitialiser les filtres
+optional: Optionnel
+n-persons:
+    - '{count} personne'
+    - '{count} personnes'
+name-and-n-others:
+    - '{name} et {count} autre'
+    - '{name} et {count} autres'
+add-comment: Ajouter un commentaire
+modify-comment: Modifier le commentaire
+save: Sauvegarder
+manually-save: Sauvegarder manuellement
+save-draft: Sauvegarder le brouillon
+add: Ajouter
+saving: Sauvegarde...
+saved: '{entity} sauvegardé.'
+deleting: Suppression...
+reset-date: Réinitialiser la date
+reset-period: Réinitialiser la période
+actions: Actions
+informations: Informations
+connexion-infos: Informations de connexion
+personal-infos: Informations personnelles
+minimal-infos: Informations minimales
+extra-infos: Informations additionnelles
+stock-infos: Informations liées au stock
+billing-infos: Informations de facturation
+other-infos: Autres informations
+other: Autre
+documents: Documents
+billing: Facturation
+history: Historique
+special-attributes: Caractéristiques spéciales
+schedule: Agenda
+pseudo: Identifiant
+email-address-or-pseudo: Adresse e-mail / Identifiant
+password: Mot de passe
+first-name: Prénom
+last-name: Nom
+name: Nom
+nickname: Surnom
+company: Société
+person: Personne
+legal-name: Raison sociale
+contact-details: Coordonnées
+email: E-mail
+phone: Téléphone
+address: Adresse
+street: Numéro et rue
+postal-code: Code postal
+city: Ville
+locality: Ville
+country: Pays
+access: Accès
+groups:
+    administration: Administration
+    management: Gestion
+    readonly-planning-general: Consultation du planning général
+    readonly-planning-self: Consultation de son planning
+    external: Externe
+owner: Propriétaire
+opening-hours: Horaires d'ouverture
+hours: heures
+minutes: minutes
+notes: Notes
+description: Description
+label-colon: "{label}\_:"
+ref: Réf.
+ref-ref: "Ref.\_: {reference}"
+reference: Référence
+number: Numéro
+park: Parc
+park-name: "Parc «\_{name}\_»"
+park-and-location: Parc et emplacement
+park-location: Emplacement dans le parc
+prices: Tarifs
+identification-type: Type d'identification
+rental-price: Tarif location
+replacement-price: Prix de remplacement
+rent-price: Tarif loc.
+repl-price: Val. rempl.
+value-per-day: "{value}\_/\_jour"
+serial-number: N° de série
+examples-list: "Exemples\_: {list}, etc."
+not-specified: Non renseigné(e)
+qty: Qté
+stock-qty: Qté stock
+stock-quantity: Quantité en stock
+out-of-order-qty: Qté en panne
+out-of-order-quantity: Quantité en panne
+remaining-qty: Qté restante
+awaited-qty-dots: "Qté attendue\_:"
+actual-qty: Qté effective
+quantities: Quantités
+period: Période
+status: Statut
+materials: Matériel
+discountable: "Remisable\_?"
+is-broken: "En panne\_?"
+broken: En panne
+is-lost: "Perdu\_?"
+lost: Perdu
+purchase-date: Date d'achat
+material-is-discountable: "Le matériel est «\_remisable\_»\_: une remise peut être appliquée sur ce matériel."
+hidden-on-invoice: "Caché sur la facture\_?"
+material-not-displayed-on-invoice: Le matériel n'est pas affiché sur les factures.
+price-must-be-zero: le tarif de location doit être égal à 0
+all-parks: Tous parcs confondus
+all-categories: Toutes catégories
+all-sub-categories: Toutes sous-catégories
+not-limited: non limité
+open-trash-bin: Afficher la corbeille
+display-not-deleted-items: Afficher les enregistrements non supprimés
+created-at: "Créé le\_: {date}"
+updated-at: "Modifié le\_: {date}"
+state: État
+picture: Photo
+add-a-picture: Ajouter une photo
+change-the-picture: Changer la photo
+remove-the-picture: Supprimer la photo
+event-details: Détails de l'événement
+title: Titre
+date: Date
+dates: Dates
+start-end-dates: Dates de début et fin
+start-date: Date de début
+end-date: Date de fin
+location: Lieu
+duration: Durée
+duration-days:
+    - "Durée\_: {duration} jour"
+    - "Durée\_: {duration} jours"
+hours-count: "{count} h"
+confirmed: Confirmé
+not-confirmed: Non confirmé
+is-billable: "Est facturable\_?"
+event-is-now-billable: Cet événement est maintenant facturable.
+is-not-billable-help: "Mode «\_Prêt\_»\_: pas de facturation."
+is-billable-help: "Mode «\_Location\_»\_: facturation possible."
+confirm-event: Confirmer l'événement
+unconfirm-event: Remettre l'événement en attente
+delete-event: Supprimer l'événement
+duplicate-event: Dupliquer l'événement
+print: Imprimer
+print-summary: Imprimer ce récapitulatif
+open: Ouvrir
+in: 'À {location}'
+for: 'Pour {beneficiary}'
+mobilization-period: 'Mobilisation {period}'
+open-in-google-maps: Ouvrir dans Google Maps
+or: ou
+with: Avec
+into: dans
+in-progress: en cours
+invoice: Facture
+estimate: Devis
+estimates: Devis
+missing-beneficiary: Bénéficiaire manquant
+requested-qty: Qté demandée
+missing-qty: Qté manquante
+position-held: Poste occupé
+with-amount-of: 'pour un montant de {amount}'
+with-amount-of-excl-tax: 'pour un montant de {amount} H.T.'
+discount: Remise
+without-discount: sans remise
+discount-rate: "Remise de {rate}\_%"
+create-invoice: Créer la facture
+create-estimate: Créer un devis
+download: Télécharger
+download-pdf: Télécharger au format PDF
+download-barcode: Télécharger le code-barre
+total: Total
+taxes: "Taxes ({rate}%)\_:\_{amount}"
+tax: Taxe
+degressive-rate: Tarif dégressif
+materials-count:
+    - '{count} matériel'
+    - '{count} matériels'
+materials-count-total:
+    - '{count} matériel au total'
+    - '{count} matériels au total'
+used-count:
+    - '{count} utilisé'
+    - '{count} utilisés'
+no-items: Aucun article
+events-count-total:
+    - '{count} événement au total'
+    - '{count} événements au total'
+stock-items-count: '{count} en stock'
+out-of-order-items-count: '{count} en panne'
+available-items-count:
+    - '{count} disponible actuellement'
+    - '{count} disponibles actuellement'
+total-value: Valeur totale
+total-quantity: "Quantité totale\_: {total}"
+daily-amount: "Montant journalier\_: {amount}"
+replacement-value-amount: "Valeur de remplacement\_: {amount}"
+calculate: Calculer
+customization: Personnalisation
+day: jour
+days-count:
+    - '{duration} jour'
+    - '{duration} jours'
+price-per-day: "{price}\_/\_jour"
+price-for-x-days:
+    - "{price}\_/\_{duration}\_jour"
+    - "{price}\_/\_{duration}\_jours"
+current: actuel
+time: heure
+delete-selected: Effacer la selection
+subtotal: Sous-total
+total-amount: Montant total
+total-amount-without-taxes: "Montant total H.T.\_:\_{amount}"
+total-amount-after-discount: "Total H.T. après remise\_:\_{amount}"
+total-replacement: "Valeur de remplacement totale\_: {total}"
+daily-total-without-tax: "Total H.T.\_/\_jour\_:"
+daily-total: "Total\_/\_jour\_:"
+total-without-taxes: "Total H.T.\_:"
+total-taxes: "T.V.A.\_:"
+total-with-taxes: "Total T.T.C.\_:"
+total-dots: "Total\_:"
+excl-tax: H.T.
+ratio: coef.
+ratio-long: Coefficient
+tags: Tags
+add-tags: Ajouter des tags
+remaining-count: 'reste {count}'
+departure-inventory: Inventaire de départ
+return-inventory: Inventaire de retour
+grouped-by: "Voir groupé par\_:"
+not-grouped: Non groupé
+start-on: Débute le
+expected-end-on: Fin prévue le
+back-to-home: Retour à l'accueil
+back-to-schedule: Retour au planning
+previous-month: Mois précédent
+next-month: Mois suivant
+used-by: Utilisé dans
+events-count:
+    - '{count} événement'
+    - '{count} événements'
+use: Utiliser
+create-company: Ajouter une nouvelle société
+inventories: Inventaires
+terminate-inventory: Terminer l'inventaire
+inventory-validation-error: >-
+    Certaines quantités ne sont pas correctes. Veuillez vérifier à nouveau la liste.
+choose-event-to-reuse-materials-list: Choisir un événement pour réutiliser sa liste de matériel
+type-to-search-event: Entrez le nom d'un événement...
+and-count-more-older-events:
+    - ...et un autre événement plus ancien.
+    - '...et {count} autres événements plus anciens.'
+choose: Choisir
+use-these-materials: Utiliser ce matériel
+choose-another-one: En choisir un autre
+created-by: Créé par
+event: Événement
+events: Événements
+user: Utilisateur
+beneficiary: Bénéficiaire
+main-beneficiary: Bénéficiaire principal
+borrower: Emprunteur
+technicians: Techniciens
+material: Matériel
+category: Catégorie
+sub-category: Sous-catégorie
+categories: Catégories
+not-categorized: Non catégorisé
+parks: Parcs
+technician: Technicien
+subject: Sujet
+subject-is: 'Sujet: {subject}'
+message-body: Corps du message
+this-feature-is-coming-soon: Cette fonctionnalité est actuellement en développement.
+external-links:
+    official-website: Site web officiel
+    support-platform: Plateforme de support
+select-no-options: Aucune option disponible.
+select-no-matching-result: Aucune option ne correspond à cette recherche
+remove-park-context: Enlever le contexte global par parc
+confirm-cancel-upload-change-tab: "Attention, un envoi de fichier est en cours. Si vous quittez cet onglet, l'envoi sera annulé. Êtes-vous sûr de vouloir continuer\_?"
+confirm-cancel-upload-close-modal: "Attention, un envoi de fichier est en cours. Si vous fermez cette fenêtre, l'envoi sera annulé. Êtes-vous sûr de vouloir continuer\_?"
+
+'@event':
+    confirm-delete: "Mettre cet événement à la corbeille\_?"
+    event-missing-materials: Matériel manquant
+    event-missing-materials-help: >-
+        Il s'agit du matériel manquant pour la période de l'événement, car il
+        est utilisé dans un autre événement, le nombre
+        voulu est trop important, ou quelques uns sont en panne.
+    missing-material-count: "Besoin de {quantity}, il en manque\_{missing}"
+    warning-no-beneficiary: "Attention, cet événement n'a aucun bénéficiaire\_!"
+    warning-no-material: "Attention, cet événement est vide, il ne contient aucun matériel pour le moment\_!"
+    event-not-confirmed-help: >-
+        L'événement n'est pas encore confirmé, il est susceptible de changer à
+        tout moment.
+    event-confirmed-help: "L'événement est confirmé\_: Ses informations ne devraient plus changer."
+    statuses:
+        is-past: Cet événement est passé.
+        is-currently-running: Cet événement se déroule en ce moment.
+        is-confirmed: Cet événement est confirmé.
+        is-not-confirmed: "Cet événement n'est pas encore confirmé\_!"
+        is-archived: Cet événement est archivé.
+        is-locked: >-
+            Cet événement est verrouillé parce qu'il est confirmé ou que son
+            inventaire de retour a été effectué.
+        has-missing-materials: Cet événement a du matériel manquant.
+        needs-its-return-inventory: "Il faut faire l'inventaire de retour de cet événement\_!"
+        has-not-returned-materials: Cet événement a du matériel qui n'a pas été retourné.

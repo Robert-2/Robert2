@@ -8,6 +8,7 @@ import type { Module, ActionContext } from 'vuex';
 import type { Session, Credentials } from '@/stores/api/session';
 import type { Group } from '@/stores/api/groups';
 import type { UserSettings } from '@/stores/api/users';
+import type { RootState } from '.';
 
 export type State = {
     user: Session | null,
@@ -16,7 +17,14 @@ export type State = {
 const setSessionCookie = (token: string): void => {
     const { cookie, timeout } = config.auth;
 
-    const cookieConfig: Cookies.CookieAttributes = {};
+    const cookieConfig: Cookies.CookieAttributes = {
+        secure: config.isSslEnabled,
+
+        // - Note: Permet la création de cookies lorsque Loxya est
+        //   intégré dans des systèmes tiers (e.g. Notion).
+        sameSite: config.isSslEnabled ? 'None' : 'Lax',
+    };
+
     if (timeout) {
         const timeoutMs = timeout * 60 * 60 * 1000;
         const timeoutDate = new Date(Date.now() + timeoutMs);
@@ -26,7 +34,7 @@ const setSessionCookie = (token: string): void => {
     cookies.set(cookie, token, cookieConfig);
 };
 
-const store: Module<State, any> = {
+const store: Module<State, RootState> = {
     namespaced: true,
     state: {
         user: null,
@@ -63,7 +71,7 @@ const store: Module<State, any> = {
         },
     },
     actions: {
-        async fetch({ dispatch, commit }: ActionContext<State, any>) {
+        async fetch({ dispatch, commit }: ActionContext<State, RootState>) {
             if (!cookies.get(config.auth.cookie)) {
                 commit('setUser', null);
                 return;
@@ -82,7 +90,7 @@ const store: Module<State, any> = {
             }
         },
 
-        async login({ dispatch, commit }: ActionContext<State, any>, credentials: Credentials) {
+        async login({ dispatch, commit }: ActionContext<State, RootState>, credentials: Credentials) {
             const { token, ...user } = await apiSession.create(credentials);
             commit('setUser', user);
             setSessionCookie(token);
@@ -92,7 +100,7 @@ const store: Module<State, any> = {
             await dispatch('settings/fetch', undefined, { root: true });
         },
 
-        async logout(_: ActionContext<State, any>, full: boolean = true) {
+        async logout(_: ActionContext<State, RootState>, full: boolean = true) {
             const theme = '';
 
             if (full) {

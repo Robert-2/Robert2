@@ -4,8 +4,12 @@ import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 
 import type { Location } from 'vue-router';
+import type { TooltipOptions } from 'v-tooltip';
 import type { PropType } from '@vue/composition-api';
-import type { Props as IconProps } from '@/themes/default/components/Icon';
+import type {
+    Props as IconProps,
+    Variant as IconVariant,
+} from '@/themes/default/components/Icon';
 
 type Props = {
     /**
@@ -31,6 +35,19 @@ type Props = {
     icon?: string | `${string}:${Required<IconProps>['variant']}`,
 
     /**
+     * Le contenu d'une éventuelle infobulle qui sera affichée au survol du lien.
+     *
+     * La valeur peut avoir deux formats différents:
+     * - Une chaîne de caractère: Celle-ci sera utilisée pour le contenu de l'infobulle
+     *   qui sera elle-même affichée centrée en dessous du lien au survol.
+     * - Un object de configuration contenant les clés:
+     *   - `content`: Le texte affiché dans l'infobulle.
+     *   - `placement`: La position de l'infobulle par rapport au lien.
+     *                  (e.g. `top`, `bottom`, `left`, `right`, ...)
+     */
+    tooltip?: string | TooltipOptions,
+
+    /**
      * Permet d'indiquer que c'est un lien externe.
      *
      * Si c'est le cas, le component fonctionnera comme suit:
@@ -53,6 +70,10 @@ const Link = defineComponent({
             type: String as PropType<Props['icon']>,
             default: undefined,
         },
+        tooltip: {
+            type: [String, Object] as PropType<Props['tooltip']>,
+            default: undefined,
+        },
         external: {
             type: Boolean as PropType<Required<Props>['external']>,
             default: false,
@@ -60,7 +81,7 @@ const Link = defineComponent({
     },
     emits: ['click'],
     computed: {
-        normalizedIcon() {
+        normalizedIcon(): IconProps | null {
             if (!this.icon) {
                 return null;
             }
@@ -70,7 +91,13 @@ const Link = defineComponent({
             }
 
             const [iconType, variant] = this.icon.split(':');
-            return { name: iconType, variant };
+            return { name: iconType, variant: variant as IconVariant };
+        },
+
+        normalizedTooltip(): TooltipOptions | string | undefined {
+            return typeof this.tooltip === 'object'
+                ? { ...this.tooltip, content: this.tooltip.content }
+                : this.tooltip;
         },
     },
     methods: {
@@ -79,8 +106,14 @@ const Link = defineComponent({
         },
     },
     render() {
-        const { normalizedIcon: icon, to, external, handleClick } = this;
         const children = this.$slots.default;
+        const {
+            normalizedIcon: icon,
+            normalizedTooltip: tooltip,
+            to,
+            external,
+            handleClick,
+        } = this;
 
         const content = (
             <Fragment>
@@ -97,6 +130,7 @@ const Link = defineComponent({
                     <a
                         href={to}
                         class="Link"
+                        v-tooltip={tooltip}
                         target={isOutside ? '_blank' : undefined}
                         rel={isOutside ? 'noreferrer noopener' : undefined}
                     >
@@ -108,7 +142,12 @@ const Link = defineComponent({
             return (
                 <router-link to={to} custom>
                     {({ href, navigate: handleNavigate }: any) => (
-                        <a href={href} onClick={handleNavigate} class="Link">
+                        <a
+                            href={href}
+                            onClick={handleNavigate}
+                            v-tooltip={tooltip}
+                            class="Link"
+                        >
                             {content}
                         </a>
                     )}
@@ -117,7 +156,12 @@ const Link = defineComponent({
         }
 
         return (
-            <button type="button" class="Link" onClick={handleClick}>
+            <button
+                type="button"
+                class="Link"
+                v-tooltip={tooltip}
+                onClick={handleClick}
+            >
                 {content}
             </button>
         );

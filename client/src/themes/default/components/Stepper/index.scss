@@ -1,0 +1,7 @@
+@use '~@/themes/default/style/globals';
+
+.Stepper {
+    display: flex;
+    flex-direction: column;
+    gap: globals.$spacing-medium;
+}

@@ -9,7 +9,7 @@ type Props = {
     tags: Tag[],
 };
 
-// @vue/component
+/** Liste de tags. */
 const TagsList = defineComponent({
     name: 'TagsList',
     props: {

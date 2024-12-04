@@ -72,6 +72,13 @@ const ScheduleCalendarHeader = defineComponent({
             return this.$store.getters['parks/options'];
         },
 
+        withParkFilter(): boolean {
+            return (
+                this.filters.parkId !== null ||
+                this.parksOptions.length > 1
+            );
+        },
+
         categoriesOptions(): Options<CategoryDetails> {
             return this.$store.getters['categories/options'];
         },
@@ -84,20 +91,12 @@ const ScheduleCalendarHeader = defineComponent({
         },
 
         isTeamMember(): boolean {
-            return this.$store.getters['auth/is']([Group.ADMIN, Group.MEMBER]);
-        },
-    },
-    watch: {
-        parksOptions() {
-            this.initializeParkFilter();
+            return this.$store.getters['auth/is']([Group.ADMINISTRATION, Group.MANAGEMENT]);
         },
     },
     created() {
         this.$store.dispatch('parks/fetch');
         this.$store.dispatch('categories/fetch');
-    },
-    mounted() {
-        this.initializeParkFilter();
     },
     methods: {
         // ------------------------------------------------------
@@ -131,20 +130,6 @@ const ScheduleCalendarHeader = defineComponent({
         handleFilterMissingMaterialChange(hasFilter: boolean) {
             this.$emit('filterMissingMaterials', hasFilter);
         },
-
-        // ------------------------------------------------------
-        // -
-        // -    Méthodes internes
-        // -
-        // ------------------------------------------------------
-
-        initializeParkFilter() {
-            const allowedParks = this.$store.state.parks.list.map(({ id }: ParkSummary) => id);
-
-            if (this.parksOptions.length > 1 && allowedParks.length === 1) {
-                this.handleFilterParkChange(allowedParks[0]);
-            }
-        },
     },
     render() {
         const {
@@ -154,6 +139,7 @@ const ScheduleCalendarHeader = defineComponent({
             isToday,
             isTeamMember,
             isLoading,
+            withParkFilter,
             parksOptions,
             categoriesOptions,
             handleSetTodayDate,
@@ -206,7 +192,7 @@ const ScheduleCalendarHeader = defineComponent({
                         </div>
                     </div>
                     <div class="ScheduleCalendarHeader__filters__general">
-                        {(parksOptions.length > 1 || !!filters.parkId) && (
+                        {withParkFilter && (
                             <div class="ScheduleCalendarHeader__filter ScheduleCalendarHeader__filter--parks">
                                 <Select
                                     value={filters.parkId}

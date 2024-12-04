@@ -9,7 +9,10 @@ import Inventory, {
 } from '@/themes/default/components/Inventory';
 
 import type { PropType } from '@vue/composition-api';
-import type { EventDetails, EventMaterial } from '@/stores/api/events';
+import type {
+    EventDetails,
+    EventMaterial,
+} from '@/stores/api/events';
 import type {
     AwaitedMaterial,
     InventoryData as CoreInventoryData,
@@ -34,14 +37,6 @@ type Props = {
 
     /** Les éventuelles erreurs de l'inventaire (par matériel). */
     errors?: InventoryMaterialError[] | null,
-
-    /**
-     * Quand l'inventaire est en "pause", c'est à dire quand il est affiché
-     * mais qu'il ne devrait pas pouvoir être modifié.
-     *
-     * @default false
-     */
-    paused?: boolean,
 };
 
 type InstanceProperties = {
@@ -76,10 +71,6 @@ const EventDepartureInventory = defineComponent({
             type: Array as PropType<Required<Props>['errors']>,
             default: null,
         },
-        paused: {
-            type: Boolean as PropType<Required<Props>['paused']>,
-            default: false,
-        },
     },
     emits: ['change', 'requestCancel'],
     setup: (): InstanceProperties => ({
@@ -91,11 +82,15 @@ const EventDepartureInventory = defineComponent({
     computed: {
         awaitedMaterials(): Array<AwaitedMaterial<false>> {
             return this.event.materials.map(
-                ({ pivot: eventMaterial, ...material }: EventMaterial): AwaitedMaterial<false> => {
-                    const { quantity } = eventMaterial;
+                (eventMaterial: EventMaterial): AwaitedMaterial<false> => {
+                    const { id, name, reference, quantity, material } = eventMaterial;
 
                     return {
-                        ...material,
+                        id,
+                        name,
+                        reference,
+                        category_id: material.category_id,
+                        park_id: material.park_id,
                         awaitedQuantity: quantity,
                     };
                 },
@@ -224,7 +219,6 @@ const EventDepartureInventory = defineComponent({
             awaitedMaterials,
             errors,
             isDone,
-            paused,
             isComplete,
             isCancellable,
             handleChange,
@@ -254,7 +248,6 @@ const EventDepartureInventory = defineComponent({
                     errors={errors}
                     onChange={handleChange}
                     locked={isDone || [InventoryLock.STATE]}
-                    paused={paused}
                     withComments
                     strict
                 />

@@ -2,6 +2,7 @@ import core from 'zod';
 import Decimal from 'decimal.js';
 import Period, { SerializedPeriodSchema } from '@/utils/period';
 import DateTime from '@/utils/datetime';
+import Currency from '@/utils/currency';
 import Day from '@/utils/day';
 
 import type { RefinementCtx } from 'zod';
@@ -101,8 +102,7 @@ const day = () => (
  * Prise en charge d'une valeur décimale, qu'elle soit sous forme
  * d'instance, de nombre ou chaîne de caractère.
  *
- * @returns Un wrapper de validation de valeur décimale.
- *          (instance, nombre ou chaîne de caractère)
+ * @returns Un wrapper de validation de valeur décimale (instance, nombre ou chaîne de caractère).
  *          Le retour sera en instance de `Decimal`.
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -130,6 +130,33 @@ const decimal = () => (
         })
 );
 
+/**
+ * Prise en charge d'une devise, qu'elle soit sous forme d'instance ou sous forme de code ISO.
+ *
+ * @returns Un wrapper de validation de devise (instance ou chaîne de caractère).
+ *          Le retour sera en instance de `Currency`.
+ */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const currency = () => (
+    core
+        .union([core.string(), core.instanceof(Currency)])
+        .transform((value: string | Currency, ctx: RefinementCtx): Currency => {
+            try {
+                return new Currency(value);
+            } catch (error) {
+                ctx.addIssue({
+                    code: core.ZodIssueCode.custom,
+                    params: {
+                        code: 'invalid-currency',
+                        cause: error,
+                    },
+                });
+
+                return core.NEVER;
+            }
+        })
+);
+
 export type {
     infer as SchemaInfer,
     output as SchemaOutput,
@@ -137,4 +164,4 @@ export type {
     ZodType as SchemaType,
 } from 'zod';
 
-export const z = { ...core, decimal, period, datetime, day };
+export const z = { ...core, decimal, period, datetime, day, currency };

@@ -2,6 +2,7 @@ title-create: New technician
 title-edit-simple: Modify technician
 title-edit: 'Modify technician "{name}"'
 
-can-prepare-orders: "Can prepare orders?"
+user-account: User account
+existing-user-help: "To modify or delete the user linked to this technician, go to the \"Users\" section."
 
 saved: Technician saved.

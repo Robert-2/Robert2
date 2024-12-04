@@ -1,0 +1,363 @@
+hello-name: 'Hello {name}!'
+action-add: Add
+action-edit: Edit
+action-view: Display details
+action-view-schedule: Display schedule
+action-trash: Trash bin
+action-restore: Restore
+action-delete: Delete
+action-remove: Remove
+action-rename: Rename
+action-duplicate: Duplicate
+action-enable: Enable
+action-disable: Disable
+action-refresh: Refresh data
+'yes': 'Yes'
+'no': 'No'
+warning: Warning!
+loading: Loading...
+please-confirm: Please confirm...
+yes-delete: 'Yes, delete'
+yes-trash: 'Yes, move in trash bin'
+yes-permanently-delete: 'Yes, permanently delete'
+yes-regenerate-link: 'Yes, regenerate the link'
+yes-restore: 'Oui, restaurer'
+changes-exists-really-cancel: Some changes have not been saved. Do you really want to leave this page?
+yes-leave-page: 'Yes, leave page'
+cancel: Cancel
+close: Close
+confirm: Confirm
+copy-to-clipboard: Copy to clipboard
+copied-to-clipboard: Copied to clipboard!
+copy: Copy
+copied: Copied!
+almost-done: Almost done...
+done: Done
+refresh-page: Refresh the page
+take-control: Take control
+update-in-progress: Update in progress
+regenerate-link: Regenerate link
+please-choose: Please choose...
+start-typing-to-search: Start typing to search...
+type-at-least-count-chars-to-search:
+    - 'Type again, at least {count} character to search...'
+    - 'Type again, at least {count} characters to search...'
+count-chars:
+    - '{count} char'
+    - '{count} chars'
+empty-state: There are no records to display at this time.
+search-term: Search
+no-result-found-try-another-search: No results. Try another search term.
+locked-reason: 'Locked: {reason}'
+clear-filters: Clear filters
+optional: Optional
+n-persons:
+    - '{count} person'
+    - '{count} persons'
+name-and-n-others:
+    - '{name} and {count} other'
+    - '{name} and {count} others'
+add-comment: Add a comment
+modify-comment: Modify comment
+save: Save
+manually-save: Manually save
+save-draft: Save draft
+add: Add
+saving: Saving...
+saved: '{entity} saved.'
+deleting: Deleting...
+reset-date: Reset date
+reset-period: Reset period
+actions: Actions
+informations: Information
+connexion-infos: Credentials
+personal-infos: Personal information
+minimal-infos: Minimal information
+extra-infos: Additional information
+stock-infos: Stock information
+billing-infos: Billing information
+other-infos: Other information
+other: Other
+documents: Documents
+billing: Billing
+history: History
+special-attributes: Special attributes
+schedule: Schedule
+pseudo: Pseudo
+email-address-or-pseudo: E-mail address or Pseudo
+password: Password
+first-name: First name
+last-name: Last name
+name: Name
+nickname: Nickname
+company: Company
+person: Person
+legal-name: Legal name
+contact-details: Contact details
+email: E-mail
+phone: Phone
+address: Address
+street: Street and Number
+postal-code: Postal code
+city: City
+locality: City
+country: Pays
+access: Access
+groups:
+    administration: Administration
+    management: Management
+    readonly-planning-general: General schedule consultation
+    readonly-planning-self: Own schedule consultation
+    external: External
+owner: Owner
+opening-hours: Opening hours
+hours: hours
+minutes: minutes
+notes: Notes
+description: Description
+label-colon: '{label}:'
+ref: Ref.
+ref-ref: 'Ref.: {reference}'
+reference: Reference
+number: Number
+park: Park
+park-name: 'Park "{name}"'
+park-and-location: Park and location
+park-location: Location in park
+prices: Prices
+identification-type: Identification type
+rental-price: Rental price
+replacement-price: Replacement price
+rent-price: Rent. price
+repl-price: Repl. price
+value-per-day: "{value}\_/\_day"
+serial-number: Serial n°
+examples-list: 'Examples: {list}, etc.'
+not-specified: Not specified
+qty: Qty
+stock-qty: Stock qty
+stock-quantity: Stock quantity
+out-of-order-qty: Out of order qty
+out-of-order-quantity: Out of order quantity
+remaining-qty: Remaining qty
+awaited-qty-dots: 'Awaited qty:'
+actual-qty: Actual qty
+quantities: Quantities
+period: Period
+status: Status
+materials: Materials
+discountable: Discountable?
+is-broken: Out of order?
+broken: Out of order
+is-lost: Lost?
+lost: Lost
+purchase-date: Purchase date
+material-is-discountable: >-
+    The material is "discountable": a discount amount can be applied to this material.
+hidden-on-invoice: Hidden on invoice?
+material-not-displayed-on-invoice: The material is not displayed on invoices.
+price-must-be-zero: the rental price must be 0
+all-parks: All parks combined
+all-categories: All categories
+all-sub-categories: All sub-categories
+not-categorized: Not categorized
+not-limited: not limited
+open-trash-bin: Display trash bin
+display-not-deleted-items: Display not deleted items
+created-at: 'Created at: {date}'
+updated-at: 'Updated at: {date}'
+state: State
+picture: Picture
+add-a-picture: Add a picture
+change-the-picture: Change the picture
+remove-the-picture: Remove the picture
+event-details: Event's details
+title: Title
+date: Date
+dates: Dates
+start-end-dates: Start and end dates
+start-date: Start Date
+end-date: End Date
+location: Location
+duration: Duration
+duration-days:
+    - 'Duration: {duration} day'
+    - 'Duration: {duration} days'
+hours-count: "{count} h"
+confirmed: Confirmed
+not-confirmed: Not confirmed
+is-billable: Is billable?
+event-is-now-billable: This event is now billable.
+is-not-billable-help: '"Loan" Mode: no billing.'
+is-billable-help: '"Rent" Mode: billing possible.'
+confirm-event: Confirm event
+unconfirm-event: Set event back on hold
+delete-event: Delete event
+duplicate-event: Duplicate event
+print: Print
+print-summary: Print this summary
+open: Open
+in: 'In {location}'
+for: 'For {beneficiary}'
+mobilization-period: 'Mobilization {period}'
+open-in-google-maps: Open in Google Maps
+or: or
+with: With
+into: into
+in-progress: in progress
+invoice: Invoice
+estimate: Estimate
+estimates: Estimates
+missing-beneficiary: Missing beneficiary
+requested-qty: Requested qty
+missing-qty: Missing qty
+position-held: Position held
+with-amount-of: 'for an amount of {amount}'
+with-amount-of-excl-tax: 'for an amount of {amount} excl. tax'
+discount: Discount
+without-discount: Without discount
+discount-rate: "{rate}\_% off"
+create-invoice: Create invoice
+create-estimate: Create estimate
+download: Download
+download-pdf: Download PDF file
+download-barcode: Download barcode
+total: Total
+taxes: "Taxes ({rate}%)\_:\_{amount}"
+tax: Tax
+degressive-rate: Degressive rate
+material-count:
+    - '{count} material'
+    - '{count} materials'
+materials-count-total:
+    - '{count} material in total'
+    - '{count} materials in total'
+used-count:
+    - '{count} used'
+    - '{count} used'
+no-items: No items
+events-count-total:
+    - 'Total {count} event'
+    - 'Total {count} events'
+stock-items-count: '{count} in stock'
+out-of-order-items-count: '{count} out of order'
+available-items-count:
+    - '{count} currently available'
+    - '{count} currently available'
+total-value: Total value
+total-quantity: 'Total quantity: {total}'
+daily-amount: 'Daily amount: {amount}'
+replacement-value-amount: "Remplacement value\_: {amount}"
+calculate: Calculate
+customization: Customization
+day: day
+days-count:
+    - '{duration} day'
+    - '{duration} days'
+price-per-day: "{price}\_/\_day"
+price-for-x-days:
+    - "{price}\_/\_{duration}\_day"
+    - "{price}\_/\_{duration}\_days"
+current: current
+time: time
+delete-selected: Delete-selected
+subtotal: Subtotal
+total-amount: Total amount
+total-amount-without-taxes: "Total amount excl. tax:\_{amount}"
+total-amount-after-discount: "Total excl. tax after discount:\_{amount}"
+total-replacement: 'Total replacement price: {total}'
+daily-total-without-tax: 'Daily total excl. tax:'
+daily-total: 'Daily total:'
+total-without-taxes: 'Total excl. tax:'
+total-taxes: 'Taxes:'
+total-with-taxes: 'Total incl. taxes:'
+total-dots: "Total:"
+excl-tax: excl. tax
+ratio: ratio
+ratio-long: Ratio
+tags: Tags
+add-tags: Add tags
+remaining-count: '{count} remaining'
+departure-inventory: Departure inventory
+return-inventory: Return inventory
+grouped-by: 'Display grouped by:'
+not-grouped: Not grouped
+start-on: Start on
+expected-end-on: Expected end on
+back-to-home: Back to homepage
+back-to-schedule: Back to schedule
+previous-month: Previous month
+next-month: Next month
+used-by: Used by
+events-count:
+    - '{count} event'
+    - '{count} events'
+use: Use
+create-company: Add a new company
+inventories: Inventories
+terminate-inventory: Terminate inventory
+inventory-validation-error: Some quantities are not valid. Please double-check the list.
+reuse-list-from-event: Add materials from another event...
+choose-event-to-reuse-materials-list: Choose an event to reuse its materials list
+type-to-search-event: Type in to search an event...
+and-count-more-older-events:
+    - ...and one older event.
+    - '...and {count} older events.'
+choose: Choose
+use-these-materials: Use these materials
+choose-another-one: Choose another one
+created-by: Created by
+event: Event
+events: Events
+user: User
+beneficiary: Beneficiary
+main-beneficiary: Main Beneficiary
+borrower: Borrower
+technicians: Technicians
+material: Material
+category: Category
+sub-category: Sub-category
+categories: Categories
+parks: Parks
+technician: Technician
+subject: Subject
+subject-is: "Subject\_: {subject}"
+message-body: Message body
+this-feature-is-coming-soon: This feature implementation is in progress.
+external-links:
+    official-website: Official website
+    support-platform: Support platform
+select-no-options: No options available.
+select-no-matching-result: No matching options.
+remove-park-context: Remove global park context
+confirm-cancel-upload-change-tab: >-
+    Please note that a file is currently being uploaded. If you leave this tab,
+    it will be cancelled. Are you sure you want to continue?
+confirm-cancel-upload-close-modal: >-
+    Please note that a file is currently being uploaded. if you close this
+    window, it will be cancelled. Are you sure you want to continue?
+
+'@event':
+    confirm-delete: Move this event in trash bin?
+    event-missing-materials: Missing materials
+    event-missing-materials-help: >-
+        These are the missing materials for the period of the event, because it
+        is used in another event, the number needed is
+        too high, or there are some out of order.
+    missing-material-count: "Need {quantity}, missing\_{missing}"
+    warning-no-beneficiary: 'Warning: this event has no beneficiaries!'
+    warning-no-material: 'Warning: this event is empty; it contains no materials.'
+    event-not-confirmed-help: The event is not confirmed yet. It is subject to change at any time.
+    event-confirmed-help: 'The event is confirmed: its information should no longer change.'
+    statuses:
+        is-past: This event is past.
+        is-currently-running: This event is currently running.
+        is-confirmed: This event is confirmed.
+        is-not-confirmed: This event is not confirmed yet!
+        is-archived: This event is archived.
+        is-locked: >-
+            This event is locked because it's confirmed or its return inventory
+            is done.
+        has-missing-materials: This event has missing materials.
+        needs-its-return-inventory: It's necessary to make the return inventory of this event!
+        has-not-returned-materials: This event has some not-returned materials.

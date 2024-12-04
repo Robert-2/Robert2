@@ -1,9 +1,8 @@
 import { z } from '@/utils/validation';
-import Decimal from 'decimal.js';
 import requester from '@/globals/requester';
 import { UserSchema } from './users';
+import { MaterialWithContextExcerptSchema } from './materials';
 import { DocumentSchema } from './documents';
-import { createMaterialSchema } from './materials';
 import { TechnicianSchema } from './technicians';
 import { withCountedEnvelope } from './@schema';
 import { EstimateSchema } from './estimates';
@@ -13,6 +12,7 @@ import {
 } from './beneficiaries';
 
 import type Period from '@/utils/period';
+import type { ZodRawShape } from 'zod';
 import type { CountedData } from './@types';
 import type { SchemaInfer } from '@/utils/validation';
 import type { Document } from './documents';
@@ -22,7 +22,6 @@ import type { Material } from './materials';
 import type { Technician } from './technicians';
 import type { Beneficiary } from './beneficiaries';
 import type { AxiosRequestConfig as RequestConfig } from 'axios';
-import type { ZodRawShape } from 'zod';
 
 // ------------------------------------------------------
 // -
@@ -43,29 +42,86 @@ export const EventTechnicianSchema = z.strictObject({
     technician: z.lazy(() => TechnicianSchema),
 });
 
+const EventTaxSchema = z.strictObject({
+    name: z.string(),
+    is_rate: z.boolean(),
+    value: z.decimal(),
+});
+
+const EventTaxTotalSchema = EventTaxSchema
+    .extend({ total: z.decimal() });
+
 //
 // -- Event material schemas / factory
 //
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const createEventMaterialSchema = <T extends ZodRawShape>(augmentation: T) => {
-    const pivotSchema = z
-        .strictObject({
-            quantity: z.number().positive(),
-            quantity_departed: z.number().nonnegative().nullable(),
-            quantity_returned: z.number().nonnegative().nullable(),
-            quantity_returned_broken: z.number().nonnegative().nullable(),
-            departure_comment: z.string().nullable(),
-        })
-        .extend<T>(augmentation);
+const EventMaterialBaseSchema = z.strictObject({
+    id: z.number(), // - Id du matériel.
+    name: z.string(),
+    reference: z.string(),
+    category_id: z.number().nullable(),
+    material: z.lazy(() => MaterialWithContextExcerptSchema),
+    quantity: z.number().positive(),
+    quantity_departed: z.number().nonnegative().nullable(),
+    quantity_returned: z.number().nonnegative().nullable(),
+    quantity_returned_broken: z.number().nonnegative().nullable(),
+    departure_comment: z.string().nullable(),
+    unit_replacement_price: z.decimal().nullable(),
+    total_replacement_price: z.decimal().nullable(),
+});
 
-    return z.lazy(() => createMaterialSchema({ pivot: pivotSchema }));
-};
+const createEventMaterialSchemaFactory = <T extends ZodRawShape>(augmentation: T) => (
+    <InnerT extends ZodRawShape>(innerAugmentation: InnerT) => (
+        EventMaterialBaseSchema
+            .extend<T>(augmentation)
+            .extend<InnerT>(innerAugmentation)
+    )
+);
 
-const EventMaterialSchema = createEventMaterialSchema({});
+const createMaterialNotBillableSchema = createEventMaterialSchemaFactory({});
+const createMaterialBillableSchema = createEventMaterialSchemaFactory({
+    unit_price: z.decimal(),
+    degressive_rate: z.decimal(),
+    unit_price_period: z.decimal(),
+    total_without_discount: z.decimal(),
+    discount_rate: z.decimal(),
+    total_discount: z.decimal(),
+    total_without_taxes: z.decimal(),
+    taxes: z.lazy(() => EventTaxSchema.array()),
+});
 
-const EventMaterialWithQuantityMissingSchema = createEventMaterialSchema({
+// - Matériel d'événement de base.
+export const EventMaterialNotBillableSchema = createMaterialNotBillableSchema({});
+export const EventMaterialBillableSchema = createMaterialBillableSchema({});
+export const EventMaterialSchema = z.union([
+    EventMaterialNotBillableSchema,
+    EventMaterialBillableSchema,
+]);
+
+// - Matériel d'événement avec quantité manquante.
+const EventMaterialNotBillableWithQuantityMissingSchema = createMaterialNotBillableSchema({
     quantity_missing: z.number().nonnegative(),
+});
+const EventMaterialBillableWithQuantityMissingSchema = createMaterialBillableSchema({
+    quantity_missing: z.number().nonnegative(),
+});
+const EventMaterialWithQuantityMissingSchema = z.union([
+    EventMaterialBillableWithQuantityMissingSchema,
+    EventMaterialNotBillableWithQuantityMissingSchema,
+]);
+
+//
+// -- Event extra schemas / factories
+//
+
+export const EventExtraSchema = z.strictObject({
+    id: z.number(),
+    description: z.string(),
+    quantity: z.number().positive(),
+    unit_price: z.decimal(),
+    tax_id: z.number().nullable(),
+    taxes: z.lazy(() => EventTaxSchema.array()),
+    total_without_taxes: z.decimal(),
 });
 
 //
@@ -89,6 +145,7 @@ export const EventSchema = EventSummarySchema.extend({
     is_archived: z.boolean(),
     is_departure_inventory_done: z.boolean(),
     is_return_inventory_done: z.boolean(),
+    materials_count: z.number().nonnegative(),
     note: z.string().nullable(),
     created_at: z.datetime(),
     updated_at: z.datetime().nullable(),
@@ -105,11 +162,11 @@ export const createEventDetailsSchema = <T extends ZodRawShape>(augmentation: T)
         })
         .extend({
             total_replacement: z.decimal(),
-            currency: z.string(),
+            currency: z.currency(),
+            has_deleted_materials: z.boolean(),
             beneficiaries: z.lazy(() => BeneficiarySchema.array()),
             technicians: z.lazy(() => EventTechnicianSchema.array()),
-            materials: z.lazy(() => EventMaterialSchema.array()),
-            note: z.string().nullable(),
+            note: z.string().nullable().optional(),
             author: z.lazy(() => UserSchema).nullable(),
         })
         .extend<T>(augmentation)
@@ -155,21 +212,20 @@ export const createEventDetailsSchema = <T extends ZodRawShape>(augmentation: T)
         .and(z.discriminatedUnion('is_billable', [
             z.object({ // TODO: `strictObject` lorsque ce sera possible.
                 is_billable: z.literal(true),
-                estimates: z.lazy(() => EstimateSchema.array()),
-                invoices: z.lazy(() => InvoiceSchema.array()),
-                degressive_rate: z.decimal(),
-                discount_rate: z.decimal(),
-                vat_rate: z.decimal(),
-                daily_total: z.decimal(),
-                total_without_discount: z.decimal(),
-                total_discountable: z.decimal(),
-                total_discount: z.decimal(),
+                materials: z.lazy(() => EventMaterialBillableSchema.array()),
+                extras: z.lazy(() => EventExtraSchema.array()),
+                estimates: z.lazy(() => EstimateSchema.array()).optional(),
+                invoices: z.lazy(() => InvoiceSchema.array()).optional(),
+                total_without_global_discount: z.decimal(),
+                global_discount_rate: z.decimal(),
+                total_global_discount: z.decimal(),
                 total_without_taxes: z.decimal(),
-                total_taxes: z.decimal(),
+                total_taxes: z.lazy(() => EventTaxTotalSchema.array()),
                 total_with_taxes: z.decimal(),
             }),
             z.object({ // TODO: `strictObject` lorsque ce sera possible.
                 is_billable: z.literal(false),
+                materials: z.lazy(() => EventMaterialNotBillableSchema.array()),
             }),
         ]))
 );
@@ -202,10 +258,19 @@ export type EventSummary = SchemaInfer<typeof EventSummarySchema>;
 // - Secondary Types
 //
 
-export type EventMaterial = SchemaInfer<typeof EventMaterialSchema>;
+export type EventMaterial<IsBillable extends boolean = boolean> =
+    IsBillable extends true
+        ? SchemaInfer<typeof EventMaterialBillableSchema>
+        : SchemaInfer<typeof EventMaterialNotBillableSchema>;
+
 export type EventMaterialWithQuantityMissing = SchemaInfer<typeof EventMaterialWithQuantityMissingSchema>;
 
+export type EventExtra = SchemaInfer<typeof EventExtraSchema>;
+
 export type EventTechnician = SchemaInfer<typeof EventTechnicianSchema>;
+
+export type EventTax = SchemaInfer<typeof EventTaxSchema>;
+export type EventTaxTotal = SchemaInfer<typeof EventTaxTotalSchema>;
 
 //
 // - Edition
@@ -225,10 +290,11 @@ export type EventEdit = {
     note?: string | null,
 };
 
-type EventDuplicatePayload = Nullable<{
-    operation_period: Period,
-    mobilization_period: Period,
-}>;
+type EventDuplicatePayload = {
+    operation_period: Period | null,
+    mobilization_period: Period | null,
+    keepBillingData?: boolean,
+};
 
 type EventReturnInventoryMaterial = {
     id: Material['id'],
@@ -256,6 +322,7 @@ export type EventTechnicianEdit = {
 type GetAllParams = {
     search?: string,
     exclude?: number | undefined,
+    onlySelectable?: boolean,
 };
 
 // ------------------------------------------------------
@@ -324,13 +391,13 @@ const cancelReturnInventory = async (id: Event['id']): Promise<EventDetails> => 
     return EventDetailsSchema.parse(response.data);
 };
 
-const createInvoice = async (id: Event['id'], discountRate: Decimal = new Decimal(0)): Promise<Invoice> => {
-    const response = await requester.post(`/events/${id}/invoices`, { discountRate });
+const createInvoice = async (id: Event['id']): Promise<Invoice> => {
+    const response = await requester.post(`/events/${id}/invoices`);
     return InvoiceSchema.parse(response.data);
 };
 
-const createEstimate = async (id: Event['id'], discountRate: Decimal = new Decimal(0)): Promise<Estimate> => {
-    const response = await requester.post(`/events/${id}/estimates`, { discountRate });
+const createEstimate = async (id: Event['id']): Promise<Estimate> => {
+    const response = await requester.post(`/events/${id}/estimates`);
     return EstimateSchema.parse(response.data);
 };
 

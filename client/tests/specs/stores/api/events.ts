@@ -163,26 +163,44 @@ describe('Events Api', () => {
     describe('missingMaterials()', () => {
         it('parse the returned data correctly', async () => {
             const _data = [
-                Object.assign(materials.default(6), {
-                    pivot: {
-                        quantity: 2,
-                        quantity_missing: 1,
-                        quantity_departed: 1,
-                        quantity_returned: 1,
-                        quantity_returned_broken: 0,
-                        departure_comment: null,
+                {
+                    id: 6,
+                    name: `Behringer X Air XR18`,
+                    reference: 'XR18',
+                    category_id: 1,
+                    quantity: 2,
+                    quantity_departed: 1,
+                    quantity_returned: 1,
+                    quantity_returned_broken: 0,
+                    quantity_missing: 1,
+                    departure_comment: null,
+                    unit_replacement_price: '49.99',
+                    total_replacement_price: '99.98',
+                    material: {
+                        ...materials.withContextExcerpt(6),
+                        degressive_rate: '30.93',
+                        rental_price_period: '1546.19',
                     },
-                }),
-                Object.assign(materials.default(7), {
-                    pivot: {
-                        quantity: 3,
-                        quantity_missing: 2,
-                        quantity_departed: null,
-                        quantity_returned: 0,
-                        quantity_returned_broken: 0,
-                        departure_comment: null,
+                },
+                {
+                    id: 7,
+                    name: `Voiture 1`,
+                    reference: 'V-1',
+                    category_id: 3,
+                    quantity: 3,
+                    quantity_departed: null,
+                    quantity_returned: 0,
+                    quantity_returned_broken: 0,
+                    quantity_missing: 2,
+                    departure_comment: null,
+                    unit_replacement_price: '32000.00',
+                    total_replacement_price: '96000.00',
+                    material: {
+                        ...materials.withContextExcerpt(7),
+                        degressive_rate: '30.75',
+                        rental_price_period: '9225.00',
                     },
-                }),
+                },
             ];
             jest.spyOn(requester, 'get').mockResolvedValue({ data: _data });
             expect(await apiEvents.missingMaterials(4)).toMatchSnapshot();

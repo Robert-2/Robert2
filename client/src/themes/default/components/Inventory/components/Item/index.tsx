@@ -1,4 +1,3 @@
-import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import Material from './Material';
 

@@ -1,25 +1,68 @@
 @use '~@/themes/default/style/globals';
 
 .GlobalSettingsSubPage {
+    $block: &;
+
+    display: flex;
+    flex-direction: column;
     max-width: 1000px;
     margin: 0 auto;
 
     &__header {
+        display: flex;
         margin-bottom: globals.$spacing-large;
         padding-bottom: globals.$spacing-medium;
         border-bottom: 1px solid globals.$divider-color;
+        gap: globals.$spacing-small;
+
+        &__main {
+            flex: 1;
+        }
+
+        &__actions {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: globals.$spacing-small;
+        }
+
+        &__title {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        &__sub-title {
+            color: globals.$text-light-color;
+        }
     }
 
-    &__title {
-        margin: 0;
-        font-size: 1.8rem;
+    &__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        &__error {
+            flex: 0;
+            margin: 0 0 globals.$spacing-medium;
+            color: globals.$text-danger-color;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        &__content {
+            flex: 1;
+        }
     }
 
-    &__sub-title {
-        color: globals.$text-light-color;
-    }
+    //
+    // - Modifiers
+    //
 
-    &__help {
-        margin-bottom: globals.$spacing-large;
+    &--centered {
+        #{$block}__body__content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
     }
 }

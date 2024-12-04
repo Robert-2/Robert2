@@ -1,0 +1,50 @@
+@use '~@/themes/default/style/globals';
+
+.EventEdit {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+
+    &__sidebar {
+        position: fixed;
+        display: none;
+        flex-direction: column;
+        width: 160px;
+        padding: 0 0 7px;
+        text-align: right;
+        gap: globals.$spacing-medium;
+
+        &__error {
+            text-align: center;
+        }
+    }
+
+    &__body {
+        flex: 1;
+        overflow: auto;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__sidebar {
+            display: flex;
+        }
+
+        &__body {
+            margin-left: 180px;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        &__sidebar {
+            width: 200px;
+        }
+
+        &__body {
+            margin-left: 220px;
+        }
+    }
+}

@@ -21,21 +21,21 @@ describe('Technicians Api', () => {
     });
 
     describe('one()', () => {
-        it.each(data.default())('parse the returned data correctly (with #$id)', async (datum: any) => {
+        it.each(data.details())('parse the returned data correctly (with #$id)', async (datum: any) => {
             jest.spyOn(requester, 'get').mockResolvedValue({ data: datum });
             expect(await apiTechnicians.one(datum.id)).toMatchSnapshot();
         });
     });
 
     describe('create()', () => {
-        it.each(data.default())('parse the returned data correctly (with #$id)', async (datum: any) => {
+        it.each(data.details())('parse the returned data correctly (with #$id)', async (datum: any) => {
             jest.spyOn(requester, 'post').mockResolvedValue({ data: datum });
             expect(await apiTechnicians.create({} as any)).toMatchSnapshot();
         });
     });
 
     describe('update()', () => {
-        it.each(data.default())('parse the returned data correctly (with #$id)', async (datum: any) => {
+        it.each(data.details())('parse the returned data correctly (with #$id)', async (datum: any) => {
             jest.spyOn(requester, 'put').mockResolvedValue({ data: datum });
             expect(await apiTechnicians.update(datum.id, {} as any)).toMatchSnapshot();
         });
@@ -64,7 +64,7 @@ describe('Technicians Api', () => {
     });
 
     describe('restore()', () => {
-        it.each(data.default())('parse the returned data correctly (with #$id)', async (datum: any) => {
+        it.each(data.details())('parse the returned data correctly (with #$id)', async (datum: any) => {
             jest.spyOn(requester, 'put').mockResolvedValue({ data: datum });
             expect(await apiTechnicians.restore(datum.id)).toMatchSnapshot();
         });

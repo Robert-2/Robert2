@@ -2,8 +2,9 @@ title: "Dupliquer l'événement «\_{title}\_»"
 
 operation-period: Dates du nouvel événement
 mobilization-period: Période de mobilisation du matériel
-mobilization-period-help: "Période pendant laquelle le matériel est mobilisé pour le nouvel événement."
-sync-mobilization-period: Utiliser une période de mobilisation du matériel identique aux dates de l'événement ?
+mobilization-period-help: Période pendant laquelle le matériel est mobilisé pour le nouvel événement.
+sync-mobilization-period: "Utiliser une période de mobilisation du matériel identique aux dates de l'événement\_?"
+keep-billing-data: "Conserver les tarifs des matériels et remises de l'événement d'origine\_?"
 
 please-choose-dates: Veuillez choisir les dates du nouvel événement.
 new-event-saved: Le nouvel événement a été sauvegardé.

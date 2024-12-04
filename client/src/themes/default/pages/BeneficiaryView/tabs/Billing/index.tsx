@@ -1,7 +1,7 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import Invoices from './Invoices';
@@ -60,10 +60,9 @@ const BeneficiaryViewBilling = defineComponent({
 
                 this.estimates = estimates;
                 this.invoices = invoices;
+                this.isFetched = true;
             } catch {
                 this.hasCriticalError = true;
-            } finally {
-                this.isFetched = true;
             }
         },
     },
@@ -73,7 +72,7 @@ const BeneficiaryViewBilling = defineComponent({
         if (hasCriticalError || !isFetched) {
             return (
                 <div class="BeneficiaryViewBilling BeneficiaryViewBilling--loading-error">
-                    {hasCriticalError ? <CriticalError type={ERROR.UNKNOWN} /> : <Loading />}
+                    {hasCriticalError ? <CriticalError type={ErrorType.UNKNOWN} /> : <Loading />}
                 </div>
             );
         }

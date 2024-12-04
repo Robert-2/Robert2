@@ -11,8 +11,15 @@ import type { SchemaInfer } from '@/utils/validation';
 // -
 // ------------------------------------------------------
 
+/** Entité concernée par l'attribut. */
+export enum AttributeEntity {
+    MATERIAL = 'material',
+}
+
+/** Type d'attribut. */
 export enum AttributeType {
     STRING = 'string',
+    TEXT = 'text',
     INTEGER = 'integer',
     FLOAT = 'float',
     BOOLEAN = 'boolean',
@@ -22,6 +29,7 @@ export enum AttributeType {
 const AttributeBaseSchema = z.strictObject({
     id: z.number(),
     name: z.string(),
+    entities: z.array(z.nativeEnum(AttributeEntity)),
 });
 
 // NOTE: Pour le moment, pas moyen de faire ça mieux en gardant l'objet `strict`.
@@ -44,6 +52,9 @@ export const AttributeSchema = z.discriminatedUnion('type', [
     AttributeBaseSchema.extend({
         type: z.literal(AttributeType.DATE),
     }),
+    AttributeBaseSchema.extend({
+        type: z.literal(AttributeType.TEXT),
+    }),
 ]);
 
 // NOTE: Pour le moment, pas moyen de faire ça mieux en gardant l'objet `strict`.
@@ -52,6 +63,10 @@ export const AttributeWithValueSchema = z.discriminatedUnion('type', [
     AttributeBaseSchema.extend({
         type: z.literal(AttributeType.STRING),
         max_length: z.number().nullable(),
+        value: z.string().nullable(),
+    }),
+    AttributeBaseSchema.extend({
+        type: z.literal(AttributeType.TEXT),
         value: z.string().nullable(),
     }),
     AttributeBaseSchema.extend({
@@ -92,7 +107,7 @@ export const AttributeDetailsSchema = (() => {
             ),
         }),
         baseSchema.extend({
-            type: z.enum([AttributeType.BOOLEAN, AttributeType.DATE]),
+            type: z.enum([AttributeType.TEXT, AttributeType.BOOLEAN, AttributeType.DATE]),
         }),
     ]);
 })();
@@ -115,6 +130,7 @@ export type AttributeDetails = SchemaInfer<typeof AttributeDetailsSchema>;
 
 export type AttributeCreate = {
     name: string,
+    entities: AttributeEntity[],
     type?: AttributeType,
     unit?: string,
     max_length?: string | number | null,
@@ -130,8 +146,11 @@ export type AttributeEdit = Omit<AttributeCreate, 'type'>;
 // -
 // ------------------------------------------------------
 
-const all = async (categoryId?: Category['id'] | 'none'): Promise<AttributeDetails[]> => {
-    const params = { ...(categoryId !== undefined ? { category: categoryId } : {}) };
+const all = async (categoryId?: Category['id'] | 'none', entity?: AttributeEntity): Promise<AttributeDetails[]> => {
+    const params = {
+        ...(categoryId !== undefined ? { category: categoryId } : {}),
+        ...(entity !== undefined) ? { entity } : {},
+    };
     const response = await requester.get('/attributes', { params });
     return AttributeDetailsSchema.array().parse(response.data);
 };

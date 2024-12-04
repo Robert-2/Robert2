@@ -1,0 +1,90 @@
+@use '~@/themes/default/style/globals';
+
+.EventEditStepTechnicians {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 800px;
+    gap: globals.$spacing-small;
+
+    &__header {
+        flex: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: globals.$spacing-medium;
+
+        &__search {
+            flex: 0 0 280px;
+        }
+
+        &__help {
+            display: none;
+
+            @include globals.icon('info-circle') {
+                margin-right: globals.$spacing-small;
+            }
+        }
+    }
+
+    &__title {
+        flex: 0 0 auto;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 200;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__timeline {
+        min-height: 100%;
+    }
+
+    &__no-technician {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+
+        &__message {
+            margin-bottom: globals.$spacing-large;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            text-align: center;
+            white-space: pre-line;
+        }
+
+        &__actions {
+            display: flex;
+            gap: globals.$spacing-medium;
+        }
+    }
+
+    &__footer {
+        flex: 0;
+        display: flex;
+        justify-content: center;
+        padding: globals.$spacing-large 0;
+        gap: globals.$spacing-small;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-desktop) {
+        &__header {
+            &__help {
+                display: block;
+            }
+        }
+
+        &__footer {
+            gap: globals.$spacing-medium;
+        }
+    }
+}

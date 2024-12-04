@@ -29,11 +29,6 @@
         }
     }
 
-    &__help-stock-unitary {
-        margin: 0;
-        font-style: italic;
-    }
-
     &__park {
         display: flex;
         margin-top: globals.$spacing-medium;
@@ -43,6 +38,35 @@
         #{$block}__park-location {
             flex: 1;
             margin-top: 0;
+        }
+    }
+
+    &__billing {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-medium;
+
+        &__switches {
+            display: flex;
+            justify-content: space-around;
+            gap: globals.$spacing-medium;
+
+            &__item {
+                // stylelint-disable-next-line declaration-no-important
+                margin: 0 !important;
+            }
+        }
+
+        &__parameters {
+            display: flex;
+            gap: globals.$spacing-medium;
+
+            &__item {
+                flex: 1;
+
+                // stylelint-disable-next-line declaration-no-important
+                margin: 0 !important;
+            }
         }
     }
 

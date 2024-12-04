@@ -1,0 +1,122 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.DefaultLayoutSidebarUser {
+    $block: &;
+
+    position: relative;
+
+    &__main {
+        display: flex;
+        align-items: center;
+        border-left: 4px solid transparent;
+        user-select: none;
+        cursor: pointer;
+        gap: globals.$spacing-small;
+        transition: all 300ms;
+
+        // stylelint-disable-next-line order/properties-order
+        padding:
+            globals.$spacing-medium
+            globals.$spacing-medium
+            globals.$spacing-medium
+            globals.$spacing-small;
+
+        @include globals.icon('chevron-up', 'solid', true) {
+            flex: 0 0 auto;
+            font-size: 0.8rem;
+        }
+
+        &__avatar {
+            $size: 28px;
+
+            flex: 0 0 $size;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: $size;
+            height: $size;
+            padding-bottom: 1px;
+            border-radius: 50%;
+            background-color: globals.$primary-color;
+            color: globals.$link-active-color;
+        }
+
+        &__text {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        &__name,
+        &__email {
+            display: block;
+            overflow: hidden;
+            width: 100%;
+            min-width: 0;
+            text-overflow: ellipsis;
+        }
+
+        &__name {
+            font-weight: 600;
+        }
+
+        &__email {
+            color: globals.$text-light-color;
+            transition: color 300ms;
+        }
+
+        &:hover {
+            background-color: rgba(globals.$primary-color, 0.1);
+        }
+
+        //
+        // - Responsive
+        //
+
+        @media (min-width: globals.$screen-mobile) and (max-width: globals.$screen-desktop) {
+            padding: globals.$spacing-medium globals.$spacing-small;
+
+            &__text {
+                display: none;
+            }
+        }
+    }
+
+    &__dropdown {
+        position: absolute;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+    }
+
+    //
+    // - États
+    //
+
+    &--active,
+    &--dropdown-open {
+        #{$block}__main {
+            background-color: rgba(globals.$primary-color, 0.1);
+            color: globals.$link-active-color;
+
+            &__email {
+                color: globals.$text-soft-color;
+            }
+        }
+    }
+
+    &--dropdown-open {
+        #{$block}__main {
+            @include globals.icon('chevron-down', 'solid', true) {
+                flex: 0 0 auto;
+                font-size: 0.8rem;
+            }
+        }
+    }
+
+    &--active {
+        #{$block}__main {
+            border-color: globals.$primary-color;
+        }
+    }
+}

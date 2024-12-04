@@ -1,0 +1,9 @@
+# - Formats simples.
+on-date: 'le {date}'
+from-date: "du\_{date}"
+to-date: "au\_{date}"
+from-date-to-date: "du\_{from} au\_{to}"
+
+# - Formats "dans une phrase".
+date-in-sentence: 'le {date}'
+period-in-sentence: 'la période du {from} au {to}'

@@ -4,9 +4,10 @@ menu:
     materials: Matériel
     technicians: Techniciens
     beneficiaries: Bénéficiaires
-    categories: Catégories
-    tags: Tags
     parks: Parcs de matériel
     users: Utilisateurs
     settings: Paramètres
-    online-booking: Réservation en ligne
+    your-settings: Vos paramètres
+    logout-quit: Quitter Loxya
+    confirm-logout: "Voulez-vous vraiment vous déconnecter\_?"
+    yes-logout: "Oui, déconnexion"

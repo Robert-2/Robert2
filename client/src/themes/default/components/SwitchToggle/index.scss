@@ -63,7 +63,8 @@ $size: 1.7rem;
     }
 
     &__disabled-reason {
-        font-style: italic;
+        color: globals.$text-light-color;
+        font-size: 1.1rem;
     }
 
     //

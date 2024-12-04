@@ -14,7 +14,7 @@ import type { Settings, SettingsEdit } from '@/stores/api/settings';
 
 type Data = {
     isSaving: boolean,
-    validationErrors: Record<string, string[]> | null,
+    validationErrors: Record<string, string> | null,
     values: {
         event: Pick<Settings['calendar']['event'], 'showLocation' | 'showBorrower'>,
         public: Pick<Settings['calendar']['public'], 'enabled'>,
@@ -189,13 +189,13 @@ const CalendarGlobalSettings = defineComponent({
                         <FormField
                             type="switch"
                             label="page.settings.calendar.showLocation"
-                            errors={validationErrors?.['calendar.event.showLocation']}
+                            error={validationErrors?.['calendar.event.showLocation']}
                             v-model={values.event.showLocation}
                         />
                         <FormField
                             type="switch"
                             label="page.settings.calendar.showBorrower"
-                            errors={validationErrors?.['calendar.event.showBorrower']}
+                            error={validationErrors?.['calendar.event.showBorrower']}
                             v-model={values.event.showBorrower}
                         />
                     </Fieldset>
@@ -206,7 +206,7 @@ const CalendarGlobalSettings = defineComponent({
                         <FormField
                             type="switch"
                             label="page.settings.calendar.enable-public-calendar"
-                            errors={validationErrors?.['calendar.public.enabled']}
+                            error={validationErrors?.['calendar.public.enabled']}
                             v-model={values.public.enabled}
                         />
                         {renderPublicCalendarUrl()}

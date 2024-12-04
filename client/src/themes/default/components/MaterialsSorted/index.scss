@@ -1,6 +1,8 @@
 @use '~@/themes/default/style/globals';
 
 .MaterialsSorted {
+    $block: &;
+
     display: flex;
     flex-direction: column;
     gap: globals.$spacing-medium;

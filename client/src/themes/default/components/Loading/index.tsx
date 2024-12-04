@@ -24,7 +24,7 @@ type Data = {
 };
 
 /** Un indicateur de chargement. */
-export default defineComponent({
+const Loading = defineComponent({
     name: 'Loading',
     props: {
         horizontal: {
@@ -74,3 +74,5 @@ export default defineComponent({
         );
     },
 });
+
+export default Loading;

@@ -15,7 +15,8 @@ const formatAttributeValue = (__: I18nTranslate, attribute: AttributeWithValue):
     const { type, value } = attribute;
 
     switch (type) {
-        case AttributeType.STRING: {
+        case AttributeType.STRING:
+        case AttributeType.TEXT: {
             return value;
         }
         case AttributeType.INTEGER:

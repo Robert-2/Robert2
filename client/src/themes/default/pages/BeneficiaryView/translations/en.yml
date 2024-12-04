@@ -21,7 +21,7 @@ billing:
     no-invoices: No invoices for this beneficiary.
     invoices-title: Invoices
     invoices-count: ["{count} invoice", "{count} invoices"]
-    invoices-total-excl-tax: Total {amount} excl. tax
+    invoices-total-excl-tax: "Total excl. tax: {amount}"
 
 borrowings:
     title: Borrowings ({count})

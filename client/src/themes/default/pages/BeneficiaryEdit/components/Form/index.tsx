@@ -2,7 +2,6 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import pick from 'lodash/pick';
 import cloneDeep from 'lodash/cloneDeep';
-import { Group } from '@/stores/api/groups';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
@@ -25,7 +24,7 @@ type Props = {
     isSaving?: boolean,
 
     /** Liste des erreurs de validation éventuelles. */
-    errors?: Record<keyof BeneficiaryEdit, string[]>,
+    errors?: Record<string, string>,
 };
 
 type Data = {
@@ -68,7 +67,7 @@ const BeneficiaryEditForm = defineComponent({
             default: null,
         },
     },
-    emits: ['change', 'cancel', 'submit'],
+    emits: ['cancel', 'submit'],
     data(): Data {
         const data = {
             ...DEFAULT_VALUES,
@@ -76,13 +75,11 @@ const BeneficiaryEditForm = defineComponent({
             email: this.savedData?.user?.email ?? this.savedData?.email ?? null,
         };
 
-        return { data };
+        return {
+            data,
+        };
     },
     computed: {
-        isAdmin(): boolean {
-            return this.$store.getters['auth/is'](Group.ADMIN);
-        },
-
         hasUserAccount(): boolean {
             return !!this.savedData?.user;
         },
@@ -101,13 +98,8 @@ const BeneficiaryEditForm = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleChange() {
-            this.$emit('change', cloneDeep(this.data));
-        },
-
         handleChangeCompany(companyId: Company['id'] | null) {
             this.data.company_id = companyId || null;
-            this.$emit('change', cloneDeep(this.data));
         },
 
         handleSubmit(e: SubmitEvent) {
@@ -129,7 +121,6 @@ const BeneficiaryEditForm = defineComponent({
             countriesOptions,
             hasUserAccount,
             isSaving,
-            handleChange,
             handleChangeCompany,
             handleSubmit,
             handleCancel,
@@ -172,7 +163,6 @@ const BeneficiaryEditForm = defineComponent({
             <form
                 class="Form Form--fixed-actions BeneficiaryEditForm"
                 onSubmit={handleSubmit}
-                onChange={handleChange}
             >
                 <Fieldset>
                     <div class="BeneficiaryEditForm__name">
@@ -180,7 +170,7 @@ const BeneficiaryEditForm = defineComponent({
                             label="first-name"
                             class="BeneficiaryEditForm__first-name"
                             v-model={data.first_name}
-                            errors={errors?.first_name}
+                            error={errors?.first_name}
                             autocomplete="off"
                             required
                         />
@@ -188,7 +178,7 @@ const BeneficiaryEditForm = defineComponent({
                             label="last-name"
                             class="BeneficiaryEditForm__last-name"
                             v-model={data.last_name}
-                            errors={errors?.last_name}
+                            error={errors?.last_name}
                             autocomplete="off"
                             required
                         />
@@ -196,7 +186,7 @@ const BeneficiaryEditForm = defineComponent({
                     <FormField
                         label="reference"
                         v-model={data.reference}
-                        errors={errors?.reference}
+                        error={errors?.reference}
                         help={__('page.beneficiary-edit.help-reference')}
                     />
                 </Fieldset>
@@ -212,20 +202,13 @@ const BeneficiaryEditForm = defineComponent({
                         type="tel"
                         autocomplete="off"
                         v-model={data.phone}
-                        errors={errors?.phone}
-                    />
-                    <FormField
-                        label="email"
-                        type="email"
-                        autocomplete="off"
-                        v-model={data.email}
-                        errors={errors?.email}
+                        error={errors?.phone}
                     />
                     <FormField
                         label="street"
                         autocomplete="off"
                         v-model={data.street}
-                        errors={errors?.street}
+                        error={errors?.street}
                     />
                     <div class="BeneficiaryEditForm__locality">
                         <FormField
@@ -233,14 +216,14 @@ const BeneficiaryEditForm = defineComponent({
                             class="BeneficiaryEditForm__postal-code"
                             autocomplete="off"
                             v-model={data.postal_code}
-                            errors={errors?.postal_code}
+                            error={errors?.postal_code}
                         />
                         <FormField
                             label="city"
                             class="BeneficiaryEditForm__city"
                             autocomplete="off"
                             v-model={data.locality}
-                            errors={errors?.locality}
+                            error={errors?.locality}
                         />
                     </div>
                     <FormField
@@ -249,8 +232,7 @@ const BeneficiaryEditForm = defineComponent({
                         autocomplete="off"
                         options={countriesOptions}
                         v-model={data.country_id}
-                        errors={errors?.country_id}
-                        onChange={handleChange}
+                        error={errors?.country_id}
                     />
                 </Fieldset>
                 <Fieldset title={__('other-infos')}>
@@ -259,7 +241,7 @@ const BeneficiaryEditForm = defineComponent({
                         type="textarea"
                         rows={4}
                         v-model={data.note}
-                        errors={errors?.note}
+                        error={errors?.note}
                     />
                 </Fieldset>
                 {renderUserAccountSection()}
