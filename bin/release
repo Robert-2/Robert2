@@ -97,6 +97,7 @@ mkdir -m 777 data/
 
 echo -e "\e[1m\e[34m-> Définition des permission des dossiers...\e[0m"
 chmod 777 src/App/Config
+find src/views -type f -exec chmod 664 {} \;
 
 echo -e "\e[1m\e[34m-> Installation des dépendances back-end...\e[0m"
 query=(

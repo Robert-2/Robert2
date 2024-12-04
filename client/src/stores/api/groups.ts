@@ -18,12 +18,6 @@ export enum Group {
      * planning général, en lecture seule.
      */
     READONLY_PLANNING_GENERAL = 'readonly-planning-general',
-
-    /**
-     * Représente le groupe des utilisateurs ayant uniquement accès
-     * à leur propre planning, en lecture seule.
-     */
-    READONLY_PLANNING_SELF = 'readonly-planning-self',
 }
 
 // ------------------------------------------------------
@@ -50,7 +44,6 @@ const all = (): GroupDetails[] => {
         { id: Group.ADMINISTRATION, name: __('groups.administration') },
         { id: Group.MANAGEMENT, name: __('groups.management') },
         { id: Group.READONLY_PLANNING_GENERAL, name: __('groups.readonly-planning-general') },
-        { id: Group.READONLY_PLANNING_SELF, name: __('groups.readonly-planning-self') },
     ];
 };
 

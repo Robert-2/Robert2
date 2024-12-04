@@ -8,7 +8,7 @@ import Notepad from '@/themes/default/components/Notepad';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
-import type { EventDetails, EventTechnician } from '@/stores/api/events';
+import type { EventDetails } from '@/stores/api/events';
 import type { DebouncedMethod } from 'lodash';
 import type { Session } from '@/stores/api/session';
 
@@ -71,23 +71,7 @@ const EventDetailsNote = defineComponent({
         readOnly(): boolean {
             const currentUser: Session = this.$store.state.auth.user;
 
-            if (currentUser.group === Group.READONLY_PLANNING_GENERAL) {
-                return true;
-            }
-
-            // - Si ce n'est pas un membre de l'équipe, on vérifie qu'il est
-            //   technicien assigné à l'événement
-            //   pour lui permettre de modifier les notes.
-            if (currentUser.group === Group.READONLY_PLANNING_SELF) {
-                const isAssignedToEvent = (this.event.technicians ?? []).some(
-                    (eventTechnician: EventTechnician) => (
-                        currentUser.id === eventTechnician.technician.user_id
-                    ),
-                );
-                return !isAssignedToEvent;
-            }
-
-            return false;
+            return currentUser.group === Group.READONLY_PLANNING_GENERAL;
         },
     },
     created() {

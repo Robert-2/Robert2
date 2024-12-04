@@ -106,8 +106,7 @@ access: Accès
 groups:
     administration: Administration
     management: Gestion
-    readonly-planning-general: Consultation du planning général
-    readonly-planning-self: Consultation de son planning
+    readonly-planning-general: Consultation du planning
     external: Externe
 owner: Propriétaire
 opening-hours: Horaires d'ouverture
@@ -219,7 +218,6 @@ create-invoice: Créer la facture
 create-estimate: Créer un devis
 download: Télécharger
 download-pdf: Télécharger au format PDF
-download-barcode: Télécharger le code-barre
 total: Total
 taxes: "Taxes ({rate}%)\_:\_{amount}"
 tax: Taxe
