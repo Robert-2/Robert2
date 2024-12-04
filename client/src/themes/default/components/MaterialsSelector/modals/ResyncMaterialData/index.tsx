@@ -278,7 +278,7 @@ const ResyncMaterialDataModal = defineComponent({
                             </table>
                         </form>
                     </div>
-                    <div class="ModalSubListEdition__footer">
+                    <div class="ResyncMaterialDataModal__footer">
                         <Button
                             type="primary"
                             onClick={handleSubmit}

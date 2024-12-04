@@ -1,6 +1,5 @@
 import './index.scss';
 import axios from 'axios';
-import config from '@/globals/config';
 import HttpCode from 'status-code-enum';
 import parseInteger from '@/utils/parseInteger';
 import { defineComponent } from '@vue/composition-api';
@@ -73,14 +72,6 @@ const MaterialView = defineComponent({
                     }
 
                     return [
-                        <Button
-                            icon="barcode"
-                            to={`${config.baseUrl}/material/${id}/barcode`}
-                            tooltip={__('download-barcode')}
-                            target="_blank"
-                            download
-                            external
-                        />,
                         <Button
                             type="edit"
                             to={{ name: 'edit-material', params: { id } }}

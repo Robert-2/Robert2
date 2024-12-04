@@ -5,7 +5,6 @@ title-edit: "Modifier l'utilisateur «\_{name}\_»"
 help-group:
     "- L'accès «\_Administration\_» donne tous les droits, dont celui de créer d'autres utilisateurs.\n
     - L'accès «\_Gestion\_» permet à l'utilisateur d'effectuer la plupart des opérations courantes.\n
-    - L'accès «\_Consultation du planning général\_» permet à l'utilisateur de consulter le planning.\n
-    - L'accès «\_Consultation de son planning\_» permet à l'utilisateur de consulter les données de planning qui le concerne uniquement.\n"
+    - L'accès «\_Consultation du planning\_» permet à l'utilisateur de consulter le planning, en lecture seule."
 
 saved: Utilisateur sauvegardé.

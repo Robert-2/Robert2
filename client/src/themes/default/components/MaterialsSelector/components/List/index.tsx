@@ -283,7 +283,7 @@ const MaterialsSelectorList = defineComponent({
         isMaterialEditable(material: SourceMaterial): boolean {
             // - Si le matériel n'est pas déjà sélectionné et qu'on est en
             //   edit only ou qu'il est supprimé, on empêche son edition.
-            const isAlreadySelected: boolean = store.getters.getAllListsQuantity(material.id) !== 0;
+            const isAlreadySelected: boolean = store.getters.getQuantity(material.id) !== 0;
             if (!isAlreadySelected && (this.isEditOnly || material.is_deleted)) {
                 return false;
             }

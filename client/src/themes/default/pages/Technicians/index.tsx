@@ -96,14 +96,6 @@ const Technicians = defineComponent({
                     ),
                 },
                 !isTrashDisplayed && {
-                    key: 'schedule-access',
-                    title: __('page.technicians.has-access-to-schedule'),
-                    class: 'Technicians__cell Technicians__cell--schedule-access',
-                    render: (h: CreateElement, { user_id: userId }: Technician) => (
-                        userId !== null ? __('yes') : __('no')
-                    ),
-                },
-                !isTrashDisplayed && {
                     key: 'address',
                     title: __('address'),
                     class: 'Technicians__cell Technicians__cell--address',

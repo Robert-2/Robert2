@@ -329,7 +329,7 @@ const InvoiceEditorResyncMaterialDataModal = defineComponent({
                             </table>
                         </form>
                     </div>
-                    <div class="ModalSubListEdition__footer">
+                    <div class="InvoiceEditorResyncMaterialDataModal__footer">
                         <Button
                             type="primary"
                             onClick={handleSubmit}

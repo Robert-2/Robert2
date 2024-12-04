@@ -106,8 +106,7 @@ access: Access
 groups:
     administration: Administration
     management: Management
-    readonly-planning-general: General schedule consultation
-    readonly-planning-self: Own schedule consultation
+    readonly-planning-general: Schedule consultation
     external: External
 owner: Owner
 opening-hours: Opening hours
@@ -221,7 +220,6 @@ create-invoice: Create invoice
 create-estimate: Create estimate
 download: Download
 download-pdf: Download PDF file
-download-barcode: Download barcode
 total: Total
 taxes: "Taxes ({rate}%)\_:\_{amount}"
 tax: Tax
