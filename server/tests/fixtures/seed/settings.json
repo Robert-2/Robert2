@@ -54,5 +54,13 @@
     {
         "key": "returnInventory.mode",
         "value": "start-empty"
+    },
+    {
+        "key": "billing.defaultTax",
+        "value": "1"
+    },
+    {
+        "key": "billing.defaultDegressiveRate",
+        "value": "1"
     }
 ]

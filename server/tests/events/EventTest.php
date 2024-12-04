@@ -6,7 +6,6 @@ namespace Loxya\Tests\Events;
 use Illuminate\Support\Carbon;
 use Loxya\Models\Estimate;
 use Loxya\Models\Event;
-use Loxya\Models\EventMaterial;
 use Loxya\Models\Invoice;
 use Loxya\Support\Period;
 use Loxya\Tests\TestCase;
@@ -15,7 +14,7 @@ final class EventTest extends TestCase
 {
     public function testDeleteEventAlsoRemoveInvoices(): void
     {
-        Event::findOrFail(1)->delete();
+        Event::findOrFail(1)->forceDelete();
 
         // - Si l'événement est supprimé, ses factures et devis doivent l'être aussi.
         //   (ceci est géré "manuellement" car ce sont des entités polymorphes)
@@ -39,10 +38,7 @@ final class EventTest extends TestCase
         //   => Pas de changement (l'inventaire est laissé comme "effectué")
         $setEventDate(new Period('2020-11-17', '2020-11-18', true));
         $this->assertTrue($event->is_departure_inventory_done);
-        foreach ($event->materials as $material) {
-            /** @var EventMaterial $eventMaterial */
-            $eventMaterial = $material->pivot;
-
+        foreach ($event->materials as $eventMaterial) {
             $this->assertNotNull($eventMaterial->quantity_departed);
         }
 
@@ -51,10 +47,7 @@ final class EventTest extends TestCase
         //   => Pas de changement (l'inventaire est laissé comme "effectué")
         $setEventDate(new Period('2023-12-18', '2023-12-19', true));
         $this->assertTrue($event->is_departure_inventory_done);
-        foreach ($event->materials as $material) {
-            /** @var EventMaterial $eventMaterial */
-            $eventMaterial = $material->pivot;
-
+        foreach ($event->materials as $eventMaterial) {
             $this->assertNotNull($eventMaterial->quantity_departed);
         }
 
@@ -62,10 +55,7 @@ final class EventTest extends TestCase
         //   ne serait pas possible sinon, on reset l'inventaire.
         $setEventDate(new Period('2023-12-20', '2023-12-21', true));
         $this->assertFalse($event->is_departure_inventory_done);
-        foreach ($event->materials as $material) {
-            /** @var EventMaterial $eventMaterial */
-            $eventMaterial = $material->pivot;
-
+        foreach ($event->materials as $eventMaterial) {
             $this->assertNull($eventMaterial->quantity_departed);
             $this->assertNull($eventMaterial->departure_comment);
         }
@@ -87,10 +77,7 @@ final class EventTest extends TestCase
         //   => Pas de changement (l'inventaire est laissé comme "effectué")
         $setEventDate(new Period('2020-11-17', '2020-11-18', true));
         $this->assertTrue($event->is_return_inventory_done);
-        foreach ($event->materials as $material) {
-            /** @var EventMaterial $eventMaterial */
-            $eventMaterial = $material->pivot;
-
+        foreach ($event->materials as $eventMaterial) {
             $this->assertNotNull($eventMaterial->quantity_returned);
             $this->assertNotNull($eventMaterial->quantity_returned_broken);
         }
@@ -99,10 +86,7 @@ final class EventTest extends TestCase
         //   ne serait pas possible sinon, on reset l'inventaire.
         $setEventDate(new Period('2023-11-20', '2023-11-21', true));
         $this->assertFalse($event->is_return_inventory_done);
-        foreach ($event->materials as $material) {
-            /** @var EventMaterial $eventMaterial */
-            $eventMaterial = $material->pivot;
-
+        foreach ($event->materials as $eventMaterial) {
             $this->assertNull($eventMaterial->quantity_returned);
             $this->assertNull($eventMaterial->quantity_returned_broken);
         }

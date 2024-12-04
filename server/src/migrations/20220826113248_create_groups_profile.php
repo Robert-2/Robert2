@@ -13,7 +13,7 @@ final class CreateGroupsProfile extends AbstractMigration
     public function up(): void
     {
         $prefix = Config::get('db.prefix');
-        $defaultTags = Config::get('defaultTags', []);
+        $defaultTags = Config::get('legacy.defaultTags', []);
 
         // - Tag "Bénéficiaire".
         /** @var SelectQuery $qb */
@@ -364,7 +364,7 @@ final class CreateGroupsProfile extends AbstractMigration
     public function down(): void
     {
         $prefix = Config::get('db.prefix');
-        $defaultTags = Config::get('defaultTags', []);
+        $defaultTags = Config::get('legacy.defaultTags', []);
 
         //
         // - Tags

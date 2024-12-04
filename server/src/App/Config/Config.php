@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Loxya\Config;
 
+use BackedEnum;
+use Loxya\Config\Enums\BillingMode;
 use Loxya\Support\Arr;
 use Loxya\Support\BaseUri;
 use Monolog\Level as LogLevel;
@@ -20,6 +22,9 @@ final class Config
      * des options ci-dessous, ou mieux encore, utilisez l'assistant d'installation.
      */
     public const DEFAULT_SETTINGS = [
+        /** Code ISO 4217 de la devise utilisée dans l'application. */
+        'currency' => 'EUR',
+
         /**
          * L'URL de base de l'application.
          *
@@ -42,8 +47,7 @@ final class Config
          */
         'maxConcurrentFetches' => 2,
         'defaultLang' => 'fr',
-        'billingMode' => 'partial', // - Valeurs possibles : 'none', 'partial', 'all'.
-        'degressiveRateFunction' => 'daysCount',
+        'billingMode' => BillingMode::PARTIAL,
         'healthcheck' => false,
         'instanceId' => null,
         'proxy' => [
@@ -53,11 +57,6 @@ final class Config
         ],
         'auth' => [
             'cookie' => 'auth',
-        ],
-        'currency' => [
-            'symbol' => '€',
-            'name' => 'Euro',
-            'iso' => 'EUR',
         ],
         'db' => [
             'driver' => 'mysql',
@@ -84,7 +83,7 @@ final class Config
             'street' => '',
             'zipCode' => '',
             'locality' => '',
-            'country' => '',
+            'country' => 'FR',
             'phone' => '',
             'email' => '',
             'legalNumbers' => [
@@ -98,7 +97,6 @@ final class Config
                 ],
             ],
             'vatNumber' => '',
-            'vatRate' => 0.0,
         ],
         'logger' => [
             'timezone' => 'Europe/Paris',
@@ -165,10 +163,9 @@ final class Config
         'httpAuthHeader' => 'string',
         'sessionExpireHours' => 'int',
         'maxItemsPerPage' => 'int',
-        'billingMode' => 'string',
-        'degressiveRateFunction' => 'string',
+        'billingMode' => BillingMode::class,
         'defaultLang' => 'string',
-        'currency' => 'array',
+        'currency' => 'string',
         'db?' => 'array',
         'companyData' => 'array',
     ];
@@ -288,9 +285,8 @@ final class Config
 
     public static function getPDO(): \PDO
     {
+        $dbConfig = self::getDbConfig();
         try {
-            $dbConfig = self::getDbConfig();
-
             return new \PDO(
                 $dbConfig['dsn'],
                 $dbConfig['username'],
@@ -359,6 +355,16 @@ final class Config
         return new BaseUri(self::getBaseUrl());
     }
 
+    /**
+     * Permet de savoir si SSL est activé.
+     *
+     * @return bool `true` si SSL est activé, `false` sinon.
+     */
+    public static function isSslEnabled(): bool
+    {
+        return Config::getBaseUri()->getScheme() === 'https';
+    }
+
     // ------------------------------------------------------
     // -
     // -    Config storage related.
@@ -390,6 +396,23 @@ final class Config
                         $field,
                     ));
                 }
+                continue;
+            }
+
+            if (is_a($type, \BackedEnum::class, true)) {
+                $enumValue = is_string($customConfig[$field])
+                    ? $type::tryFrom($customConfig[$field])
+                    : $customConfig[$field];
+
+                if (!($enumValue instanceof $type)) {
+                    throw new \InvalidArgumentException(vsprintf(
+                        "Configuration Field `%s` must be of type `%s`.",
+                        [$field, $type],
+                    ));
+                }
+
+                /** @var BackedEnum $enumValue */
+                $customConfig[$field] = $enumValue->value;
                 continue;
             }
 
@@ -447,6 +470,18 @@ final class Config
             }
         } else {
             $settings = static::$testConfig;
+        }
+
+        foreach (self::CUSTOM_SETTINGS as $field => $type) {
+            if (!array_key_exists($field, $settings)) {
+                continue;
+            }
+
+            if (is_a($type, \BackedEnum::class, true)) {
+                $settings[$field] = !($settings[$field] instanceof $type)
+                    ? $type::from($settings[$field])
+                    : $settings[$field];
+            }
         }
 
         return array_replace_recursive(self::DEFAULT_SETTINGS, $settings);

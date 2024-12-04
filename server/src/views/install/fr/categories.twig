@@ -1,5 +1,5 @@
 <div class="page__content">
-    <h2>{{stepNumber}} - Catégories</h2>
+    <h2>{{ stepNumber }} - Catégories</h2>
     <p>
         Parfait ! L'installation est maintenant terminée.
     </p>
@@ -24,14 +24,14 @@
                 name="categories"
                 id="categories"
                 class="form__input-categories"
-                value="{{stepData['categories']}}"
+                value="{{ stepData['categories'] }}"
                 onKeyUp="onInputKeyUp()"
                 autocomplete="off"
                 autofocus
             />
             {% if validationErrors %}
             <div class="form__field-error">
-                <pre>{{validationErrors}}</pre>
+                <pre>{{ validationErrors }}</pre>
             </div>
             {% endif %}
             <p class="form__field-description" style="margin-top: .5rem;">

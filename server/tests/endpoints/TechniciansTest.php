@@ -5,15 +5,17 @@ namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Loxya\Models\EventTechnician;
 use Loxya\Models\Technician;
+use Loxya\Support\Arr;
 use Loxya\Support\Filesystem\UploadedFile;
 
 final class TechniciansTest extends ApiTestCase
 {
-    public static function data(?int $id = null)
+    public static function data(?int $id = null, string $format = Technician::SERIALIZE_DEFAULT)
     {
-        return static::dataFactory($id, [
+        $technicians = new Collection([
             [
                 'id' => 1,
                 'user_id' => 2,
@@ -29,6 +31,7 @@ final class TechniciansTest extends ApiTestCase
                 'country_id' => null,
                 'full_address' => null,
                 'country' => null,
+                'user' => UsersTest::data(2),
                 'note' => null,
             ],
             [
@@ -46,9 +49,20 @@ final class TechniciansTest extends ApiTestCase
                 'country_id' => 2,
                 'full_address' => null,
                 'country' => CountriesTest::data(2),
+                'user' => null,
                 'note' => null,
             ],
         ]);
+
+        $technicians = match ($format) {
+            Technician::SERIALIZE_DEFAULT => $technicians->map(static fn ($material) => (
+                Arr::except($material, ['user'])
+            )),
+            Technician::SERIALIZE_DETAILS => $technicians,
+            default => throw new \InvalidArgumentException(sprintf("Unknown format \"%s\"", $format)),
+        };
+
+        return static::dataFactory($id, $technicians->all());
     }
 
     public function testGetAll(): void
@@ -204,7 +218,7 @@ final class TechniciansTest extends ApiTestCase
     {
         $this->client->get('/api/technicians/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(self::data(1));
+        $this->assertResponseData(self::data(1, Technician::SERIALIZE_DETAILS));
     }
 
     public function testCreateWithoutData(): void
@@ -224,14 +238,10 @@ final class TechniciansTest extends ApiTestCase
             'nickname' => 'ilestvraimeeeentrèslongcesurnom',
         ]);
         $this->assertApiValidationError([
-            'nickname' => ["30 max. characters."],
-            'first_name' => ['This field contains some unauthorized characters.'],
-            'last_name' => [
-                "This field is mandatory.",
-                "This field contains some unauthorized characters.",
-                "2 min. characters, 35 max. characters.",
-            ],
-            'email' => ["This email address is invalid."],
+            'nickname' => "30 max. characters.",
+            'first_name' => "This field contains some unauthorized characters.",
+            'last_name' => "This field is mandatory.",
+            'email' => "This email address is invalid.",
         ]);
 
         // - Test 2.
@@ -243,7 +253,7 @@ final class TechniciansTest extends ApiTestCase
             'phone' => 'notAphoneNumber',
         ]);
         $this->assertApiValidationError([
-            'phone' => ['This phone number is invalid.'],
+            'phone' => "This phone number is invalid.",
         ]);
     }
 
@@ -278,6 +288,7 @@ final class TechniciansTest extends ApiTestCase
             'country_id' => 2,
             'country' => CountriesTest::data(2),
             'full_address' => '74000 Annecy',
+            'user' => null,
             'note' => null,
         ]);
     }
@@ -294,17 +305,25 @@ final class TechniciansTest extends ApiTestCase
         ]);
 
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(array_replace(static::data(1), [
-            'first_name' => 'José',
-            'last_name' => 'Gatillon',
-            'nickname' => 'Gégé',
-            'full_name' => 'José Gatillon',
-            'postal_code' => '74000',
-            'locality' => 'Annecy',
-            'country_id' => 2,
-            'country' => CountriesTest::data(2),
-            'full_address' => '74000 Annecy',
-        ]));
+        $this->assertResponseData(array_replace_recursive(
+            static::data(1, Technician::SERIALIZE_DETAILS),
+            [
+                'first_name' => 'José',
+                'last_name' => 'Gatillon',
+                'nickname' => 'Gégé',
+                'full_name' => 'José Gatillon',
+                'postal_code' => '74000',
+                'locality' => 'Annecy',
+                'country_id' => 2,
+                'country' => CountriesTest::data(2),
+                'full_address' => '74000 Annecy',
+                'user' => [
+                    'first_name' => 'José',
+                    'last_name' => 'Gatillon',
+                    'full_name' => 'José Gatillon',
+                ],
+            ],
+        ));
     }
 
     public function testDeleteAndDestroy(): void
@@ -435,7 +454,7 @@ final class TechniciansTest extends ApiTestCase
                     'Un fichier bien trop volumineux.pdf',
                     'application/pdf',
                 ),
-                'expected' => ['This file exceeds maximum size allowed.'],
+                'expected' => "This file exceeds maximum size allowed.",
             ],
             [
                 'file' => new UploadedFile(
@@ -445,7 +464,7 @@ final class TechniciansTest extends ApiTestCase
                     'échec-upload.csv',
                     'text/csv',
                 ),
-                'expected' => ['File upload failed.'],
+                'expected' => "File upload failed.",
             ],
             [
                 'file' => new UploadedFile(
@@ -455,7 +474,7 @@ final class TechniciansTest extends ApiTestCase
                     'app.dmg',
                     'application/octet-stream',
                 ),
-                'expected' => ['This file type is not allowed.'],
+                'expected' => "This file type is not allowed.",
             ],
         ];
         foreach ($invalidUploads as $invalidUpload) {

@@ -54,7 +54,8 @@ final class UserController extends BaseController
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
-            if (Auth::user()->id === (int) $id) {
+            $user = User::findOrFail($id);
+            if (Auth::user()->is($user)) {
                 throw new HttpForbiddenException(
                     $request,
                     'Self retrieving this way is forbidden, use `GET /api/users/self`.',
@@ -62,22 +63,23 @@ final class UserController extends BaseController
             }
 
             // - Si ce n'est pas un admin, on empêche la récupération des autres utilisateurs.
-            if (!Auth::is(Group::ADMIN)) {
+            if (!Auth::is(Group::ADMINISTRATION)) {
                 throw new HttpForbiddenException($request);
             }
         } else {
-            $id = Auth::user()->id;
+            $user = clone Auth::user();
         }
 
-        $user = static::_formatOne(User::findOrFail((int) $id));
-        return $response->withJson($user, StatusCode::STATUS_OK);
+        $data = static::_formatOne($user);
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
     public function update(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
-            if (Auth::user()->id === (int) $id) {
+            $user = User::findOrFail($id);
+            if (Auth::user()->is($user)) {
                 throw new HttpForbiddenException(
                     $request,
                     'Self update this way is forbidden, use `PUT /api/users/self`.',
@@ -85,12 +87,13 @@ final class UserController extends BaseController
             }
 
             // - Si ce n'est pas un admin, on empêche la modification des autres utilisateurs.
-            if (!Auth::is(Group::ADMIN)) {
+            if (!Auth::is(Group::ADMINISTRATION)) {
                 throw new HttpForbiddenException($request);
             }
 
             return $this->_originalUpdate($request, $response);
         }
+        $user = clone Auth::user();
 
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
@@ -105,7 +108,8 @@ final class UserController extends BaseController
         );
 
         try {
-            $user = User::staticEdit(Auth::user()->id, $postData);
+            $user->edit($postData);
+            Auth::user()->refresh();
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
             if (!empty($errors)) {
@@ -114,39 +118,40 @@ final class UserController extends BaseController
             throw new ValidationException($errors);
         }
 
-        $user = static::_formatOne($user);
-        return $response->withJson($user, StatusCode::STATUS_OK);
+        $data = static::_formatOne($user);
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
     public function getSettings(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
-            if (Auth::user()->id === (int) $id) {
+            $user = User::findOrFail($id);
+            if (Auth::user()->is($user)) {
                 throw new HttpForbiddenException(
                     $request,
-                    'Self retrieving this way is forbidden, use `GET /api/users/self/settings`.',
+                    'Self retrieving this way is forbidden, use `GET /api/users/self`.',
                 );
             }
 
             // - Si ce n'est pas un admin, on empêche la récupération des autres utilisateurs.
-            if (!Auth::is(Group::ADMIN)) {
+            if (!Auth::is(Group::ADMINISTRATION)) {
                 throw new HttpForbiddenException($request);
             }
         } else {
-            $id = Auth::user()->id;
+            $user = clone Auth::user();
         }
 
-        $user = User::findOrFail((int) $id);
-        $result = $user->serialize(User::SERIALIZE_SETTINGS);
-        return $response->withJson($result, StatusCode::STATUS_OK);
+        $data = $user->serialize(User::SERIALIZE_SETTINGS);
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
     public function updateSettings(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getAttribute('id');
         if ($id !== 'self') {
-            if (Auth::user()->id === (int) $id) {
+            $user = User::findOrFail($id);
+            if (Auth::user()->is($user)) {
                 throw new HttpForbiddenException(
                     $request,
                     'Self updating this way is forbidden, use `PUT /api/users/self/settings`.',
@@ -154,11 +159,11 @@ final class UserController extends BaseController
             }
 
             // - Si ce n'est pas un admin, on empêche la récupération des autres utilisateurs.
-            if (!Auth::is(Group::ADMIN)) {
+            if (!Auth::is(Group::ADMINISTRATION)) {
                 throw new HttpForbiddenException($request);
             }
         } else {
-            $id = Auth::user()->id;
+            $user = clone Auth::user();
         }
 
         $postData = Arr::only(
@@ -170,7 +175,11 @@ final class UserController extends BaseController
         }
 
         try {
-            $user = User::staticEdit((int) $id, $postData);
+            $user->edit($postData);
+
+            if (Auth::user()->is($user)) {
+                Auth::user()->refresh();
+            }
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
             if (empty($errors)) {
@@ -181,8 +190,8 @@ final class UserController extends BaseController
             throw new ValidationException($errors);
         }
 
-        $result = $user->serialize(User::SERIALIZE_SETTINGS);
-        return $response->withJson($result, StatusCode::STATUS_OK);
+        $data = $user->serialize(User::SERIALIZE_SETTINGS);
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
     public function delete(Request $request, Response $response): ResponseInterface

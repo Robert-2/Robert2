@@ -1,5 +1,5 @@
 <div class="page__content">
-    <h2>{{stepNumber}} - Loxya core settings</h2>
+    <h2>{{ stepNumber }} - Loxya core settings</h2>
     <p>
         In this step, the configuration has been <strong>automatically detected</strong>,
         but you can check and modify all settings, if you know what you're doing!
@@ -10,7 +10,7 @@
             <p class="form__field-description">
                 This is the base URL of the application, that you'll use everyday.
             </p>
-            <input type="text" name="baseUrl" size="10" value="{{config['baseUrl']}}" />
+            <input type="text" name="baseUrl" size="10" value="{{ config['baseUrl'] }}" />
         </section>
         <p>
             <a onclick="showHiddenFieldset()" id="show-fieldset" class="form__fieldset-toggle">
@@ -100,7 +100,7 @@
                     Sessions duration
                 </h3>
                 <p class="form__field-description">
-                    Expiration time of a session: number of hours a session can last on Robert, before
+                    Expiration time of a session: number of hours a session can last on Loxya, before
                     the user must re-log into the application.
                 </p>
                 <div class="form__input">
@@ -108,7 +108,7 @@
                         type="number"
                         step="1"
                         name="sessionExpireHours"
-                        value="{{config['sessionExpireHours']}}"
+                        value="{{ config['sessionExpireHours'] }}"
                     />
                     <label for="sessionExpireHours">hours</label>
                 </div>
@@ -125,7 +125,7 @@
                 <input
                     type="text"
                     name="JWTSecret"
-                    value="{{stepData['JWTSecret']}}"
+                    value="{{ stepData['JWTSecret'] }}"
                 />
             </section>
             <section class="form__field">
@@ -139,7 +139,7 @@
                 <input
                     type="text"
                     name="httpAuthHeader"
-                    value="{{config['httpAuthHeader']}}"
+                    value="{{ config['httpAuthHeader'] }}"
                 />
             </section>
             <p>

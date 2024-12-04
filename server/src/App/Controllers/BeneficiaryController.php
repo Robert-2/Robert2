@@ -5,14 +5,12 @@ namespace Loxya\Controllers;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\Builder;
-use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Controllers\Traits\Crud;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
 use Loxya\Models\Beneficiary;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
 use Loxya\Models\Park;
-use Loxya\Services\Auth;
 use Loxya\Support\Database\QueryAggregator;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
@@ -20,7 +18,8 @@ use Slim\Http\Response;
 
 final class BeneficiaryController extends BaseController
 {
-    use WithCrud;
+    use Crud\GetOne;
+    use Crud\SoftDelete;
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
@@ -116,9 +115,7 @@ final class BeneficiaryController extends BaseController
         }
 
         $postData = Beneficiary::unserialize($postData);
-        if (!Auth::is(Group::ADMIN)) {
-            unset($postData['user']);
-        }
+        unset($postData['user'], $postData['user_id']);
 
         try {
             $beneficiary = Beneficiary::new($postData);
@@ -133,19 +130,19 @@ final class BeneficiaryController extends BaseController
 
     public function update(Request $request, Response $response): ResponseInterface
     {
+        $id = $request->getIntegerAttribute('id');
+        $beneficiary = Beneficiary::findOrFail($id);
+
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
         $postData = Beneficiary::unserialize($postData);
-        if (!Auth::is(Group::ADMIN)) {
-            unset($postData['user']);
-        }
+        unset($postData['user']);
 
         try {
-            $id = $request->getIntegerAttribute('id');
-            $beneficiary = Beneficiary::staticEdit($id, $postData);
+            $beneficiary->edit($postData);
         } catch (ValidationException $e) {
             $errors = Beneficiary::serializeValidation($e->getValidationErrors());
             throw new ValidationException($errors);

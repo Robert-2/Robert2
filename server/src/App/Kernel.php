@@ -140,6 +140,7 @@ final class Kernel
         Models\Event::observe(Observers\EventObserver::class);
         Models\EventMaterial::observe(Observers\EventMaterialObserver::class);
         Models\Material::observe(Observers\MaterialObserver::class);
+        Models\Attribute::observe(Observers\AttributeObserver::class);
         Models\AttributeCategory::observe(Observers\AttributeCategoryObserver::class);
         Models\Beneficiary::observe(Observers\BeneficiaryObserver::class);
         Models\Park::observe(Observers\ParkObserver::class);

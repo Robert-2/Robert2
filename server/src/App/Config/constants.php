@@ -25,6 +25,10 @@ if (!defined('LOCALES_FOLDER')) {
     define('LOCALES_FOLDER', SRC_FOLDER . DS . 'locales');
 }
 
+if (!defined('MIGRATIONS_FOLDER')) {
+    define('MIGRATIONS_FOLDER', SRC_FOLDER . DS . 'migrations');
+}
+
 if (!defined('PUBLIC_FOLDER')) {
     define('PUBLIC_FOLDER', SRC_FOLDER . DS . 'public');
 }

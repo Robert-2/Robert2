@@ -86,7 +86,7 @@ final class ImproveBillsTable extends AbstractMigration
             $dailyTotalWithoutTaxes = $dailyTotalWithoutDiscount - $dailyTotalDiscount;
 
             // - Taxes.
-            $vatPercent = Config::get('companyData.vatRate');
+            $vatPercent = Config::get('legacy.companyData.vatRate');
             $vatRate = ((float) $vatPercent) / 100;
             $dailyTotalTaxes = $dailyTotalWithoutTaxes * $vatRate;
             $dailyTotalWithTaxes = $dailyTotalWithoutTaxes + $dailyTotalTaxes;
@@ -439,7 +439,7 @@ final class ImproveBillsTable extends AbstractMigration
             $dailyTotalWithoutTaxes = $dailyTotalWithoutDiscount - $dailyTotalDiscount;
 
             // - Taxes.
-            $vatPercent = Config::get('companyData.vatRate');
+            $vatPercent = Config::get('legacy.companyData.vatRate');
             $vatRate = ((float) $vatPercent) / 100;
             $dailyTotalTaxes = $dailyTotalWithoutTaxes * $vatRate;
             $dailyTotalWithTaxes = $dailyTotalWithoutTaxes + $dailyTotalTaxes;

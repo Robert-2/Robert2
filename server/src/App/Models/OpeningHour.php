@@ -32,7 +32,7 @@ final class OpeningHour extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'weekday' => V::intVal()->between(0, 6),
+            'weekday' => V::custom([$this, 'checkOpeningHour']),
             'start_time' => V::custom([$this, 'checkStartTime']),
             'end_time' => V::custom([$this, 'checkEndTime']),
         ];
@@ -43,6 +43,14 @@ final class OpeningHour extends BaseModel implements Serializable
     // -    Validation
     // -
     // ------------------------------------------------------
+
+    public function checkOpeningHour($value)
+    {
+        return V::create()
+            ->intVal()
+            ->between(0, 6)
+            ->validate($value);
+    }
 
     public function checkStartTime($value)
     {

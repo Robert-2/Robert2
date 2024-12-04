@@ -27,7 +27,7 @@ return [
     },
 
     'session' => static function () {
-        $secure = Config::getBaseUri()->getScheme() === 'https';
+        $shouldSecureCookie = Config::isSslEnabled();
         $sessionClass = Config::getEnv() !== 'test'
             ? PhpSession::class
             : MemorySession::class;
@@ -37,8 +37,12 @@ return [
             'lifetime' => 0,
             'path' => '/',
             'httponly' => true,
-            'secure' => $secure,
+            'secure' => $shouldSecureCookie,
             'cache_limiter' => 'nocache',
+
+            // - Note: Permet la création de cookies lorsque Loxya est
+            //   intégré dans des systèmes tiers (e.g. Notion).
+            'cookie_samesite' => $shouldSecureCookie ? 'None' : 'Lax',
         ]);
     },
 

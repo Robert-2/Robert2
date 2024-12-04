@@ -20,19 +20,19 @@ final class MaterialTest extends TestCase
             'park_id' => 1,
             'category_id' => 1,
             'sub_category_id' => 2,
-            'rental_price' => -2.5,
+            'rental_price' => '-2.5',
             'stock_quantity' => 120_000,
             'out_of_order_quantity' => 110_000,
-            'replacement_price' => -10,
+            'replacement_price' => '-10',
         ];
         $expectedErrors = [
-            'name' => ["2 caractères min., 191 caractères max."],
-            'reference' => ["Ce champ contient des caractères non autorisés."],
-            'picture' => ["5 caractères min., 227 caractères max."],
-            'rental_price' => ["Doit être supérieur ou égal à 0."],
-            'stock_quantity' => ["Doit être inférieur ou égal à 100000."],
-            'out_of_order_quantity' => ["Doit être inférieur ou égal à 100000."],
-            'replacement_price' => ["Doit être supérieur ou égal à 0."],
+            'name' => "2 caractères min., 191 caractères max.",
+            'reference' => "Ce champ contient des caractères non autorisés.",
+            'picture' => "5 caractères min., 227 caractères max.",
+            'rental_price' => "Ce montant est invalide, il doit être positif et avec deux chiffres après la virgule maximum.",
+            'stock_quantity' => "Doit être inférieur ou égal à 100000.",
+            'out_of_order_quantity' => "Doit être inférieur ou égal à 100000.",
+            'replacement_price' => "Ce montant est invalide, il doit être positif et avec deux chiffres après la virgule maximum.",
         ];
         $this->assertEquals($expectedErrors, (new Material($data))->validationErrors());
     }
@@ -107,7 +107,7 @@ final class MaterialTest extends TestCase
             'reference' => 'CL3',
             'park_id' => 1,
             'category_id' => 1,
-            'rental_price' => 155,
+            'rental_price' => '155',
             'stock_quantity' => 10,
         ]);
     }
@@ -126,13 +126,15 @@ final class MaterialTest extends TestCase
             'category_id' => 1,
             'is_unitary' => 0,
             'sub_category_id' => null,
-            'out_of_order_quantity' => null,
-            'rental_price' => 100.0,
-            'replacement_price' => 100.6,
+            'out_of_order_quantity' => 0,
+            'rental_price' => '100.00',
+            'degressive_rate_id' => 1,
+            'tax_id' => 5,
+            'replacement_price' => '100.60',
             'stock_quantity' => 1,
             'is_hidden_on_bill' => false,
             'is_discountable' => true,
-            'is_reservable' => true,
+            'is_reservable' => 1,
             'picture' => null,
             'note' => null,
             'created_at' => '2019-02-24 23:59:00',
@@ -145,9 +147,11 @@ final class MaterialTest extends TestCase
             'park_id' => 1,
             'category_id' => 1,
             'rental_price' => '100.0',
+            'degressive_rate_id' => 1,
+            'tax_id' => 5,
             'replacement_price' => '100.6',
             'stock_quantity' => 1,
         ]);
-        $this->assertEquals($expected, $material->attributesToArray());
+        $this->assertSameCanonicalize($expected, $material->toArray());
     }
 }

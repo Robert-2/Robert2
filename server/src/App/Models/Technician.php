@@ -7,11 +7,17 @@ use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
+use Loxya\Services\Auth;
+use Loxya\Support\Arr;
 use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
 
@@ -48,12 +54,17 @@ use Respect\Validation\Validator as V;
 final class Technician extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletable;
+    use SoftDeletes;
 
     /** L'identifiant unique du modèle. */
     public const TYPE = 'technician';
 
     protected $table = 'technicians';
+
+    // - Types de sérialisation.
+    public const SERIALIZE_SUMMARY = 'summary';
+    public const SERIALIZE_DEFAULT = 'default';
+    public const SERIALIZE_DETAILS = 'details';
 
     public function __construct(array $attributes = [])
     {
@@ -73,11 +84,26 @@ final class Technician extends BaseModel implements Serializable
 
     public function checkPersonId($value)
     {
+        V::nullable(V::intVal())->check($value);
+
         // - L'identifiant de la personne n'est pas encore défini, on skip.
         if (!$this->exists && $value === null) {
             return true;
         }
-        return Person::staticExists($value);
+
+        if (!Person::includes($value)) {
+            return false;
+        }
+
+        $alreadyExists = static::query()
+            ->where('person_id', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->withTrashed()
+            ->exists();
+
+        return !$alreadyExists ?: 'person-already-a-technician';
     }
 
     // ------------------------------------------------------
@@ -86,12 +112,12 @@ final class Technician extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function person()
+    public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class);
     }
 
-    public function assignments()
+    public function assignments(): HasMany
     {
         return $this->hasMany(EventTechnician::class, 'technician_id')
             ->with('event')
@@ -99,10 +125,11 @@ final class Technician extends BaseModel implements Serializable
             ->orderBy('start_date');
     }
 
-    public function documents()
+    public function documents(): MorphMany
     {
         return $this->morphMany(Document::class, 'entity')
-            ->orderBy('name', 'asc');
+            ->orderBy('name', 'asc')
+            ->orderBy('id', 'asc');
     }
 
     // ------------------------------------------------------
@@ -156,7 +183,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->last_name;
     }
 
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): string
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -167,7 +194,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->full_name;
     }
 
-    public function getEmailAttribute()
+    public function getEmailAttribute(): string|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -178,7 +205,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->email;
     }
 
-    public function getPhoneAttribute()
+    public function getPhoneAttribute(): string|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -189,7 +216,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->phone;
     }
 
-    public function getStreetAttribute()
+    public function getStreetAttribute(): string|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -200,7 +227,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->street;
     }
 
-    public function getPostalCodeAttribute()
+    public function getPostalCodeAttribute(): string|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -211,7 +238,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->postal_code;
     }
 
-    public function getLocalityAttribute()
+    public function getLocalityAttribute(): string|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -222,7 +249,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->locality;
     }
 
-    public function getCountryIdAttribute()
+    public function getCountryIdAttribute(): int|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -233,7 +260,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->country_id;
     }
 
-    public function getCountryAttribute()
+    public function getCountryAttribute(): Country|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -244,7 +271,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->country;
     }
 
-    public function getFullAddressAttribute()
+    public function getFullAddressAttribute(): string|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -255,7 +282,7 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->full_address;
     }
 
-    public function getUserIdAttribute()
+    public function getUserIdAttribute(): int|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -263,10 +290,10 @@ final class Technician extends BaseModel implements Serializable
                 'this relation should always be defined.',
             );
         }
-        return $this->person->user_id;
+        return $this->person->user?->id;
     }
 
-    public function getUserAttribute()
+    public function getUserAttribute(): User|null
     {
         if (!$this->person) {
             throw new \LogicException(
@@ -342,45 +369,89 @@ final class Technician extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
+    // -    Méthodes liées à une "entity"
+    // -
+    // ------------------------------------------------------
+
+    public function edit(array $data, bool $withUser = false): static
+    {
+        $this->fill(Arr::except($data, ['person', 'user', 'user_id']));
+
+        $user = null;
+        $person = $this->person ?? new Person();
+        if ($withUser && Auth::is(Group::ADMINISTRATION)) {
+            $bindUserId = $data['user_id'] ?? null;
+            if ($bindUserId) {
+                $user = User::find($bindUserId);
+                if ($user === null) {
+                    throw new ValidationException([
+                        'user' => __('user-does-not-exist'),
+                    ]);
+                }
+                $person = $user->person ?? $person;
+            }
+            if ($user === null && !$person?->user) {
+                $userData = is_array($data['user'] ?? []) ? ($data['user'] ?? []) : [];
+                $user = new User(array_replace($userData, [
+                    'group' => Group::READONLY_PLANNING_SELF,
+                    'language' => Config::get('defaultLang'),
+                    'password' => !empty($userData['password'])
+                        ? password_hash($userData['password'], PASSWORD_DEFAULT)
+                        : null,
+                ]));
+            }
+        }
+        $person->fill($data['person'] ?? []);
+
+        if (!$this->isValid() || !$person->isValid() || ($user && !$user->isValid())) {
+            throw new ValidationException(array_merge(
+                $this->validationErrors(),
+                ['person' => $person->validationErrors()],
+                ['user' => $user?->validationErrors() ?? null],
+            ));
+        }
+
+        return dbTransaction(function () use ($person, $user) {
+            if ($user && !$user->exists) {
+                if (!$user->save()) {
+                    throw new \RuntimeException("Unable to create the technician's related user.");
+                }
+                $person->user()->associate($user);
+            }
+
+            if (!$person->save()) {
+                throw new \RuntimeException("Unable to save the technician's related person.");
+            }
+            $this->person()->associate($person);
+
+            if (!$this->save()) {
+                throw new \RuntimeException("Unable to save the technician.");
+            }
+
+            return $this->refresh();
+        });
+    }
+
+    /**
+     * Permet de savoir si le technicien est assigné à un événement donné.
+     *
+     * @param Event $event L'événement à vérifier.
+     * @return bool True si le technicien est assigné à l'événement.
+     */
+    public function isAssignedToEvent(Event $event): bool
+    {
+        return $this->assignments->containsStrict('event_id', $event->id);
+    }
+
+    // ------------------------------------------------------
+    // -
     // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 
-    public static function staticEdit($id = null, array $data = []): static
+    public static function new(array $data, bool $withUser = false): static
     {
-        $personId = null;
-        if ($id) {
-            if (!static::staticExists($id)) {
-                throw (new ModelNotFoundException())
-                    ->setModel(self::class, $id);
-            }
-            $personId = static::find($id)->person_id;
-        }
-
-        $personData = $data['person'] ?? [];
-        unset($data['person']);
-
-        $technician = static::firstOrNew(compact('id'))->fill($data);
-        $person = Person::firstOrNew(['id' => $personId])->fill($personData);
-        if (!$technician->isValid() || !$person->isValid()) {
-            throw new ValidationException(array_merge(
-                $technician->validationErrors(),
-                ['person' => $person->validationErrors()],
-            ));
-        }
-
-        return dbTransaction(static function () use ($person, $technician) {
-            if (!$person->save()) {
-                throw new \RuntimeException("Unable to save the technician's related person.");
-            }
-            $technician->person()->associate($person);
-
-            if (!$technician->save()) {
-                throw new \RuntimeException("Unable to save the technician.");
-            }
-
-            return $technician->refresh();
-        });
+        return (new static())->edit($data, $withUser);
     }
 
     // ------------------------------------------------------
@@ -389,17 +460,42 @@ final class Technician extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function serialize(): array
+    public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
         /** @var Technician $technician */
-        $technician = tap(clone $this, static function (Technician $technician) {
-            $technician->append(['country']);
+        $technician = tap(clone $this, static function (Technician $technician) use ($format) {
+            if ($format !== self::SERIALIZE_SUMMARY) {
+                $technician->append(['country']);
+            }
+
+            if ($format === self::SERIALIZE_DETAILS) {
+                $technician->append(['user']);
+            }
         });
 
-        return (new DotArray($technician->attributesForSerialization()))
+        $data = new DotArray($technician->attributesForSerialization());
+
+        if ($format === self::SERIALIZE_SUMMARY) {
+            $data->delete([
+                'first_name',
+                'last_name',
+                'nickname',
+                'phone',
+                'street',
+                'postal_code',
+                'locality',
+                'country_id',
+                'country',
+                'full_address',
+                'user_id',
+                'note',
+            ]);
+        }
+
+        return $data
             ->delete([
-                'is_preparer',
                 'person_id',
+                'is_preparer',
                 'created_at',
                 'updated_at',
                 'deleted_at',
@@ -433,6 +529,19 @@ final class Technician extends BaseModel implements Serializable
             $data->delete('person');
         }
 
+        $userFields = ['pseudo', 'email', 'password', 'group'];
+        foreach ($userFields as $field) {
+            $originalPath = sprintf('user.%s', $field);
+            if ($data->has($originalPath) && !$data->has($field)) {
+                $data->set($field, $data->get($originalPath));
+            }
+            $data->delete($originalPath);
+        }
+
+        if ($data->isEmpty('user')) {
+            $data->delete('user');
+        }
+
         return $data->all();
     }
 
@@ -440,14 +549,20 @@ final class Technician extends BaseModel implements Serializable
     {
         $data = new DotArray($data);
 
-        // - On supprime l'éventuel sous-object `person` dans le payload, non attendu sous cette forme.
-        //   (les données de la personne liée sont fusionnées avec les données du bénéficiaire)
-        $data->delete(['person', 'person_id']);
+        // - On supprime les éventuels sous-objects `person` et `user` dans le payload,
+        //   non attendus sous cette forme (les données de la personne liée et de
+        //   l'utilisateur lié doivent être fusionnées avec les données du bénéficiaire).
+        $data->delete(['person', 'person_id', 'user']);
+
+        if ($data->has('email')) {
+            $data->set('person.email', $data->get('email'));
+            $data->set('user.email', $data->get('email'));
+            $data->delete('email');
+        }
 
         $personFields = [
             'first_name',
             'last_name',
-            'email',
             'phone',
             'street',
             'postal_code',
@@ -456,6 +571,15 @@ final class Technician extends BaseModel implements Serializable
         ];
         foreach ($personFields as $field) {
             $originalPath = sprintf('person.%s', $field);
+            if ($data->has($field)) {
+                $data->set($originalPath, $data->get($field));
+                $data->delete($field);
+            }
+        }
+
+        $userFields = ['pseudo', 'password'];
+        foreach ($userFields as $field) {
+            $originalPath = sprintf('user.%s', $field);
             if ($data->has($field)) {
                 $data->set($originalPath, $data->get($field));
                 $data->delete($field);

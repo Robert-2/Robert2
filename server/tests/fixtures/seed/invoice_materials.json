@@ -6,11 +6,17 @@
         "name": "Console Yamaha CL3",
         "reference": "PM5D",
         "quantity": 1,
-        "unit_price": 300,
-        "total_price": 300,
-        "replacement_price": 19400,
-        "is_hidden_on_bill": false,
-        "is_discountable": false
+        "unit_price": "300.00",
+        "degressive_rate": null,
+        "unit_price_period": null,
+        "discount_rate": "0.0000",
+        "taxes": null,
+        "total_without_discount": "300.00",
+        "total_discount": "0.00",
+        "total_without_taxes": "300.00",
+        "unit_replacement_price": "19400.00",
+        "total_replacement_price": "19400.00",
+        "is_hidden_on_bill": false
     },
     {
         "id": 2,
@@ -19,10 +25,16 @@
         "name": "Processeur DBX PA2",
         "reference": "DBXPA2",
         "quantity": 1,
-        "unit_price": 25.5,
-        "total_price": 25.5,
-        "replacement_price": 349.9,
-        "is_hidden_on_bill": false,
-        "is_discountable": true
+        "unit_price": "25.50",
+        "degressive_rate": null,
+        "unit_price_period": null,
+        "discount_rate": "0.0000",
+        "taxes": null,
+        "total_without_discount": "25.50",
+        "total_discount": "0.00",
+        "total_without_taxes": "25.50",
+        "unit_replacement_price": "349.90",
+        "total_replacement_price": "349.90",
+        "is_hidden_on_bill": false
     }
 ]

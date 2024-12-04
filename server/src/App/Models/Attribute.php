@@ -4,11 +4,17 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Loxya\Contracts\Serializable;
+use Loxya\Models\Casts\AsSet;
+use Loxya\Models\Enums\AttributeEntity;
+use Loxya\Models\Enums\AttributeType;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Models\Traits\TransientAttributes;
+use Loxya\Support\Arr;
+use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
 
 /**
@@ -16,16 +22,19 @@ use Respect\Validation\Validator as V;
  *
  * @property-read ?int $id
  * @property string $name
+ * @property array $entities
  * @property string $type
  * @property string|null $unit
  * @property int|null $max_length
  * @property bool|null $is_totalisable
- * @property-read int|float|bool|string|null $value
+ * @property int|float|bool|string|null $value
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  *
  * @property-read Collection<array-key, Category> $categories
  * @property-read Collection<array-key, Material> $materials
+ *
+ * @method static Builder|static forEntity(AttributeEntity $entity)
  */
 final class Attribute extends BaseModel implements Serializable
 {
@@ -44,6 +53,7 @@ final class Attribute extends BaseModel implements Serializable
 
         $this->validation = [
             'name' => V::notEmpty()->alnum(static::EXTRA_CHARS)->length(2, 64),
+            'entities' => V::custom([$this, 'checkEntities']),
             'type' => V::custom([$this, 'checkType']),
             'unit' => V::custom([$this, 'checkUnit']),
             'max_length' => V::custom([$this, 'checkMaxLength']),
@@ -57,43 +67,65 @@ final class Attribute extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function checkType()
+    public function checkEntities($value)
+    {
+        if (!is_array($value)) {
+            if (!V::notEmpty()->stringType()->validate($value)) {
+                return false;
+            }
+            $value = explode(',', $value);
+        }
+
+        return V::arrayType()
+            ->each(
+                V::anyOf(
+                    V::equals(AttributeEntity::MATERIAL->value),
+                ),
+            )
+            ->validate($value);
+    }
+
+    public function checkType($value)
     {
         if ($this->exists && !$this->isDirty('type')) {
             return true;
         }
 
-        return V::notEmpty()->anyOf(
-            V::equals('string'),
-            V::equals('integer'),
-            V::equals('float'),
-            V::equals('boolean'),
-            V::equals('date'),
-        );
+        return V::create()
+            ->notEmpty()
+            ->anyOf(
+                V::equals(AttributeType::STRING->value),
+                V::equals(AttributeType::TEXT->value),
+                V::equals(AttributeType::INTEGER->value),
+                V::equals(AttributeType::FLOAT->value),
+                V::equals(AttributeType::BOOLEAN->value),
+                V::equals(AttributeType::DATE->value),
+            )
+            ->validate($value);
     }
 
     public function checkUnit()
     {
-        if (!in_array($this->type, ['integer', 'float'], true)) {
+        if (!in_array($this->type, [AttributeType::INTEGER->value, AttributeType::FLOAT->value], true)) {
             return V::nullType();
         }
-        return V::optional(V::length(1, 8));
+        return V::nullable(V::length(1, 8));
     }
 
     public function checkMaxLength()
     {
-        if ($this->type !== 'string') {
+        if (!in_array($this->type, [AttributeType::STRING->value, AttributeType::TEXT->value], true)) {
             return V::nullType();
         }
-        return V::optional(V::numericVal());
+        return V::nullable(V::intVal());
     }
 
     public function checkIsTotalisable()
     {
-        if (!in_array($this->type, ['integer', 'float'], true)) {
+        if (!in_array($this->type, [AttributeType::INTEGER->value, AttributeType::FLOAT->value], true)) {
             return V::nullType();
         }
-        return V::optional(V::boolType());
+        return V::nullable(V::boolType());
     }
 
     // ------------------------------------------------------
@@ -102,7 +134,7 @@ final class Attribute extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function materials()
+    public function materials(): BelongsToMany
     {
         return $this->belongsToMany(Material::class, 'material_attributes')
             ->using(MaterialAttribute::class)
@@ -110,7 +142,7 @@ final class Attribute extends BaseModel implements Serializable
             ->orderByPivot('id');
     }
 
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'attribute_categories')
             ->using(AttributeCategory::class)
@@ -125,6 +157,7 @@ final class Attribute extends BaseModel implements Serializable
 
     protected $casts = [
         'name' => 'string',
+        'entities' => AsSet::class,
         'type' => 'string',
         'unit' => 'string',
         'max_length' => 'integer',
@@ -133,23 +166,24 @@ final class Attribute extends BaseModel implements Serializable
         'updated_at' => 'immutable_datetime',
     ];
 
-    public function getCategoriesAttribute()
+    /** @return Collection<array-key, Category> */
+    public function getCategoriesAttribute(): Collection
     {
         return $this->getRelationValue('categories');
     }
 
-    public function getValueAttribute()
+    public function getValueAttribute(): mixed
     {
         $value = $this->getTransientAttribute('value');
         if ($value === null) {
             return $value;
         }
 
-        if ($this->type === 'integer') {
+        if ($this->type === AttributeType::INTEGER->value) {
             return (int) $value;
         }
 
-        if ($this->type === 'float') {
+        if ($this->type === AttributeType::FLOAT->value) {
             return (float) $value;
         }
 
@@ -168,6 +202,7 @@ final class Attribute extends BaseModel implements Serializable
 
     protected $fillable = [
         'name',
+        'entities',
         'type',
         'unit',
         'max_length',
@@ -177,6 +212,57 @@ final class Attribute extends BaseModel implements Serializable
     public function setValueAttribute(string $value): void
     {
         $this->setTransientAttribute('value', $value);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Query Scopes
+    // -
+    // ------------------------------------------------------
+
+    public function scopeForEntity(Builder $query, AttributeEntity $entity): Builder
+    {
+        Assert::isInstanceOf($entity, AttributeEntity::class);
+
+        return $query->where(static fn ($query) => (
+            $query->orWhereRaw("FIND_IN_SET(?, entities)", [$entity])
+        ));
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes liées à une "entity"
+    // -
+    // ------------------------------------------------------
+
+    public function edit(array $data): static
+    {
+        if ($this->exists) {
+            // - À l'édition on ne permet pas le changement de type
+            unset($data['type']);
+        }
+
+        return dbTransaction(function () use ($data) {
+            $this->fill(Arr::except($data, ['categories']))->save();
+
+            // - Catégories
+            if (isset($data['categories'])) {
+                Assert::isArray($data['categories'], "Key `categories` must be an array.");
+
+                // Si on enlève toutes les catégories (= pas de limite par catégorie),
+                // on veut conserver les valeurs existantes des caractéristiques du matériel,
+                // donc on ne déclenche pas les events du model `AttributeCategory`.
+                if (empty($data['categories'])) {
+                    static::withoutEvents(function () use ($data) {
+                        $this->categories()->sync($data['categories']);
+                    });
+                } else {
+                    $this->categories()->sync($data['categories']);
+                }
+            }
+
+            return $this->refresh();
+        });
     }
 
     // ------------------------------------------------------
@@ -197,12 +283,12 @@ final class Attribute extends BaseModel implements Serializable
         $data = $attribute->attributesForSerialization();
 
         switch ($data['type']) {
-            case 'integer':
-            case 'float':
+            case AttributeType::INTEGER->value:
+            case AttributeType::FLOAT->value:
                 unset($data['max_length']);
                 break;
 
-            case 'string':
+            case AttributeType::STRING->value:
                 unset($data['unit'], $data['is_totalisable']);
                 break;
 
@@ -220,44 +306,5 @@ final class Attribute extends BaseModel implements Serializable
         );
 
         return $data;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Méthodes de "repository"
-    // -
-    // ------------------------------------------------------
-
-    public static function staticEdit($id = null, array $data = []): static
-    {
-        $isCreate = $id === null;
-        if (!$isCreate) {
-            if (!static::staticExists($id)) {
-                throw (new ModelNotFoundException())
-                    ->setModel(self::class, $id);
-            }
-
-            // - À l'édition on ne permet pas le changement de type
-            unset($data['type']);
-        }
-
-        return dbTransaction(static function () use ($id, $data) {
-            $attribute = static::updateOrCreate(compact('id'), $data);
-
-            if (isset($data['categories'])) {
-                // Si on enlève toutes les catégories (= pas de limite par catégorie),
-                // on veut conserver les valeurs existantes des caractéristiques du matériel,
-                // donc on ne déclenche pas les events du model `AttributeCategory`.
-                if (empty($data['categories'])) {
-                    static::withoutEvents(static function () use ($attribute, $data) {
-                        $attribute->categories()->sync($data['categories']);
-                    });
-                } else {
-                    $attribute->categories()->sync($data['categories']);
-                }
-            }
-
-            return $attribute->refresh();
-        });
     }
 }

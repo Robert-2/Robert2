@@ -7,13 +7,19 @@ use DI\Container;
 use Loxya\Config\Config;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
-use Loxya\Install\Install;
 use Loxya\Models\Category;
+use Loxya\Models\Country;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\User;
 use Loxya\Services\I18n;
 use Loxya\Services\View;
+use Loxya\Support\Install;
+use Loxya\Support\Str;
 use Psr\Http\Message\ResponseInterface;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Exceptions\ValidationException as RespectValidationException;
+use Respect\Validation\Rules as Rule;
+use Respect\Validation\Validator as V;
 use Slim\Http\Response;
 
 final class SetupController extends BaseController
@@ -43,6 +49,7 @@ final class SetupController extends BaseController
 
         $lang = $this->i18n->getLanguage();
         $allCurrencies = Install::getAllCurrencies();
+        $allCountries = Install::getAllCountries();
 
         if ($request->isGet()) {
             if ($currentStep === 'welcome') {
@@ -53,8 +60,45 @@ final class SetupController extends BaseController
                 );
             }
 
+            if ($currentStep === 'settings') {
+                $currentCurrency = is_array(Config::get('currency'))
+                    // - Rétro-compatibilité.
+                    ? Config::get('currency.iso')
+                    : Config::get('currency');
+
+                $stepData = [
+                    'currency' => $currentCurrency ?? 'EUR',
+                ];
+            }
+
             if ($currentStep === 'company') {
                 $stepData = Config::get('companyData');
+
+                // - Rétrocompatibilité.
+                $isLegacyCountry = (
+                    !empty($stepData['country']) &&
+                    (
+                        strlen($stepData['country']) !== 2 ||
+                        strtoupper($stepData['country']) !== $stepData['country']
+                    )
+                );
+                if ($isLegacyCountry) {
+                    $normalizedCountry = Str::of($stepData['country'])
+                        ->transliterate(null)
+                        ->lower();
+
+                    $stepData['country'] = null;
+                    foreach ($allCountries as $country) {
+                        $_normalizedCountry = Str::of($country['name'])
+                            ->transliterate(null)
+                            ->lower();
+
+                        if ($normalizedCountry->exactly($_normalizedCountry)) {
+                            $stepData['country'] = $country['code'];
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -70,8 +114,6 @@ final class SetupController extends BaseController
             }
 
             if ($currentStep === 'settings') {
-                $installData['currency'] = $allCurrencies[$installData['currency']];
-
                 // - Pré-remplissage des données spécifiques à la Premium qui ne sont pas demandées
                 //   dans le wizard d'installation avec les valeurs par défaut, afin de les avoir
                 //   sous la main dans le fichier settings.json, le jour où on veut les renseigner.
@@ -86,11 +128,10 @@ final class SetupController extends BaseController
             }
 
             try {
-                Install::setInstallProgress($currentStep, $installData);
-
                 if ($currentStep === 'company') {
                     $this->_validateCompanyData($installData);
                 }
+                Install::setInstallProgress($currentStep, $installData);
 
                 if ($currentStep === 'database') {
                     $settings = Install::getSettingsFromInstallData();
@@ -103,14 +144,14 @@ final class SetupController extends BaseController
                 }
 
                 if ($currentStep === 'adminUser') {
-                    if ($stepSkipped && !User::where('group', Group::ADMIN)->exists()) {
+                    if ($stepSkipped && !User::where('group', Group::ADMINISTRATION)->exists()) {
                         throw new \InvalidArgumentException(
                             "At least one user must exists. Please create an administrator.",
                         );
                     }
 
                     if (!$stepSkipped) {
-                        $installData['user']['group'] = Group::ADMIN;
+                        $installData['user']['group'] = Group::ADMINISTRATION;
                         User::new($installData['user']);
                     }
                 }
@@ -141,6 +182,10 @@ final class SetupController extends BaseController
             $stepData['JWTSecret'] = md5(uniqid('Loxya', true));
         }
 
+        if ($currentStep === 'company') {
+            $stepData['countries'] = $allCountries;
+        }
+
         if ($currentStep === 'settings') {
             $stepData['currencies'] = $allCurrencies;
         }
@@ -162,7 +207,7 @@ final class SetupController extends BaseController
         }
 
         if ($currentStep === 'adminUser') {
-            $stepData['existingAdmins'] = User::where('group', Group::ADMIN)->get()->toArray();
+            $stepData['existingAdmins'] = User::where('group', Group::ADMINISTRATION)->get()->toArray();
         }
 
         // - Données de configuration existantes.
@@ -240,12 +285,30 @@ final class SetupController extends BaseController
 
     private function _validateCompanyData($companyData): void
     {
-        $errors = [];
-        foreach (['name', 'street', 'zipCode', 'locality'] as $mandatoryField) {
-            if (empty($companyData[$mandatoryField])) {
-                $errors[$mandatoryField] = 'mandatory-field';
-                continue;
-            }
+        $schema = new Rule\KeySet(
+            new Rule\Key('name', V::notEmpty()->stringType()),
+            new Rule\Key('street', V::notEmpty()->stringType()),
+            new Rule\Key('zipCode', V::notEmpty()->stringType()),
+            new Rule\Key('locality', V::notEmpty()->stringType()),
+            new Rule\Key('country', V::custom(
+                static function ($value) {
+                    V::notEmpty()->stringType()->check($value);
+                    return Country::where('code', $value)->exists();
+                },
+            )),
+        );
+
+        try {
+            $schema->assert($companyData);
+        } catch (NestedValidationException $e) {
+            $errors = array_reduce(
+                iterator_to_array($e),
+                static function (array $errors, RespectValidationException $exception) {
+                    $errors[$exception->getParam('name')] = $exception->getMessage();
+                    return $errors;
+                },
+                [],
+            );
         }
 
         if (empty($errors)) {

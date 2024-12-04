@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "estimate_id": 1,
+        "description": "Nettoyage post-événement",
+        "unit_price": "135.50",
+        "quantity": 5,
+        "total_without_taxes": "677.50",
+        "taxes": [
+            {
+                "name": "T.V.A.",
+                "is_rate": true,
+                "value": "20.000"
+            }
+        ]
+    }
+]

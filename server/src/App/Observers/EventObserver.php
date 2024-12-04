@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Loxya\Observers;
 
+use Brick\Math\BigDecimal as Decimal;
 use Loxya\Models\Event;
-use Loxya\Models\EventMaterial;
 
 final class EventObserver
 {
@@ -39,6 +39,7 @@ final class EventObserver
         debug("[Event] Événement #%s modifié.", $event->id);
 
         $this->onUpdateSyncCache($event);
+        $this->onUpdateSyncEventMaterials($event);
         $this->onUpdateSyncDepartureInventories($event);
         $this->onUpdateSyncReturnInventories($event);
     }
@@ -81,6 +82,10 @@ final class EventObserver
 
     public function deleted(Event $event): void
     {
+        if (!$event->isForceDeleting()) {
+            return;
+        }
+
         //
         // - Supprime les factures et devis liés.
         //   (Doit être géré manuellement car tables polymorphes)
@@ -113,7 +118,7 @@ final class EventObserver
         if (!$event->wasChanged(['mobilization_start_date', 'mobilization_end_date'])) {
             return;
         }
-        $oldData = $event->getOriginal();
+        $oldData = $event->getPrevious();
 
         //
         // -- Événements ...
@@ -134,6 +139,49 @@ final class EventObserver
         foreach ($neighborEvents as $neighborEvent) {
             $neighborEvent->invalidateCache('has_missing_materials');
         }
+    }
+
+    private function onUpdateSyncEventMaterials(Event $event): void
+    {
+        // - Si la facturabilité ou la période d'opération de l'événement n'ont pas changés, on ne va pas plus loin.
+        $hasChangedIsBillable = $event->wasChanged(['is_billable']);
+        $hasChangedOperationPeriod = $event->wasChanged(['operation_start_date', 'operation_end_date']);
+        if (!$hasChangedOperationPeriod && !$hasChangedIsBillable) {
+            return;
+        }
+
+        dbTransaction(static function () use ($event, $hasChangedOperationPeriod, $hasChangedIsBillable) {
+            foreach ($event->materials as $eventMaterial) {
+                $material = $eventMaterial->material;
+
+                if ($hasChangedIsBillable) {
+                    $eventMaterial->unit_price = !$event->is_billable ? null : (
+                        $material->rental_price ?? Decimal::zero()
+                    );
+                    $eventMaterial->discount_rate = !$event->is_billable ? null : (
+                        Decimal::zero()
+                    );
+                    $eventMaterial->taxes = !$event->is_billable ? null : (
+                        $material->tax?->asFlatArray()
+                    );
+                }
+
+                if ($hasChangedIsBillable || $hasChangedOperationPeriod) {
+                    $durationDays = $event->operation_period->asDays();
+                    $eventMaterial->degressive_rate = !$event->is_billable ? null : (
+                        $material->degressive_rate?->computeForDays($durationDays)
+                            // - Pas de dégressivité.
+                            ?? $durationDays
+                    );
+                }
+
+                $eventMaterial->save(['validate' => false]);
+            }
+
+            if ($hasChangedIsBillable && !$event->is_billable) {
+                $event->extras->each->delete();
+            }
+        });
     }
 
     private function onUpdateSyncDepartureInventories(Event $event): void
@@ -162,9 +210,7 @@ final class EventObserver
             $event->saveQuietly(['validate' => false]);
             $event->refresh();
 
-            foreach ($event->materials as $material) {
-                /** @var EventMaterial $eventMaterial */
-                $eventMaterial = $material->pivot;
+            foreach ($event->materials as $eventMaterial) {
                 $eventMaterial->quantity_departed = null;
                 $eventMaterial->departure_comment = null;
                 $eventMaterial->save(['validate' => false]);
@@ -199,9 +245,7 @@ final class EventObserver
             $event->saveQuietly(['validate' => false]);
             $event->refresh();
 
-            foreach ($event->materials()->get() as $material) {
-                /** @var EventMaterial $eventMaterial */
-                $eventMaterial = $material->pivot;
+            foreach ($event->materials as $eventMaterial) {
                 $eventMaterial->quantity_returned = null;
                 $eventMaterial->quantity_returned_broken = null;
                 $eventMaterial->save(['validate' => false]);

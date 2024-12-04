@@ -17,13 +17,13 @@ final class AssertTest extends TestCase
 
         // - Avec une énumération qui n'existe pas...
         $exception = new InvalidArgumentException('Expected an existing enum name. Got: "__UNKNOwN_ENUM__"');
-        $this->assertException($exception, static fn () => (
+        $this->assertThrow($exception, static fn () => (
             Assert::enumExists('__UNKNOwN_ENUM__')
         ));
 
         // - Avec une énumération qui n'existe pas et un message custom.
         $exception = new InvalidArgumentException("An error message.");
-        $this->assertException($exception, static fn () => (
+        $this->assertThrow($exception, static fn () => (
             Assert::enumExists('__UNKNOwN_ENUM__', "An error message.")
         ));
     }
@@ -40,7 +40,7 @@ final class AssertTest extends TestCase
             $exception = new InvalidArgumentException(
                 sprintf('Expected a non-empty value. Got: %s', $readableName),
             );
-            $this->assertException($exception, static fn () => (
+            $this->assertThrow($exception, static fn () => (
                 Assert::notEmpty($invalidValue)
             ));
         }
@@ -50,13 +50,13 @@ final class AssertTest extends TestCase
 
         // - Avec une collection vide...
         $exception = new InvalidArgumentException('Expected a non-empty collection.');
-        $this->assertException($exception, static fn () => (
+        $this->assertThrow($exception, static fn () => (
             Assert::notEmpty(new Collection())
         ));
 
         // - Avec une collection vide et un message custom.
         $exception = new InvalidArgumentException("An error message.");
-        $this->assertException($exception, static fn () => (
+        $this->assertThrow($exception, static fn () => (
             Assert::notEmpty(new Collection(), "An error message.")
         ));
     }

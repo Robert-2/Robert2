@@ -4,12 +4,17 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
+use Brick\Math\BigDecimal as Decimal;
+use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\LazyCollection;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Support\Arr;
 use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
@@ -28,19 +33,20 @@ use Respect\Validation\Validator as V;
  * @property string|null $note
  * @property-read int $total_items
  * @property-read int $total_stock_quantity
- * @property-read float $total_amount
+ * @property-read Decimal $total_amount
  * @property-read bool $has_ongoing_booking
- * @property-read Collection<array-key, Material> $materials
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
+ *
+ * @property-read Collection<array-key, Material> $materials
  *
  * @method static Builder|static search(string $term)
  */
 final class Park extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletable;
+    use SoftDeletes;
 
     // - Types de sérialisation.
     public const SERIALIZE_DEFAULT = 'default';
@@ -86,11 +92,8 @@ final class Park extends BaseModel implements Serializable
 
     public function checkCountryId($value)
     {
-        V::optional(V::numericVal())->check($value);
-
-        return $value !== null
-            ? Country::staticExists($value)
-            : true;
+        V::nullable(V::intVal())->check($value);
+        return $value === null || Country::includes($value);
     }
 
     // ------------------------------------------------------
@@ -99,13 +102,13 @@ final class Park extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function materials()
+    public function materials(): HasMany
     {
         return $this->hasMany(Material::class)
             ->orderBy('id');
     }
 
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
     }
@@ -146,16 +149,19 @@ final class Park extends BaseModel implements Serializable
         return $total;
     }
 
-    public function getTotalAmountAttribute(): float
+    public function getTotalAmountAttribute(): Decimal
     {
-        $total = 0;
-
-        $materials = Material::getParkAll($this->id);
-        foreach ($materials as $material) {
-            $total += ($material->replacement_price ?? 0) * (int) $material->stock_quantity;
-        }
-
-        return $total;
+        return Material::getParkAll($this->id)
+            ->reduce(
+                static fn (Decimal $currentTotal, Material $material) => (
+                    $currentTotal->plus(
+                        ($material->replacement_price ?? Decimal::zero())
+                            ->multipliedBy((int) $material->stock_quantity),
+                    )
+                ),
+                Decimal::zero(),
+            )
+            ->toScale(2, RoundingMode::UNNECESSARY);
     }
 
     public function getHasOngoingBookingAttribute(): bool
@@ -164,14 +170,19 @@ final class Park extends BaseModel implements Serializable
             return false;
         }
 
-        $ongoingEvents = Event::inProgress()
-            ->with('materials')
-            ->get();
+        $ongoingBookings = (new LazyCollection())
+            ->concat(
+                Event::inProgress()
+                    ->with('materials')
+                    ->lazy(100),
+            );
 
-        return $ongoingEvents->some(fn (Event $ongoingEvent) => (
-            $ongoingEvent->materials->some(fn (Material $material) => (
-                $material->park_id === $this->id
-            ))
+        return $ongoingBookings->some(fn (Event $ongoingBooking) => (
+            $ongoingBooking->materials->some(
+                fn (EventMaterial $bookingMaterial) => (
+                    $bookingMaterial->material->park_id === $this->id
+                )
+            )
         ));
     }
 

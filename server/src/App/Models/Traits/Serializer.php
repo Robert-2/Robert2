@@ -112,11 +112,9 @@ trait Serializer
 
     protected function mutateAttributeForSerialization($key, $value)
     {
-        $value = $this->isClassCastable($key)
-            ? $this->getClassCastableAttributeValue($key, $value)
-            : $this->mutateAttribute($key, $value);
+        $value = $this->transformModelValue($key, $value);
 
-        $serialize = function ($value) {
+        $serialize = function ($value) use (&$serialize) {
             if ($value instanceof Serializable) {
                 return $value->serialize();
             }
@@ -129,18 +127,25 @@ trait Serializer
                 return $this->serializeDate($value);
             }
 
+            if ($value instanceof Collection) {
+                return $value
+                    ->map(static fn ($value) => $serialize($value))
+                    ->all();
+            }
+
             if ($value instanceof Arrayable) {
                 return $value->toArray();
             }
 
+            if (is_array($value)) {
+                return array_map(
+                    static fn ($subValue) => $serialize($subValue),
+                    $value,
+                );
+            }
+
             return $value;
         };
-
-        if ($value instanceof Collection) {
-            return $value
-                ->map(static fn ($value) => $serialize($value))
-                ->all();
-        }
 
         return $serialize($value);
     }

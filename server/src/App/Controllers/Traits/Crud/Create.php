@@ -28,7 +28,7 @@ trait Create
         }
 
         try {
-            $model = $this->getModelClass()::new($postData);
+            $entity = $this->getModelClass()::new($postData);
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
             if (empty($errors) || !method_exists($this->getModelClass(), 'serializeValidation')) {
@@ -40,10 +40,10 @@ trait Create
             throw new ValidationException($errors);
         }
 
-        if (method_exists(static::class, '_formatOne')) {
-            $model = static::_formatOne($model);
-        }
+        $data = method_exists(static::class, '_formatOne')
+            ? static::_formatOne($entity)
+            : $entity;
 
-        return $response->withJson($model, StatusCode::STATUS_CREATED);
+        return $response->withJson($data, StatusCode::STATUS_CREATED);
     }
 }

@@ -1,5 +1,5 @@
 <section class="page__content">
-    <h2>{{stepNumber}} - Paramètres de l'application</h2>
+    <h2>{{ stepNumber }} - Paramètres de l'application</h2>
     <p>
         In this step we'll define some important parameters for <strong>your personnal</strong>
         use of Loxya.
@@ -22,8 +22,8 @@
             </p>
             <select class="currency-selector" name="currency" style="width: 300px;">
                 {% for currency in stepData['currencies'] %}
-                <option value="{{currency['iso']}}" {% if currency['iso'] == 'EUR' %}selected{% endif %}>
-                    {{currency['name']}} ({{currency['symbol']}})
+                <option value="{{ currency['code'] }}" {% if currency['code'] == stepData['currency'] %}selected{% endif %}>
+                    {{ currency['code'] }} - {{ currency['name'] }}
                 </option>
                 {% endfor %}
             </select>
@@ -38,12 +38,12 @@
                     type="radio"
                     id="billingModeAll"
                     name="billingMode"
-                    value="all"
+                    value="{{ constant('Loxya\\Config\\Enums\\BillingMode::ALL').value }}"
                     onchange="handleBillingModeChange(this)"
                 />
                 <label for="billingModeAll">
                     <strong>Equipment rental</strong>&nbsp;:
-                    billing of all events.
+                    Billing enabled for all events.
                 </label>
             </div>
             <div class="form__radio">
@@ -51,13 +51,13 @@
                     type="radio"
                     id="billingModePartial"
                     name="billingMode"
-                    value="partial"
+                    value="{{ constant('Loxya\\Config\\Enums\\BillingMode::PARTIAL').value }}"
                     onchange="handleBillingModeChange(this)"
                     checked
                 />
                 <label for="billingModePartial">
                     <strong>Equipment rental AND loan</strong>&nbsp;:
-                    the choice is made for each event.
+                    The choice is made for each event.
                 </label>
             </div>
             <div class="form__radio">
@@ -65,29 +65,14 @@
                     type="radio"
                     id="billingModeNone"
                     name="billingMode"
-                    value="none"
+                    value="{{ constant('Loxya\\Config\\Enums\\BillingMode::NONE').value }}"
                     onchange="handleBillingModeChange(this)"
                 />
                 <label for="billingModeNone">
                     <strong>Loan of equipment</strong>&nbsp;:
-                    no billing at all.
+                    No billing at all.
                 </label>
             </div>
-        </section>
-        <section class="form__field" id="degressiveRateField">
-            <h3 class="form__field-title">
-                Degressive rate
-            </h3>
-            <p class="form__field-description">
-                This is the function expression that will be used to calculate the
-                degressive rate of the rental price according to number of days.
-                The variable <code>daysCount</code> represents the number of days.
-            </p>
-            <input
-                type="text"
-                name="degressiveRateFunction"
-                value="{{config['degressiveRateFunction']}}"
-            />
         </section>
         <section class="form__field">
             <h3 class="form__field-title">
@@ -101,7 +86,7 @@
                     type="number"
                     step="1"
                     name="maxItemsPerPage"
-                    value="{{config['maxItemsPerPage']}}"
+                    value="{{ config['maxItemsPerPage'] }}"
                 />
                 <label for="maxItemsPerPage">items</label>
             </div>

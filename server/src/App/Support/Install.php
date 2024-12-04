@@ -1,17 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Loxya\Install;
+namespace Loxya\Support;
 
 use Loxya\Config\Config;
 use Loxya\Console\App as CliApp;
-use Loxya\Support\Arr;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
 final class Install
 {
-    protected const INSTALL_FILE = __DIR__ . '/progress.json';
+    protected const INSTALL_FILE = CONFIG_FOLDER . '/install.json';
 
     // - Voir dans `SetupController` pour les étapes d'exécution.
     public const INSTALL_STEPS = [
@@ -52,7 +51,12 @@ final class Install
         'useRouterCache' => 'boolean',
         'sessionExpireHours' => 'integer',
         'maxItemsPerPage' => 'integer',
-        'vatRate' => 'float',
+    ];
+
+    protected const LEGACY_DATA = [
+        'defaultTags',
+        'companyData.vatRate',
+        'degressiveRateFunction',
     ];
 
     public static function getStep(): string
@@ -109,6 +113,19 @@ final class Install
         $settings['db'] = $installData['data']['database'];
         $settings['companyData'] = $installData['data']['company'];
 
+        // - Legacy data.
+        foreach (static::LEGACY_DATA as $legacyField) {
+            if (!Config::has($legacyField)) {
+                continue;
+            }
+
+            Arr::set(
+                $settings,
+                sprintf('legacy.%s', $legacyField),
+                Config::get($legacyField),
+            );
+        }
+
         return $settings;
     }
 
@@ -125,7 +142,12 @@ final class Install
 
     public static function getAllCurrencies(): array
     {
-        return require 'data/currencies.php';
+        return require MIGRATIONS_FOLDER . DS . 'data' . DS . 'currencies.php';
+    }
+
+    public static function getAllCountries(): array
+    {
+        return require MIGRATIONS_FOLDER . DS . 'data' . DS . 'countries.php';
     }
 
     // ------------------------------------------------------
@@ -173,7 +195,7 @@ final class Install
         $installDataAsJson = json_encode($installData, Config::JSON_OPTIONS);
         if (!file_put_contents(self::INSTALL_FILE, $installDataAsJson)) {
             throw new \RuntimeException(
-                "Unable to write JSON install data file. Check write access to `install` folder.",
+                "Unable to write JSON install data file. Check write access to configuration folder.",
             );
         }
         return $installData;
