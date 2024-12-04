@@ -7,21 +7,21 @@ final class AddDefaultBookingsViewModeToUser extends AbstractMigration
 {
     public function up(): void
     {
-        $table = $this->table('users');
-        $table
+        $users = $this->table('users');
+        $users
             ->addColumn('default_bookings_view', 'enum', [
                 'values' => ['calendar', 'listing'],
                 'after' => 'language',
                 'default' => 'calendar',
             ])
-            ->save();
+            ->update();
     }
 
     public function down(): void
     {
-        $table = $this->table('users');
-        $table
+        $users = $this->table('users');
+        $users
             ->removeColumn('default_bookings_view')
-            ->save();
+            ->update();
     }
 }

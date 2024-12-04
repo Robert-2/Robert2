@@ -21,8 +21,15 @@ class MaterialsCollection extends Collection
     public function byCategories(): Collection
     {
         return $this
-            ->mapToGroups(function ($entity) {
-                $this->_checkItemInstance($entity);
+            ->mapToGroups(static function ($entity) {
+                if (
+                    !$entity instanceof Material &&
+                    !$entity instanceof EventMaterial &&
+                    !$entity instanceof InvoiceMaterial &&
+                    !$entity instanceof EstimateMaterial
+                ) {
+                    throw new \RuntimeException(sprintf("Material instance of `%s` not supported.", $entity::class));
+                }
 
                 /** @var Material $material */
                 $material = !($entity instanceof Material)
@@ -43,8 +50,15 @@ class MaterialsCollection extends Collection
     public function bySubCategories(): Collection
     {
         return $this
-            ->mapToGroups(function ($entity) {
-                $this->_checkItemInstance($entity);
+            ->mapToGroups(static function ($entity) {
+                if (
+                    !$entity instanceof Material &&
+                    !$entity instanceof EventMaterial &&
+                    !$entity instanceof InvoiceMaterial &&
+                    !$entity instanceof EstimateMaterial
+                ) {
+                    throw new \RuntimeException(sprintf("Material instance of `%s` not supported.", $entity::class));
+                }
 
                 /** @var Material $material */
                 $material = !($entity instanceof Material)
@@ -65,13 +79,19 @@ class MaterialsCollection extends Collection
     /**
      * Trie une collection de materiel par parc.
      *
-     * @return Collection Une nouvelle collection avec les parcs en clé
+     * @return Collection Une nouvelle collection avec les parcs en clé.
      */
     public function byParks(): Collection
     {
+        /** @var Collection<string, MaterialsCollection> $byParks */
         $byParks = new Collection();
         foreach ($this->items as $entity) {
-            $this->_checkItemInstance($entity);
+            if (
+                !$entity instanceof Material &&
+                !$entity instanceof EventMaterial
+            ) {
+                throw new \RuntimeException(sprintf("Material instance of `%s` not supported.", $entity::class));
+            }
 
             /** @var Material $material */
             $material = !($entity instanceof Material)
@@ -79,7 +99,6 @@ class MaterialsCollection extends Collection
                 : $entity;
 
             $parkName = $material?->park?->name;
-
             if (!$byParks->has($parkName)) {
                 $byParks->put($parkName, new MaterialsCollection());
             }
@@ -89,27 +108,8 @@ class MaterialsCollection extends Collection
             $parkMaterials->push($entity);
         }
 
-        return (new Collection($byParks))->sortKeys();
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -     Méthodes internes
-    // -
-    // ------------------------------------------------------
-
-    protected function _checkItemInstance($material): void
-    {
-        if (
-            !$material instanceof Material &&
-            !$material instanceof EventMaterial &&
-            !$material instanceof InvoiceMaterial &&
-            !$material instanceof EstimateMaterial
-        ) {
-            throw new \RuntimeException(sprintf(
-                "Material instance of `%s` not supported.",
-                $material::class,
-            ));
-        }
+        return $byParks
+            ->filter(static fn ($parkMaterials) => !$parkMaterials->isEmpty())
+            ->sortKeys();
     }
 }

@@ -4,8 +4,79 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.24.4 (2024-05-30)
+## 1.0.0 (UNRELEASED)
 
+- Ajoute une popup avec plus d'informations sur le matériel au survol de la référence et du nom du matériel sur le listing du matériel.
+- Améliore la prise en charge des fichiers CSV dans l'import des bénéficiaires (notamment ceux générés via Windows ou Microsoft 365) (Premium).
+- Corrige le rafraîchissement de la liste des tags dans les filtres après ajout, restoration ou suppression.
+- La barre du menu principal a été améliorée, et le menu utilisateur a été déplacé en bas de cette barre de menu.
+- Les pages "Catégories" et "Tags" ont été déplacées dans la page "Paramètres".
+- Un sélecteur, placé tout en haut à gauche de l'écran quand il existe plusieurs parcs, permet de choisir l'un de ces parcs comme contexte d'utilisation global. Ce contexte permet de filtrer les listes de matériel selon le parc choisi, ou de remplir automatiquement le champ "parc" dans les formulaires de création de matériel, ou d'unité de matériel (Premium).
+- Corrige quelques problèmes liés à la restriction des parcs aux utilisateurs (Premium).
+- Dans l'onglet "Historique" de la fenêtre des événements et réservations, est affiché l'historique de toutes les opérations effectuées sur les événements et les réservations (Premium).
+  Cet historique est accessible uniquement par les utilisateurs ayant un accès "administration", et montre une liste horodatée des opérations suivantes (avec la personne ayant effectué l'opération) :
+    - création de l'événement ou de la réservation,
+    - modification des informations de l'événement,
+    - ajout ou suppression de matériel dans la liste,
+    - modification de quantité de matériel dans la liste,
+    - confirmation ou remise en attente de l'événement,
+    - approbation de la réservation,
+    - assignation ou désaffectation des bénéficiaires ou des techniciens de l'événement,
+    - création des devis et des factures,
+    - clôture ou annulation de l'inventaire de départ
+    - clôture ou annulation de l'inventaire de retour,
+    - duplication de l'événement,
+    - envoi de la liste du matériel au(x) bénéficiaire(s),
+    - envoi de la fiche de sortie aux techniciens de l'événement,
+    - envoi d'un e-mail de rappel en cas de non-retour du matériel à temps,
+    - archivage, ou désarchivage.
+- Les caractéristiques spéciales peuvent être liées aux unités de matériel, en plus du matériel (Premium).
+  Lors de l'édition d'une caractéristique spéciale, il suffit de choisir sa portée ("matériel", "unités de matériel", ou les deux). Les valeurs des caractéristiques spéciales des unités de matériel peuvent être définies dans le formulaire d'édition des unités de matériel. Bien sûr, la visibilité d'une caractéristique limitée à certaines catégories dépend de la catégorie du matériel lié à l'unité. Quand une caractéristique spéciale numérique totalisable est liée au matériel et aux unités de matériel, le calcul du total utilise les valeurs des caractéristiques des unités de matériel en priorité, et n'ajoute celles du matériel lui-même que pour le matériel en excédent (Premium).
+- En cliquant sur une ligne de la liste des unités de matériel (ou sur le bouton "œil" en bout de ligne), une fenêtre contenant tous les détails de l'unité s'affiche (Premium).
+- Un nouveau type a été ajouté pour les caractéristiques spéciales : "texte multi-lignes". Ce type de donnée permet de saisir un texte plus long que pour le type "texte", et permet les sauts de ligne.
+- Le nombre d'heures d'exploitation de chaque unité de matériel (Premium) est affiché dans la liste des unités (onglet "unités" de la fiche matériel), ainsi que dans la nouvelle fenêtre "détails de l'unité".
+- Les groupes d'accès des utilisateurs ont été remaniés ainsi : le groupe "admin" est maintenant l'accès _"Administration"_, le groupe "membre" est maintenant l'accès _"Gestion"_, et le groupe "visiteur" devient l'accès _"Consultation du planning général"_.
+  Un nouveau type d'accès nommé _"Consultation de son planning"_ a été ajouté, permettant de n'afficher que les données de planning qui concernent uniquement l'utilisateur lui-même.
+- Les techniciens peuvent être liés à un compte utilisateur, qui leur permet de se connecter au logiciel. Par défaut, le groupe _"Consultation de son planning"_ est utilisé : il peuvent ainsi consulter leur propre planning, rédiger des notes sur les événements dans lesquels ils sont assignés, mais ne peuvent pas modifier les autres informations de l'événement et n'ont pas accès à l'onglet "Historique" (Premium).
+- Il est possible de lier un compte utilisateur existant à une fiche technicien ou bénéficiaire. Il n'est donc plus nécessaire de créer un nouveau compte pour cela. (Premium)
+- Améliore les messages d'erreurs dans les formulaires.
+- Affiche les numéros de page dans le pied-de-page des documents PDF.
+- Améliore la configuration des cookies pour permettre l'intégration (par exemple dans Notion). NOTE : Uniquement possible dans les contexte sécurisés ou l'application est installée derrière un certificat TLS/CSS et donc accessible via une URL du type `https://...`.
+- La facturation a été revue et améliorée :
+  - La configuration du logiciel permet désormais de définir plusieurs tarifs dégressifs, les taxes et groupes de taxes.
+    (Un groupe de taxes étant la réunion de plusieurs taxes, appliquées en même temps, par exemple une T.V.A à 20% + Une participation écologique à prix fixe)
+  - Chaque matériel peut utiliser son propre tarif dégressif (ou aucun), sa propre taxe, groupe de taxe ou pas de taxe.
+  - La remise globale des événements et réservations se configure dorénavant dans l'édition de l'événement ou la réservation 
+    à la nouvelle étape "Facturation" (voir plus bas).
+  - Le prix du matériel peut maintenant être personnalisé directement dans les réservations et événements.
+  - Des lignes de facturation supplémentaires peuvent désormais être ajoutées aux devis et factures des événements et réservations.
+  - L'édition des devis pour les réservations est maintenant disponible.
+  - Il est maintenant possible d'appliquer des remises au niveau de chaque matériel dans les événements et réservations, en plus de la remise globale.
+  - Le mode de calcul des factures et devis a changé (ceci n'impacte évidemment pas les factures / devis déjà édités) :
+    Avant, vu que le tarif dégressif était le même partout, le calcul était : 
+    - Pour chaque matériel : quantité x prix unitaire = Total arrondi à deux chiffres après la virgule.
+    - Une fois fait pour chaque matériel, somme de ces totaux puis multiplication par le tarif dégressif global, arrondi 
+      du résultat à deux chiffres après la virgule. Celui-ci constituait donc le total hors remise globale.
+    - Si remise globale, application de celle-ci, puis obtention du total hors taxes arrondi.
+    - Si T.V.A, application de celle-ci pour obtenir le total T.T.C arrondi.
+    Maintenant, chaque matériel peut avoir son propre tarif dégressif. Le calcul se passe donc ainsi:
+    - Pour chaque matériel : Prix unitaire x Tarif dégressif, obtention d'un prix pour la période de réservation / de l'événement, 
+      arrondi à deux chiffres après la virgule puis multiplié par la quantité et à nouveau arrondi pour avoir le total pour le
+      matériel (si remise sur le matériel, application de la remise puis à nouveau arrondi pour avoir le total final pour le matériel).
+    - Une fois fait pour chaque matériel, somme de ces totaux pour obtenir le total hors remise globale, arrondi.
+    - Si remise globale, application de celle-ci, puis obtention du total hors taxes arrondi.
+    - Si taxes, application de celles-ci pour chaque matériel puis déduction de la remise globale éventuelle pour obtenir le total T.T.C arrondi.
+- Lors de l'ajout d'un matériel à un événement / une réservation, son nom, sa référence, son prix unitaire et son tarif dégressif sont dorénavant "figés" dans l'événement ou la réservation, ceci permettant d'éviter que lors du renommage ou de l'ajustement d'un prix d'un matériel, les événements passés prennent ces nouvelles valeurs, qui n'étaient pas effectives "à l'époque". De la même manière, cela permet, pour une réservation ou un événement futur dont le prix total (et donc celui de chaque matériel) a été accepté par un client, d'éviter de modifier ces prix acceptés, même en cas de hausse de prix à posteriori. Bien sûr l'interface propose donc maintenant de "resynchroniser" ces éléments avec les dernières informations du matériel et vous indique qu'une information est "désynchronisée" en la soulignant en bleu dans l'édition d'une réservation ou d'un événement.
+- Dans la page de modification des événements, une nouvelle étape "Facturation" a été ajoutée après celle du matériel, pour pouvoir ajuster les montant de chaque matériel et ajouter des lignes additionnelles aux devis et factures qui seront générées pour l'événement.
+- Un bouton "modifier" dans la fenêtre des réservations (Premium) permet d'accéder à une nouvelle page de modification de la réservation, similaire à celle des événements, avec 4 étapes :
+    - 1. Informations (pour modifier les dates de la réservation)
+    - 2. Matériel (pour modifier la liste du matériel de la réservation)
+    - 3. Facturation (pour gérer les tarifs du matériel et les lignes additionnelles)
+    - 4. Récapitulatif (pour consulter l'ensemble des informations de la réservation)
+- Des codes-barres peuvent être générés pour le matériel identifié de manière groupée (donc non-unitaire) (Premium).
+  Scanner un code-barres de ce type de matériel a pour effet d'ajouter 1 dans les listes de matériel d'événements et réservations, ainsi que les inventaires de départ et retour.
+- Un bouton "Rechercher" en haut du menu principal permet de rechercher un nom ou une référence de matériel ou d'une unité de matériel, ainsi que d'utiliser le scanner de code-barres depuis n'importe quelle page du logiciel, pour obtenir toutes les informations du matériel scanné ou recherché (photo, description, quantités, caractéristiques, tags...), la liste de ses unités, les événements ou réservations dans lesquels il est utilisé actuellement, et l'éventuel inventaire de départ ou de retour qui doit être effectué avec ce matériel (Premium).
+- La recherche de matériel retourne maintenant le matériel dont la référence des unités contient le terme recherché, ou dont le numéro de série est exactement le terme recherché (Premium).
 - Correction d'un bug dans la fonctionnalité de recherche des tableaux lorsque ceux-ci contiennent des dates.
 
 ## 0.24.3 (2024-05-23)

@@ -96,5 +96,19 @@
         "country_id": null,
         "created_at": "2021-02-13 23:16:00",
         "updated_at": "2021-02-13 23:16:00"
+    },
+    {
+        "id": 8,
+        "user_id": 3,
+        "first_name": "Alexandre",
+        "last_name": "Dupont",
+        "email": "alex.dupont@example.com",
+        "phone": "+33678901234",
+        "street": "15 Rue de l'Église",
+        "postal_code": "75001",
+        "locality": "Paris",
+        "country_id": 1,
+        "created_at": "2022-04-21 14:30:00",
+        "updated_at": "2022-04-21 14:30:00"
     }
 ]

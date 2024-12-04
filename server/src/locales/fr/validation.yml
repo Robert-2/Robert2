@@ -1099,6 +1099,9 @@ invalid-period:
 invalid-value:
     "La valeur est invalide."
 
+invalid-positive-amount:
+    "Ce montant est invalide, il doit être positif et avec deux chiffres après la virgule maximum."
+
 facility-closed-at-this-start-date-day:
     "L'établissement est fermé ce jour de début."
 
@@ -1252,8 +1255,8 @@ invalid-csv-mapping:
 invalid-csv-delimiter:
     "Le délimiteur CSV est invalide."
 
-discount-rate-exceeds-maximum:
-    "Le taux de remise dépasse le maximum."
+invalid-csv-file-encoding:
+    "L'encodage du fichier CSV est invalide."
 
 #
 # - Existence messages
@@ -1273,6 +1276,12 @@ document-already-in-use-for-this-material:
 
 person-already-a-beneficiary:
     "Cette personne est déjà un bénéficiaire."
+
+person-already-a-technician:
+    "Cette personne est déjà un technicien."
+
+user-does-not-exist:
+    "Cet utilisateur n'existe pas."
 
 reference-already-in-use:
     "Cette référence est déjà utilisée."
@@ -1297,6 +1306,18 @@ user-pseudo-already-in-use:
 
 user-email-already-in-use:
     "Cet e-mail est déjà utilisé."
+
+tax-name-already-in-use:
+    "Une taxe avec ce nom existe déjà."
+
+tax-component-name-already-in-use:
+    "Cette composante de taxe existe déjà dans la même taxe."
+
+degressive-rate-name-already-in-use:
+    "Un tarif dégressif avec ce nom existe déjà."
+
+degressive-rate-day-already-exists:
+    "Un palier commençant ce jour existe déjà dans ce tarif dégressif."
 
 invalid-hexadecimal-color:
     "Code de couleur invalide (doit être un code hexadécimal)."

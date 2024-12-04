@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Loxya\Config\Acl;
 use Loxya\Config\Config;
 use Loxya\Http\Request;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\User;
 use Loxya\Services\Auth\Contracts\AuthenticatorInterface;
 use Loxya\Services\Auth\Contracts\RemoteAuthenticatorInterface;
@@ -154,10 +155,17 @@ final class Auth
         $groups = (array) $groups;
 
         if (!static::isAuthenticated()) {
-            return false;
+            // - Si on est en mode CLI, on considère que le process
+            //   courant a un accès administrateur.
+            if (!isCli()) {
+                return false;
+            }
+            $userGroup = Group::ADMINISTRATION;
+        } else {
+            $userGroup = static::user()->group;
         }
 
-        return in_array(static::user()->group, (array) $groups, true);
+        return in_array($userGroup, (array) $groups, true);
     }
 
     public static function reset(): void

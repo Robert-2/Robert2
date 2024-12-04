@@ -11,7 +11,7 @@ final class HealthcheckTest extends ApiTestCase
     {
         $this->client->get('/healthcheck');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(['last_update' => '2022-05-29 18:05:00']);
+        $this->assertResponseData(['last_update' => '2024-02-14 14:22:36']);
     }
 
     public function testHealthcheckDisabled(): void

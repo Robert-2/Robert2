@@ -25,19 +25,14 @@ final class OpeningHourTest extends TestCase
         // - Si le jour de la semaine n'est pas valide.
         foreach ([null, '__INVALID__'] as $invalidWeekday) {
             $openingHour = $generateOpeningHour(['weekday' => $invalidWeekday]);
-            $expectedErrors = [
-                'weekday' => [
-                    "Ce champ doit contenir un nombre entier.",
-                    "La valeur doit être comprise entre 0 et 6.",
-                ],
-            ];
+            $expectedErrors = ['weekday' => "Ce champ est invalide."];
             $this->assertFalse($openingHour->isValid());
             $this->assertSame($expectedErrors, $openingHour->validationErrors());
         }
 
         // - Si le jour de la semaine n'est pas valide: PAs dans l'intervalle 0 à 6.
         $openingHour = $generateOpeningHour(['weekday' => 15]);
-        $expectedErrors = ['weekday' => ["La valeur doit être comprise entre 0 et 6."]];
+        $expectedErrors = ['weekday' => "Ce champ est invalide."];
         $this->assertFalse($openingHour->isValid());
         $this->assertSame($expectedErrors, $openingHour->validationErrors());
 
@@ -47,8 +42,8 @@ final class OpeningHourTest extends TestCase
             'end_time' => '17:20:00',
         ]);
         $expectedErrors = [
-            'start_time' => ["L'heure doit être arrondie au quart d'heure le plus proche."],
-            'end_time' => ["L'heure doit être arrondie au quart d'heure le plus proche."],
+            'start_time' => "L'heure doit être arrondie au quart d'heure le plus proche.",
+            'end_time' => "L'heure doit être arrondie au quart d'heure le plus proche.",
         ];
         $this->assertFalse($openingHour->isValid());
         $this->assertSame($expectedErrors, $openingHour->validationErrors());
@@ -56,8 +51,8 @@ final class OpeningHourTest extends TestCase
         // - Si l'heure d'ouverture est égale à l'heure de fermeture.
         $openingHour = $generateOpeningHour(['start_time' => '17:45:00']);
         $expectedErrors = [
-            'start_time' => ["L'heure de fin doit être après l'heure de début."],
-            'end_time' => ["L'heure de fin doit être après l'heure de début."],
+            'start_time' => "L'heure de fin doit être après l'heure de début.",
+            'end_time' => "L'heure de fin doit être après l'heure de début.",
         ];
         $this->assertFalse($openingHour->isValid());
         $this->assertSame($expectedErrors, $openingHour->validationErrors());
@@ -65,8 +60,8 @@ final class OpeningHourTest extends TestCase
         // - Si l'heure d'ouverture est après l'heure de fermeture.
         $openingHour = $generateOpeningHour(['start_time' => '18:00:00']);
         $expectedErrors = [
-            'start_time' => ["L'heure de fin doit être après l'heure de début."],
-            'end_time' => ["L'heure de fin doit être après l'heure de début."],
+            'start_time' => "L'heure de fin doit être après l'heure de début.",
+            'end_time' => "L'heure de fin doit être après l'heure de début.",
         ];
         $this->assertFalse($openingHour->isValid());
         $this->assertSame($expectedErrors, $openingHour->validationErrors());
@@ -75,8 +70,8 @@ final class OpeningHourTest extends TestCase
         //   (et chevaucheront les nouvelles) pour la période.
         $openingHour = $generateOpeningHour(['weekday' => 1]);
         $expectedErrors = [
-            'start_time' => ["Cette période entre en conflit avec une période déjà existante."],
-            'end_time' => ["Cette période entre en conflit avec une période déjà existante."],
+            'start_time' => "Cette période entre en conflit avec une période déjà existante.",
+            'end_time' => "Cette période entre en conflit avec une période déjà existante.",
         ];
         $this->assertFalse($openingHour->isValid());
         $this->assertSame($expectedErrors, $openingHour->validationErrors());

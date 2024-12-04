@@ -1,8 +1,9 @@
+{%- set showPark = withoutPark == false and material.material.park.name is not empty -%}
 <tr>
     {% if showPictures -%}
     <td class="picture-cell">
         <img
-            src="{{ material.picture ?: baseUrl ~ '/img/material-picture-placeholder.png' }}"
+            src="{{ material.material.picture ?: baseUrl ~ '/img/material-picture-placeholder.png' }}"
             class="material-picture"
         />
     </td>
@@ -10,40 +11,39 @@
     <td>{{ material.reference }}</td>
     <td>
         {{- material.name }}
-        {%- set showPark = withoutPark == false and material.park.name is not empty -%}
         {%- if showPark -%}
             {{- ' ' -}}
-            <em class="lighter">({{ material.park.name }})</em>
+            <em class="lighter">({{ material.material.park.name }})</em>
         {%- endif -%}
-        {%- if material.attributes is not empty -%}
+        {%- if material.material.attributes is not empty -%}
             <br />
-            {%- for attribute in material.attributes -%}
+            {%- for attribute in material.material.attributes -%}
                 {{ include('blocks/materials/attribute.twig', { attribute }) -}}
             {%- endfor -%}
         {%- endif -%}
     </td>
     {% if showDescriptions -%}
     <td class="max50mm">
-        {{- material.description|nl2br -}}
+        {{- material.material.description|nl2br -}}
     </td>
     {% endif -%}
     {% if showTags -%}
     <td class="center">
-        {%- for tag in material.tags -%}
+        {%- for tag in material.material.tags -%}
         {{ tag.name }}<br />
         {%- endfor -%}
     </td>
     {% endif -%}
     {% if showReplacementPrices -%}
     <td class="right lighter">
-        {{- (material.replacement_price ?? 0)|format_currency(currency, locale=locale) -}}
+        {{- (material.unit_replacement_price ?? 0)|format_currency(event.currency, locale=locale) -}}
     </td>
     <td class="right lighter">
-        {{- ((material.replacement_price ?? 0) * material.pivot.quantity)|format_currency(currency, locale=locale) -}}
+        {{- (material.total_replacement_price ?? 0)|format_currency(event.currency, locale=locale) -}}
     </td>
     {% endif -%}
     <td class="center">
-        {{- material.pivot.quantity -}}
+        {{- material.quantity -}}
     </td>
-    <td></td>
+    <td class="center"></td>
 </tr>

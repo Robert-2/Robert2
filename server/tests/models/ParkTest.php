@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Tests;
 
+use Brick\Math\BigDecimal as Decimal;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Park;
 
@@ -17,17 +18,19 @@ final class ParkTest extends TestCase
     public function testGetTotalAmount(): void
     {
         $park = Park::findOrFail(1);
-        $this->assertEquals(11_9480.80, $park->total_amount);
+
+        $this->assertInstanceOf(Decimal::class, $park->total_amount);
+        $this->assertSame('119480.80', (string) $park->total_amount);
     }
 
-    public function testRemoveNotEmptyPark(): void
+    public function testDelete(): void
     {
-        $this->expectException(\LogicException::class);
-        Park::findOrFail(1)->delete();
-    }
+        // - Avec un parc non vide.
+        $this->assertThrow(\LogicException::class, static function () {
+            Park::findOrFail(1)->delete();
+        });
 
-    public function testRemoveEmptyPark(): void
-    {
+        // - Avec un parc vide.
         $newPark = Park::create(['name' => 'Vide et éphémère']);
         $isDeleted = Park::findOrFail($newPark->id)->delete();
         $this->assertTrue($isDeleted);

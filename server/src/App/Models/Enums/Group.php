@@ -11,13 +11,22 @@ namespace Loxya\Models\Enums;
 final class Group
 {
     /** Représente le groupe des administrateurs. */
-    public const ADMIN = 'admin';
+    public const ADMINISTRATION = 'administration';
 
-    /** Représente le groupe des membres de l'équipe. */
-    public const MEMBER = 'member';
+    /** Représente le groupe des gestionnaires, membres de l'équipe. */
+    public const MANAGEMENT = 'management';
 
-    /** Représente le groupe des visiteurs. */
-    public const VISITOR = 'visitor';
+    /**
+     * Représente le groupe des utilisateurs ayant accès au
+     * planning général, en lecture seule.
+     */
+    public const READONLY_PLANNING_GENERAL = 'readonly-planning-general';
+
+    /**
+     * Représente le groupe des utilisateurs ayant uniquement accès
+     * à leur propre planning, en lecture seule.
+     */
+    public const READONLY_PLANNING_SELF = 'readonly-planning-self';
 
     // ------------------------------------------------------
     // -
@@ -28,9 +37,10 @@ final class Group
     public static function all(): array
     {
         return [
-            Group::VISITOR,
-            Group::MEMBER,
-            Group::ADMIN,
+            Group::READONLY_PLANNING_SELF,
+            Group::READONLY_PLANNING_GENERAL,
+            Group::MANAGEMENT,
+            Group::ADMINISTRATION,
         ];
     }
 }

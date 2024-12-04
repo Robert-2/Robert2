@@ -21,9 +21,10 @@ parameters:
         - '#Cannot access property \$.+ on array<Illuminate\\Database\\Eloquent\\Builder>\|Illuminate\\Database\\Eloquent\\Builder\|Illuminate\\Database\\Eloquent\\Collection\|Illuminate\\Database\\Eloquent\\Model\.#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\(HasMany|BelongsToMany|MorphToMany|MorphMany|BelongsTo)::.+\(\)\.#'
         - '#Call to an undefined method Illuminate\\Support\\HigherOrderCollectionProxy::.+\(\)\.#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$.+#'
         - '#Call to an undefined method Illuminate\\Database\\Query\\Builder::.+\(\)\.#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::.+#'
-        - '#Access to an undefined property Loxya\\Models\\.+::\$pivot\.#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\.+::.+\(\)\.#'
 
         # - À cause du getter `attributes` dans le modèle `Material` qui entre en collision avec le `$attributes` d'Eloquent.
         - '#Access to protected property Illuminate\\Database\\Eloquent\\Model::\$attributes\.#'

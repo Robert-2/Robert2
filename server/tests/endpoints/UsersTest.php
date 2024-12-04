@@ -22,8 +22,14 @@ final class UsersTest extends ApiTestCase
                 'last_name' => 'Fountain',
                 'full_name' => 'Jean Fountain',
                 'phone' => null,
+                'street' => "1, somewhere av.",
+                'postal_code' => '1234',
+                'locality' => "Megacity",
+                'country_id' => 1,
+                'country' => CountriesTest::data(1),
+                'full_address' => "1, somewhere av.\n1234 Megacity",
                 'email' => 'tester@robertmanager.net',
-                'group' => Group::ADMIN,
+                'group' => Group::ADMINISTRATION,
                 'language' => 'en',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
@@ -34,20 +40,32 @@ final class UsersTest extends ApiTestCase
                 'last_name' => 'Rabbit',
                 'full_name' => 'Roger Rabbit',
                 'phone' => null,
+                'street' => null,
+                'postal_code' => null,
+                'locality' => null,
+                'country_id' => null,
+                'country' => null,
+                'full_address' => null,
                 'email' => 'tester2@robertmanager.net',
-                'group' => Group::MEMBER,
+                'group' => Group::MANAGEMENT,
                 'language' => 'fr',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
             [
                 'id' => 3,
-                'pseudo' => 'nobody',
-                'first_name' => null,
-                'last_name' => null,
-                'full_name' => null,
-                'phone' => null,
-                'email' => 'nobody@robertmanager.net',
-                'group' => Group::MEMBER,
+                'pseudo' => 'aldup',
+                'first_name' => 'Alexandre',
+                'last_name' => 'Dupont',
+                'full_name' => 'Alexandre Dupont',
+                'phone' => '+33678901234',
+                'street' => "15 Rue de l'Église",
+                'postal_code' => '75001',
+                'locality' => 'Paris',
+                'country_id' => 1,
+                'country' => CountriesTest::data(1),
+                'full_address' => "15 Rue de l'Église\n75001 Paris",
+                'email' => 'alex.dupont@example.com',
+                'group' => Group::MANAGEMENT,
                 'language' => 'fr',
                 'default_bookings_view' => BookingViewMode::LISTING->value,
             ],
@@ -58,8 +76,14 @@ final class UsersTest extends ApiTestCase
                 'last_name' => 'Berluc',
                 'full_name' => 'Henry Berluc',
                 'phone' => '+33724000000',
+                'street' => null,
+                'postal_code' => null,
+                'locality' => null,
+                'country_id' => 2,
+                'country' => CountriesTest::data(2),
+                'full_address' => null,
                 'email' => 'visitor@robertmanager.net',
-                'group' => Group::VISITOR,
+                'group' => Group::READONLY_PLANNING_GENERAL,
                 'language' => 'fr',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
@@ -70,8 +94,14 @@ final class UsersTest extends ApiTestCase
                 'last_name' => 'Farol',
                 'full_name' => 'Caroline Farol',
                 'phone' => '+33786325500',
+                'street' => null,
+                'postal_code' => null,
+                'locality' => null,
+                'country_id' => null,
+                'country' => null,
+                'full_address' => null,
                 'email' => 'external@robertmanager.net',
-                'group' => Group::VISITOR,
+                'group' => Group::READONLY_PLANNING_GENERAL,
                 'language' => 'en',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
             ],
@@ -81,9 +111,18 @@ final class UsersTest extends ApiTestCase
             User::SERIALIZE_SETTINGS => $users->map(static fn ($user) => (
                 Arr::only($user, User::SETTINGS_ATTRIBUTES)
             )),
+            User::SERIALIZE_SUMMARY => $users->map(static fn ($user) => (
+                Arr::only($user, ['id', 'full_name', 'email'])
+            )),
             User::SERIALIZE_DEFAULT => $users->map(static fn ($user) => (
                 Arr::except($user, [
                     ...User::SETTINGS_ATTRIBUTES,
+                    'street',
+                    'postal_code',
+                    'locality',
+                    'country_id',
+                    'country',
+                    'full_address',
                 ])
             )),
             User::SERIALIZE_DETAILS => $users->map(static fn ($user) => (
@@ -104,8 +143,8 @@ final class UsersTest extends ApiTestCase
         $this->client->get('/api/users');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(5, [
-            self::data(5),
             self::data(3),
+            self::data(5),
             self::data(1),
             self::data(2),
             self::data(4),
@@ -117,7 +156,7 @@ final class UsersTest extends ApiTestCase
         $this->assertResponsePaginatedData(0);
 
         // - Test de récupération des membres d'un groupe en particulier.
-        $this->client->get(sprintf('/api/users?group=%s', Group::MEMBER));
+        $this->client->get(sprintf('/api/users?group=%s', Group::MANAGEMENT));
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(2, [
             self::data(3),
@@ -206,35 +245,15 @@ final class UsersTest extends ApiTestCase
             'email' => 'not-an-email',
             'first_name' => '',
             'last_name' => '',
+            'group' => 'invalid',
         ]);
         $this->assertApiValidationError([
-            'pseudo' => [
-                "This field is mandatory.",
-            ],
-            'email' => [
-                "This email address is invalid.",
-            ],
-            'group' => [
-                "This field is mandatory.",
-                "One of the following rules must be verified:",
-                'Must equal "admin".',
-                'Must equal "member".',
-                'Must equal "visitor".',
-            ],
-            'password' => [
-                "This field is mandatory.",
-                "4 min. characters, 191 max. characters.",
-            ],
-            'first_name' => [
-                "This field is mandatory.",
-                "This field contains some unauthorized characters.",
-                "2 min. characters, 35 max. characters.",
-            ],
-            'last_name' => [
-                "This field is mandatory.",
-                "This field contains some unauthorized characters.",
-                "2 min. characters, 35 max. characters.",
-            ],
+            'pseudo' => "This field is mandatory.",
+            'email' => "This email address is invalid.",
+            'group' => "This field is invalid.",
+            'password' => "This field is mandatory.",
+            'first_name' => "This field is mandatory.",
+            'last_name' => "This field is mandatory.",
         ]);
     }
 
@@ -246,11 +265,11 @@ final class UsersTest extends ApiTestCase
             'last_name' => 'Testeur',
             'email' => 'tester@robertmanager.net',
             'password' => 'test-dupe',
-            'group' => Group::MEMBER,
+            'group' => Group::MANAGEMENT,
         ]);
         $this->assertApiValidationError([
-            'pseudo' => ["This pseudo is already in use."],
-            'email' => ["This email is already in use."],
+            'pseudo' => "This pseudo is already in use.",
+            'email' => "This email is already in use.",
         ]);
     }
 
@@ -262,7 +281,7 @@ final class UsersTest extends ApiTestCase
             'first_name' => 'Jeanne',
             'last_name' => 'Testeur',
             'password' => 'my-ultim4te-paßwor!',
-            'group' => Group::MEMBER,
+            'group' => Group::MANAGEMENT,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
@@ -270,10 +289,16 @@ final class UsersTest extends ApiTestCase
             'first_name' => 'Jeanne',
             'last_name' => 'Testeur',
             'full_name' => 'Jeanne Testeur',
-            'phone' => null,
             'email' => 'someone@test.org',
             'pseudo' => 'Jeanne',
-            'group' => Group::MEMBER,
+            'phone' => null,
+            'street' => null,
+            'postal_code' => null,
+            'locality' => null,
+            'country' => null,
+            'country_id' => null,
+            'full_address' => null,
+            'group' => Group::MANAGEMENT,
         ]);
     }
 
@@ -313,7 +338,7 @@ final class UsersTest extends ApiTestCase
             'first_name' => 'Edited',
             'last_name' => 'Tester',
             'full_name' => 'Edited Tester',
-            'group' => Group::ADMIN,
+            'group' => Group::ADMINISTRATION,
         ];
         $this->client->put('/api/users/3', $updatedData);
         $this->assertStatusCode(StatusCode::STATUS_OK);

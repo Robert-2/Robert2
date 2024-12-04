@@ -1,7 +1,7 @@
 <div class="page__content">
     <h2>Bienvenue&nbsp;!</h2>
     <p>
-        Voici l'assistant d'installation de Loxya, version <strong>{{version()}}</strong>.<br />
+        Voici l'assistant d'installation de Loxya, version <strong>{{ version() }}</strong>.<br />
         Il va vous guider, en 5 petites étapes, pour installer et configurer votre application.
     </p>
     <p>
@@ -9,27 +9,27 @@
         Mais avant, vérifions que votre environnement dispose du minimum requis pour que tout fonctionne correctement.
     </p>
     <div class="install__check">
-        Loxya est compatible avec PHP de la version <strong>{{phpVersionMin}}</strong> à <strong>{{phpVersionMax}}</strong>.
+        Loxya est compatible avec PHP de la version <strong>{{ phpVersionMin }}</strong> à <strong>{{ phpVersionMax }}</strong>.
         <div class="install__check-result">
             {% if phpversionIsAboveMax %}
             <div class="install__check-warning">
-            Attention, votre version de PHP (<strong>{{phpVersion}}</strong>) est supérieure à la version
-            de PHP officiellement supportée par Loxya (<strong>{{phpVersionMax}}</strong>).
+            Attention, votre version de PHP (<strong>{{ phpVersion }}</strong>) est supérieure à la version
+            de PHP officiellement supportée par Loxya (<strong>{{ phpVersionMax }}</strong>).
             <br /><br />
             Il est possible que cela fonctionne sans problème mais si ce n'est pas le cas,
             il faudra attendre une release officielle.
             </div>
             {% elseif phpversionIsAboveMin %}
             <div class="install__check-success">
-                OK, version de PHP utilisée : <strong>{{phpVersion}}</strong>
+                OK, version de PHP utilisée : <strong>{{ phpVersion }}</strong>
             </div>
             {% else %}
             <div class="install__check-error">
-                Votre version de PHP (<strong>{{phpVersion}}</strong>) est inférieure à la version
-                minimum requise pour exécuter Loxya (<strong>{{phpVersionMin}}</strong>).
+                Votre version de PHP (<strong>{{ phpVersion }}</strong>) est inférieure à la version
+                minimum requise pour exécuter Loxya (<strong>{{ phpVersionMin }}</strong>).
                 <br /><br />
-                Veuillez installer au minimum PHP <strong>{{phpVersionMin}}</strong> et au
-                maximum PHP <strong>{{phpVersionMax}}</strong>.
+                Veuillez installer au minimum PHP <strong>{{ phpVersionMin }}</strong> et au
+                maximum PHP <strong>{{ phpVersionMax }}</strong>.
             </div>
             {% endif %}
         </div>
@@ -38,7 +38,7 @@
         Quelques extensions PHP doivent aussi être installées.
         <div class="install__check-result">
             {% for extension in missingExtensions %}
-            <li class="install__check-error">L'extension &laquo;&nbsp;{{extension}}&nbsp;&raquo; est manquante.</li>
+            <li class="install__check-error">L'extension &laquo;&nbsp;{{ extension }}&nbsp;&raquo; est manquante.</li>
             {% else %}
             <span class="install__check-success">Toutes les extensions requises sont présentes&nbsp;!</span>
             {% endfor %}

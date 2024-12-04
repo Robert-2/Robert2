@@ -2,6 +2,7 @@
     {
         "id": 1,
         "name": "Poids",
+        "entities": ["material"],
         "type": "float",
         "unit": "kg",
         "max_length": null,
@@ -12,6 +13,7 @@
     {
         "id": 2,
         "name": "Couleur",
+        "entities": ["material"],
         "type": "string",
         "unit": null,
         "max_length": null,
@@ -22,6 +24,7 @@
     {
         "id": 3,
         "name": "Puissance",
+        "entities": ["material"],
         "type": "integer",
         "unit": "W",
         "max_length": null,
@@ -32,6 +35,7 @@
     {
         "id": 4,
         "name": "Conforme",
+        "entities": ["material"],
         "type": "boolean",
         "unit": null,
         "max_length": null,
@@ -42,11 +46,45 @@
     {
         "id": 5,
         "name": "Date d'achat",
+        "entities": ["material"],
         "type": "date",
         "unit": null,
         "max_length": null,
         "is_totalisable": null,
         "created_at": "2021-02-12 12:35:46",
         "updated_at": "2021-02-12 14:00:00"
+    },
+    {
+        "id": 6,
+        "name": "Nettoyé le",
+        "entities": ["material"],
+        "type": "date",
+        "unit": null,
+        "max_length": null,
+        "is_totalisable": null,
+        "created_at": "2021-06-07 10:22:00",
+        "updated_at": "2021-06-07 15:00:00"
+    },
+    {
+        "id": 7,
+        "name": "Immatriculation",
+        "entities": ["material"],
+        "type": "string",
+        "unit": null,
+        "max_length": null,
+        "is_totalisable": null,
+        "created_at": "2021-06-07 10:24:00",
+        "updated_at": "2021-06-07 15:00:00"
+    },
+    {
+        "id": 8,
+        "name": "Prix d'achat",
+        "entities": ["material"],
+        "type": "float",
+        "unit": "€",
+        "max_length": null,
+        "is_totalisable": true,
+        "created_at": "2024-07-08 12:00:00",
+        "updated_at": "2024-07-08 12:00:00"
     }
 ]

@@ -13,7 +13,7 @@ final class UserTest extends TestCase
     public function testFromLogin(): void
     {
         // - Avec un un couple d'identifiants inexistants.
-        $this->assertException(ModelNotFoundException::class, static fn () => (
+        $this->assertThrow(ModelNotFoundException::class, static fn () => (
             User::fromLogin('foo', 'bar')
         ));
 
@@ -52,7 +52,7 @@ final class UserTest extends TestCase
         User::new([
             'pseudo' => 'Owkay',
             'email' => 'owkay@test.org',
-            'group' => Group::ADMIN,
+            'group' => Group::ADMINISTRATION,
             'password' => 'test-pw',
         ]);
     }
@@ -63,7 +63,7 @@ final class UserTest extends TestCase
             'pseudo' => 'testAdd',
             'email' => 'testadd@testing.org',
             'password' => 'test-add',
-            'group' => Group::MEMBER,
+            'group' => Group::MANAGEMENT,
             'person' => [
                 'first_name' => 'Testing',
                 'last_name' => 'Add',
@@ -75,39 +75,30 @@ final class UserTest extends TestCase
         $this->assertEquals(6, $result->id);
         $this->assertEquals('testAdd', $result->pseudo);
         $this->assertEquals('testadd@testing.org', $result->email);
-        $this->assertEquals(Group::MEMBER, $result->group);
-        $this->assertEquals(8, $result->person->id);
+        $this->assertEquals(Group::MANAGEMENT, $result->group);
+        $this->assertEquals(9, $result->person->id);
         $this->assertEquals(6, $result->person->user_id);
         $this->assertEquals('Testing', $result->person->first_name);
         $this->assertEquals('Add', $result->person->last_name);
     }
 
-    public function testUpdateNotFound(): void
+    public function testEdit(): void
     {
-        $this->expectException(ModelNotFoundException::class);
-        User::staticEdit(999, []);
-    }
-
-    public function testUpdate(): void
-    {
-        $data = [
-            'pseudo' => 'testUpdate',
-            'email' => 'testUpdate@robertmanager.net',
-        ];
-
-        $result = User::staticEdit(1, $data);
-        $this->assertEquals('testUpdate', $result->pseudo);
+        $user = User::findOrFail(1)->edit([
+            'pseudo' => 'test-edit',
+            'email' => 'test-edit@robertmanager.net',
+        ]);
+        $this->assertEquals('test-edit', $user->pseudo);
 
         // - Test update avec des données de "Person"
-        $data = [
+        $user = User::findOrFail(3)->edit([
             'pseudo' => 'testEdit',
             'person' => [
                 'first_name' => 'Testing',
                 'last_name' => 'Tester',
             ],
-        ];
-        $result = User::staticEdit(3, $data);
-        $this->assertEquals('testEdit', $result->pseudo);
-        $this->assertEquals('Testing Tester', $result->person->full_name);
+        ]);
+        $this->assertEquals('testEdit', $user->pseudo);
+        $this->assertEquals('Testing Tester', $user->person->full_name);
     }
 }

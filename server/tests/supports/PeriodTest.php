@@ -332,7 +332,7 @@ final class PeriodTest extends TestCase
             ['start' => '[Invalid]', 'end' => '[Invalid]'],
         ];
         foreach ($invalidData as $invalidDatum) {
-            $this->assertException(\InvalidArgumentException::class, static fn () => (
+            $this->assertThrow(\InvalidArgumentException::class, static fn () => (
                 Period::fromArray($invalidDatum)
             ));
         }
@@ -480,7 +480,7 @@ final class PeriodTest extends TestCase
     {
         // - Avec des valeurs invalides.
         foreach ([null, '', [], ['[Invalid]', '[Invalid]']] as $invalidValue) {
-            $this->assertException(\InvalidArgumentException::class, static fn () => (
+            $this->assertThrow(\InvalidArgumentException::class, static fn () => (
                 Period::from($invalidValue)
             ));
         }

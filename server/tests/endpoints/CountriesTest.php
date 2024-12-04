@@ -28,25 +28,20 @@ final class CountriesTest extends ApiTestCase
         ]);
     }
 
-    public function testGetCountries(): void
+    public function testGetAll(): void
     {
         $this->client->get('/api/countries');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
-            self::data(1),
-            self::data(2),
-            self::data(3),
-        ]);
+        $this->assertResponseData(self::data());
     }
 
-    public function testGetCountryNotFound(): void
+    public function testGetOne(): void
     {
+        // - Test avec un pays inexistant.
         $this->client->get('/api/countries/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-    }
 
-    public function testGetCountry(): void
-    {
+        // - Test valide.
         $this->client->get('/api/countries/1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(self::data(1));

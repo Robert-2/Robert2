@@ -10,7 +10,7 @@ use Loxya\Models\Event;
 use Loxya\Models\User;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
-use Loxya\Support\Pdf;
+use Loxya\Support\Pdf\Pdf;
 use Loxya\Support\Period;
 
 final class EventTest extends TestCase
@@ -34,7 +34,15 @@ final class EventTest extends TestCase
                 'is_confirmed' => false,
                 'is_archived' => true,
                 'location' => "Brousse",
+                'materials_count' => 23,
                 'is_billable' => false,
+                'currency' => 'EUR',
+                'total_without_global_discount' => null,
+                'global_discount_rate' => null,
+                'total_global_discount' => null,
+                'total_without_taxes' => null,
+                'total_taxes' => null,
+                'total_with_taxes' => null,
                 'is_departure_inventory_done' => true,
                 'departure_inventory_datetime' => '2018-12-15 08:17:00',
                 'departure_inventory_author_id' => 1,
@@ -62,7 +70,22 @@ final class EventTest extends TestCase
                 'is_confirmed' => false,
                 'is_archived' => false,
                 'location' => "Gap",
+                'materials_count' => 3,
                 'is_billable' => true,
+                'currency' => 'EUR',
+                'total_without_global_discount' => '422.54',
+                'global_discount_rate' => '10.0000',
+                'total_global_discount' => '42.25',
+                'total_without_taxes' => '380.29',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'value' => '20.000',
+                        'is_rate' => true,
+                        'total' => '76.06',
+                    ],
+                ],
+                'total_with_taxes' => '456.35',
                 'is_departure_inventory_done' => true,
                 'departure_inventory_datetime' => '2018-12-16 15:35:00',
                 'departure_inventory_author_id' => 1,
@@ -90,7 +113,28 @@ final class EventTest extends TestCase
                 'is_confirmed' => false,
                 'is_archived' => false,
                 'location' => "Lyon",
+                'materials_count' => 5,
                 'is_billable' => true,
+                'currency' => 'EUR',
+                'total_without_global_discount' => '-909.67',
+                'global_discount_rate' => '0.0000',
+                'total_global_discount' => '0.00',
+                'total_without_taxes' => '-909.67',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '376.07',
+                    ],
+                    [
+                        'name' => 'Taxes diverses',
+                        'is_rate' => false,
+                        'value' => '10.00',
+                        'total' => '20.00',
+                    ],
+                ],
+                'total_with_taxes' => '-513.60',
                 'is_departure_inventory_done' => false,
                 'departure_inventory_datetime' => null,
                 'departure_inventory_author_id' => null,
@@ -134,23 +178,21 @@ final class EventTest extends TestCase
         // - Retourne les événements qui ont le terme "premier" dans le titre.
         $this->assertEquals(
             [
-                ['id' => 1, 'title' => 'Premier événement'],
-                ['id' => 3, 'title' => 'Avant-premier événement'],
+                1 => 'Premier événement',
+                3 => 'Avant-premier événement',
             ],
             Event::search('premier')
-                ->select(['id', 'title'])
-                ->get()->toArray(),
+                ->get()->pluck('title', 'id')->all(),
         );
 
         // - Retourne les événements qui ont un bénéficiaire dont le nom contient "tain".
         $this->assertSame(
             [
-                ['id' => 1, 'title' => 'Premier événement'],
-                ['id' => 5, 'title' => "Kermesse de l'école des trois cailloux"],
+                1 => 'Premier événement',
+                5 => "Kermesse de l'école des trois cailloux",
             ],
             Event::search('tain')
-                ->select(['id', 'title'])
-                ->get()->toArray(),
+                ->get()->pluck('title', 'id')->all(),
         );
     }
 
@@ -164,13 +206,13 @@ final class EventTest extends TestCase
         $result = Event::find(1)->missingMaterials();
         $this->assertCount(1, $result);
         $this->assertEquals('DBXPA2', $result->get(0)['reference']);
-        $this->assertEquals(1, $result->get(0)['pivot']['quantity_missing']);
+        $this->assertEquals(1, $result->get(0)['quantity_missing']);
 
         // - Get missing materials of event #4
         $result = Event::find(4)->missingMaterials();
         $this->assertCount(1, $result);
-        $this->assertEquals('Transporter', $result->get(0)['reference']);
-        $this->assertEquals(1, $result->get(0)['pivot']['quantity_missing']);
+        $this->assertEquals('V-1', $result->get(0)['reference']);
+        $this->assertEquals(1, $result->get(0)['quantity_missing']);
 
         // - Get missing materials of event #5
         $result = Event::find(5)->missingMaterials();
@@ -241,19 +283,14 @@ final class EventTest extends TestCase
         $this->assertNull(Event::findOrFail(3)->has_not_returned_materials);
     }
 
-    public function testTotalWithoutDiscount(): void
+    public function testTotalWithoutGlobalDiscount(): void
     {
-        $this->assertEquals('597.54', (string) Event::find(1)->total_without_discount);
-    }
-
-    public function testTotalDiscountable(): void
-    {
-        $this->assertEquals('72.54', (string) Event::find(1)->total_discountable);
+        $this->assertEquals('422.54', (string) Event::find(1)->total_without_global_discount);
     }
 
     public function testTotalReplacement(): void
     {
-        $this->assertEquals('19808.90', (string) Event::find(1)->total_replacement);
+        $this->assertEquals('19408.90', (string) Event::find(1)->total_replacement);
     }
 
     public function testGetParksAttribute(): void
@@ -294,7 +331,7 @@ final class EventTest extends TestCase
             'operation_is_full_days' => false,
         ]);
         $expectedErrors = [
-            'operation_end_date' => ['La date de fin doit être postérieure à la date de début.'],
+            'operation_end_date' => "La date de fin doit être postérieure à la date de début.",
         ];
         $this->assertSameCanonicalize($expectedErrors, (new Event($testData))->validationErrors());
 
@@ -303,8 +340,8 @@ final class EventTest extends TestCase
             'mobilization_period' => new Period('2020-02-27 14:12:00', '2020-03-06 10:02:30'),
         ]);
         $expectedErrors = [
-            'mobilization_end_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
-            'mobilization_start_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
+            'mobilization_end_date' => "La date doit être arrondie au quart d'heure le plus proche.",
+            'mobilization_start_date' => "La date doit être arrondie au quart d'heure le plus proche.",
         ];
         $this->assertSameCanonicalize($expectedErrors, (new Event($testData))->validationErrors());
     }
@@ -313,37 +350,43 @@ final class EventTest extends TestCase
     {
         $baseData = [
             'title' => "Test is_archived validation",
+            'is_billable' => true,
+            'global_discount_rate' => 0,
             'operation_period' => new Period('2020-03-01', '2020-03-03', true),
             'mobilization_period' => new Period('2020-03-01', '2020-03-03', true),
             'is_confirmed' => false,
+            'currency' => 'EUR',
             'author_id' => 1,
         ];
 
-        // - Validation pass: event has a return inventory
+        // - Pas de soucis: L'événement a un inventaire de retour.
         $event1 = new Event($baseData);
         $event1->is_return_inventory_done = true;
         $event1->is_archived = true;
-        $event1->validate();
+        $this->assertTrue($event1->isValid());
 
-        // - Validation pass: event is not archived
+        // - Pas de soucis: L'événement n'est pas archivé.
         $event2 = new Event($baseData);
         $event2->is_return_inventory_done = true;
         $event2->is_archived = false;
-        $event2->validate();
+        $this->assertTrue($event2->isValid());
 
-        // - Validation fails: event hos no return inventory
-        $this->expectException(ValidationException::class);
+        // - Soucis: L'événement n'a pas d'inventaire de retour.
         $event3 = new Event($baseData);
         $event3->is_return_inventory_done = false;
         $event3->is_archived = true;
-        $event3->validate();
+        $expectedErrors = [
+            'is_archived' => (
+                "Un événement ne peut pas être archivé si son " .
+                "inventaire de retour n'a pas encore été effectué !"
+            ),
+        ];
+        $this->assertFalse($event3->isValid());
+        $this->assertSameCanonicalize($expectedErrors, $event3->validationErrors());
     }
 
     public function testValidateIsArchivedNotPast(): void
     {
-        // - Validation fails: event is not past
-        $this->expectException(ValidationException::class);
-
         $event = new Event([
             'title' => "Test is_archive validation failure",
             'operation_period' => new Period('2120-03-01', '2120-03-03', true),
@@ -352,7 +395,14 @@ final class EventTest extends TestCase
             'author_id' => 1,
         ]);
         $event->is_archived = true;
-        $event->validate();
+        $expectedErrors = [
+            'is_archived' => (
+                "Un événement ne peut pas être archivé si son " .
+                "inventaire de retour n'a pas encore été effectué !"
+            ),
+        ];
+        $this->assertFalse($event->isValid());
+        $this->assertSameCanonicalize($expectedErrors, $event->validationErrors());
     }
 
     public function testValidateReference(): void
@@ -367,12 +417,15 @@ final class EventTest extends TestCase
 
         foreach (['REF1', null] as $testValue) {
             $testData = array_merge($data, ['reference' => $testValue]);
-            (new Event($testData))->validate();
+            $this->assertTrue((new Event($testData))->isValid());
         }
 
-        $this->expectException(ValidationException::class);
-        $testData = array_merge($data, ['reference' => 'forb1dden-ch@rs']);
-        (new Event($testData))->validate();
+        $event = new Event(array_merge($data, ['reference' => 'forb1dden-ch@rs']));
+        $expectedErrors = [
+            'reference' => "Ce champ contient des caractères non autorisés.",
+        ];
+        $this->assertFalse($event->isValid());
+        $this->assertSameCanonicalize($expectedErrors, $event->validationErrors());
     }
 
     public function testValidation(): void
@@ -397,7 +450,7 @@ final class EventTest extends TestCase
             'color' => 'not-a-color',
         ]);
         $expectedErrors = [
-            'color' => ["Code de couleur invalide (doit être un code hexadécimal)."],
+            'color' => "Code de couleur invalide (doit être un code hexadécimal).",
         ];
         $this->assertFalse($event->isValid());
         $this->assertSame($expectedErrors, $event->validationErrors());
@@ -410,19 +463,19 @@ final class EventTest extends TestCase
         $result = Event::findOrFail(1)->toPdf(new I18n('fr_CH'));
         $this->assertInstanceOf(Pdf::class, $result);
         $this->assertSame('fiche-de-sortie-testing-corp-premier-evenement.pdf', $result->getName());
-        $this->assertMatchesHtmlSnapshot($result->getRawContent());
+        $this->assertMatchesHtmlSnapshot($result->getHtml());
 
         $result = Event::findOrFail(2)->toPdf(new I18n('en'));
         $this->assertInstanceOf(Pdf::class, $result);
         $this->assertSame('release-sheet-testing-corp-second-evenement.pdf', $result->getName());
-        $this->assertMatchesHtmlSnapshot($result->getRawContent());
+        $this->assertMatchesHtmlSnapshot($result->getHtml());
     }
 
     public function testStaticEdit(): void
     {
         Carbon::setTestNow(Carbon::create(2019, 2, 20, 13, 30, 0));
 
-        $data = [
+        $event = Event::findOrFail(4)->edit([
             'title' => ' Test update ',
             'description' => '',
             'beneficiaries' => [3],
@@ -445,125 +498,241 @@ final class EventTest extends TestCase
                 [ 'id' => 1, 'quantity' => 8 ],
                 [ 'id' => 6, 'quantity' => 1 ],
             ],
-        ];
-
-        $event = Event::staticEdit(4, $data);
-        $this->assertEquals(
-            array_replace(
-                EventsTest::data(4, Event::SERIALIZE_DETAILS),
-                [
-                    'title' => "Test update",
-                    'total_replacement' => "158581.70",
-                    'is_return_inventory_started' => false,
-                    'has_missing_materials' => true,
-                    'beneficiaries' => [
-                        BeneficiariesTest::data(3),
+        ]);
+        $this->assertSameCanonicalize(
+            [
+                'id' => 4,
+                'title' => "Test update",
+                'mobilization_end_date' => '2019-04-11 00:00:00',
+                'mobilization_start_date' => '2019-03-01 00:00:00',
+                'operation_start_date' => '2019-03-01 00:00:00',
+                'operation_end_date' => '2019-04-11 00:00:00',
+                'operation_is_full_days' => true,
+                'color' => '#ef5b5b',
+                'location' => 'Moon',
+                'reference' => null,
+                'description' => null,
+                'preparer_id' => null,
+                'materials_count' => 46,
+                'is_return_inventory_started' => false,
+                'has_missing_materials' => true,
+                'is_archived' => false,
+                'is_billable' => false,
+                'is_confirmed' => false,
+                'currency' => 'EUR',
+                'total_without_global_discount' => null,
+                'global_discount_rate' => null,
+                'total_global_discount' => null,
+                'total_without_taxes' => null,
+                'total_taxes' => null,
+                'total_with_taxes' => null,
+                'total_replacement' => '158212.69',
+                'is_departure_inventory_done' => false,
+                'departure_inventory_author_id' => null,
+                'departure_inventory_datetime' => null,
+                'is_return_inventory_done' => false,
+                'return_inventory_author_id' => null,
+                'return_inventory_datetime' => null,
+                'beneficiaries' => [
+                    [
+                        'id' => 3,
+                        'person_id' => 3,
+                        'user_id' => null,
+                        'company_id' => null,
+                        'reference' => '0003',
+                        'last_name' => 'Benef',
+                        'first_name' => 'Client',
+                        'full_name' => 'Client Benef',
+                        'email' => 'client@beneficiaires.com',
+                        'street' => '156 bis, avenue des tests poussés',
+                        'postal_code' => '88080',
+                        'locality' => 'Wazzaville',
+                        'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
+                        'phone' => '+33123456789',
+                        'country_id' => null,
+                        'note' => null,
+                        'can_make_reservation' => 0,
+                        'created_at' => '2018-01-01 00:02:00',
+                        'updated_at' => '2022-01-01 00:02:00',
+                        'deleted_at' => null,
                     ],
-                    'technicians' => [
-                        [
-                            'id' => 4,
-                            'event_id' => 4,
-                            'technician_id' => 1,
-                            'position' => 'Testeur',
-                            'period' => [
-                                'start' => '2019-03-01 10:00:00',
-                                'end' => '2019-03-02 19:00:00',
-                                'isFullDays' => false,
-                            ],
-                            'technician' => TechniciansTest::data(1),
-                        ],
-                        [
-                            'id' => 5,
-                            'event_id' => 4,
-                            'technician_id' => 2,
-                            'position' => 'Stagiaire observateur',
-                            'period' => [
-                                'start' => '2019-03-02 09:00:00',
-                                'end' => '2019-03-02 16:00:00',
-                                'isFullDays' => false,
-                            ],
-                            'technician' => TechniciansTest::data(2),
-                        ],
-                    ],
-                    'materials' => [
-                        array_merge(MaterialsTest::data(1), [
-                            'pivot' => [
-                                'quantity' => 8,
-                                'quantity_departed' => null,
-                                'quantity_returned' => 0,
-                                'quantity_returned_broken' => 0,
-                                'departure_comment' => null,
-                            ],
-                        ]),
-                        array_merge(MaterialsTest::data(6), [
-                            'pivot' => [
-                                'quantity' => 1,
-                                'quantity_departed' => 1,
-                                'quantity_returned' => 1,
-                                'quantity_returned_broken' => 0,
-                                'departure_comment' => null,
-                            ],
-                        ]),
-                        array_merge(MaterialsTest::data(3), [
-                            'pivot' => [
-                                'quantity' => 20,
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
-                        ]),
-                        array_merge(MaterialsTest::data(2), [
-                            'pivot' => [
-                                'quantity' => 3,
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
-                        ]),
-                        array_merge(MaterialsTest::data(5), [
-                            'pivot' => [
-                                'quantity' => 14,
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
-                        ]),
-                    ],
-                    'updated_at' => '2019-02-20 13:30:00',
                 ],
-            ),
-            $event->serialize(Event::SERIALIZE_DETAILS),
+                'technicians' => [
+                    [
+                        'id' => 4,
+                        'event_id' => 4,
+                        'technician_id' => 1,
+                        'start_date' => '2019-03-01 10:00:00',
+                        'end_date' => '2019-03-02 19:00:00',
+                        'position' => 'Testeur',
+                    ],
+                    [
+                        'id' => 5,
+                        'event_id' => 4,
+                        'technician_id' => 2,
+                        'start_date' => '2019-03-02 09:00:00',
+                        'end_date' => '2019-03-02 16:00:00',
+                        'position' => 'Stagiaire observateur',
+                    ],
+                ],
+                'materials' => [
+                    [
+                        'id' => 10,
+                        'event_id' => 4,
+                        'material_id' => 6,
+                        'reference' => 'XR18',
+                        'name' => 'Behringer X Air XR18',
+                        'category_id' => 1,
+                        'quantity' => 1,
+                        'unit_price' => null,
+                        'degressive_rate' => null,
+                        'unit_price_period' => null,
+                        'discount_rate' => null,
+                        'taxes' => null,
+                        'total_without_discount' => null,
+                        'total_discount' => null,
+                        'total_without_taxes' => null,
+                        'unit_replacement_price' => '49.99',
+                        'total_replacement_price' => '49.99',
+                        'quantity_departed' => 1,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                    ],
+                    [
+                        'id' => 20,
+                        'event_id' => 4,
+                        'material_id' => 5,
+                        'reference' => 'XLR10',
+                        'name' => 'Câble XLR 10m',
+                        'category_id' => null,
+                        'quantity' => 14,
+                        'unit_price' => null,
+                        'degressive_rate' => null,
+                        'unit_price_period' => null,
+                        'discount_rate' => null,
+                        'taxes' => null,
+                        'total_without_discount' => null,
+                        'total_discount' => null,
+                        'total_without_taxes' => null,
+                        'unit_replacement_price' => '9.50',
+                        'total_replacement_price' => '133.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                    ],
+                    [
+                        'id' => 9,
+                        'event_id' => 4,
+                        'material_id' => 1,
+                        'reference' => 'CL',
+                        'name' => 'Console Yamaha CL3',
+                        'category_id' => 1,
+                        'quantity' => 8,
+                        'unit_price' => null,
+                        'degressive_rate' => null,
+                        'unit_price_period' => null,
+                        'discount_rate' => null,
+                        'taxes' => null,
+                        'total_without_discount' => null,
+                        'total_discount' => null,
+                        'total_without_taxes' => null,
+                        'unit_replacement_price' => '19400.00',
+                        'total_replacement_price' => '155200.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => 0,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                    ],
+                    [
+                        'id' => 18,
+                        'event_id' => 4,
+                        'material_id' => 3,
+                        'reference' => 'PAR64LED',
+                        'name' => 'PAR64 LED',
+                        'category_id' => 2,
+                        'quantity' => 20,
+                        'unit_price' => null,
+                        'degressive_rate' => null,
+                        'unit_price_period' => null,
+                        'discount_rate' => null,
+                        'taxes' => null,
+                        'total_without_discount' => null,
+                        'total_discount' => null,
+                        'total_without_taxes' => null,
+                        'unit_replacement_price' => '89.00',
+                        'total_replacement_price' => '1780.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                    ],
+                    [
+                        'id' => 19,
+                        'event_id' => 4,
+                        'material_id' => 2,
+                        'reference' => 'DBXPA2',
+                        'name' => 'Processeur DBX PA2',
+                        'category_id' => 1,
+                        'unit_price' => null,
+                        'degressive_rate' => null,
+                        'unit_price_period' => null,
+                        'discount_rate' => null,
+                        'quantity' => 3,
+                        'taxes' => null,
+                        'total_without_discount' => null,
+                        'total_discount' => null,
+                        'total_without_taxes' => null,
+                        'unit_replacement_price' => '349.90',
+                        'total_replacement_price' => '1049.70',
+                        'quantity_departed' => null,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                    ],
+                ],
+                'note' => 'Penser à contacter Cap Canaveral fin janvier pour booker le pas de tir.',
+                'author_id' => 1,
+                'created_at' => '2019-01-01 20:12:00',
+                'updated_at' => '2019-02-20 13:30:00',
+                'deleted_at' => null,
+            ],
+            $event
+                ->append([
+                    'is_return_inventory_started',
+                    'has_missing_materials',
+                    'total_replacement',
+                    'beneficiaries',
+                    'technicians',
+                    'materials',
+                ])
+                ->toArray(),
         );
     }
 
-    public function testStaticEditBadBeneficiaries(): void
+    public function testEditBadBeneficiaries(): void
     {
         Carbon::setTestNow(Carbon::create(2019, 2, 20, 13, 30, 0));
 
-        $data = ['beneficiaries' => 'not_an_array'];
         $this->expectException(\InvalidArgumentException::class);
-        Event::staticEdit(4, $data);
+        Event::findOrFail(4)->edit(['beneficiaries' => 'not_an_array']);
     }
 
-    public function testStaticEditBadTechnicians(): void
+    public function testEditBadTechnicians(): void
     {
         Carbon::setTestNow(Carbon::create(2019, 2, 20, 13, 30, 0));
 
-        $data = ['technicians' => 'not_an_array'];
         $this->expectException(\InvalidArgumentException::class);
-        Event::staticEdit(4, $data);
+        Event::findOrFail(4)->edit(['technicians' => 'not_an_array']);
     }
 
-    public function testStaticEditBadMaterials(): void
+    public function testEditBadMaterials(): void
     {
         Carbon::setTestNow(Carbon::create(2019, 2, 20, 13, 30, 0));
 
-        $data = ['materials' => 'not_an_array'];
         $this->expectException(\InvalidArgumentException::class);
-        Event::staticEdit(4, $data);
+        Event::findOrFail(4)->edit(['materials' => 'not_an_array']);
     }
 
     public function testSyncBeneficiaries(): void
@@ -620,31 +789,28 @@ final class EventTest extends TestCase
     {
         Carbon::setTestNow(Carbon::create(2019, 2, 20, 13, 30, 0));
 
-        $technicians = [
-            [
-                'id' => 1,
-                'position' => 'Roadie déballage',
-                'period' => new Period('2019-03-01 20:00:00', '2019-03-02 08:00:00'),
-            ],
-            [
-                'id' => 2,
-                'position' => 'Régisseur',
-                'period' => new Period('2019-04-10 10:00:00', '2019-04-11 17:00:00'),
-            ],
-        ];
-        $event = Event::findOrFail(4);
-
         $errors = null;
         try {
-            $event->syncTechnicians($technicians);
+            Event::findOrFail(4)->syncTechnicians([
+                [
+                    'id' => 1,
+                    'position' => 'Roadie déballage',
+                    'period' => new Period('2019-03-01 20:00:00', '2019-03-02 08:00:00'),
+                ],
+                [
+                    'id' => 2,
+                    'position' => 'Régisseur',
+                    'period' => new Period('2019-04-10 10:00:00', '2019-04-11 17:00:00'),
+                ],
+            ]);
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
         }
 
         $expectedErrors = [
             2 => [
-                'start_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
-                'end_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+                'start_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",
+                'end_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",
             ],
         ];
         $this->assertEquals($expectedErrors, $errors);
@@ -661,20 +827,20 @@ final class EventTest extends TestCase
         ];
         $event = Event::findOrFail(4);
         $event->syncMaterials($materials);
-        $this->assertEquals(3, count($event->materials));
+        $this->assertCount(3, $event->materials);
 
         $expectedData = [
-            ['id' => 1, 'quantity' => 7],
-            ['id' => 2, 'quantity' => 4],
-            ['id' => 6, 'quantity' => 2],
+            ['material_id' => 1, 'quantity' => 7],
+            ['material_id' => 2, 'quantity' => 4],
+            ['material_id' => 6, 'quantity' => 2],
         ];
-        $materials = $event->materials->sortBy('id')->values();
+        $materials = $event->materials->sortBy('material_id')->values();
         foreach ($expectedData as $index => $expected) {
             $this->assertArrayHasKey($index, $materials);
             $resultMaterial = $materials[$index];
 
-            $this->assertEquals($expected['id'], $resultMaterial['id']);
-            $this->assertEquals($expected['quantity'], $resultMaterial['pivot']['quantity']);
+            $this->assertEquals($expected['material_id'], $resultMaterial['material_id']);
+            $this->assertEquals($expected['quantity'], $resultMaterial['quantity']);
         }
     }
 
@@ -691,91 +857,345 @@ final class EventTest extends TestCase
     {
         Carbon::setTestNow(Carbon::create(2021, 07, 23, 12, 31, 24));
 
+        $originalData = Event::findOrFail(1)
+            ->append(['technicians', 'materials'])
+            ->toArray();
+
         // - Test simple.
         $newEvent = Event::findOrFail(1)->duplicate([
             'mobilization_period' => new Period('2021-08-01', '2021-08-02', true),
             'operation_period' => new Period('2021-08-01', '2021-08-02', true),
-            'author_id' => 1,
         ]);
-        $expected = [
-            'id' => 8,
-            'reference' => null,
-            'title' => 'Premier événement',
-            'description' => null,
+        $expected = array_replace($originalData, [
+            'id' => 9,
             'mobilization_start_date' => '2021-08-01 00:00:00',
             'mobilization_end_date' => '2021-08-03 00:00:00',
             'operation_start_date' => '2021-08-01 00:00:00',
             'operation_end_date' => '2021-08-03 00:00:00',
             'operation_is_full_days' => true,
-            'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
-            'location' => 'Gap',
-            'is_billable' => true,
+            'total_without_global_discount' => '378.91',
+            'global_discount_rate' => '0.0000',
+            'total_global_discount' => '0.00',
+            'total_without_taxes' => '378.91',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'value' => '20.000',
+                    'is_rate' => true,
+                    'total' => '75.78',
+                ],
+            ],
+            'total_with_taxes' => '454.69',
+            'total_replacement' => '19808.90',
             'is_departure_inventory_done' => false,
             'departure_inventory_author_id' => null,
             'departure_inventory_datetime' => null,
             'is_return_inventory_done' => false,
             'return_inventory_author_id' => null,
             'return_inventory_datetime' => null,
+            'materials' => [
+                array_replace($originalData['materials'][0], [
+                    'id' => 18,
+                    'event_id' => 9,
+                    'name' => 'Console Yamaha CL3',
+                    'reference' => 'CL3',
+                    'unit_price' => '300.00',
+                    'degressive_rate' => '1.00',
+                    'unit_price_period' => '300.00',
+                    'discount_rate' => '0.0000',
+                    'taxes' => [
+                        [
+                            'name' => 'T.V.A.',
+                            'value' => '20.000',
+                            'is_rate' => true,
+                        ],
+                    ],
+                    'total_without_discount' => '300.00',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '300.00',
+                    'unit_replacement_price' => '19400.00',
+                    'total_replacement_price' => '19400.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][1], [
+                    'id' => 19,
+                    'event_id' => 9,
+                    'name' => 'Processeur DBX PA2',
+                    'reference' => 'DBXPA2',
+                    'unit_price' => '25.50',
+                    'degressive_rate' => '2.00',
+                    'unit_price_period' => '51.00',
+                    'discount_rate' => '0.0000',
+                    'taxes' => [
+                        [
+                            'name' => 'T.V.A.',
+                            'value' => '20.000',
+                            'is_rate' => true,
+                        ],
+                    ],
+                    'total_without_discount' => '51.00',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '51.00',
+                    'unit_replacement_price' => '349.90',
+                    'total_replacement_price' => '349.90',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][2], [
+                    'id' => 20,
+                    'event_id' => 9,
+                    'name' => 'Showtec SDS-6',
+                    'reference' => 'SDS-6-01',
+                    'unit_price' => '15.95',
+                    'degressive_rate' => '1.75',
+                    'unit_price_period' => '27.91',
+                    'discount_rate' => '0.0000',
+                    'taxes' => [
+                        [
+                            'name' => 'T.V.A.',
+                            'value' => '20.000',
+                            'is_rate' => true,
+                        ],
+                    ],
+                    'total_without_discount' => '27.91',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '27.91',
+                    'unit_replacement_price' => '59.00',
+                    'total_replacement_price' => '59.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+            ],
             'technicians' => [],
-            'note' => null,
             'author_id' => null,
-            'preparer_id' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
-            'deleted_at' => null,
-        ];
+        ]);
         $this->assertEquals($expected, (
             $newEvent
-                ->append(['technicians'])
-                ->attributesToArray()
+                ->append([
+                    'technicians',
+                    'materials',
+                    'total_replacement',
+                ])
+                ->toArray()
         ));
         $this->assertCount(1, $newEvent->beneficiaries);
-        $this->assertCount(3, $newEvent->materials);
 
-        // - Test avec un événement dupliqué plus long que l'original.
+        // - Test avec le même événement mais conservation des données de facturation.
+        $newEvent = Event::findOrFail(1)->duplicate(
+            [
+                'mobilization_period' => new Period('2021-08-03', '2021-08-04', true),
+                'operation_period' => new Period('2021-08-03', '2021-08-04', true),
+            ],
+            true,
+        );
+        $expected = array_replace($originalData, [
+            'id' => 10,
+            'mobilization_start_date' => '2021-08-03 00:00:00',
+            'mobilization_end_date' => '2021-08-05 00:00:00',
+            'operation_start_date' => '2021-08-03 00:00:00',
+            'operation_end_date' => '2021-08-05 00:00:00',
+            'operation_is_full_days' => true,
+            'is_confirmed' => false,
+            'is_archived' => false,
+            'total_without_global_discount' => '278.91',
+            'global_discount_rate' => '10.0000',
+            'total_global_discount' => '27.89',
+            'total_without_taxes' => '251.02',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'value' => '20.000',
+                    'is_rate' => true,
+                    'total' => '50.20',
+                ],
+            ],
+            'total_with_taxes' => '301.22',
+            'total_replacement' => '19808.90',
+            'is_departure_inventory_done' => false,
+            'departure_inventory_author_id' => null,
+            'departure_inventory_datetime' => null,
+            'is_return_inventory_done' => false,
+            'return_inventory_author_id' => null,
+            'return_inventory_datetime' => null,
+            'materials' => [
+                array_replace($originalData['materials'][0], [
+                    'id' => 21,
+                    'event_id' => 10,
+                    'name' => 'Console Yamaha CL3',
+                    'reference' => 'CL3',
+                    'degressive_rate' => '1.00',
+                    'unit_price_period' => '200.00',
+                    'total_without_discount' => '200.00',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '200.00',
+                    'unit_replacement_price' => '19400.00',
+                    'total_replacement_price' => '19400.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][1], [
+                    'id' => 22,
+                    'event_id' => 10,
+                    'name' => 'Processeur DBX PA2',
+                    'reference' => 'DBXPA2',
+                    'degressive_rate' => '2.00',
+                    'unit_price_period' => '51.00',
+                    'total_without_discount' => '51.00',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '51.00',
+                    'unit_replacement_price' => '349.90',
+                    'total_replacement_price' => '349.90',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][2], [
+                    'id' => 23,
+                    'event_id' => 10,
+                    'name' => 'Showtec SDS-6',
+                    'reference' => 'SDS-6-01',
+                    'unit_replacement_price' => '59.00',
+                    'total_replacement_price' => '59.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+            ],
+            'technicians' => [],
+            'author_id' => null,
+            'created_at' => '2021-07-23 12:31:24',
+            'updated_at' => '2021-07-23 12:31:24',
+        ]);
+        $this->assertEquals($expected, (
+            $newEvent
+                ->append([
+                    'technicians',
+                    'materials',
+                    'total_replacement',
+                ])
+                ->toArray()
+        ));
+
+        // - Test avec un événement dupliqué plus long que l'original (en conservant les données de facturation).
         $newEvent = Event::findOrFail(1)->duplicate(
             [
                 // - Un jour de plus que l'original.
                 'mobilization_period' => new Period('2021-08-03', '2021-08-05', true),
                 'operation_period' => new Period('2021-08-03', '2021-08-05', true),
             ],
+            true,
             User::findOrFail(1),
         );
-        $expected = [
-            'id' => 9,
-            'reference' => null,
-            'title' => 'Premier événement',
-            'description' => null,
+        $expected = array_replace($originalData, [
+            'id' => 11,
             'mobilization_start_date' => '2021-08-03 00:00:00',
             'mobilization_end_date' => '2021-08-06 00:00:00',
             'operation_start_date' => '2021-08-03 00:00:00',
             'operation_end_date' => '2021-08-06 00:00:00',
             'operation_is_full_days' => true,
-            'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
-            'location' => 'Gap',
-            'is_billable' => true,
+            'total_without_global_discount' => '316.38',
+            'global_discount_rate' => '10.0000',
+            'total_global_discount' => '31.64',
+            'total_without_taxes' => '284.74',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'value' => '20.000',
+                    'is_rate' => true,
+                    'total' => '56.95',
+                ],
+            ],
+            'total_with_taxes' => '341.69',
+            'total_replacement' => '19808.90',
             'is_departure_inventory_done' => false,
             'departure_inventory_author_id' => null,
             'departure_inventory_datetime' => null,
             'is_return_inventory_done' => false,
             'return_inventory_author_id' => null,
             'return_inventory_datetime' => null,
+            'materials' => [
+                array_replace($originalData['materials'][0], [
+                    'id' => 24,
+                    'event_id' => 11,
+                    'name' => 'Console Yamaha CL3',
+                    'reference' => 'CL3',
+                    'degressive_rate' => '1.00',
+                    'unit_price_period' => '200.00',
+                    'total_without_discount' => '200.00',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '200.00',
+                    'unit_replacement_price' => '19400.00',
+                    'total_replacement_price' => '19400.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][1], [
+                    'id' => 25,
+                    'event_id' => 11,
+                    'name' => 'Processeur DBX PA2',
+                    'reference' => 'DBXPA2',
+                    'degressive_rate' => '3.00',
+                    'unit_price_period' => '76.50',
+                    'total_without_discount' => '76.50',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '76.50',
+                    'unit_replacement_price' => '349.90',
+                    'total_replacement_price' => '349.90',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][2], [
+                    'id' => 26,
+                    'event_id' => 11,
+                    'name' => 'Showtec SDS-6',
+                    'reference' => 'SDS-6-01',
+                    'degressive_rate' => '2.50',
+                    'unit_price_period' => '39.88',
+                    'total_without_discount' => '39.88',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '39.88',
+                    'unit_replacement_price' => '59.00',
+                    'total_replacement_price' => '59.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+            ],
             'technicians' => [],
-            'note' => null,
             'author_id' => 1,
-            'preparer_id' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
-            'deleted_at' => null,
-        ];
+        ]);
         $this->assertEquals($expected, (
             $newEvent
-                ->append(['technicians'])
-                ->attributesToArray()
+                ->append([
+                    'technicians',
+                    'materials',
+                    'total_replacement',
+                ])
+                ->toArray()
         ));
 
         // - Test avec un événement dupliqué plus court que l'original.
@@ -784,81 +1204,104 @@ final class EventTest extends TestCase
             'mobilization_period' => new Period('2021-08-06', '2021-08-06', true),
             'operation_period' => new Period('2021-08-06', '2021-08-06', true),
         ]);
-        $expected = [
-            'id' => 10,
-            'reference' => null,
-            'title' => 'Premier événement',
-            'description' => null,
+
+        $expected = array_replace($originalData, [
+            'id' => 12,
             'mobilization_start_date' => '2021-08-06 00:00:00',
             'mobilization_end_date' => '2021-08-07 00:00:00',
             'operation_start_date' => '2021-08-06 00:00:00',
             'operation_end_date' => '2021-08-07 00:00:00',
             'operation_is_full_days' => true,
-            'color' => null,
             'is_confirmed' => false,
             'is_archived' => false,
-            'location' => 'Gap',
-            'is_billable' => true,
+            'total_without_global_discount' => '341.45',
+            'global_discount_rate' => '0.0000',
+            'total_global_discount' => '0.00',
+            'total_without_taxes' => '341.45',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'value' => '20.000',
+                    'is_rate' => true,
+                    'total' => '68.29',
+                ],
+            ],
+            'total_with_taxes' => '409.74',
+            'total_replacement' => '19808.90',
             'is_departure_inventory_done' => false,
             'departure_inventory_author_id' => null,
             'departure_inventory_datetime' => null,
             'is_return_inventory_done' => false,
             'return_inventory_author_id' => null,
             'return_inventory_datetime' => null,
+            'materials' => [
+                array_replace($originalData['materials'][0], [
+                    'id' => 27,
+                    'event_id' => 12,
+                    'name' => 'Console Yamaha CL3',
+                    'reference' => 'CL3',
+                    'unit_price' => '300.00',
+                    'degressive_rate' => '1.00',
+                    'unit_price_period' => '300.00',
+                    'total_without_discount' => '300.00',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '300.00',
+                    'unit_replacement_price' => '19400.00',
+                    'total_replacement_price' => '19400.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][1], [
+                    'id' => 28,
+                    'event_id' => 12,
+                    'name' => 'Processeur DBX PA2',
+                    'reference' => 'DBXPA2',
+                    'degressive_rate' => '1.00',
+                    'unit_price_period' => '25.50',
+                    'total_without_discount' => '25.50',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '25.50',
+                    'unit_replacement_price' => '349.90',
+                    'total_replacement_price' => '349.90',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+                array_replace($originalData['materials'][2], [
+                    'id' => 29,
+                    'event_id' => 12,
+                    'name' => 'Showtec SDS-6',
+                    'reference' => 'SDS-6-01',
+                    'degressive_rate' => '1.00',
+                    'unit_price_period' => '15.95',
+                    'total_without_discount' => '15.95',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '15.95',
+                    'unit_replacement_price' => '59.00',
+                    'total_replacement_price' => '59.00',
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                ]),
+            ],
             'technicians' => [],
-            'note' => null,
             'author_id' => null,
-            'preparer_id' => null,
             'created_at' => '2021-07-23 12:31:24',
             'updated_at' => '2021-07-23 12:31:24',
-            'deleted_at' => null,
-        ];
+        ]);
         $this->assertEquals($expected, (
             $newEvent
-                ->append(['technicians'])
-                ->attributesToArray()
+                ->append([
+                    'technicians',
+                    'materials',
+                    'total_replacement',
+                ])
+                ->toArray()
         ));
-    }
-
-    public function testDuplicateWithConflicts(): void
-    {
-        $assertQuantities = function (Event $event, $expectedQuantities) {
-            $this->assertSameCanonicalize($expectedQuantities, (
-                $event->materials
-                    ->map(static fn ($material) => [
-                        'id' => $material->id,
-                        'quantity' => $material->pivot->quantity,
-                    ])
-                    ->all()
-            ));
-        };
-
-        $expectedQuantities = [
-            [
-                'id' => 1,
-                'quantity' => 2,
-            ],
-            [
-                'id' => 6,
-                'quantity' => 2,
-            ],
-            [
-                'id' => 7,
-                'quantity' => 1,
-            ],
-            [
-                'id' => 4,
-                'quantity' => 2,
-            ],
-        ];
-
-        // - On duplique à un endroit "sans problème".
-        $newEvent1 = Event::findOrFail(7)->duplicate([
-            'mobilization_period' => new Period('2023-01-01', '2023-01-10', true),
-            'operation_period' => new Period('2023-01-01', '2023-01-10', true),
-        ]);
-        $this->assertInstanceOf(Event::class, $newEvent1);
-        $assertQuantities($newEvent1, $expectedQuantities);
     }
 
     public function testChangeDatesLonger(): void
@@ -875,7 +1318,8 @@ final class EventTest extends TestCase
         $event->return_inventory_author_id = null;
         $event->save();
 
-        $event = Event::staticEdit(1, [
+        // - Test
+        $event = Event::findOrFail(1)->edit([
             // - Un jour de plus.
             'mobilization_period' => new Period('2018-12-17', '2018-12-19', true),
             'operation_period' => new Period('2018-12-17', '2018-12-19', true),
@@ -903,7 +1347,8 @@ final class EventTest extends TestCase
         $event->return_inventory_author_id = null;
         $event->save();
 
-        $event = Event::staticEdit(1, [
+        // - Test
+        $event = Event::findOrFail(1)->edit([
             // - Un jour de moins.
             'mobilization_period' => new Period('2018-12-17', '2018-12-17', true),
             'operation_period' => new Period('2018-12-17', '2018-12-17', true),
@@ -941,13 +1386,10 @@ final class EventTest extends TestCase
     public function testTotalisableAttributes(): void
     {
         $getTestValues = static fn (Attribute $attribute) => (
-            array_intersect_key(
-                $attribute->append('value')->toArray(),
-                array_flip(['id', 'name', 'value', 'unit']),
-            )
+            $attribute->only(['id', 'name', 'value', 'unit'])
         );
 
-        // Totaux des attributs numériques pour l'événement #1
+        // - Totaux des attributs numériques pour l'événement #1.
         $result = Event::findOrFail(1)->totalisable_attributes;
         $expected = [
             1 => [
@@ -963,9 +1405,9 @@ final class EventTest extends TestCase
                 'unit' => 'W',
             ],
         ];
-        $this->assertEquals($expected, array_map($getTestValues, $result));
+        $this->assertSame($expected, $result->map($getTestValues)->toArray());
 
-        // Totaux des attributs numériques pour l'événement #2
+        // - Totaux des attributs numériques pour l'événement #2.
         $result = Event::findOrFail(2)->totalisable_attributes;
         $expected = [
             1 => [
@@ -981,6 +1423,6 @@ final class EventTest extends TestCase
                 'unit' => 'W',
             ],
         ];
-        $this->assertEquals($expected, array_map($getTestValues, $result));
+        $this->assertSame($expected, $result->map($getTestValues)->toArray());
     }
 }

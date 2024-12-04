@@ -7,9 +7,10 @@ use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
 
@@ -28,7 +29,7 @@ use Respect\Validation\Validator as V;
  */
 final class Tag extends BaseModel implements Serializable
 {
-    use SoftDeletable;
+    use SoftDeletes;
     use Serializer;
 
     public function __construct(array $attributes = [])
@@ -69,7 +70,7 @@ final class Tag extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function materials()
+    public function materials(): MorphToMany
     {
         return $this->morphedByMany(Material::class, 'taggable')
             ->orderBy('id');

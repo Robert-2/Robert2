@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Loxya\Controllers\Traits\Crud;
 use Loxya\Http\Request;
 use Loxya\Models\Attribute;
+use Loxya\Models\Enums\AttributeEntity;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
 
@@ -20,19 +21,20 @@ final class AttributeController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $categoryId = $request->getQueryParam('category', null);
+        $categoryId = $request->getQueryParam('category');
+        $entity = $request->getEnumQueryParam('entity', AttributeEntity::class);
 
         $attributes = Attribute::query()
-            ->when(
-                $categoryId !== null,
-                static function (Builder $subQuery) use ($categoryId) {
-                    $subQuery->whereDoesntHave('categories');
-
-                    if ($categoryId !== 'none') {
-                        $subQuery->orWhereRelation('categories', 'categories.id', $categoryId);
-                    }
-                },
-            )
+            ->when($categoryId !== null, static fn (Builder $query) => (
+                $query
+                    ->whereDoesntHave('categories')
+                    ->when($categoryId !== 'none', static fn (Builder $subQuery) => (
+                        $subQuery->orWhereRelation('categories', 'categories.id', $categoryId)
+                    ))
+            ))
+            ->when($entity !== null, static fn (Builder $query) => (
+                $query->forEntity($entity)
+            ))
             ->with(['categories'])
             ->orderBy('name', 'asc')
             ->get();

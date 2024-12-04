@@ -22,8 +22,8 @@ final class PersonTest extends TestCase
             'last_name' => 'fo#32;reux',
         ]);
         $expectedErrors = [
-            'first_name' => ['Ce champ contient des caractères non autorisés.'],
-            'last_name' => ['Ce champ contient des caractères non autorisés.'],
+            'first_name' => "Ce champ contient des caractères non autorisés.",
+            'last_name' => "Ce champ contient des caractères non autorisés.",
         ];
         $this->assertFalse($person->isValid());
         $this->assertSame($expectedErrors, $person->validationErrors());
@@ -31,42 +31,42 @@ final class PersonTest extends TestCase
 
     public function testSearch(): void
     {
-        $result = Person::search('Jean')->get();
-        $this->assertEquals(2, $result->count());
+        $results = Person::search('Jean')->get();
+        $this->assertCount(2, $results);
         $this->assertEquals(
             ['Jean Fountain', 'Jean Technicien'],
-            $result->pluck('full_name')->all(),
+            $results->pluck('full_name')->all(),
         );
 
-        $result = Person::search('Fount')->get();
-        $this->assertEquals(1, $result->count());
-        $this->assertEquals(['Jean Fountain'], $result->pluck('full_name')->all());
+        $results = Person::search('Fount')->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals(['Jean Fountain'], $results->pluck('full_name')->all());
 
-        $result = Person::search('Jean F')->get();
-        $this->assertEquals(1, $result->count());
-        $this->assertEquals(['Jean Fountain'], $result->pluck('full_name')->all());
+        $results = Person::search('Jean F')->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals(['Jean Fountain'], $results->pluck('full_name')->all());
 
-        $result = Person::search('Technicien Jean')->get();
-        $this->assertEquals(1, $result->count());
-        $this->assertEquals(['Jean Technicien'], $result->pluck('full_name')->all());
+        $results = Person::search('Technicien Jean')->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals(['Jean Technicien'], $results->pluck('full_name')->all());
     }
 
     public function testEditNormalizePhone(): void
     {
         // - Test 1 : Sans préfixe.
-        $resultPerson = Person::staticEdit(1, [
+        $resultPerson = Person::findOrFail(1)->edit([
             'phone' => '06 25 25 21 25',
         ]);
         $this->assertEquals('0625252125', $resultPerson->phone);
 
         // - Test 2 : Avec préfixe `00`.
-        $resultPerson = Person::staticEdit(1, [
+        $resultPerson = Person::findOrFail(1)->edit([
             'phone' => '00336 25 25 21 25',
         ]);
         $this->assertEquals('0033625252125', $resultPerson->phone);
 
         // - Test 2 : Avec préfixe `+`.
-        $resultPerson = Person::staticEdit(1, [
+        $resultPerson = Person::findOrFail(1)->edit([
             'phone' => '+336 25 25 21 25',
         ]);
         $this->assertEquals('+33625252125', $resultPerson->phone);
@@ -95,8 +95,8 @@ final class PersonTest extends TestCase
             'last_name' => "Testing",
             'email' => "marie@testing.org",
         ]);
-        $this->assertNotEmpty(Person::find(8));
+        $createdPersonId = $person->id;
         $person->deleteIfOrphan();
-        $this->assertEmpty(Person::find(8));
+        $this->assertNull(Person::find($createdPersonId));
     }
 }

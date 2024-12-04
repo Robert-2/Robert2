@@ -7,10 +7,12 @@ use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
 
@@ -38,7 +40,7 @@ use Respect\Validation\Validator as V;
 final class Company extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletable;
+    use SoftDeletes;
 
     public function __construct(array $attributes = [])
     {
@@ -79,10 +81,10 @@ final class Company extends BaseModel implements Serializable
 
     public function checkCountryId($value)
     {
-        V::optional(V::numericVal())->check($value);
+        V::nullable(V::intVal())->check($value);
 
         return $value !== null
-            ? Country::staticExists($value)
+            ? Country::includes($value)
             : true;
     }
 
@@ -92,13 +94,13 @@ final class Company extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function beneficiaries()
+    public function beneficiaries(): HasMany
     {
         return $this->hasMany(Beneficiary::class)
             ->orderBy('id');
     }
 
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
     }
@@ -126,7 +128,7 @@ final class Company extends BaseModel implements Serializable
         'deleted_at' => 'immutable_datetime',
     ];
 
-    public function getFullAddressAttribute()
+    public function getFullAddressAttribute(): string|null
     {
         $addressParts = [];
 
@@ -140,7 +142,7 @@ final class Company extends BaseModel implements Serializable
         return !empty($addressParts) ? implode("\n", $addressParts) : null;
     }
 
-    public function getCountryAttribute()
+    public function getCountryAttribute(): Country|null
     {
         return $this->getRelationValue('country');
     }
@@ -161,7 +163,7 @@ final class Company extends BaseModel implements Serializable
         'note',
     ];
 
-    public function setPhoneAttribute($value): void
+    public function setPhoneAttribute(mixed $value): void
     {
         $value = !empty($value) ? Str::remove(' ', $value) : $value;
         $this->attributes['phone'] = $value === '' ? null : $value;

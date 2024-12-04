@@ -59,7 +59,7 @@
             vertical-align: top;
         }
         th {
-            text-align: center;
+            text-align: left;
         }
         th:last-child, td:last-child {
             border-right: 1pt solid #888;
@@ -79,6 +79,8 @@
         }
         .listing-table > thead > tr > th {
             font-size: 0.8rem;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
@@ -86,6 +88,8 @@
             padding: 2mm;
             font-size: 0.7rem;
             border: none;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
@@ -94,15 +98,40 @@
             font-size: 0.8rem;
             color: #888;
         }
+        .listing-table > thead > tr > th:first-child,
         .listing-table > tbody > tr > td:first-child {
-            border-left: 1pt solid #888;
+            border-left: 1pt solid #888 !important;
         }
+        .listing-table > thead > tr > th:last-child,
         .listing-table > tbody > tr > td:last-child {
-            border-right: 1pt solid #888;
+            border-right: 1pt solid #888 !important;
+        }
+        .listing-table__item__label {
+            font-weight: 600;
+        }
+        .listing-table__item__sub-name {
+            margin-top: 2px;
+            font-size: 0.6rem;
+        }
+        .listing-table__item__label,
+        .listing-table__item__sub-name {
+            display: block;
+        }
+        .totals-table {
+            width: 50%;
+            margin: 0 0 5mm auto;
+        }
+        .totals-table--legacy {
+            width: 100%;
+            margin: 0;
         }
         .totals-table > tbody > tr > td {
             border-bottom: 1pt solid #888;
+            text-align: right;
             vertical-align: middle;
+        }
+        .totals-table--legacy > tbody > tr > td {
+            text-align: center;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;
@@ -170,7 +199,7 @@
         <td class="half size11">
 <h3>Location: Machin-le-chateau</h3>
 <p class="lighter">This event is confirmed.</p>
-            <p class="lighter">Total replacement amount: &euro;71,756.00</p>
+            <p class="lighter">Total replacement amount: &euro;99,099.98</p>
 <p class="lighter">Printed on 23 September 2022</p>
         </td>
         <td class="half">
@@ -194,43 +223,44 @@
         <tr>
             <th>Ref.</th>
             <th>Designation</th>
-            <th>Repl. Val.</th>
-            <th>Total Repl. Val.</th>
-            <th>Qty</th>
-            <th>Qty Return</th>
+            <th class="right">Repl. Val.</th>
+            <th class="right">Total Repl. Val.</th>
+            <th class="center">Qty</th>
+            <th class="center">Qty Returned</th>
         </tr>
     </thead>
     <tbody>
         <tr>
     <td>CL3</td>
-    <td>Console Yamaha CL3<br><span class="lighter">Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
-<span class="lighter">Couleur&nbsp;:&nbsp;Grise</span>
+    <td>Console Yamaha CL3<br><span class="lighter">Couleur&nbsp;:&nbsp;Grise</span>
+<span class="lighter">Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
 <span class="lighter">Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
 </td>
     <td class="right lighter">&euro;19,400.00</td>
     <td class="right lighter">&euro;38,800.00</td>
     <td class="center">2</td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 <tr>
     <td>SDS-6-01</td>
-    <td>Showtec SDS-6<br><span class="lighter">Poids&nbsp;:&nbsp;3.15&nbsp;kg.</span>
+    <td>Showtec SDS-6<br><span class="lighter">Conforme&nbsp;:&nbsp;Yes.</span>
+<span class="lighter">Poids&nbsp;:&nbsp;3.15&nbsp;kg.</span>
 <span class="lighter">Puissance&nbsp;:&nbsp;60&nbsp;W.</span>
-<span class="lighter">Conforme&nbsp;:&nbsp;Yes.</span>
 </td>
-    <td class="right lighter">&euro;59.00</td>
-    <td class="right lighter">&euro;118.00</td>
+    <td class="right lighter">&euro;100.00</td>
+    <td class="right lighter">&euro;200.00</td>
     <td class="center">2</td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 <tr>
     <td>XR18</td>
     <td>Behringer X Air XR18<br><span class="lighter">Date d'achat&nbsp;:&nbsp;28/01/2021.</span>
+<span class="lighter">Prix d'achat&nbsp;:&nbsp;250&nbsp;&euro;.</span>
 </td>
-    <td class="right lighter">&euro;419.00</td>
-    <td class="right lighter">&euro;838.00</td>
+    <td class="right lighter">&euro;49.99</td>
+    <td class="right lighter">&euro;99.98</td>
     <td class="center">2</td>
-    <td></td>
+    <td class="center"></td>
 </tr>
     </tbody>
 </table>
@@ -242,20 +272,20 @@
         <tr>
             <th>Ref.</th>
             <th>Designation</th>
-            <th>Repl. Val.</th>
-            <th>Total Repl. Val.</th>
-            <th>Qty</th>
-            <th>Qty Return</th>
+            <th class="right">Repl. Val.</th>
+            <th class="right">Total Repl. Val.</th>
+            <th class="center">Qty</th>
+            <th class="center">Qty Returned</th>
         </tr>
     </thead>
     <tbody>
         <tr>
     <td>Transporter</td>
     <td>Volkswagen Transporter</td>
-    <td class="right lighter">&euro;32,000.00</td>
-    <td class="right lighter">&euro;32,000.00</td>
+    <td class="right lighter">&euro;60,000.00</td>
+    <td class="right lighter">&euro;60,000.00</td>
     <td class="center">1</td>
-    <td></td>
+    <td class="center"></td>
 </tr>
     </tbody>
 </table>
@@ -266,6 +296,10 @@
         <tr>
             <td>Poids</td>
             <td>79.3&nbsp;kg</td>
+        </tr>
+        <tr>
+            <td>Prix d'achat</td>
+            <td>500&nbsp;&euro;</td>
         </tr>
         <tr>
             <td>Puissance</td>

@@ -6,6 +6,7 @@ namespace Loxya\Models;
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Loxya\Contracts\PeriodInterface;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
@@ -48,7 +49,7 @@ final class EventTechnician extends BaseModel implements Serializable
             'technician_id' => V::custom([$this, 'checkTechnicianId']),
             'start_date' => V::custom([$this, 'checkDates']),
             'end_date' => V::custom([$this, 'checkDates']),
-            'position' => V::optional(V::length(2, 191)),
+            'position' => V::nullable(V::length(2, 191)),
         ];
     }
 
@@ -60,16 +61,26 @@ final class EventTechnician extends BaseModel implements Serializable
 
     public function checkEventId($value)
     {
+        V::nullable(V::intVal())->check($value);
+
         // - L'identifiant de l’événement n'est pas encore défini, on skip.
         if (!$this->exists && $value === null) {
             return true;
         }
-        return Event::staticExists($value);
+
+        $event = Event::withTrashed()->find($value);
+        if (!$event) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('event_id')
+            ? !$event->trashed()
+            : true;
     }
 
     public function checkTechnicianId($value)
     {
-        V::notEmpty()->numericVal()->check($value);
+        V::notEmpty()->intVal()->check($value);
 
         $technician = Technician::withTrashed()->find($value);
         if (!$technician) {
@@ -136,13 +147,13 @@ final class EventTechnician extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function event()
+    public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class, 'event_id')
             ->withTrashed();
     }
 
-    public function technician()
+    public function technician(): BelongsTo
     {
         return $this->belongsTo(Technician::class, 'technician_id')
             ->withTrashed();
@@ -200,7 +211,7 @@ final class EventTechnician extends BaseModel implements Serializable
         $this->end_date = $period?->getEndDate()->format('Y-m-d H:i:s');
     }
 
-    public function setPositionAttribute($value): void
+    public function setPositionAttribute(mixed $value): void
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['position'] = $value;
@@ -253,17 +264,6 @@ final class EventTechnician extends BaseModel implements Serializable
         }
 
         return new Period($periodStart, $periodEnd);
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Méthodes de "repository"
-    // -
-    // ------------------------------------------------------
-
-    public static function flushForEvent(int $eventId): void
-    {
-        static::where('event_id', $eventId)->delete();
     }
 
     // ------------------------------------------------------
@@ -326,12 +326,19 @@ final class EventTechnician extends BaseModel implements Serializable
         $data = new DotArray($data);
 
         // - Période d'assignation.
-        $periodErrors = array_unique(array_merge(
-            $data->get('start_date', []),
-            $data->get('end_date', []),
-        ));
+        $periodErrors = array_unique(array_filter([
+            $data->get('start_date'),
+            $data->get('end_date'),
+        ]));
         if (!empty($periodErrors)) {
-            $data->set('period', $periodErrors);
+            $data->set('period', (
+                count($periodErrors) === 1
+                    ? current($periodErrors)
+                    : implode("\n", array_map(
+                        static fn ($message) => sprintf('- %s', $message),
+                        $periodErrors,
+                    ))
+            ));
         }
         $data->delete('start_date');
         $data->delete('end_date');

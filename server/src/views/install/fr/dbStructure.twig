@@ -1,5 +1,5 @@
 <div class="page__content">
-    <h2>{{stepNumber}} - Structure de la base de données</h2>
+    <h2>{{ stepNumber }} - Structure de la base de données</h2>
     <p>
         Impeccable ! Robert peut maintenant se connecter à sa base de données. De plus,
         la configuration a été créée sur le serveur, dans le fichier
@@ -20,7 +20,7 @@
         <ul>
             {% for line in stepData['migrationStatus'] %}
             <li>
-                <strong>{{line['table']}}</strong> :
+                <strong>{{ line['table'] }}</strong> :
                 <span
                     {% if line['state'] == 'up' %}
                         class="install__check-success"
@@ -28,7 +28,7 @@
                         class="install__check-info"
                     {% endif %}
                 >
-                    {{line['state']|capitalize}}
+                    {{ line['state']|capitalize }}
                 </span>
             </li>
             {% endfor %}
@@ -49,10 +49,10 @@
     {% else %}
     <p class="install__check-error">
         Une erreur est survenue pendant la récupération du statut des migrations
-        de la base de données. Détail de l'erreur (exit code {{stepData['code']}}) :
+        de la base de données. Détail de l'erreur (exit code {{ stepData['code'] }}) :
     </p>
     <pre class="install__check-error">
-        {{stepData['error']}}
+        {{ stepData['error'] }}
     </pre>
     {% endif %}
 </div>

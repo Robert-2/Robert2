@@ -7,7 +7,10 @@ use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Loxya\Contracts\Serializable;
+use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Traits\Serializer;
 use Respect\Validation\Validator as V;
 
@@ -70,19 +73,19 @@ final class Category extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function subCategories()
+    public function subCategories(): HasMany
     {
         return $this->hasMany(SubCategory::class)
             ->orderBy('name');
     }
 
-    public function materials()
+    public function materials(): HasMany
     {
         return $this->hasMany(Material::class)
             ->orderBy('id');
     }
 
-    public function attributes()
+    public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class, 'attribute_categories')
             ->select([
@@ -105,7 +108,8 @@ final class Category extends BaseModel implements Serializable
         'updated_at' => 'immutable_datetime',
     ];
 
-    public function getSubCategoriesAttribute()
+    /** @return Collection<array-key, SubCategory> */
+    public function getSubCategoriesAttribute(): Collection
     {
         return $this->getRelationValue('subCategories');
     }
@@ -122,6 +126,33 @@ final class Category extends BaseModel implements Serializable
     // ------------------------------------------------------
 
     protected $fillable = ['name'];
+
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes liées à une "entity"
+    // -
+    // ------------------------------------------------------
+
+    public function edit(array $data): static
+    {
+        return dbTransaction(function () use ($data) {
+            $hasFailed = false;
+            $validationErrors = [];
+
+            try {
+                $this->fill($data)->save();
+            } catch (ValidationException $e) {
+                $validationErrors = $e->getValidationErrors();
+                $hasFailed = true;
+            }
+
+            if ($hasFailed) {
+                throw new ValidationException($validationErrors);
+            }
+
+            return $this->refresh();
+        });
+    }
 
     // ------------------------------------------------------
     // -

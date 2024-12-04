@@ -42,12 +42,17 @@ final class Setting extends BaseModel
 
             'eventSummary.materialDisplayMode' => [
                 'type' => 'string',
-                'validation' => V::notEmpty()->anyOf(
-                    V::equals('categories'),
-                    V::equals('sub-categories'),
-                    V::equals('parks'),
-                    V::equals('flat'),
-                ),
+                'validation' => V::custom(static fn ($value) => (
+                    V::create()
+                        ->notEmpty()
+                        ->anyOf(
+                            V::equals('categories'),
+                            V::equals('sub-categories'),
+                            V::equals('parks'),
+                            V::equals('flat'),
+                        )
+                        ->validate($value)
+                )),
                 'sensitive' => false,
                 'default' => 'sub-categories',
             ],
@@ -124,11 +129,16 @@ final class Setting extends BaseModel
             ],
             'calendar.public.displayedPeriod' => [
                 'type' => 'string',
-                'validation' => V::notEmpty()->anyOf(
-                    V::equals(PublicCalendarPeriodDisplay::MOBILIZATION),
-                    V::equals(PublicCalendarPeriodDisplay::OPERATION),
-                    V::equals(PublicCalendarPeriodDisplay::BOTH),
-                ),
+                'validation' => V::custom(static fn ($value) => (
+                    V::create()
+                        ->notEmpty()
+                        ->anyOf(
+                            V::equals(PublicCalendarPeriodDisplay::MOBILIZATION),
+                            V::equals(PublicCalendarPeriodDisplay::OPERATION),
+                            V::equals(PublicCalendarPeriodDisplay::BOTH),
+                        )
+                        ->validate($value)
+                )),
                 'sensitive' => false,
                 'default' => PublicCalendarPeriodDisplay::OPERATION,
             ],
@@ -139,12 +149,42 @@ final class Setting extends BaseModel
 
             'returnInventory.mode' => [
                 'type' => 'string',
-                'validation' => V::notEmpty()->anyOf(
-                    V::equals('start-empty'),
-                    V::equals('start-full'),
-                ),
+                'validation' => V::custom(static fn ($value) => (
+                    V::create()
+                        ->notEmpty()
+                        ->anyOf(
+                            V::equals('start-empty'),
+                            V::equals('start-full'),
+                        )
+                        ->validate($value)
+                )),
                 'sensitive' => false,
                 'default' => 'start-empty',
+            ],
+
+            //
+            // - Facturation
+            //
+
+            'billing.defaultTax' => [
+                'type' => 'reference',
+                'model' => Tax::class,
+                'validation' => V::custom(static function ($value) {
+                    V::nullable(V::intVal())->check($value);
+                    return $value === null || Tax::includes($value);
+                }),
+                'sensitive' => false,
+                'default' => null,
+            ],
+            'billing.defaultDegressiveRate' => [
+                'type' => 'reference',
+                'model' => DegressiveRate::class,
+                'validation' => V::custom(static function ($value) {
+                    V::nullable(V::intVal())->check($value);
+                    return $value === null || DegressiveRate::includes($value);
+                }),
+                'sensitive' => false,
+                'default' => null,
             ],
         ];
     }
@@ -185,19 +225,29 @@ final class Setting extends BaseModel
 
     public function getValueAttribute($value)
     {
-        $manifest = static::manifest();
-        if (!array_key_exists($this->key, $manifest)) {
+        $allManifests = static::manifest();
+        if (!array_key_exists($this->key, $allManifests)) {
             return $value;
         }
+        $manifest = $allManifests[$this->key];
 
         if ($value === null) {
             return $value;
         }
 
-        $type = $manifest[$this->key]['type'] ?? 'string';
+        $type = $manifest['type'] ?? 'string';
         switch ($type) {
             case 'boolean':
                 return filter_var($value, \FILTER_VALIDATE_BOOLEAN);
+
+            case 'reference':
+                if (!array_key_exists('model', $manifest)) {
+                    throw new \LogicException(sprintf("Missing model for reference field \"%s\".", $this->key));
+                }
+
+                /** @var BaseModel $model */
+                $model = $manifest['model'];
+                return $model::find((int) $value)->getKey();
 
             case 'integer':
                 return (int) $value;
@@ -248,7 +298,7 @@ final class Setting extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public static function staticEdit($id = null, array $data = []): static
+    public static function bulkEdit(array $data): static
     {
         $errors = [];
 
@@ -257,7 +307,7 @@ final class Setting extends BaseModel
                 try {
                     $model = static::find($key);
                     if (empty($model)) {
-                        $errors[$key] = ["This setting does not exists."];
+                        $errors[$key] = "This setting does not exists.";
                         continue;
                     }
 

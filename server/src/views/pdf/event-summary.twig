@@ -45,17 +45,17 @@
             {%- if event.is_confirmed -%}
                 <p class="lighter">{{ __('this-event-is-confirmed') }}</p>
             {% endif %}
-            {%- if replacementAmount -%}
+            {%- if event.total_replacement -%}
                 <p class="lighter">
                     {{-
                         __('total-replacement-amount', [
-                            replacementAmount|format_currency(currency, locale=locale),
+                            event.total_replacement|format_currency(event.currency, locale=locale),
                         ])
                     -}}
                 </p>
             {%- endif -%}
             <p class="lighter">
-                {{- __('printed-on-date', [date|format_date('long', locale=locale)]) -}}
+                {{- __('printed-on-date', [now|format_date('long', locale=locale)]) -}}
             </p>
         </td>
         <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }}">

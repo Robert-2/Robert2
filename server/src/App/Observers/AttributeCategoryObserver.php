@@ -27,7 +27,8 @@ final class AttributeCategoryObserver
         //   des nouvelles catégories limitantes.
         //
 
-        $categoryMaterials = Material::whereNotIn('category_id', $attributeCategoriesIds)
+        $categoryMaterials = Material::query()
+            ->whereNotIn('category_id', $attributeCategoriesIds)
             ->whereHas('attributes', static function ($query) use ($attribute) {
                 $query->where('attribute_id', $attribute->id);
             })
@@ -47,8 +48,14 @@ final class AttributeCategoryObserver
     {
         $categoryId = $attributeCategory->category_id;
         $attributeId = $attributeCategory->attribute_id;
+        $attribute = Attribute::find($attributeId);
 
         debug("[Event] La caractéristique #%d n'est plus limitée à la catégorie #%d.", $attributeId, $categoryId);
+
+        if ($attribute->categories->isEmpty()) {
+            debug("-> Plus aucune catégorie ne limite la caractéristique, les valeurs existantes sont conservées.");
+            return;
+        }
 
         //
         // - Suppression de la caractéristique pour le matériel faisant partie

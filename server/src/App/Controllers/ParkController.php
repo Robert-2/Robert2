@@ -9,19 +9,13 @@ use Loxya\Controllers\Traits\WithCrud;
 use Loxya\Http\Request;
 use Loxya\Models\Material;
 use Loxya\Models\Park;
-use Loxya\Services\Auth;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
 final class ParkController extends BaseController
 {
-    use WithCrud {
-        getOne as protected _originalGetOne;
-        update as protected _originalUpdate;
-        delete as protected _originalDelete;
-        restore as protected _originalRestore;
-    }
+    use WithCrud;
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
@@ -54,23 +48,10 @@ final class ParkController extends BaseController
         return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
-    public function getOne(Request $request, Response $response): ResponseInterface
-    {
-        $id = $request->getIntegerAttribute('id');
-        if (!Auth::user()->hasAccessToPark($id)) {
-            throw new HttpNotFoundException($request);
-        }
-        return $this->_originalGetOne($request, $response);
-    }
-
     public function getOneMaterials(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        if (!Auth::user()->hasAccessToPark($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
-        if (!Park::staticExists($id)) {
+        if (!Park::includes($id)) {
             throw new HttpNotFoundException($request);
         }
 
@@ -81,41 +62,10 @@ final class ParkController extends BaseController
     public function getOneTotalAmount(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        if (!Auth::user()->hasAccessToPark($id)) {
-            throw new HttpNotFoundException($request);
-        }
-
         /** @var Park $park */
-        $park = Park::withTrashed()->findOrFail($id);
+        $park = Park::findOrFail($id);
 
         return $response->withJson($park->total_amount, StatusCode::STATUS_OK);
-    }
-
-    public function update(Request $request, Response $response): ResponseInterface
-    {
-        $id = $request->getIntegerAttribute('id');
-        if (!Auth::user()->hasAccessToPark($id)) {
-            throw new HttpNotFoundException($request);
-        }
-        return $this->_originalUpdate($request, $response);
-    }
-
-    public function delete(Request $request, Response $response): ResponseInterface
-    {
-        $id = $request->getIntegerAttribute('id');
-        if (!Auth::user()->hasAccessToPark($id)) {
-            throw new HttpNotFoundException($request);
-        }
-        return $this->_originalDelete($request, $response);
-    }
-
-    public function restore(Request $request, Response $response): ResponseInterface
-    {
-        $id = $request->getIntegerAttribute('id');
-        if (!Auth::user()->hasAccessToPark($id)) {
-            throw new HttpNotFoundException($request);
-        }
-        return $this->_originalRestore($request, $response);
     }
 
     // ------------------------------------------------------

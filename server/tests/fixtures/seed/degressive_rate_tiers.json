@@ -1,0 +1,58 @@
+[
+    {
+        "id": 1,
+        "degressive_rate_id": 1,
+        "from_day": 6,
+        "is_rate": true,
+        "value": "75.42"
+    },
+    {
+        "id": 2,
+        "degressive_rate_id": 1,
+        "from_day": 1,
+        "is_rate": false,
+        "value": "1.00"
+    },
+    {
+        "id": 3,
+        "degressive_rate_id": 1,
+        "from_day": 2,
+        "is_rate": false,
+        "value": "1.75"
+    },
+    {
+        "id": 4,
+        "degressive_rate_id": 1,
+        "from_day": 3,
+        "is_rate": false,
+        "value": "2.50"
+    },
+    {
+        "id": 5,
+        "degressive_rate_id": 1,
+        "from_day": 4,
+        "is_rate": false,
+        "value": "3.25"
+    },
+    {
+        "id": 6,
+        "degressive_rate_id": 1,
+        "from_day": 5,
+        "is_rate": false,
+        "value": "4.00"
+    },
+    {
+        "id": 7,
+        "degressive_rate_id": 2,
+        "from_day": 2,
+        "is_rate": true,
+        "value": "75.00"
+    },
+    {
+        "id": 8,
+        "degressive_rate_id": 3,
+        "from_day": 1,
+        "is_rate": false,
+        "value": "1.00"
+    }
+]

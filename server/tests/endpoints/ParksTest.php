@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Loxya\Models\Park;
 use Loxya\Support\Arr;
@@ -80,6 +81,8 @@ final class ParksTest extends ApiTestCase
 
     public function testGetOne(): void
     {
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
         // - Avec un enregistrement inexistant.
         $this->client->get('/api/parks/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
@@ -108,7 +111,7 @@ final class ParksTest extends ApiTestCase
         // - Test valide.
         $this->client->get('/api/parks/1/total-amount');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(11_9480.80);
+        $this->assertResponseData('119480.80');
     }
 
     public function testCreate(): void
@@ -134,6 +137,8 @@ final class ParksTest extends ApiTestCase
 
     public function testUpdate(): void
     {
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
         $this->client->put('/api/parks/1', [
             'name' => 'Mon parc',
         ]);

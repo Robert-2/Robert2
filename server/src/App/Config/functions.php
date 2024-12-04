@@ -142,3 +142,37 @@ function urlFor(string $routeName, array $data = [], array $queryParams = []): s
     $routeParser = $container->get(RouteParserInterface::class);
     return $routeParser->fullUrlFor(Config::getBaseUri(), $routeName, $data, $queryParams);
 }
+
+/**
+ * Pour modifier la limite de mémoire de PHP pendant l'exécution d'une partie du code.
+ *
+ * @param string $limit La limite de mémoire (par exemple '256M' ou '1G') à appliquer
+ *                      pour exécuter le code fourni.
+ * @param callable $callback Le code à exécuter avec la modification temporaire
+ *                           de la limite de mémoire.
+ *
+ * @return mixed Le retour de la fonction de callback.
+ */
+function increaseMemory(string $limit, callable $callback): mixed
+{
+    $defaultMemoryLimit = ini_get('memory_limit');
+    ini_set('memory_limit', $limit);
+
+    $result = $callback();
+
+    ini_set('memory_limit', $defaultMemoryLimit);
+
+    return $result;
+}
+
+/**
+ * Permet de savoir si est actuellement dans un contexte
+ * d'execution en ligne de commandes.
+ *
+ * @return bool `true` si on est dans un contexte d'execution en
+ *              ligne de commandes, `false sinon`.
+ */
+function isCli(): bool
+{
+    return strtolower(php_sapi_name()) === 'cli';
+}
