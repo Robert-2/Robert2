@@ -1,11 +1,13 @@
+@use '~@/themes/default/style/globals';
+
 //
 // - Variantes
 //
 
 $warning-variant: (
     icon: 'exclamation-triangle',
-    background: #644a2b,
-    color: #fff,
+    background: globals.$bg-color-emphasis-warning,
+    color: globals.$color-emphasis-warning-base,
 ) !default;
 
 $info-variant: (

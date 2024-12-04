@@ -68,24 +68,8 @@
         }
     }
 
-    &__existing-user-help,
-    &__create-user-help {
+    &__existing-user-help {
         margin-top: globals.$spacing-medium;
         font-style: italic;
-    }
-
-    &__create-user {
-        display: flex;
-        margin: globals.$spacing-medium 0;
-
-        #{$block}__pseudo {
-            flex: 1;
-            margin: 0;
-        }
-
-        #{$block}__user-email {
-            flex: 1;
-            margin: 0 0 0 10px;
-        }
     }
 }

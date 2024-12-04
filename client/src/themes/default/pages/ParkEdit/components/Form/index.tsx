@@ -19,7 +19,7 @@ type Props = {
     isSaving?: boolean,
 
     /** Liste des erreurs de validation éventuelles. */
-    errors?: Record<keyof ParkEdit, string[]>,
+    errors?: Record<keyof ParkEdit, string>,
 };
 
 type Data = {
@@ -110,7 +110,7 @@ const ParkEditForm = defineComponent({
                     <FormField
                         label="name"
                         v-model={data.name}
-                        errors={errors?.name}
+                        error={errors?.name}
                         required
                     />
                 </Fieldset>
@@ -119,7 +119,7 @@ const ParkEditForm = defineComponent({
                         label="street"
                         autocomplete="off"
                         v-model={data.street}
-                        errors={errors?.street}
+                        error={errors?.street}
                     />
                     <div class="ParkEditForm__locality">
                         <FormField
@@ -127,14 +127,14 @@ const ParkEditForm = defineComponent({
                             class="ParkEditForm__postal-code"
                             autocomplete="off"
                             v-model={data.postal_code}
-                            errors={errors?.postal_code}
+                            error={errors?.postal_code}
                         />
                         <FormField
                             label="city"
                             class="ParkEditForm__city"
                             autocomplete="off"
                             v-model={data.locality}
-                            errors={errors?.locality}
+                            error={errors?.locality}
                         />
                     </div>
                     <FormField
@@ -143,21 +143,21 @@ const ParkEditForm = defineComponent({
                         autocomplete="off"
                         options={countriesOptions}
                         v-model={data.country_id}
-                        errors={errors?.country_id}
+                        error={errors?.country_id}
                     />
                 </Fieldset>
                 <Fieldset title={__('other-infos')}>
                     <FormField
                         label="opening-hours"
                         v-model={data.opening_hours}
-                        errors={errors?.opening_hours}
+                        error={errors?.opening_hours}
                     />
                     <FormField
                         label="notes"
                         type="textarea"
                         rows={5}
                         v-model={data.note}
-                        errors={errors?.note}
+                        error={errors?.note}
                     />
                 </Fieldset>
                 <section class="Form__actions">

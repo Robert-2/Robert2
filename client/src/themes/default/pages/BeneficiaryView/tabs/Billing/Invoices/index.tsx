@@ -8,8 +8,9 @@ import { ClientTable } from '@/themes/default/components/Table';
 import Button from '@/themes/default/components/Button';
 import Fragment from '@/components/Fragment';
 
-import type { PropType } from '@vue/composition-api';
 import type { CreateElement } from 'vue';
+import type Currency from '@/utils/currency';
+import type { PropType } from '@vue/composition-api';
 import type { Invoice } from '@/stores/api/invoices';
 import type { Columns } from '@/themes/default/components/Table/Client';
 
@@ -17,6 +18,9 @@ type Props = {
     /** Liste de factures. */
     invoices: Invoice[],
 };
+
+type CurrencyTotal = { currency: Currency, total: Decimal };
+type CurrencyTotals = Map<Currency['code'], CurrencyTotal>;
 
 /** Affiche une liste de factures. */
 const BeneficiaryViewBillingInvoices = defineComponent({
@@ -32,13 +36,22 @@ const BeneficiaryViewBillingInvoices = defineComponent({
             return this.invoices.length === 0;
         },
 
-        total(): Decimal {
+        totals(): CurrencyTotals {
             const { invoices } = this;
+
             return invoices.reduce(
-                (total: Decimal, invoice: Invoice): Decimal => (
-                    total.add(invoice.total_without_taxes)
-                ),
-                new Decimal(0),
+                (totals: CurrencyTotals, invoice: Invoice): CurrencyTotals => {
+                    const total = totals.get(invoice.currency.code) ?? {
+                        currency: invoice.currency,
+                        total: new Decimal(0),
+                    };
+
+                    total.total = total.total.add(invoice.total_without_taxes);
+                    totals.set(invoice.currency.code, total);
+
+                    return totals;
+                },
+                new Map(),
             );
         },
 
@@ -90,17 +103,6 @@ const BeneficiaryViewBillingInvoices = defineComponent({
                     ),
                 },
                 {
-                    key: 'discount',
-                    title: __('discount'),
-                    class: [
-                        'BeneficiaryViewBillingInvoices__col',
-                        'BeneficiaryViewBillingInvoices__col--discount',
-                    ],
-                    render: (h: CreateElement, { discount_rate: discount }: Invoice) => (
-                        discount.isZero() ? __('without-discount') : `${discount.toString()} %`
-                    ),
-                },
-                {
                     key: 'actions',
                     title: '',
                     class: [
@@ -115,7 +117,7 @@ const BeneficiaryViewBillingInvoices = defineComponent({
         },
     },
     render() {
-        const { $t: __, isEmpty, invoices, columns, total } = this;
+        const { $t: __, isEmpty, invoices, columns, totals } = this;
 
         const renderContent = (): JSX.Element => {
             if (isEmpty) {
@@ -131,7 +133,6 @@ const BeneficiaryViewBillingInvoices = defineComponent({
                 <ClientTable
                     columns={columns}
                     data={invoices}
-                    withColumnsSelector={false}
                     defaultOrderBy={{
                         column: 'date',
                         ascending: false,
@@ -152,7 +153,19 @@ const BeneficiaryViewBillingInvoices = defineComponent({
                                 {__('page.beneficiary-view.billing.invoices-count', { count: invoices.length }, invoices.length)}
                             </div>
                             <div class="BeneficiaryViewBillingInvoices__total">
-                                {__('page.beneficiary-view.billing.invoices-total-excl-tax', { amount: formatAmount(total) })}
+                                {__('page.beneficiary-view.billing.invoices-total-excl-tax', {
+                                    amount: ((): string => {
+                                        if (totals.size === 0) {
+                                            return formatAmount(0);
+                                        }
+
+                                        return [...totals.values()]
+                                            .map(({ currency, total }: CurrencyTotal) => (
+                                                formatAmount(total, currency)
+                                            ))
+                                            .join(' + ');
+                                    })(),
+                                })}
                             </div>
                         </Fragment>
                     )}

@@ -4,9 +4,10 @@ menu:
     materials: Materials
     technicians: Technicians
     beneficiaries: Beneficiaries
-    categories: Categories
-    tags: Tags
     parks: Material parks
     users: Users
     settings: Settings
-    online-booking: Online booking
+    your-settings: Your settings
+    logout-quit: Quit Loxya
+    confirm-logout: "Do you really want to disconnect?"
+    yes-logout: "Yes, disconnect"

@@ -1,17 +1,18 @@
 import './index.scss';
 import axios from 'axios';
+import config from '@/globals/config';
 import apiEvents from '@/stores/api/events';
 import FormField from '@/themes/default/components/FormField';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import Alert from '@/themes/default/components/Alert';
-import EventBeneficiaries from '@/themes/default/components/EventBeneficiaries';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import { defineComponent } from '@vue/composition-api';
 
 import type Period from '@/utils/period';
 import type { PropType } from '@vue/composition-api';
 import type { EventDetails, EventMaterial } from '@/stores/api/events';
+import type { Beneficiary } from '@/stores/api/beneficiaries';
 
 type Props = {
     /** L'événement à dupliquer. */
@@ -22,9 +23,10 @@ type Data = {
     isSaving: boolean,
     operationPeriod: Period | null,
     operationPeriodIsFullDays: boolean,
+    shouldKeepBillingData: boolean,
     shouldSyncPeriods: boolean,
     mobilizationPeriod: Period | null,
-    validationErrors: Record<string, string[]> | null,
+    validationErrors: Record<string, string> | null,
 };
 
 /** Modale de duplication d'un événement. */
@@ -49,6 +51,7 @@ const DuplicateEvent = defineComponent({
         isSaving: false,
         operationPeriod: null,
         operationPeriodIsFullDays: true,
+        shouldKeepBillingData: false,
         shouldSyncPeriods: true,
         mobilizationPeriod: null,
         validationErrors: null,
@@ -63,14 +66,35 @@ const DuplicateEvent = defineComponent({
 
             return materials.reduce(
                 (total: number, material: EventMaterial) => (
-                    total + material.pivot.quantity
+                    total + material.quantity
                 ),
                 0,
             );
         },
 
-        hasBeneficiary(): boolean {
-            return this.event.beneficiaries?.length > 0;
+        hasBeneficiaries(): boolean {
+            return this.event.beneficiaries.length > 0;
+        },
+
+        canKeepBillingData(): boolean {
+            if (!this.event.is_billable) {
+                return false;
+            }
+
+            // - On ne peut pas dupliquer un événement dans une devise différente de la devise globale
+            //   actuelle en conservant les données de facturation de l'ancien événement car il va être
+            //   impossible de récupérer les prix de remplacement dans la devise de l'événement d'origine.
+            //   (et les prix de remplacement ne sont pas conservés d'une duplication à une autre, ces
+            //   données doivent toujours être à jour)
+            return this.event.currency.isSame(config.currency);
+        },
+
+        beneficiariesNames(): string[] {
+            const { beneficiaries } = this.event;
+
+            return beneficiaries.map(({ company, full_name: fullName }: Beneficiary) => (
+                `${fullName}${company ? ` (${company.legal_name})` : ''}`
+            ));
         },
     },
     methods: {
@@ -86,6 +110,10 @@ const DuplicateEvent = defineComponent({
             if (this.shouldSyncPeriods) {
                 this.mobilizationPeriod = operationPeriod?.setFullDays(false) ?? null;
             }
+        },
+
+        handleKeepBillingDataChange(shouldKeep: boolean) {
+            this.shouldKeepBillingData = shouldKeep;
         },
 
         handleSyncPeriodsChange(shouldSync: boolean) {
@@ -118,16 +146,22 @@ const DuplicateEvent = defineComponent({
                 return;
             }
 
-            const { __, mobilizationPeriod, operationPeriod } = this;
+            const {
+                __,
+                operationPeriod,
+                mobilizationPeriod,
+                shouldKeepBillingData,
+            } = this;
+
             if (!operationPeriod) {
                 this.validationErrors = {
-                    operation_period: [__('please-choose-dates')],
+                    operation_period: __('please-choose-dates'),
                 };
                 return;
             }
             if (!mobilizationPeriod) {
                 this.validationErrors = {
-                    mobilization_period: [__('please-choose-dates')],
+                    mobilization_period: __('please-choose-dates'),
                 };
                 return;
             }
@@ -139,6 +173,7 @@ const DuplicateEvent = defineComponent({
                 const newEvent = await apiEvents.duplicate(id, {
                     operation_period: operationPeriod,
                     mobilization_period: mobilizationPeriod,
+                    keepBillingData: shouldKeepBillingData,
                 });
 
                 this.$toasted.success(__('new-event-saved'));
@@ -167,20 +202,24 @@ const DuplicateEvent = defineComponent({
         },
     },
     render() {
-        const { title, location, beneficiaries, technicians } = this.event;
+        const { title, location, technicians } = this.event;
         const {
             __,
             duration,
             itemsCount,
-            hasBeneficiary,
+            hasBeneficiaries,
+            beneficiariesNames,
+            canKeepBillingData,
             validationErrors,
             isSaving,
             shouldSyncPeriods,
+            shouldKeepBillingData,
             operationPeriodIsFullDays,
             handleClose,
             handleSubmit,
             handleSyncPeriodsChange,
             handleOperationPeriodChange,
+            handleKeepBillingDataChange,
         } = this;
 
         return (
@@ -204,7 +243,7 @@ const DuplicateEvent = defineComponent({
                             )}
                             label={__('operation-period')}
                             v-model={this.operationPeriod}
-                            errors={validationErrors?.operation_period}
+                            error={validationErrors?.operation_period}
                             onChange={handleOperationPeriodChange}
                             withFullDaysToggle
                             withoutMinutes
@@ -225,9 +264,18 @@ const DuplicateEvent = defineComponent({
                                 help={__('mobilization-period-help')}
                                 type="datetime"
                                 v-model={this.mobilizationPeriod}
-                                errors={validationErrors?.mobilization_period}
+                                error={validationErrors?.mobilization_period}
                                 required
                                 range
+                            />
+                        )}
+                        {canKeepBillingData && (
+                            <FormField
+                                type="switch"
+                                label={__('keep-billing-data')}
+                                value={shouldKeepBillingData}
+                                onChange={handleKeepBillingDataChange}
+                                required
                             />
                         )}
                     </form>
@@ -262,7 +310,7 @@ const DuplicateEvent = defineComponent({
                                     </span>
                                 </div>
                             )}
-                            {!hasBeneficiary && (
+                            {!hasBeneficiaries && (
                                 <div class="DuplicateEvent__infos__item DuplicateEvent__infos__item--empty">
                                     <Icon name="address-book" class="DuplicateEvent__infos__item__icon" />
                                     <span class="DuplicateEvent__infos__item__content">
@@ -270,16 +318,18 @@ const DuplicateEvent = defineComponent({
                                     </span>
                                 </div>
                             )}
-                            {hasBeneficiary && (
-                                <EventBeneficiaries
-                                    class="DuplicateEvent__infos__item"
-                                    beneficiaries={beneficiaries}
-                                />
+                            {hasBeneficiaries && (
+                                <div class="DuplicateEvent__infos__item">
+                                    <Icon name="address-book" class="DuplicateEvent__infos__item__icon" />
+                                    <span class="DuplicateEvent__infos__item__content">
+                                        {__('global.for', { beneficiary: beneficiariesNames.join(', ') })}
+                                    </span>
+                                </div>
                             )}
                             <div class="DuplicateEvent__infos__item">
                                 <Icon name="box" class="DuplicateEvent__infos__item__icon" />
                                 <span class="DuplicateEvent__infos__item__content">
-                                    {__('global.items-count', { count: itemsCount }, itemsCount)}
+                                    {__('global.materials-count', { count: itemsCount }, itemsCount)}
                                 </span>
                             </div>
                         </div>

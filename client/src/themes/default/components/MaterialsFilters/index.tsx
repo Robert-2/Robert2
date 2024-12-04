@@ -8,7 +8,8 @@ import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
 import type { Tag } from '@/stores/api/tags';
-import type { Park } from '@/stores/api/parks';
+import type { Park, ParkSummary } from '@/stores/api/parks';
+import type { Options } from '@/utils/formatOptions';
 import type { SubCategory } from '@/stores/api/subcategories';
 import type { Filters as AllFilters } from '@/stores/api/materials';
 import type { Category, CategoryDetails } from '@/stores/api/categories';
@@ -25,7 +26,7 @@ type Props = {
     values: Filters,
 };
 
-// @vue/component
+/** Filtres de la liste de matériel. */
 const MaterialsFilters = defineComponent({
     name: 'MaterialsFilters',
     props: {
@@ -36,15 +37,21 @@ const MaterialsFilters = defineComponent({
     },
     emits: ['change'],
     computed: {
-        parksOptions() {
+        parksOptions(): Options<ParkSummary> {
             return this.$store.getters['parks/options'];
         },
 
-        tagsOptions() {
+        parksDisabled(): boolean {
+            return (
+                this.parksOptions.length <= 1
+            );
+        },
+
+        tagsOptions(): Options<Tag> {
             return this.$store.getters['tags/options'];
         },
 
-        categoriesOptions() {
+        categoriesOptions(): Options<Category> {
             const { $t: __ } = this;
 
             return [
@@ -53,7 +60,7 @@ const MaterialsFilters = defineComponent({
             ];
         },
 
-        subCategoriesOptions() {
+        subCategoriesOptions(): Options<SubCategory> {
             const { category: categoryId } = this.values;
             if (categoryId === undefined || categoryId === UNCATEGORIZED) {
                 return [];
@@ -69,16 +76,16 @@ const MaterialsFilters = defineComponent({
             return formatOptions(category.sub_categories);
         },
 
-        disableSubCategories() {
+        subCategoriesDisabled(): boolean {
             if (this.values.category === undefined) {
                 return true;
             }
             return this.subCategoriesOptions.length <= 0;
         },
 
-        isFilterEmpty() {
+        isFilterEmpty(): boolean {
             return (
-                this.values.park === undefined &&
+                (this.values.park === undefined) &&
                 this.values.category === undefined &&
                 this.values.subCategory === undefined &&
                 (this.values.tags ?? []).length === 0
@@ -157,11 +164,12 @@ const MaterialsFilters = defineComponent({
         const {
             $t: __,
             values,
-            tagsOptions,
+            parksDisabled,
             parksOptions,
+            tagsOptions,
             categoriesOptions,
             subCategoriesOptions,
-            disableSubCategories,
+            subCategoriesDisabled,
             isFilterEmpty,
             handleClear,
             handleParkChange,
@@ -172,13 +180,13 @@ const MaterialsFilters = defineComponent({
 
         return (
             <div class="MaterialsFilters">
-                {parksOptions.length > 1 && (
+                {!parksDisabled && (
                     <Select
                         class="MaterialsFilters__item MaterialsFilters__item--park"
                         placeholder={__('all-parks')}
                         options={parksOptions}
                         value={values.park ?? null}
-                        highlight={values.park !== undefined}
+                        highlight={!!values.park}
                         onChange={handleParkChange}
                     />
                 )}
@@ -193,10 +201,10 @@ const MaterialsFilters = defineComponent({
                 <Select
                     class="MaterialsFilters__item MaterialsFilters__item--sub-category"
                     placeholder={__('all-sub-categories')}
-                    disabled={disableSubCategories}
+                    disabled={subCategoriesDisabled}
                     options={subCategoriesOptions}
                     value={values.subCategory ?? null}
-                    highlight={!disableSubCategories && values.subCategory !== undefined}
+                    highlight={!subCategoriesDisabled && values.subCategory !== undefined}
                     onChange={handleSubCategoryChange}
                 />
                 <Select

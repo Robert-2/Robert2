@@ -20,12 +20,13 @@ declare module 'vue-tables-2-premium' {
     type ColumnsVisibility = Record<string, ColumnVisibility>;
 
     type TemplateRenderFunction<Datum = any> = (
-        (h: CreateElement, row: Datum, index: number) => JSX.Element | JSX.Element[] | string | null
+        (h: CreateElement, row: Datum, index: number) => JSX.Element | JSX.Element[] | string | number | null
     );
 
     type RowClickEventPayload<Datum = any> = { row: Datum, event: PointerEvent, index: number };
 
     type BaseTableOptions<Datum> = {
+        uniqueKey?: string,
         headings?: Record<string, string>,
         initialPage?: number,
         perPage?: number,
@@ -34,6 +35,7 @@ declare module 'vue-tables-2-premium' {
         filterable?: boolean | string[],
         multiSorting?: Record<string, Array<{ column: string, matchDir: boolean }>>,
         filterByColumn?: boolean,
+        resizableColumns?: boolean | string[],
         columnsDropdown?: boolean,
         preserveState?: boolean,
         saveState?: boolean,
@@ -41,6 +43,14 @@ declare module 'vue-tables-2-premium' {
         columnsClasses?: Record<string, string>,
         templates?: Record<string, TemplateRenderFunction<Datum>>,
         rowClassCallback?(row: Datum): VNodeClass,
+        stickyHeader?: boolean,
+        pagination?: {
+            chunk?: number,
+            dropdown?: boolean,
+            edge?: boolean,
+            show?: boolean,
+            virtual?: boolean,
+        },
     };
 
     interface BaseTableInstance<Datum> {

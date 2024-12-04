@@ -117,7 +117,7 @@ const boot = async () => {
     await store.dispatch('auth/fetch');
 
     if (store.getters['auth/isLogged']) {
-        await store.dispatch('settings/fetch');
+        await store.dispatch('settings/boot');
     }
 
     // eslint-disable-next-line no-new, vue/require-name-property

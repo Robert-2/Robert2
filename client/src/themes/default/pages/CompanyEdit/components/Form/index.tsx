@@ -19,7 +19,7 @@ type Props = {
     isSaving?: boolean,
 
     /** Liste des erreurs de validation éventuelles. */
-    errors?: Record<keyof CompanyEdit, string[]>,
+    errors?: Record<keyof CompanyEdit, string>,
 };
 
 type Data = {
@@ -58,8 +58,14 @@ const CompanyEditForm = defineComponent({
     },
     emits: ['submit', 'cancel'],
     data(): Data {
+        const requestedName = this.$route.query.name ?? null;
+        const defaultLegalName = (requestedName !== null && typeof requestedName === 'string')
+            ? requestedName
+            : DEFAULT_VALUES.legal_name;
+
         const data = {
             ...DEFAULT_VALUES,
+            legal_name: defaultLegalName,
             ...pick(this.savedData ?? {}, Object.keys(DEFAULT_VALUES)),
         };
 
@@ -111,7 +117,7 @@ const CompanyEditForm = defineComponent({
                         label="legal-name"
                         autocomplete="off"
                         v-model={data.legal_name}
-                        errors={errors?.legal_name}
+                        error={errors?.legal_name}
                         required
                     />
                     <FormField
@@ -119,7 +125,7 @@ const CompanyEditForm = defineComponent({
                         type="tel"
                         autocomplete="off"
                         v-model={data.phone}
-                        errors={errors?.phone}
+                        error={errors?.phone}
                     />
                 </Fieldset>
                 <Fieldset title={__('address')}>
@@ -127,7 +133,7 @@ const CompanyEditForm = defineComponent({
                         label="street"
                         autocomplete="off"
                         v-model={data.street}
-                        errors={errors?.street}
+                        error={errors?.street}
                     />
                     <div class="CompanyEditForm__locality">
                         <FormField
@@ -135,14 +141,14 @@ const CompanyEditForm = defineComponent({
                             autocomplete="off"
                             class="CompanyEditForm__postal-code"
                             v-model={data.postal_code}
-                            errors={errors?.postal_code}
+                            error={errors?.postal_code}
                         />
                         <FormField
                             label="city"
                             class="CompanyEditForm__city"
                             autocomplete="off"
                             v-model={data.locality}
-                            errors={errors?.locality}
+                            error={errors?.locality}
                         />
                     </div>
                     <FormField
@@ -151,7 +157,7 @@ const CompanyEditForm = defineComponent({
                         autocomplete="off"
                         options={countriesOptions}
                         v-model={data.country_id}
-                        errors={errors?.country_id}
+                        error={errors?.country_id}
                     />
                 </Fieldset>
                 <Fieldset title={__('other-infos')}>
@@ -160,7 +166,7 @@ const CompanyEditForm = defineComponent({
                         label="notes"
                         rows={5}
                         type="textarea"
-                        errors={errors?.note}
+                        error={errors?.note}
                     />
                 </Fieldset>
                 <section class="Form__actions">

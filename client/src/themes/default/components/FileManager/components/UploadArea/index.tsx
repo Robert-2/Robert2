@@ -39,7 +39,7 @@ type Data = {
  */
 const MAX_CONCURRENT_UPLOADS = 5;
 
-// @vue/component
+/** Upload de fichiers avec système de queue et persistance. */
 const FileManagerUploadArea = defineComponent({
     name: 'FileManagerUploadArea',
     props: {

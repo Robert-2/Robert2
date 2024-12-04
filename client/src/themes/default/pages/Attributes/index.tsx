@@ -222,10 +222,9 @@ const Attributes = defineComponent({
         async fetchData() {
             try {
                 this.attributes = await apiAttributes.all();
+                this.isFetched = true;
             } catch {
                 this.hasCriticalError = true;
-            } finally {
-                this.isFetched = true;
             }
         },
     },
@@ -265,6 +264,7 @@ const Attributes = defineComponent({
                         columns={columns}
                         data={attributes}
                         defaultOrderBy="name"
+                        filterable
                     />
                 </div>
             </Page>

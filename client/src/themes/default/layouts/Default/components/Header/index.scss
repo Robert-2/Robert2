@@ -8,17 +8,6 @@
     max-height: globals.$main-header-height;
     background-color: globals.$bg-color-emphasis;
 
-    &__logo {
-        flex: 0 0 globals.$sidebar-width;
-        display: none;
-        padding: 0.2rem 0.2rem 0;
-        text-align: center;
-
-        .Logo {
-            height: globals.$main-header-height * 0.6;
-        }
-    }
-
     &__menu-toggle {
         flex: 0 0 auto;
         display: flex;
@@ -54,10 +43,6 @@
     //
 
     @media (min-width: globals.$screen-mobile) {
-        &__logo {
-            display: block;
-        }
-
         &__menu-toggle {
             display: none;
         }
@@ -70,16 +55,6 @@
     @media (min-width: globals.$screen-tablet) {
         &__title {
             font-size: 1.6rem;
-
-            .Logo {
-                height: globals.$main-header-height * 0.6;
-            }
-        }
-    }
-
-    @media (min-width: globals.$screen-desktop) {
-        &__logo {
-            flex: 0 0 globals.$sidebar-full-width;
         }
     }
 }

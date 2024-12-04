@@ -69,17 +69,6 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                     ),
                 },
                 {
-                    key: 'discount',
-                    title: __('discount'),
-                    class: [
-                        'BeneficiaryViewBillingEstimates__col',
-                        'BeneficiaryViewBillingEstimates__col--discount',
-                    ],
-                    render: (h: CreateElement, { discount_rate: discount }: Estimate) => (
-                        discount.isZero() ? __('without-discount') : `${discount.toString()} %`
-                    ),
-                },
-                {
                     key: 'actions',
                     title: '',
                     class: [
@@ -110,7 +99,6 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                 <ClientTable
                     columns={columns}
                     data={estimates}
-                    withColumnsSelector={false}
                     defaultOrderBy={{
                         column: 'date',
                         ascending: false,
@@ -127,7 +115,11 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                     </h3>
                     {!isEmpty && (
                         <div class="BeneficiaryViewBillingEstimates__count">
-                            {__('page.beneficiary-view.billing.estimates-count', { count: estimates.length }, estimates.length)}
+                            {__(
+                                'page.beneficiary-view.billing.estimates-count',
+                                { count: estimates.length },
+                                estimates.length,
+                            )}
                         </div>
                     )}
                 </div>

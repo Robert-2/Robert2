@@ -8,13 +8,22 @@ import Vue from 'vue';
 
 export enum Group {
     /** Représente le groupe des administrateurs. */
-    ADMIN = 'admin',
+    ADMINISTRATION = 'administration',
 
-    /** Représente le groupe des membres de l'équipe. */
-    MEMBER = 'member',
+    /** Représente le groupe des gestionnaires, membres de l'équipe. */
+    MANAGEMENT = 'management',
 
-    /** Représente le groupe des visiteurs. */
-    VISITOR = 'visitor',
+    /**
+     * Représente le groupe des utilisateurs ayant accès au
+     * planning général, en lecture seule.
+     */
+    READONLY_PLANNING_GENERAL = 'readonly-planning-general',
+
+    /**
+     * Représente le groupe des utilisateurs ayant uniquement accès
+     * à leur propre planning, en lecture seule.
+     */
+    READONLY_PLANNING_SELF = 'readonly-planning-self',
 }
 
 // ------------------------------------------------------
@@ -38,14 +47,11 @@ const all = (): GroupDetails[] => {
     const { translate: __ } = (Vue as any).i18n;
 
     return [
-        { id: Group.ADMIN, name: __('admin') },
-        { id: Group.MEMBER, name: __('member') },
-        { id: Group.VISITOR, name: __('visitor') },
+        { id: Group.ADMINISTRATION, name: __('groups.administration') },
+        { id: Group.MANAGEMENT, name: __('groups.management') },
+        { id: Group.READONLY_PLANNING_GENERAL, name: __('groups.readonly-planning-general') },
+        { id: Group.READONLY_PLANNING_SELF, name: __('groups.readonly-planning-self') },
     ];
 };
 
-const one = (group: Group): GroupDetails | undefined => (
-    all().find(({ id }: GroupDetails) => id === group)
-);
-
-export default { all, one };
+export default { all };

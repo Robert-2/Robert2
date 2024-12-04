@@ -15,10 +15,9 @@ describe('MaterialsSelector / Store / setQuantity()', () => {
             .toThrow('Invalid quantity, should be positive.');
     });
 
-    it('should add a new material with specified quantity (not unitary)', () => {
+    it('should add a new material with specified quantity', () => {
         const material = materials.withAvailability(1);
 
-        // - Sans liste.
         const state1 = createState({});
         setQuantity(state1, { material, quantity: 5 });
         expect(state1.materials).toEqual({
@@ -29,7 +28,6 @@ describe('MaterialsSelector / Store / setQuantity()', () => {
     it('should do nothing if there is no changes in quantities', () => {
         const material = materials.withAvailability(1);
 
-        // - Sans liste.
         const state1 = createState({});
         setQuantity(state1, { material, quantity: 5 });
         setQuantity(state1, { material, quantity: 5 });
@@ -42,7 +40,6 @@ describe('MaterialsSelector / Store / setQuantity()', () => {
     it('should modify the specified quantity (and not "incrementing" it)', () => {
         const material = materials.withAvailability(1);
 
-        // - Sans liste.
         const state1 = createState({});
         setQuantity(state1, { material, quantity: 5 });
         setQuantity(state1, { material, quantity: 3 });

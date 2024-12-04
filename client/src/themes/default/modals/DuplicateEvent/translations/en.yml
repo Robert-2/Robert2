@@ -2,8 +2,9 @@ title: "Duplicate event \"{title}\""
 
 operation-period: Dates of new event
 mobilization-period: Mobilization period of the material
-mobilization-period-help: "Period during which materials are mobilized for the new event."
+mobilization-period-help: Period during which materials are mobilized for the new event.
 sync-mobilization-period: Use a material mobilization period identical to the event dates?
+keep-billing-data: Keep the material prices and discounts of the original event?
 
 please-choose-dates: Please choose new event dates.
 new-event-saved: New event successfully saved.

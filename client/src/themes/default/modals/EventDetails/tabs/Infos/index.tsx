@@ -1,15 +1,16 @@
 import './index.scss';
 import DateTime from '@/utils/datetime';
 import { defineComponent } from '@vue/composition-api';
+import { Group } from '@/stores/api/groups';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
-import EventTechnicians from '@/themes/default/components/EventTechnicians';
-import EventTotals from '@/themes/default/components/EventTotals';
+import Totals from '@/themes/default/components/Totals';
+import Technicians from './components/Technicians';
 import MainBeneficiary from './components/MainBeneficiary';
-import EventBeneficiaries from '@/themes/default/components/EventBeneficiaries';
 
 import type { PropType } from '@vue/composition-api';
 import type { EventDetails } from '@/stores/api/events';
+import type { Beneficiary } from '@/stores/api/beneficiaries';
 
 type Props = {
     /** L'événement dont on veut afficher les informations. */
@@ -40,12 +41,19 @@ const EventDetailsInfos = defineComponent({
         now: DateTime.now(),
     }),
     computed: {
-        hasBeneficiary(): boolean {
-            return this.event.beneficiaries?.length > 0;
+        hasBeneficiaries(): boolean {
+            return this.event.beneficiaries.length > 0;
         },
 
         hasTechnicians(): boolean {
-            return this.event.technicians?.length > 0;
+            return this.event.technicians.length > 0;
+        },
+
+        isTeamMember(): boolean {
+            return this.$store.getters['auth/is']([
+                Group.ADMINISTRATION,
+                Group.MANAGEMENT,
+            ]);
         },
 
         hasMaterials(): boolean {
@@ -54,6 +62,28 @@ const EventDetailsInfos = defineComponent({
 
         isPast(): boolean {
             return this.event.mobilization_period.isBefore(this.now);
+        },
+
+        isEditable(): boolean {
+            const { event } = this;
+
+            return (
+                // - Un événement archivé n'est pas modifiable.
+                !event.is_archived &&
+
+                // - Un événement ne peut être modifié que si son inventaire de retour
+                //   n'a pas été effectué (sans quoi celui-ci n'aurait plus aucun sens,
+                //   d'autant que le stock global a pu être impacté suite à cet inventaire).
+                !event.is_return_inventory_done
+            );
+        },
+
+        beneficiariesNames(): string[] {
+            const { beneficiaries } = this.event;
+
+            return beneficiaries.map(({ company, full_name: fullName }: Beneficiary) => (
+                `${fullName}${company ? ` (${company.legal_name})` : ''}`
+            ));
         },
     },
     mounted() {
@@ -69,9 +99,12 @@ const EventDetailsInfos = defineComponent({
         const {
             $t: __,
             event,
-            hasBeneficiary,
+            hasBeneficiaries,
+            beneficiariesNames,
             hasTechnicians,
             hasMaterials,
+            isTeamMember,
+            isEditable,
             isPast,
         } = this;
         const {
@@ -86,16 +119,21 @@ const EventDetailsInfos = defineComponent({
         return (
             <div class="EventDetailsInfos">
                 <div class="EventDetailsInfos__summary">
-                    {hasBeneficiary && (
+                    {hasBeneficiaries && (
                         <div class="EventDetailsInfos__summary__beneficiaries">
-                            <EventBeneficiaries
-                                beneficiaries={beneficiaries}
-                                class="EventDetailsInfos__summary__beneficiaries__list"
-                            />
+                            <div class="EventDetailsInfos__summary__beneficiaries__list">
+                                <Icon
+                                    name="address-book"
+                                    class="EventDetailsInfos__summary__beneficiaries__list__icon"
+                                />
+                                <span class="EventDetailsInfos__summary__beneficiaries__list__content">
+                                    {__('for', { beneficiary: beneficiariesNames.join(', ') })}
+                                </span>
+                            </div>
                             <MainBeneficiary beneficiary={beneficiaries[0]} />
                         </div>
                     )}
-                    {!hasBeneficiary && (
+                    {!hasBeneficiaries && (
                         <div class="EventDetailsInfos__no-beneficiary">
                             {__('@event.warning-no-beneficiary')}
                         </div>
@@ -122,7 +160,7 @@ const EventDetailsInfos = defineComponent({
                                 </p>
                             )}
                             {hasTechnicians && (
-                                <EventTechnicians eventTechnicians={technicians} />
+                                <Technicians eventTechnicians={technicians} />
                             )}
                         </div>
                     )}
@@ -135,7 +173,7 @@ const EventDetailsInfos = defineComponent({
                 {!hasMaterials && (
                     <div class="EventDetailsInfos__no-material">
                         {__('@event.warning-no-material')}
-                        {!isPast && (
+                        {(isTeamMember && isEditable && !isPast) && (
                             <p>
                                 <Button
                                     type="primary"
@@ -155,10 +193,14 @@ const EventDetailsInfos = defineComponent({
                             { 'EventDetailsInfos__confirmation--confirmed': isConfirmed },
                         ]}
                     >
-                        {isConfirmed ? __('@event.event-confirmed-help') : __('@event.event-not-confirmed-help')}
+                        {(
+                            isConfirmed
+                                ? __('@event.event-confirmed-help')
+                                : __('@event.event-not-confirmed-help')
+                        )}
                     </div>
                 )}
-                <EventTotals event={event} />
+                <Totals booking={event} />
             </div>
         );
     },

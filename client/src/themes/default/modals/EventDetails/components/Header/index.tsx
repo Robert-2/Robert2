@@ -31,7 +31,6 @@ type InstanceProperties = {
 type Data = {
     now: DateTime,
     isConfirming: boolean,
-    isSending: boolean,
     isArchiving: boolean,
     isDeleting: boolean,
 };
@@ -57,7 +56,6 @@ const EventDetailsHeader = defineComponent({
     data: (): Data => ({
         now: DateTime.now(),
         isConfirming: false,
-        isSending: false,
         isArchiving: false,
         isDeleting: false,
     }),
@@ -82,7 +80,10 @@ const EventDetailsHeader = defineComponent({
         },
 
         isTeamMember(): boolean {
-            return this.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN]);
+            return this.$store.getters['auth/is']([
+                Group.ADMINISTRATION,
+                Group.MANAGEMENT,
+            ]);
         },
 
         hasStarted(): boolean {
@@ -181,6 +182,12 @@ const EventDetailsHeader = defineComponent({
 
         isRemovable(): boolean {
             return !this.isConfirmed && !this.isReturnInventoryDone;
+        },
+
+        isDuplicable(): boolean {
+            // - On ne peut pas dupliquer un événement qui
+            //   contient du matériel supprimé.
+            return !this.event.has_deleted_materials;
         },
     },
     mounted() {
@@ -328,6 +335,7 @@ const EventDetailsHeader = defineComponent({
             isPrintable,
             summaryPdfUrl,
             isTeamMember,
+            isDuplicable,
             isEditable,
             isConfirmed,
             isConfirming,
@@ -489,15 +497,17 @@ const EventDetailsHeader = defineComponent({
                 );
             }
 
-            actions.push(
-                <Button
-                    icon="copy"
-                    type="default"
-                    onClick={handleDuplicate}
-                >
-                    {__('global.duplicate-event')}
-                </Button>,
-            );
+            if (isDuplicable) {
+                actions.push(
+                    <Button
+                        icon="copy"
+                        type="default"
+                        onClick={handleDuplicate}
+                    >
+                        {__('global.duplicate-event')}
+                    </Button>,
+                );
+            }
 
             if (isRemovable) {
                 actions.push(

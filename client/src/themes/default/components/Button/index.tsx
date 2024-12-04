@@ -276,9 +276,9 @@ const Button = defineComponent({
             return position ?? 'before';
         },
 
-        normalizedTooltip() {
+        normalizedTooltip(): TooltipOptions | string | undefined {
             return typeof this.tooltip === 'object'
-                ? { ...this.tooltip, 'content': this.tooltip.content }
+                ? { ...this.tooltip, content: this.tooltip.content }
                 : this.tooltip;
         },
     },

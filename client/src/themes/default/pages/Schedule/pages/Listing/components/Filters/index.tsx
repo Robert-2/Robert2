@@ -10,7 +10,7 @@ import Button from '@/themes/default/components/Button';
 import type { PropType } from '@vue/composition-api';
 import type { BookingListFilters } from '@/stores/api/bookings';
 import type { Options } from '@/utils/formatOptions';
-import type { Park } from '@/stores/api/parks';
+import type { Park, ParkSummary } from '@/stores/api/parks';
 import type { Category } from '@/stores/api/categories';
 import type Period from '@/utils/period';
 
@@ -34,8 +34,15 @@ const ScheduleListingFilters = defineComponent({
     },
     emits: ['change'],
     computed: {
-        parksOptions(): Options<Park> {
+        parksOptions(): Options<ParkSummary> {
             return this.$store.getters['parks/options'];
+        },
+
+        withParkFilter(): boolean {
+            return (
+                this.values.park !== null ||
+                this.parksOptions.length > 1
+            );
         },
 
         categoriesOptions(): Options<Category> {
@@ -142,6 +149,7 @@ const ScheduleListingFilters = defineComponent({
     render() {
         const {
             $t: __,
+            withParkFilter,
             parksOptions,
             categoriesOptions,
             statesOptions,
@@ -157,8 +165,9 @@ const ScheduleListingFilters = defineComponent({
 
         return (
             <div class="ScheduleListingFilters">
-                {parksOptions.length > 1 && (
+                {withParkFilter && (
                     <Select
+                        key="park-filter"
                         class="ScheduleListingFilters__item ScheduleListingFilters__item--park"
                         placeholder={__('all-parks')}
                         options={parksOptions}
@@ -168,6 +177,7 @@ const ScheduleListingFilters = defineComponent({
                     />
                 )}
                 <Select
+                    key="categories-filter"
                     class="ScheduleListingFilters__item ScheduleListingFilters__item--category"
                     placeholder={__('all-categories')}
                     options={categoriesOptions}
@@ -186,6 +196,7 @@ const ScheduleListingFilters = defineComponent({
                     clearable
                 />
                 <Select
+                    key="state-filter"
                     class="ScheduleListingFilters__item ScheduleListingFilters__item--state"
                     placeholder={__('page.schedule.listing.all-states')}
                     options={statesOptions}

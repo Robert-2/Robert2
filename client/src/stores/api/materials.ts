@@ -1,9 +1,10 @@
 import requester from '@/globals/requester';
 import { z } from '@/utils/validation';
+import { omit } from 'lodash';
 import { TagSchema } from './tags';
 import { DocumentSchema } from './documents';
 import { AttributeWithValueSchema } from './attributes';
-import { createBookingSummarySchema } from './bookings';
+import { BookingSummarySchema, createBookingSummarySchema } from './bookings';
 import { withPaginationEnvelope } from './@schema';
 
 import type Period from '@/utils/period';
@@ -13,12 +14,14 @@ import type { Park } from './parks';
 import type { Category } from './categories';
 import type { Event } from './events';
 import type { SubCategory } from './subcategories';
-import type { Attribute } from './attributes';
+import type { Attribute, AttributeWithValue } from './attributes';
 import type { Tag } from './tags';
 import type { Document } from './documents';
 import type { SchemaInfer } from '@/utils/validation';
 import type { ZodRawShape } from 'zod';
 import type { Simplify } from 'type-fest';
+import type { DegressiveRate } from './degressive-rates';
+import type { Tax } from './taxes';
 
 // ------------------------------------------------------
 // -
@@ -37,11 +40,14 @@ const MaterialBaseSchema = z.strictObject({
     id: z.number(),
     name: z.string(),
     reference: z.string(),
+    park_id: z.number(),
     picture: z.string().nullable(),
     description: z.string().nullable(),
     category_id: z.number().nullable(),
     sub_category_id: z.number().nullable(),
     rental_price: z.decimal().nullable().optional(),
+    degressive_rate_id: z.number().nullable().optional(),
+    tax_id: z.number().nullable().optional(),
     replacement_price: z.decimal().nullable(),
     stock_quantity: z.number().nullable().transform(
         (value: number | null): number => value ?? 0,
@@ -49,10 +55,8 @@ const MaterialBaseSchema = z.strictObject({
     out_of_order_quantity: z.number().nullable().transform(
         (value: number | null): number => value ?? 0,
     ),
-    park_id: z.number(),
     is_hidden_on_bill: z.boolean().optional(),
     is_discountable: z.boolean().optional(),
-    is_reservable: z.boolean(),
     attributes: z.lazy(() => AttributeWithValueSchema.array()),
     tags: z.lazy(() => TagSchema.array()),
     note: z.string().nullable(),
@@ -70,10 +74,36 @@ const createMaterialSchemaFactory = <T extends ZodRawShape>(augmentation: T) => 
 
 export const createMaterialSchema = createMaterialSchemaFactory({});
 
-export const createMaterialDetailsSchema = createMaterialSchemaFactory({});
+export const createMaterialDetailsSchema = createMaterialSchemaFactory(
+    {
+        available_quantity: z.number(),
+        departure_inventory_todo: z.lazy(() => BookingSummarySchema).nullable(),
+        return_inventory_todo: z.lazy(() => BookingSummarySchema).nullable(),
+    },
+);
 
 export const createMaterialWithAvailabilitySchema = createMaterialSchemaFactory(
-    { available_quantity: z.number() },
+    {
+        available_quantity: z.number(),
+        is_deleted: z.boolean(),
+    },
+);
+
+export const createMaterialWithContextExcerptSchema = createMaterialSchemaFactory(
+    {
+        degressive_rate: z.decimal().nullable().optional(),
+        rental_price_period: z.decimal().nullable().optional(),
+        is_deleted: z.boolean(),
+    },
+);
+
+export const createMaterialWithContextSchema = createMaterialSchemaFactory(
+    {
+        degressive_rate: z.decimal().nullable().optional(),
+        rental_price_period: z.decimal().nullable().optional(),
+        available_quantity: z.number(),
+        is_deleted: z.boolean(),
+    },
 );
 
 const MaterialBookingSummarySchema = z.lazy(() => (
@@ -93,9 +123,13 @@ export const MaterialSchema = createMaterialSchema({});
 export const MaterialDetailsSchema = createMaterialDetailsSchema({});
 
 export const MaterialWithAvailabilitySchema = createMaterialWithAvailabilitySchema({});
+export const MaterialWithContextExcerptSchema = createMaterialWithContextExcerptSchema({});
+export const MaterialWithContextSchema = createMaterialWithContextSchema({});
 
 export const MaterialPublicSchema = (() => {
     const baseSchema = MaterialBaseSchema.extend({
+        degressive_rate: z.decimal(),
+        rental_price_period: z.decimal().nullable(),
         available_quantity: z.number(),
     });
 
@@ -104,8 +138,10 @@ export const MaterialPublicSchema = (() => {
         name: true,
         description: true,
         picture: true,
+        degressive_rate: true,
         available_quantity: true,
         rental_price: true,
+        rental_price_period: true,
     });
 })();
 
@@ -121,6 +157,8 @@ export type MaterialDetails = SchemaInfer<typeof MaterialDetailsSchema>;
 
 export type MaterialWithAvailability = SchemaInfer<typeof MaterialWithAvailabilitySchema>;
 
+export type MaterialWithContext = SchemaInfer<typeof MaterialWithContextSchema>;
+
 export type MaterialPublic = SchemaInfer<typeof MaterialPublicSchema>;
 
 //
@@ -135,25 +173,26 @@ export type MaterialBookingSummary = SchemaInfer<typeof MaterialBookingSummarySc
 
 type MaterialEditAttribute = {
     id: Attribute['id'],
-    value: string,
+    value: AttributeWithValue['value'],
 };
 
 export type MaterialEdit = {
-    name: string,
+    name: string | null,
     picture?: File | null,
-    reference: string,
-    description: string,
-    is_unitary: boolean,
-    park_id: Park['id'],
-    category_id: Category['id'],
+    reference: string | null,
+    description: string | null,
+    park_id: Park['id'] | null,
+    category_id: Category['id'] | null,
     sub_category_id: SubCategory['id'] | null,
-    rental_price: string,
-    stock_quantity: string,
-    out_of_order_quantity: string,
-    replacement_price: string,
+    rental_price: string | null,
+    degressive_rate_id: DegressiveRate['id'] | null,
+    tax_id: Tax['id'] | null,
+    stock_quantity: string | number | null,
+    out_of_order_quantity: string | number | null,
+    replacement_price: string | null,
     is_hidden_on_bill: boolean,
     is_discountable: boolean,
-    is_reservable?: boolean,
+    note: string | null,
     tags?: Array<Tag['id']>,
     attributes?: MaterialEditAttribute[],
 };
@@ -178,9 +217,15 @@ export type Filters = Simplify<(
     }>
 )>;
 
-type GetAllParamsBase = Filters & SortableParams & { deleted?: boolean };
+type GetAllParamsBase = Filters & SortableParams & { withDeleted?: boolean, onlyDeleted?: boolean };
 type GetAllParamsPaginated = GetAllParamsBase & PaginationParams & { paginated?: true };
 type GetAllParamsRaw = GetAllParamsBase & { paginated: false };
+
+type GetBookingsParams = (
+    & PaginationParams
+    & { period?: Period }
+    & Pick<SortableParams, 'ascending'>
+);
 
 // ------------------------------------------------------
 // -
@@ -208,9 +253,9 @@ async function all({ quantitiesPeriod, ...otherParams }: GetAllParamsPaginated |
     return schema.parse(response.data);
 }
 
-const allWhileEvent = async (eventId: Event['id']): Promise<MaterialWithAvailability[]> => {
+const allWhileEvent = async (eventId: Event['id']): Promise<MaterialWithContext[]> => {
     const response = await requester.get(`/materials/while-event/${eventId}`);
-    return MaterialWithAvailabilitySchema.array().parse(response.data);
+    return MaterialWithContextSchema.array().parse(response.data);
 };
 
 const one = async (id: Material['id']): Promise<MaterialDetails> => {
@@ -241,9 +286,12 @@ const remove = async (id: Material['id']): Promise<void> => {
     await requester.delete(`/materials/${id}`);
 };
 
-const bookings = async (id: Material['id'], params?: PaginationParams): Promise<PaginatedData<MaterialBookingSummary[]>> => {
-    const config = { ...(params ? { params } : {}) };
-    const response = await requester.get(`/materials/${id}/bookings`, config);
+const bookings = async (id: Material['id'], params: GetBookingsParams = {}): Promise<PaginatedData<MaterialBookingSummary[]>> => {
+    const normalizedParams = {
+        ...omit(params, ['period']),
+        ...params?.period?.toQueryParams('period'),
+    };
+    const response = await requester.get(`/materials/${id}/bookings`, { params: normalizedParams });
     return withPaginationEnvelope(MaterialBookingSummarySchema).parse(response.data);
 };
 

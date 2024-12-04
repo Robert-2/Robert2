@@ -72,6 +72,7 @@ exports[`Technicians Api allWhileEvent() parse the returned data correctly 1`] =
           "is_departure_inventory_done": true,
           "is_return_inventory_done": true,
           "location": "Gap",
+          "materials_count": 3,
           "mobilization_period": /* Period Instance => */ {
             "end": "2018-12-19 00:00:00",
             "isFullDays": false,
@@ -132,6 +133,7 @@ exports[`Technicians Api allWhileEvent() parse the returned data correctly 1`] =
           "is_departure_inventory_done": true,
           "is_return_inventory_done": true,
           "location": "Gap",
+          "materials_count": 3,
           "mobilization_period": /* Period Instance => */ {
             "end": "2018-12-19 00:00:00",
             "isFullDays": false,
@@ -169,6 +171,7 @@ exports[`Technicians Api allWhileEvent() parse the returned data correctly 1`] =
           "is_departure_inventory_done": false,
           "is_return_inventory_done": false,
           "location": "Machin-le-chateau",
+          "materials_count": 7,
           "mobilization_period": /* Period Instance => */ {
             "end": "2023-05-29 00:00:00",
             "isFullDays": false,
@@ -225,6 +228,7 @@ exports[`Technicians Api assignments() parse the returned data correctly (with #
       "is_departure_inventory_done": true,
       "is_return_inventory_done": true,
       "location": "Gap",
+      "materials_count": 3,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-19 00:00:00",
         "isFullDays": false,
@@ -267,6 +271,7 @@ exports[`Technicians Api assignments() parse the returned data correctly (with #
       "is_departure_inventory_done": true,
       "is_return_inventory_done": true,
       "location": "Gap",
+      "materials_count": 3,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-19 00:00:00",
         "isFullDays": false,
@@ -304,6 +309,7 @@ exports[`Technicians Api assignments() parse the returned data correctly (with #
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "Machin-le-chateau",
+      "materials_count": 7,
       "mobilization_period": /* Period Instance => */ {
         "end": "2023-05-29 00:00:00",
         "isFullDays": false,
@@ -414,6 +420,16 @@ exports[`Technicians Api create() parse the returned data correctly (with #1) 1`
   "phone": null,
   "postal_code": null,
   "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "management",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
   "user_id": 2,
 }
 `;
@@ -438,6 +454,7 @@ exports[`Technicians Api create() parse the returned data correctly (with #2) 1`
   "phone": "+33645698520",
   "postal_code": null,
   "street": null,
+  "user": null,
   "user_id": null,
 }
 `;
@@ -511,6 +528,16 @@ exports[`Technicians Api one() parse the returned data correctly (with #1) 1`] =
   "phone": null,
   "postal_code": null,
   "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "management",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
   "user_id": 2,
 }
 `;
@@ -535,6 +562,7 @@ exports[`Technicians Api one() parse the returned data correctly (with #2) 1`] =
   "phone": "+33645698520",
   "postal_code": null,
   "street": null,
+  "user": null,
   "user_id": null,
 }
 `;
@@ -555,6 +583,16 @@ exports[`Technicians Api restore() parse the returned data correctly (with #1) 1
   "phone": null,
   "postal_code": null,
   "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "management",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
   "user_id": 2,
 }
 `;
@@ -579,6 +617,7 @@ exports[`Technicians Api restore() parse the returned data correctly (with #2) 1
   "phone": "+33645698520",
   "postal_code": null,
   "street": null,
+  "user": null,
   "user_id": null,
 }
 `;
@@ -599,6 +638,16 @@ exports[`Technicians Api update() parse the returned data correctly (with #1) 1`
   "phone": null,
   "postal_code": null,
   "street": null,
+  "user": {
+    "email": "tester2@robertmanager.net",
+    "first_name": "Roger",
+    "full_name": "Roger Rabbit",
+    "group": "management",
+    "id": 2,
+    "last_name": "Rabbit",
+    "phone": null,
+    "pseudo": "test2",
+  },
   "user_id": 2,
 }
 `;
@@ -623,6 +672,7 @@ exports[`Technicians Api update() parse the returned data correctly (with #2) 1`
   "phone": "+33645698520",
   "postal_code": null,
   "street": null,
+  "user": null,
   "user_id": null,
 }
 `;

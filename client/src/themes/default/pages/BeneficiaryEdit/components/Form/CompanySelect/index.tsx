@@ -162,7 +162,7 @@ const BeneficiaryEditCompanySelect = defineComponent({
                             return (
                                 <Fragment>
                                     <p>{__('no-result-found-try-another-search')}</p>
-                                    <Button type="add" to={{ name: 'add-company' }}>
+                                    <Button type="add" to={{ name: 'add-company', query: { name: search } }}>
                                         {__('create-company')}
                                     </Button>
                                 </Fragment>

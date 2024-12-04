@@ -1,2 +1,3 @@
 choose-tags-below: "Choose tags below:"
 entity-name-tags: Tags of "{entityName}"
+remove-all-tags: Remove all tags

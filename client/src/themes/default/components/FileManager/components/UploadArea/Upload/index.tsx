@@ -16,6 +16,7 @@ type Props = {
     upload: UploadType,
 };
 
+/** Affiche l'état d'un fichier en cours d'upload. */
 const FileManagerUpload = defineComponent({
     name: 'FileManagerUpload',
     props: {
@@ -26,7 +27,7 @@ const FileManagerUpload = defineComponent({
     },
     emits: ['cancel'],
     computed: {
-        hasError() {
+        hasError(): boolean {
             return this.upload.error !== null;
         },
 
@@ -42,7 +43,7 @@ const FileManagerUpload = defineComponent({
                 : undefined;
         },
 
-        progress() {
+        progress(): number {
             return this.upload.progress;
         },
 
@@ -93,7 +94,7 @@ const FileManagerUpload = defineComponent({
                 : __('upload-in-process');
         },
 
-        cancellable() {
+        cancellable(): boolean {
             if (this.upload.isCancelled) {
                 return false;
             }

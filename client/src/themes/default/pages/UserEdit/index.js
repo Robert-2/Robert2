@@ -2,9 +2,10 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
+import parseInteger from '@/utils/parseInteger';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import Page from '@/themes/default/components/Page';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Form from './components/Form';
 import apiUsers from '@/stores/api/users';
@@ -13,12 +14,8 @@ import apiUsers from '@/stores/api/users';
 const UserEdit = defineComponent({
     name: 'UserEdit',
     data() {
-        const id = this.$route.params.id
-            ? parseInt(this.$route.params.id, 10)
-            : null;
-
         return {
-            id,
+            id: parseInteger(this.$route.params.id),
             isFetched: false,
             isSaving: false,
             user: null,
@@ -83,12 +80,12 @@ const UserEdit = defineComponent({
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
                     console.error(`Error occurred while retrieving user #${this.id} data`, error);
-                    this.criticalError = ERROR.UNKNOWN;
+                    this.criticalError = ErrorType.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
                     this.criticalError = status === HttpCode.ClientErrorNotFound
-                        ? ERROR.NOT_FOUND
-                        : ERROR.UNKNOWN;
+                        ? ErrorType.NOT_FOUND
+                        : ErrorType.UNKNOWN;
                 }
             }
         },

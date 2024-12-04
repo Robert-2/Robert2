@@ -23,6 +23,17 @@
         &__beneficiaries {
             &__list {
                 margin-bottom: 10px;
+                font-size: 1.2rem;
+
+                &__icon {
+                    width: 1.5rem;
+                    margin-right: globals.$spacing-thin;
+                    text-align: center;
+                }
+
+                &__content {
+                    margin-left: globals.$spacing-thin;
+                }
             }
         }
 

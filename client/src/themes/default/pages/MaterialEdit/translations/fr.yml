@@ -3,9 +3,15 @@ title-simple: Modifier le matériel
 title-create: Nouveau matériel
 
 help-name: Trouvez un nom assez court, et utilisez la description pour détailler, si besoin.
-help-stock-unitary: Les quantités en stock et les parcs de ce matériel seront définis lors de l'ajout des unités de matériel, dans un second temps.
-help-picture: "La photo du matériel doit être au format JPG, PNG ou WebP, et ne doit pas dépasser 10\_Mo."
 
 currency-per-day: "{currency}\_/\_jour"
 fields-changes-depending-on-category: Les champs ci-dessous fluctuent en fonction de la catégorie sélectionnée.
 saved: Matériel sauvegardé.
+
+fields:
+    tax:
+        label: Taxe
+        placeholder: Pas de taxe
+    degressive-rate:
+        label: Tarif dégressif
+        placeholder: Pas de dégressivité

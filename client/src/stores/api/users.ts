@@ -1,6 +1,7 @@
 import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
 import { Group } from './groups';
+import { CountrySchema } from './countries';
 import { withPaginationEnvelope } from './@schema';
 
 import type { PaginatedData, ListingParams } from './@types';
@@ -27,8 +28,21 @@ export enum BookingsViewMode {
     LISTING = 'listing',
 }
 
-export const UserSchema = z.strictObject({
+export const UserSummarySchema = z.strictObject({
     id: z.number(),
+    full_name: z.string().nullable().transform(
+        // NOTE: Le `?` ci-dessous n'est pas idéal et doit être évité dans la mesure
+        //       du possible, mais étant donné qu'il est possible que la `person` lié
+        //       ait été supprimée, on préfère utiliser `?` en fallback plutôt que de
+        //       planter le retour.  Ceci n'est pas censé arriver mais le cas doit être
+        //       géré, au cas où.
+        (value: string | null) => value ?? '?',
+    ),
+    // TODO [zod@>3.22.4]: Remettre `email()`.
+    email: z.string(),
+});
+
+export const UserSchema = UserSummarySchema.extend({
     pseudo: z.string(),
     first_name: z.string().nullable().transform(
         // NOTE: Le `?` ci-dessous n'est pas idéal et doit être évité dans la mesure
@@ -46,21 +60,18 @@ export const UserSchema = z.strictObject({
         //       géré, au cas où.
         (value: string | null) => value ?? '?',
     ),
-    full_name: z.string().nullable().transform(
-        // NOTE: Le `?` ci-dessous n'est pas idéal et doit être évité dans la mesure
-        //       du possible, mais étant donné qu'il est possible que la `person` lié
-        //       ait été supprimée, on préfère utiliser `?` en fallback plutôt que de
-        //       planter le retour.  Ceci n'est pas censé arriver mais le cas doit être
-        //       géré, au cas où.
-        (value: string | null) => value ?? '?',
-    ),
     phone: z.string().nullable(),
-    // TODO [zod@>3.22.4]: Remettre `email()`.
-    email: z.string(),
     group: z.nativeEnum(Group),
 });
 
-export const UserDetailsSchema = UserSchema;
+export const UserDetailsSchema = UserSchema.extend({
+    street: z.string().nullable(),
+    postal_code: z.string().nullable(),
+    locality: z.string().nullable(),
+    country_id: z.number().nullable(),
+    country: z.lazy(() => CountrySchema).nullable(),
+    full_address: z.string().nullable(),
+});
 
 export const UserSettingsSchema = z.strictObject({
     language: z.string(),
@@ -76,7 +87,7 @@ export const UserSettingsSchema = z.strictObject({
 export type UserSettings = SchemaInfer<typeof UserSettingsSchema>;
 
 export type User = SchemaInfer<typeof UserSchema>;
-
+export type UserSummary = SchemaInfer<typeof UserSummarySchema>;
 export type UserDetails = SchemaInfer<typeof UserDetailsSchema>;
 
 //
@@ -103,7 +114,7 @@ export type UserSettingsEdit = Partial<UserSettings>;
 // - Récupération
 //
 
-type GetAllParams = ListingParams & {
+export type GetAllParams = ListingParams & {
     deleted?: boolean,
     group?: Group,
 };

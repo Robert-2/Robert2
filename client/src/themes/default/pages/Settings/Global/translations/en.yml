@@ -4,6 +4,82 @@ title: Application settings
 # - Tabs
 #
 
+categories:
+    title: Categories of materials
+    help: Here, you can manage your material's categories and sub-categories.
+
+    no-category-yet: There is no category yet.
+    create-a-first-category: Create a first category
+
+    add-a-subcategory: Add a sub-category
+    display-materials-list: See the material of this category
+
+    name-length-not-valid: The name must have a length between 2 and 96 characters.
+    cannot-delete-not-empty: 'Impossible to delete this category, because it''s not empty!'
+
+    #
+    # - Catégories
+    #
+
+    create: Create category
+    modify: Modify category
+    delete: Delete category
+
+    new-category: New category
+    category-name: Category name
+    name-already-exists: A category already exists with this name.
+
+    saved: Category saved.
+    deleted: Category deleted.
+
+    confirm-permanently-delete: Do you really want to permanently delete this category?
+    confirm-restore: Do you really want to restore this category?
+
+    #
+    # - Sous-catégories
+    #
+
+    create-subcategory: Create the sub-category
+    modify-subcategory: Modify the sub-category
+    delete-subcategory: Delete the sub-category
+
+    new-subcategory: "New sub-category of \"{categoryName}\""
+    subcategory-name: Name of the sub-category
+    subcategory-name-already-exists: A sub-category already exists with this name.
+
+    subcategory-saved: Sub-category saved.
+    subcategory-deleted: Sub-category deleted.
+
+    confirm-permanently-delete-subcategory: Do you really want to permanently delete this sub-category?
+    confirm-restore-subcategory: Do you really want to restore this sub-category?
+
+tags:
+    title: Tags of materials
+    title-trash: Deleted Tags
+    help: |-
+        Tags help you quickly search for materials in lists.
+        Hover over a tag to rename or delete it.
+
+    no-tag-yet: There is no tag yet.
+    create-first-tag: Create a first tag
+    no-tag-in-trash: No tag in trash bin.
+
+    action-add: New tag
+    create: Create tag
+
+    prompt-add: New tag
+    prompt-modify: Modify tag
+
+    tag-name: Tag name
+
+    confirm-delete: Move this tag in trash bin?
+    confirm-permanently-delete: Do you really want to permanently delete this tag?
+    confirm-restore: Do you really want to restore this tag?
+
+    saved: Tag saved.
+    deleted: Tag deleted.
+    restored: Tag restored.
+
 event-summary:
     title: Event summaries
     help: Here you can customize the PDF event summaries
@@ -15,7 +91,6 @@ event-summary:
     display-replacement-prices: "Display replacement prices?"
     display-descriptions: "Display descriptions?"
     display-tags: "Display associated tags?"
-    display-units-serial-numbers: "Display serial numbers of units?"
     display-pictures: "Display pictures (thumbnails)?"
     list-display-mode-categories: Sorted by categories
     list-display-mode-sub-categories: Sorted by sub-categories
@@ -70,7 +145,7 @@ calendar:
 inventories:
     title: "Departure\_/\_Return inventories"
     help: "Here you can define the behavior of departure and return inventories."
-    saved: Inventories settings has been successfully saved.
+    saved: Inventories settings have been successfully saved.
 
     return:
         section-title: Return inventories
@@ -80,3 +155,163 @@ inventories:
             choices:
                 start-empty: Returned quantities must be defined manually.
                 start-full: Returned quantities are pre-filled with the expected quantities.
+
+taxes:
+    title: "Billing - Taxes"
+    help: Here you can modify the billing settings related to taxes.
+    saved: Taxes settings have been successfully saved.
+
+    section-title: "Taxes and Tax Groups"
+    create-action: New tax
+
+    confirm-delete: Do you really want to delete this tax?
+    not-deletable:
+        default-and-used: |
+            This tax cannot be deleted because it's the default tax and it is also used as the tax for some materials.
+
+            To delete it, change the default tax (remember to save) and change the tax used in the affected materials.
+
+        used: |
+            This tax cannot be deleted because it is currently used as the tax for some materials.
+
+            To delete it, change the tax used in the affected materials and then try again.
+
+        default: |
+            This tax cannot be deleted because it's the default tax.
+
+            To delete it, change the default tax (remember to save) and then try again.
+
+        default-changed-not-saved: |
+            This tax cannot yet be deleted because it's still the default tax as you have not saved.
+
+            Save the changes you just made to the default tax and then try again.
+
+    default-field:
+        label: Tax by default
+        placeholder: Tax-free
+
+    table-column:
+        name: Name
+        is-group: Tax group?
+
+    yes-with-count-sub-taxes:
+        - Yes, with 1 sub-tax
+        - Yes, with {count} sub-taxes
+
+    modals:
+        #
+        # - Édition d'une taxe
+        #
+
+        tax-edition:
+            modal-title:
+                new: New tax
+                edit: Modification of the tax "{name}"
+            save: Save tax
+            saved: The tax have been successfully saved.
+            fields:
+                name:
+                    label: Tax name
+                    placeholder: VAT, Eco Tax, ...
+                is-group:
+                    label: "Tax group?"
+                    help: |
+                        Tax groups are used to define multiple taxes that will all be applied to a given material or product.
+
+                        This could be for example:
+                        - A group that would include a VAT as well as an "Eco Tax".
+                        - A TPS + TVQ tax group for Quebec.
+                is-rate:
+                    label: "Rate\_/\_Fixed price?"
+                    options:
+                        rate: Rate
+                        fixed-price: Fixed price
+                value:
+                    label-rate: Rate
+                    label-fixed-price: Amount
+                components:
+                    label: Group taxes
+                    empty: |
+                        There are no taxes associated with this tax group yet.
+                        Currently, this group does not apply any taxes.
+                    add: Add a tax
+                    fields:
+                        name:
+                            label: Tax name
+                            placeholder: VAT, Eco Tax, ...
+                        value: "Rate\_/\_Amount"
+                        is-rate:
+                            label: "Rate\_/\_Fixed price?"
+                            options:
+                                rate: Rate
+                                fixed-price: Fixed price
+
+degressive-rates:
+    title: "Billing - Degressive Rates"
+    help: Here you can modify the billing settings related to degressive rates.
+    saved: Degressive rates settings have been successfully saved.
+
+    section-title: "Degressive rates"
+    create-action: New degressive rate
+
+    confirm-delete: Do you really want to delete this degressive rate?
+    not-deletable:
+        default-and-used: |
+            This degressive rate cannot be deleted because it's the default one and it is also used as the degressive rate for some materials.
+
+            To delete it, change the default degressive rate (remember to save) and change the degressive rate used in the affected materials.
+
+        used: |
+            This degressive rate cannot be deleted because it is currently used as the degressive rate for some materials.
+
+            To delete it, change the degressive rate used in the affected materials and then try again.
+
+        default: |
+            This degressive rate cannot be deleted because it's the default one.
+
+            To delete it, change the default degressive rate (remember to save) and then try again.
+
+        default-changed-not-saved: |
+            This degressive rate cannot yet be deleted because it's still the default degressive rate as you have not saved.
+
+            Save the changes you just made to the default degressive rate and then try again.
+
+    default-field:
+        label: Degressive rate by default
+        placeholder: Non-degressive
+
+    table-column:
+        name: Name
+
+    modals:
+        #
+        # - Édition d'un tarif dégressif
+        #
+
+        degressive-rate-edition:
+            modal-title:
+                new: New degressive rate
+                edit: Modification of the degressive rate "{name}"
+            save: Save degressive rate
+            saved: The degressive rate have been successfully saved.
+            fields:
+                name:
+                    label: Name
+                    placeholder: Base, Transport, Fixed, ...
+                tiers:
+                    label: Tiers of the degressive rate
+                    empty: |
+                        There are no tiers associated with this degressive rate yet.
+                        Currently, this degressive rate does not apply any degressivity.
+                    add: Add a tier
+                    fields:
+                        from_day: From day
+                        is-rate:
+                            options:
+                                rate: Rate
+                                fixed: Coefficient
+                        value:
+                            label: "Rate\_/\_Coefficient"
+                            addons:
+                                rate: "%"
+                                fixed: ""

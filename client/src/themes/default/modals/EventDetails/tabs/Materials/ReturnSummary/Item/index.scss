@@ -1,15 +1,29 @@
 @use '~@/themes/default/style/globals';
 
 .EventDetailsReturnSummaryItem {
-    display: flex;
-    margin-bottom: globals.$spacing-medium;
-    padding-bottom: 2px;
-    border-bottom: 1px dashed globals.$list-left-border-color;
-    list-style: none;
+    &__col {
+        padding: globals.$spacing-small;
+
+        &--name {
+            padding-left: 0;
+        }
+
+        &--missing {
+            width: 250px;
+            margin: 0;
+            color: globals.$text-danger-color;
+            text-align: right;
+        }
+
+        &--broken {
+            width: 150px;
+            padding-left: 0;
+            color: globals.$text-warning-color;
+            text-align: right;
+        }
+    }
 
     &__name {
-        flex: 1;
-
         &__link,
         &__link:active {
             color: globals.$text-base-color;
@@ -18,16 +32,5 @@
         &__link:hover {
             color: globals.$link-hover-color;
         }
-    }
-
-    &__missing {
-        flex: 0 0 250px;
-        margin: 0;
-        color: globals.$text-danger-color;
-    }
-
-    &__broken {
-        flex: 0 0 150px;
-        color: globals.$text-warning-color;
     }
 }

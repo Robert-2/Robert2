@@ -3,6 +3,7 @@ import requester from '@/globals/requester';
 import { CountrySchema } from './countries';
 import { DocumentSchema } from './documents';
 import { EventSchema } from './events';
+import { UserSchema } from './users';
 import { withPaginationEnvelope } from './@schema';
 
 import type Period from '@/utils/period';
@@ -54,6 +55,10 @@ export const TechnicianSchema = z.strictObject({
     note: z.string().nullable(),
 });
 
+export const TechnicianDetailsSchema = TechnicianSchema.extend({
+    user: z.lazy(() => UserSchema).nullable(),
+});
+
 export const TechnicianWithEventsSchema = TechnicianSchema.extend({
     events: TechnicianEventSchema.array(),
 });
@@ -65,6 +70,8 @@ export const TechnicianWithEventsSchema = TechnicianSchema.extend({
 // ------------------------------------------------------
 
 export type Technician = SchemaInfer<typeof TechnicianSchema>;
+
+export type TechnicianDetails = SchemaInfer<typeof TechnicianDetailsSchema>;
 
 export type TechnicianEvent = SchemaInfer<typeof TechnicianEventSchema>;
 export type TechnicianWithEvents = SchemaInfer<typeof TechnicianWithEventsSchema>;
@@ -83,6 +90,7 @@ export type TechnicianEdit = {
     postal_code: string | null,
     locality: string | null,
     country_id: number | null,
+    user_id?: number,
     note: string | null,
 };
 
@@ -121,24 +129,26 @@ const allWhileEvent = async (eventId: Event['id']): Promise<TechnicianWithEvents
     return TechnicianWithEventsSchema.array().parse(response.data);
 };
 
-const one = async (id: Technician['id']): Promise<Technician> => {
+const one = async (id: Technician['id']): Promise<TechnicianDetails> => {
     const response = await requester.get(`/technicians/${id}`);
-    return TechnicianSchema.parse(response.data);
+    return TechnicianDetailsSchema.parse(response.data);
 };
 
-const create = async (data: TechnicianEdit): Promise<Technician> => {
-    const response = await requester.post('/technicians', data);
-    return TechnicianSchema.parse(response.data);
+const create = async (data: TechnicianEdit, withUser?: boolean): Promise<TechnicianDetails> => {
+    const params = withUser !== undefined ? { withUser } : undefined;
+    const response = await requester.post('/technicians', data, { params });
+    return TechnicianDetailsSchema.parse(response.data);
 };
 
-const update = async (id: Technician['id'], data: TechnicianEdit): Promise<Technician> => {
-    const response = await requester.put(`/technicians/${id}`, data);
-    return TechnicianSchema.parse(response.data);
+const update = async (id: Technician['id'], data: TechnicianEdit, withUser?: boolean): Promise<TechnicianDetails> => {
+    const params = withUser !== undefined ? { withUser } : undefined;
+    const response = await requester.put(`/technicians/${id}`, data, { params });
+    return TechnicianDetailsSchema.parse(response.data);
 };
 
-const restore = async (id: Technician['id']): Promise<Technician> => {
+const restore = async (id: Technician['id']): Promise<TechnicianDetails> => {
     const response = await requester.put(`/technicians/restore/${id}`);
-    return TechnicianSchema.parse(response.data);
+    return TechnicianDetailsSchema.parse(response.data);
 };
 
 const remove = async (id: Technician['id']): Promise<void> => {

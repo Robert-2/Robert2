@@ -6,6 +6,9 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -14,6 +17,9 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "value": 36.5,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 2,
           "max_length": null,
           "name": "Couleur",
@@ -21,6 +27,9 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "value": "Grise",
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -32,11 +41,12 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 4,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+      "degressive_rate_id": 3,
       "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
       "id": 1,
+      "is_deleted": false,
       "is_discountable": false,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Console Yamaha CL3",
       "note": null,
       "out_of_order_quantity": 1,
@@ -53,11 +63,15 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "name": "Premium",
         },
       ],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -66,6 +80,9 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "value": 2.2,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -77,11 +94,12 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 2,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+      "degressive_rate_id": null,
       "description": "Système de diffusion numérique",
       "id": 2,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": false,
       "name": "Processeur DBX PA2",
       "note": null,
       "out_of_order_quantity": 0,
@@ -98,11 +116,15 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "name": "Premium",
         },
       ],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -111,6 +133,9 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "value": 0.85,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -122,11 +147,12 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 30,
       "category_id": 2,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+      "degressive_rate_id": 1,
       "description": "Projecteur PAR64 à LED, avec son set de gélatines",
       "id": 3,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "PAR64 LED",
       "note": "Soyez délicats avec ces projos !",
       "out_of_order_quantity": 4,
@@ -143,11 +169,15 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "name": "Premium",
         },
       ],
+      "tax_id": null,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -156,6 +186,9 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "value": 3.15,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -164,6 +197,9 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
           "value": 60,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 4,
           "name": "Conforme",
           "type": "boolean",
@@ -173,11 +209,12 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 2,
       "category_id": 2,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+      "degressive_rate_id": 1,
       "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
       "id": 4,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Showtec SDS-6",
       "note": null,
       "out_of_order_quantity": 0,
@@ -189,6 +226,7 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "stock_quantity": 2,
       "sub_category_id": 4,
       "tags": [],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
     },
     {
@@ -196,11 +234,12 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 32,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+      "degressive_rate_id": 3,
       "description": "Câble audio XLR 10 mètres, mâle-femelle",
       "id": 5,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": true,
-      "is_reservable": true,
       "name": "Câble XLR 10m",
       "note": null,
       "out_of_order_quantity": 8,
@@ -212,11 +251,16 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "stock_quantity": 40,
       "sub_category_id": null,
       "tags": [],
+      "tax_id": 2,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+            "material",
+          ],
           "id": 5,
           "name": "Date d'achat",
           "type": "date",
@@ -226,11 +270,12 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 2,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+      "degressive_rate_id": 1,
       "description": "Mélangeur numérique 18 canaux",
       "id": 6,
+      "is_deleted": false,
       "is_discountable": false,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Behringer X Air XR18",
       "note": null,
       "out_of_order_quantity": 1,
@@ -242,6 +287,7 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "stock_quantity": 3,
       "sub_category_id": 1,
       "tags": [],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
     },
     {
@@ -249,15 +295,16 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 2,
       "category_id": 3,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+      "degressive_rate_id": 2,
       "description": "Volume utile: 9.3 m3",
       "id": 7,
+      "is_deleted": false,
       "is_discountable": false,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Volkswagen Transporter",
       "note": null,
       "out_of_order_quantity": 0,
-      "park_id": 1,
+      "park_id": 2,
       "picture": null,
       "reference": "Transporter",
       "rental_price": /* Decimal Instance => */ "300",
@@ -265,6 +312,7 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "stock_quantity": 2,
       "sub_category_id": null,
       "tags": [],
+      "tax_id": null,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
     },
     {
@@ -272,11 +320,12 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "available_quantity": 2,
       "category_id": 4,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+      "degressive_rate_id": 3,
       "description": "Forêt mystique, typique des récits fantastiques.",
       "id": 8,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Décor Thème Forêt",
       "note": null,
       "out_of_order_quantity": 0,
@@ -288,6 +337,7 @@ exports[`Materials Api all() parse the returned data correctly 1`] = `
       "stock_quantity": 2,
       "sub_category_id": null,
       "tags": [],
+      "tax_id": 4,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
     },
   ],
@@ -308,6 +358,9 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -316,6 +369,9 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "value": 36.5,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 2,
           "max_length": null,
           "name": "Couleur",
@@ -323,6 +379,9 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "value": "Grise",
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -334,11 +393,12 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 4,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+      "degressive_rate_id": 3,
       "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
       "id": 1,
+      "is_deleted": false,
       "is_discountable": false,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Console Yamaha CL3",
       "note": null,
       "out_of_order_quantity": 1,
@@ -355,11 +415,15 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "name": "Premium",
         },
       ],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -368,6 +432,9 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "value": 2.2,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -379,11 +446,12 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 2,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+      "degressive_rate_id": null,
       "description": "Système de diffusion numérique",
       "id": 2,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": false,
       "name": "Processeur DBX PA2",
       "note": null,
       "out_of_order_quantity": 0,
@@ -400,11 +468,15 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "name": "Premium",
         },
       ],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -413,6 +485,9 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "value": 0.85,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -424,11 +499,12 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 30,
       "category_id": 2,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+      "degressive_rate_id": 1,
       "description": "Projecteur PAR64 à LED, avec son set de gélatines",
       "id": 3,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "PAR64 LED",
       "note": "Soyez délicats avec ces projos !",
       "out_of_order_quantity": 4,
@@ -445,11 +521,15 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "name": "Premium",
         },
       ],
+      "tax_id": null,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+          ],
           "id": 1,
           "is_totalisable": true,
           "name": "Poids",
@@ -458,6 +538,9 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "value": 3.15,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 3,
           "is_totalisable": true,
           "name": "Puissance",
@@ -466,6 +549,9 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
           "value": 60,
         },
         {
+          "entities": [
+            "material",
+          ],
           "id": 4,
           "name": "Conforme",
           "type": "boolean",
@@ -475,11 +561,12 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 2,
       "category_id": 2,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+      "degressive_rate_id": 1,
       "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
       "id": 4,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Showtec SDS-6",
       "note": null,
       "out_of_order_quantity": 0,
@@ -491,6 +578,7 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "stock_quantity": 2,
       "sub_category_id": 4,
       "tags": [],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
     },
     {
@@ -498,11 +586,12 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 32,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+      "degressive_rate_id": 3,
       "description": "Câble audio XLR 10 mètres, mâle-femelle",
       "id": 5,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": true,
-      "is_reservable": true,
       "name": "Câble XLR 10m",
       "note": null,
       "out_of_order_quantity": 8,
@@ -514,11 +603,16 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "stock_quantity": 40,
       "sub_category_id": null,
       "tags": [],
+      "tax_id": 2,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
     },
     {
       "attributes": [
         {
+          "entities": [
+            "material",
+            "material",
+          ],
           "id": 5,
           "name": "Date d'achat",
           "type": "date",
@@ -528,11 +622,12 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 2,
       "category_id": 1,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+      "degressive_rate_id": 1,
       "description": "Mélangeur numérique 18 canaux",
       "id": 6,
+      "is_deleted": false,
       "is_discountable": false,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Behringer X Air XR18",
       "note": null,
       "out_of_order_quantity": 1,
@@ -544,6 +639,7 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "stock_quantity": 3,
       "sub_category_id": 1,
       "tags": [],
+      "tax_id": 1,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
     },
     {
@@ -551,15 +647,16 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 2,
       "category_id": 3,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+      "degressive_rate_id": 2,
       "description": "Volume utile: 9.3 m3",
       "id": 7,
+      "is_deleted": false,
       "is_discountable": false,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Volkswagen Transporter",
       "note": null,
       "out_of_order_quantity": 0,
-      "park_id": 1,
+      "park_id": 2,
       "picture": null,
       "reference": "Transporter",
       "rental_price": /* Decimal Instance => */ "300",
@@ -567,6 +664,7 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "stock_quantity": 2,
       "sub_category_id": null,
       "tags": [],
+      "tax_id": null,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
     },
     {
@@ -574,11 +672,12 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "available_quantity": 2,
       "category_id": 4,
       "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+      "degressive_rate_id": 3,
       "description": "Forêt mystique, typique des récits fantastiques.",
       "id": 8,
+      "is_deleted": false,
       "is_discountable": true,
       "is_hidden_on_bill": false,
-      "is_reservable": true,
       "name": "Décor Thème Forêt",
       "note": null,
       "out_of_order_quantity": 0,
@@ -590,6 +689,7 @@ exports[`Materials Api all() parse the returned data correctly 2`] = `
       "stock_quantity": 2,
       "sub_category_id": null,
       "tags": [],
+      "tax_id": 4,
       "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
     },
   ],
@@ -609,6 +709,9 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -617,6 +720,9 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "value": 36.5,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 2,
         "max_length": null,
         "name": "Couleur",
@@ -624,6 +730,9 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "value": "Grise",
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -635,11 +744,12 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 4,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+    "degressive_rate_id": 3,
     "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
     "id": 1,
+    "is_deleted": false,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Console Yamaha CL3",
     "note": null,
     "out_of_order_quantity": 1,
@@ -656,11 +766,15 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -669,6 +783,9 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "value": 2.2,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -680,11 +797,12 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 2,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+    "degressive_rate_id": null,
     "description": "Système de diffusion numérique",
     "id": 2,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": false,
     "name": "Processeur DBX PA2",
     "note": null,
     "out_of_order_quantity": 0,
@@ -701,11 +819,15 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -714,6 +836,9 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "value": 0.85,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -725,11 +850,12 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 30,
     "category_id": 2,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+    "degressive_rate_id": 1,
     "description": "Projecteur PAR64 à LED, avec son set de gélatines",
     "id": 3,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "PAR64 LED",
     "note": "Soyez délicats avec ces projos !",
     "out_of_order_quantity": 4,
@@ -746,11 +872,15 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": null,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -759,6 +889,9 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "value": 3.15,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -767,6 +900,9 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
         "value": 60,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 4,
         "name": "Conforme",
         "type": "boolean",
@@ -776,11 +912,12 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 2,
     "category_id": 2,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+    "degressive_rate_id": 1,
     "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
     "id": 4,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Showtec SDS-6",
     "note": null,
     "out_of_order_quantity": 0,
@@ -792,6 +929,7 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "stock_quantity": 2,
     "sub_category_id": 4,
     "tags": [],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
   },
   {
@@ -799,11 +937,12 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 32,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+    "degressive_rate_id": 3,
     "description": "Câble audio XLR 10 mètres, mâle-femelle",
     "id": 5,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": true,
-    "is_reservable": true,
     "name": "Câble XLR 10m",
     "note": null,
     "out_of_order_quantity": 8,
@@ -815,11 +954,16 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "stock_quantity": 40,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": 2,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+          "material",
+        ],
         "id": 5,
         "name": "Date d'achat",
         "type": "date",
@@ -829,11 +973,12 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 2,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+    "degressive_rate_id": 1,
     "description": "Mélangeur numérique 18 canaux",
     "id": 6,
+    "is_deleted": false,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Behringer X Air XR18",
     "note": null,
     "out_of_order_quantity": 1,
@@ -845,6 +990,7 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "stock_quantity": 3,
     "sub_category_id": 1,
     "tags": [],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
   },
   {
@@ -852,15 +998,16 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 2,
     "category_id": 3,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+    "degressive_rate_id": 2,
     "description": "Volume utile: 9.3 m3",
     "id": 7,
+    "is_deleted": false,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Volkswagen Transporter",
     "note": null,
     "out_of_order_quantity": 0,
-    "park_id": 1,
+    "park_id": 2,
     "picture": null,
     "reference": "Transporter",
     "rental_price": /* Decimal Instance => */ "300",
@@ -868,6 +1015,7 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "stock_quantity": 2,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": null,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
   },
   {
@@ -875,11 +1023,12 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "available_quantity": 2,
     "category_id": 4,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+    "degressive_rate_id": 3,
     "description": "Forêt mystique, typique des récits fantastiques.",
     "id": 8,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Décor Thème Forêt",
     "note": null,
     "out_of_order_quantity": 0,
@@ -891,6 +1040,7 @@ exports[`Materials Api all() parse the returned data correctly 3`] = `
     "stock_quantity": 2,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": 4,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
   },
 ]
@@ -901,6 +1051,9 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -909,6 +1062,9 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "value": 36.5,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 2,
         "max_length": null,
         "name": "Couleur",
@@ -916,6 +1072,9 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "value": "Grise",
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -927,11 +1086,13 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 4,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+    "degressive_rate": /* Decimal Instance => */ "6",
+    "degressive_rate_id": 3,
     "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
     "id": 1,
+    "is_deleted": false,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Console Yamaha CL3",
     "note": null,
     "out_of_order_quantity": 1,
@@ -939,6 +1100,7 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "picture": "http://loxya.test/materials/1/picture",
     "reference": "CL3",
     "rental_price": /* Decimal Instance => */ "300",
+    "rental_price_period": /* Decimal Instance => */ "1800",
     "replacement_price": /* Decimal Instance => */ "19400",
     "stock_quantity": 5,
     "sub_category_id": 1,
@@ -948,11 +1110,15 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -961,6 +1127,9 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "value": 2.2,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -972,11 +1141,13 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 2,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+    "degressive_rate": /* Decimal Instance => */ "1",
+    "degressive_rate_id": null,
     "description": "Système de diffusion numérique",
     "id": 2,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": false,
     "name": "Processeur DBX PA2",
     "note": null,
     "out_of_order_quantity": 0,
@@ -984,6 +1155,7 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "picture": null,
     "reference": "DBXPA2",
     "rental_price": /* Decimal Instance => */ "25.5",
+    "rental_price_period": /* Decimal Instance => */ "25.5",
     "replacement_price": /* Decimal Instance => */ "349.9",
     "stock_quantity": 2,
     "sub_category_id": 2,
@@ -993,11 +1165,15 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -1006,6 +1182,9 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "value": 0.85,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -1017,11 +1196,13 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 30,
     "category_id": 2,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+    "degressive_rate": /* Decimal Instance => */ "1",
+    "degressive_rate_id": 1,
     "description": "Projecteur PAR64 à LED, avec son set de gélatines",
     "id": 3,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "PAR64 LED",
     "note": "Soyez délicats avec ces projos !",
     "out_of_order_quantity": 4,
@@ -1029,6 +1210,7 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "picture": null,
     "reference": "PAR64LED",
     "rental_price": /* Decimal Instance => */ "3.5",
+    "rental_price_period": /* Decimal Instance => */ "3.5",
     "replacement_price": /* Decimal Instance => */ "89",
     "stock_quantity": 34,
     "sub_category_id": 3,
@@ -1038,11 +1220,15 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "name": "Premium",
       },
     ],
+    "tax_id": null,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+        ],
         "id": 1,
         "is_totalisable": true,
         "name": "Poids",
@@ -1051,6 +1237,9 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "value": 3.15,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 3,
         "is_totalisable": true,
         "name": "Puissance",
@@ -1059,6 +1248,9 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
         "value": 60,
       },
       {
+        "entities": [
+          "material",
+        ],
         "id": 4,
         "name": "Conforme",
         "type": "boolean",
@@ -1068,11 +1260,13 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 2,
     "category_id": 2,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+    "degressive_rate": /* Decimal Instance => */ "1.25",
+    "degressive_rate_id": 1,
     "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
     "id": 4,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Showtec SDS-6",
     "note": null,
     "out_of_order_quantity": 0,
@@ -1080,10 +1274,12 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "picture": null,
     "reference": "SDS-6-01",
     "rental_price": /* Decimal Instance => */ "15.95",
+    "rental_price_period": /* Decimal Instance => */ "19.94",
     "replacement_price": /* Decimal Instance => */ "59",
     "stock_quantity": 2,
     "sub_category_id": 4,
     "tags": [],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
   },
   {
@@ -1091,11 +1287,13 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 32,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+    "degressive_rate": /* Decimal Instance => */ "1",
+    "degressive_rate_id": 3,
     "description": "Câble audio XLR 10 mètres, mâle-femelle",
     "id": 5,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": true,
-    "is_reservable": true,
     "name": "Câble XLR 10m",
     "note": null,
     "out_of_order_quantity": 8,
@@ -1103,15 +1301,21 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "picture": null,
     "reference": "XLR10",
     "rental_price": /* Decimal Instance => */ "0.5",
+    "rental_price_period": /* Decimal Instance => */ "0.5",
     "replacement_price": /* Decimal Instance => */ "9.5",
     "stock_quantity": 40,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": 2,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
   },
   {
     "attributes": [
       {
+        "entities": [
+          "material",
+          "material",
+        ],
         "id": 5,
         "name": "Date d'achat",
         "type": "date",
@@ -1121,11 +1325,13 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 2,
     "category_id": 1,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+    "degressive_rate": /* Decimal Instance => */ "1.5",
+    "degressive_rate_id": 1,
     "description": "Mélangeur numérique 18 canaux",
     "id": 6,
+    "is_deleted": false,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Behringer X Air XR18",
     "note": null,
     "out_of_order_quantity": 1,
@@ -1133,10 +1339,12 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "picture": null,
     "reference": "XR18",
     "rental_price": /* Decimal Instance => */ "49.99",
+    "rental_price_period": /* Decimal Instance => */ "74.99",
     "replacement_price": /* Decimal Instance => */ "419",
     "stock_quantity": 3,
     "sub_category_id": 1,
     "tags": [],
+    "tax_id": 1,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
   },
   {
@@ -1144,22 +1352,26 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 2,
     "category_id": 3,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+    "degressive_rate": /* Decimal Instance => */ "3",
+    "degressive_rate_id": 2,
     "description": "Volume utile: 9.3 m3",
     "id": 7,
+    "is_deleted": false,
     "is_discountable": false,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Volkswagen Transporter",
     "note": null,
     "out_of_order_quantity": 0,
-    "park_id": 1,
+    "park_id": 2,
     "picture": null,
     "reference": "Transporter",
     "rental_price": /* Decimal Instance => */ "300",
+    "rental_price_period": /* Decimal Instance => */ "900",
     "replacement_price": /* Decimal Instance => */ "32000",
     "stock_quantity": 2,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": null,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
   },
   {
@@ -1167,11 +1379,13 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "available_quantity": 2,
     "category_id": 4,
     "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+    "degressive_rate": /* Decimal Instance => */ "1",
+    "degressive_rate_id": 3,
     "description": "Forêt mystique, typique des récits fantastiques.",
     "id": 8,
+    "is_deleted": false,
     "is_discountable": true,
     "is_hidden_on_bill": false,
-    "is_reservable": true,
     "name": "Décor Thème Forêt",
     "note": null,
     "out_of_order_quantity": 0,
@@ -1179,10 +1393,12 @@ exports[`Materials Api allWhileEvent() parse the returned data correctly 1`] = `
     "picture": null,
     "reference": "Decor-Forest",
     "rental_price": /* Decimal Instance => */ "1500",
+    "rental_price_period": /* Decimal Instance => */ "1500",
     "replacement_price": /* Decimal Instance => */ "8500",
     "stock_quantity": 2,
     "sub_category_id": null,
     "tags": [],
+    "tax_id": 4,
     "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
   },
 ]
@@ -1317,6 +1533,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": true,
       "is_return_inventory_done": true,
       "location": "Gap",
+      "materials_count": 3,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-19 00:00:00",
         "isFullDays": false,
@@ -1437,6 +1654,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": true,
       "location": "Lyon",
+      "materials_count": 5,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-20 00:00:00",
         "isFullDays": false,
@@ -1476,6 +1694,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": true,
       "is_return_inventory_done": true,
       "location": "Brousse",
+      "materials_count": 23,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-16 15:45:00",
         "isFullDays": false,
@@ -1515,6 +1734,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "Moon",
+      "materials_count": 6,
       "mobilization_period": /* Period Instance => */ {
         "end": "2019-04-11 00:00:00",
         "isFullDays": false,
@@ -1595,6 +1815,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "Saint-Jean-la-Forêt",
+      "materials_count": 2,
       "mobilization_period": /* Period Instance => */ {
         "end": "2020-01-02 00:00:00",
         "isFullDays": false,
@@ -1631,6 +1852,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "La Clusaz",
+      "materials_count": 0,
       "mobilization_period": /* Period Instance => */ {
         "end": "2019-04-02 00:00:00",
         "isFullDays": false,
@@ -1669,6 +1891,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "Machin-le-chateau",
+      "materials_count": 7,
       "mobilization_period": /* Period Instance => */ {
         "end": "2023-05-29 00:00:00",
         "isFullDays": false,
@@ -1739,6 +1962,9 @@ exports[`Materials Api create() parse the returned data correctly (with #1) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -1747,6 +1973,9 @@ exports[`Materials Api create() parse the returned data correctly (with #1) 1`] 
       "value": 36.5,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 2,
       "max_length": null,
       "name": "Couleur",
@@ -1754,6 +1983,9 @@ exports[`Materials Api create() parse the returned data correctly (with #1) 1`] 
       "value": "Grise",
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -1762,13 +1994,15 @@ exports[`Materials Api create() parse the returned data correctly (with #1) 1`] 
       "value": 850,
     },
   ],
+  "available_quantity": 4,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
   "id": 1,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Console Yamaha CL3",
   "note": null,
   "out_of_order_quantity": 1,
@@ -1777,6 +2011,7 @@ exports[`Materials Api create() parse the returned data correctly (with #1) 1`] 
   "reference": "CL3",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "19400",
+  "return_inventory_todo": null,
   "stock_quantity": 5,
   "sub_category_id": 1,
   "tags": [
@@ -1785,6 +2020,7 @@ exports[`Materials Api create() parse the returned data correctly (with #1) 1`] 
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
 }
 `;
@@ -1793,6 +2029,9 @@ exports[`Materials Api create() parse the returned data correctly (with #2) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -1801,6 +2040,9 @@ exports[`Materials Api create() parse the returned data correctly (with #2) 1`] 
       "value": 2.2,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -1809,13 +2051,15 @@ exports[`Materials Api create() parse the returned data correctly (with #2) 1`] 
       "value": 35,
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+  "degressive_rate_id": null,
+  "departure_inventory_todo": null,
   "description": "Système de diffusion numérique",
   "id": 2,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": false,
   "name": "Processeur DBX PA2",
   "note": null,
   "out_of_order_quantity": 0,
@@ -1824,6 +2068,7 @@ exports[`Materials Api create() parse the returned data correctly (with #2) 1`] 
   "reference": "DBXPA2",
   "rental_price": /* Decimal Instance => */ "25.5",
   "replacement_price": /* Decimal Instance => */ "349.9",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 2,
   "tags": [
@@ -1832,6 +2077,7 @@ exports[`Materials Api create() parse the returned data correctly (with #2) 1`] 
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -1840,6 +2086,9 @@ exports[`Materials Api create() parse the returned data correctly (with #3) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -1848,6 +2097,9 @@ exports[`Materials Api create() parse the returned data correctly (with #3) 1`] 
       "value": 0.85,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -1856,13 +2108,15 @@ exports[`Materials Api create() parse the returned data correctly (with #3) 1`] 
       "value": 150,
     },
   ],
+  "available_quantity": 30,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Projecteur PAR64 à LED, avec son set de gélatines",
   "id": 3,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "PAR64 LED",
   "note": "Soyez délicats avec ces projos !",
   "out_of_order_quantity": 4,
@@ -1871,6 +2125,7 @@ exports[`Materials Api create() parse the returned data correctly (with #3) 1`] 
   "reference": "PAR64LED",
   "rental_price": /* Decimal Instance => */ "3.5",
   "replacement_price": /* Decimal Instance => */ "89",
+  "return_inventory_todo": null,
   "stock_quantity": 34,
   "sub_category_id": 3,
   "tags": [
@@ -1879,6 +2134,7 @@ exports[`Materials Api create() parse the returned data correctly (with #3) 1`] 
       "name": "Premium",
     },
   ],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -1887,6 +2143,9 @@ exports[`Materials Api create() parse the returned data correctly (with #4) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -1895,6 +2154,9 @@ exports[`Materials Api create() parse the returned data correctly (with #4) 1`] 
       "value": 3.15,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -1903,19 +2165,24 @@ exports[`Materials Api create() parse the returned data correctly (with #4) 1`] 
       "value": 60,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 4,
       "name": "Conforme",
       "type": "boolean",
       "value": true,
     },
   ],
+  "available_quantity": 2,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
   "id": 4,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Showtec SDS-6",
   "note": null,
   "out_of_order_quantity": 0,
@@ -1924,9 +2191,11 @@ exports[`Materials Api create() parse the returned data correctly (with #4) 1`] 
   "reference": "SDS-6-01",
   "rental_price": /* Decimal Instance => */ "15.95",
   "replacement_price": /* Decimal Instance => */ "59",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 4,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
 }
 `;
@@ -1934,13 +2203,15 @@ exports[`Materials Api create() parse the returned data correctly (with #4) 1`] 
 exports[`Materials Api create() parse the returned data correctly (with #5) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 32,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Câble audio XLR 10 mètres, mâle-femelle",
   "id": 5,
   "is_discountable": true,
   "is_hidden_on_bill": true,
-  "is_reservable": true,
   "name": "Câble XLR 10m",
   "note": null,
   "out_of_order_quantity": 8,
@@ -1949,9 +2220,11 @@ exports[`Materials Api create() parse the returned data correctly (with #5) 1`] 
   "reference": "XLR10",
   "rental_price": /* Decimal Instance => */ "0.5",
   "replacement_price": /* Decimal Instance => */ "9.5",
+  "return_inventory_todo": null,
   "stock_quantity": 40,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 2,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
 }
 `;
@@ -1960,19 +2233,25 @@ exports[`Materials Api create() parse the returned data correctly (with #6) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+        "material",
+      ],
       "id": 5,
       "name": "Date d'achat",
       "type": "date",
       "value": /* Day Instance => */ "2021-01-28",
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Mélangeur numérique 18 canaux",
   "id": 6,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Behringer X Air XR18",
   "note": null,
   "out_of_order_quantity": 1,
@@ -1981,9 +2260,11 @@ exports[`Materials Api create() parse the returned data correctly (with #6) 1`] 
   "reference": "XR18",
   "rental_price": /* Decimal Instance => */ "49.99",
   "replacement_price": /* Decimal Instance => */ "419",
+  "return_inventory_todo": null,
   "stock_quantity": 3,
   "sub_category_id": 1,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
 }
 `;
@@ -1991,24 +2272,28 @@ exports[`Materials Api create() parse the returned data correctly (with #6) 1`] 
 exports[`Materials Api create() parse the returned data correctly (with #7) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 3,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+  "degressive_rate_id": 2,
+  "departure_inventory_todo": null,
   "description": "Volume utile: 9.3 m3",
   "id": 7,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Volkswagen Transporter",
   "note": null,
   "out_of_order_quantity": 0,
-  "park_id": 1,
+  "park_id": 2,
   "picture": null,
   "reference": "Transporter",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "32000",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
 }
 `;
@@ -2016,13 +2301,15 @@ exports[`Materials Api create() parse the returned data correctly (with #7) 1`] 
 exports[`Materials Api create() parse the returned data correctly (with #8) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 4,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Forêt mystique, typique des récits fantastiques.",
   "id": 8,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Décor Thème Forêt",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2031,9 +2318,11 @@ exports[`Materials Api create() parse the returned data correctly (with #8) 1`] 
   "reference": "Decor-Forest",
   "rental_price": /* Decimal Instance => */ "1500",
   "replacement_price": /* Decimal Instance => */ "8500",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 4,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
 }
 `;
@@ -2095,6 +2384,9 @@ exports[`Materials Api one() parse the returned data correctly (with #1) 1`] = `
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2103,6 +2395,9 @@ exports[`Materials Api one() parse the returned data correctly (with #1) 1`] = `
       "value": 36.5,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 2,
       "max_length": null,
       "name": "Couleur",
@@ -2110,6 +2405,9 @@ exports[`Materials Api one() parse the returned data correctly (with #1) 1`] = `
       "value": "Grise",
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2118,13 +2416,15 @@ exports[`Materials Api one() parse the returned data correctly (with #1) 1`] = `
       "value": 850,
     },
   ],
+  "available_quantity": 4,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
   "id": 1,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Console Yamaha CL3",
   "note": null,
   "out_of_order_quantity": 1,
@@ -2133,6 +2433,7 @@ exports[`Materials Api one() parse the returned data correctly (with #1) 1`] = `
   "reference": "CL3",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "19400",
+  "return_inventory_todo": null,
   "stock_quantity": 5,
   "sub_category_id": 1,
   "tags": [
@@ -2141,6 +2442,7 @@ exports[`Materials Api one() parse the returned data correctly (with #1) 1`] = `
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
 }
 `;
@@ -2149,6 +2451,9 @@ exports[`Materials Api one() parse the returned data correctly (with #2) 1`] = `
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2157,6 +2462,9 @@ exports[`Materials Api one() parse the returned data correctly (with #2) 1`] = `
       "value": 2.2,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2165,13 +2473,15 @@ exports[`Materials Api one() parse the returned data correctly (with #2) 1`] = `
       "value": 35,
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+  "degressive_rate_id": null,
+  "departure_inventory_todo": null,
   "description": "Système de diffusion numérique",
   "id": 2,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": false,
   "name": "Processeur DBX PA2",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2180,6 +2490,7 @@ exports[`Materials Api one() parse the returned data correctly (with #2) 1`] = `
   "reference": "DBXPA2",
   "rental_price": /* Decimal Instance => */ "25.5",
   "replacement_price": /* Decimal Instance => */ "349.9",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 2,
   "tags": [
@@ -2188,6 +2499,7 @@ exports[`Materials Api one() parse the returned data correctly (with #2) 1`] = `
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -2196,6 +2508,9 @@ exports[`Materials Api one() parse the returned data correctly (with #3) 1`] = `
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2204,6 +2519,9 @@ exports[`Materials Api one() parse the returned data correctly (with #3) 1`] = `
       "value": 0.85,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2212,13 +2530,15 @@ exports[`Materials Api one() parse the returned data correctly (with #3) 1`] = `
       "value": 150,
     },
   ],
+  "available_quantity": 30,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Projecteur PAR64 à LED, avec son set de gélatines",
   "id": 3,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "PAR64 LED",
   "note": "Soyez délicats avec ces projos !",
   "out_of_order_quantity": 4,
@@ -2227,6 +2547,7 @@ exports[`Materials Api one() parse the returned data correctly (with #3) 1`] = `
   "reference": "PAR64LED",
   "rental_price": /* Decimal Instance => */ "3.5",
   "replacement_price": /* Decimal Instance => */ "89",
+  "return_inventory_todo": null,
   "stock_quantity": 34,
   "sub_category_id": 3,
   "tags": [
@@ -2235,6 +2556,7 @@ exports[`Materials Api one() parse the returned data correctly (with #3) 1`] = `
       "name": "Premium",
     },
   ],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -2243,6 +2565,9 @@ exports[`Materials Api one() parse the returned data correctly (with #4) 1`] = `
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2251,6 +2576,9 @@ exports[`Materials Api one() parse the returned data correctly (with #4) 1`] = `
       "value": 3.15,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2259,19 +2587,24 @@ exports[`Materials Api one() parse the returned data correctly (with #4) 1`] = `
       "value": 60,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 4,
       "name": "Conforme",
       "type": "boolean",
       "value": true,
     },
   ],
+  "available_quantity": 2,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
   "id": 4,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Showtec SDS-6",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2280,9 +2613,11 @@ exports[`Materials Api one() parse the returned data correctly (with #4) 1`] = `
   "reference": "SDS-6-01",
   "rental_price": /* Decimal Instance => */ "15.95",
   "replacement_price": /* Decimal Instance => */ "59",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 4,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
 }
 `;
@@ -2290,13 +2625,15 @@ exports[`Materials Api one() parse the returned data correctly (with #4) 1`] = `
 exports[`Materials Api one() parse the returned data correctly (with #5) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 32,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Câble audio XLR 10 mètres, mâle-femelle",
   "id": 5,
   "is_discountable": true,
   "is_hidden_on_bill": true,
-  "is_reservable": true,
   "name": "Câble XLR 10m",
   "note": null,
   "out_of_order_quantity": 8,
@@ -2305,9 +2642,11 @@ exports[`Materials Api one() parse the returned data correctly (with #5) 1`] = `
   "reference": "XLR10",
   "rental_price": /* Decimal Instance => */ "0.5",
   "replacement_price": /* Decimal Instance => */ "9.5",
+  "return_inventory_todo": null,
   "stock_quantity": 40,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 2,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
 }
 `;
@@ -2316,19 +2655,25 @@ exports[`Materials Api one() parse the returned data correctly (with #6) 1`] = `
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+        "material",
+      ],
       "id": 5,
       "name": "Date d'achat",
       "type": "date",
       "value": /* Day Instance => */ "2021-01-28",
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Mélangeur numérique 18 canaux",
   "id": 6,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Behringer X Air XR18",
   "note": null,
   "out_of_order_quantity": 1,
@@ -2337,9 +2682,11 @@ exports[`Materials Api one() parse the returned data correctly (with #6) 1`] = `
   "reference": "XR18",
   "rental_price": /* Decimal Instance => */ "49.99",
   "replacement_price": /* Decimal Instance => */ "419",
+  "return_inventory_todo": null,
   "stock_quantity": 3,
   "sub_category_id": 1,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
 }
 `;
@@ -2347,24 +2694,28 @@ exports[`Materials Api one() parse the returned data correctly (with #6) 1`] = `
 exports[`Materials Api one() parse the returned data correctly (with #7) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 3,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+  "degressive_rate_id": 2,
+  "departure_inventory_todo": null,
   "description": "Volume utile: 9.3 m3",
   "id": 7,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Volkswagen Transporter",
   "note": null,
   "out_of_order_quantity": 0,
-  "park_id": 1,
+  "park_id": 2,
   "picture": null,
   "reference": "Transporter",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "32000",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
 }
 `;
@@ -2372,13 +2723,15 @@ exports[`Materials Api one() parse the returned data correctly (with #7) 1`] = `
 exports[`Materials Api one() parse the returned data correctly (with #8) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 4,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Forêt mystique, typique des récits fantastiques.",
   "id": 8,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Décor Thème Forêt",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2387,9 +2740,11 @@ exports[`Materials Api one() parse the returned data correctly (with #8) 1`] = `
   "reference": "Decor-Forest",
   "rental_price": /* Decimal Instance => */ "1500",
   "replacement_price": /* Decimal Instance => */ "8500",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 4,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
 }
 `;
@@ -2398,6 +2753,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #1) 1`]
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2406,6 +2764,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #1) 1`]
       "value": 36.5,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 2,
       "max_length": null,
       "name": "Couleur",
@@ -2413,6 +2774,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #1) 1`]
       "value": "Grise",
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2421,13 +2785,15 @@ exports[`Materials Api restore() parse the returned data correctly (with #1) 1`]
       "value": 850,
     },
   ],
+  "available_quantity": 4,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
   "id": 1,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Console Yamaha CL3",
   "note": null,
   "out_of_order_quantity": 1,
@@ -2436,6 +2802,7 @@ exports[`Materials Api restore() parse the returned data correctly (with #1) 1`]
   "reference": "CL3",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "19400",
+  "return_inventory_todo": null,
   "stock_quantity": 5,
   "sub_category_id": 1,
   "tags": [
@@ -2444,6 +2811,7 @@ exports[`Materials Api restore() parse the returned data correctly (with #1) 1`]
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
 }
 `;
@@ -2452,6 +2820,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #2) 1`]
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2460,6 +2831,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #2) 1`]
       "value": 2.2,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2468,13 +2842,15 @@ exports[`Materials Api restore() parse the returned data correctly (with #2) 1`]
       "value": 35,
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+  "degressive_rate_id": null,
+  "departure_inventory_todo": null,
   "description": "Système de diffusion numérique",
   "id": 2,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": false,
   "name": "Processeur DBX PA2",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2483,6 +2859,7 @@ exports[`Materials Api restore() parse the returned data correctly (with #2) 1`]
   "reference": "DBXPA2",
   "rental_price": /* Decimal Instance => */ "25.5",
   "replacement_price": /* Decimal Instance => */ "349.9",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 2,
   "tags": [
@@ -2491,6 +2868,7 @@ exports[`Materials Api restore() parse the returned data correctly (with #2) 1`]
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -2499,6 +2877,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #3) 1`]
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2507,6 +2888,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #3) 1`]
       "value": 0.85,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2515,13 +2899,15 @@ exports[`Materials Api restore() parse the returned data correctly (with #3) 1`]
       "value": 150,
     },
   ],
+  "available_quantity": 30,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Projecteur PAR64 à LED, avec son set de gélatines",
   "id": 3,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "PAR64 LED",
   "note": "Soyez délicats avec ces projos !",
   "out_of_order_quantity": 4,
@@ -2530,6 +2916,7 @@ exports[`Materials Api restore() parse the returned data correctly (with #3) 1`]
   "reference": "PAR64LED",
   "rental_price": /* Decimal Instance => */ "3.5",
   "replacement_price": /* Decimal Instance => */ "89",
+  "return_inventory_todo": null,
   "stock_quantity": 34,
   "sub_category_id": 3,
   "tags": [
@@ -2538,6 +2925,7 @@ exports[`Materials Api restore() parse the returned data correctly (with #3) 1`]
       "name": "Premium",
     },
   ],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -2546,6 +2934,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #4) 1`]
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2554,6 +2945,9 @@ exports[`Materials Api restore() parse the returned data correctly (with #4) 1`]
       "value": 3.15,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2562,19 +2956,24 @@ exports[`Materials Api restore() parse the returned data correctly (with #4) 1`]
       "value": 60,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 4,
       "name": "Conforme",
       "type": "boolean",
       "value": true,
     },
   ],
+  "available_quantity": 2,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
   "id": 4,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Showtec SDS-6",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2583,9 +2982,11 @@ exports[`Materials Api restore() parse the returned data correctly (with #4) 1`]
   "reference": "SDS-6-01",
   "rental_price": /* Decimal Instance => */ "15.95",
   "replacement_price": /* Decimal Instance => */ "59",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 4,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
 }
 `;
@@ -2593,13 +2994,15 @@ exports[`Materials Api restore() parse the returned data correctly (with #4) 1`]
 exports[`Materials Api restore() parse the returned data correctly (with #5) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 32,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Câble audio XLR 10 mètres, mâle-femelle",
   "id": 5,
   "is_discountable": true,
   "is_hidden_on_bill": true,
-  "is_reservable": true,
   "name": "Câble XLR 10m",
   "note": null,
   "out_of_order_quantity": 8,
@@ -2608,9 +3011,11 @@ exports[`Materials Api restore() parse the returned data correctly (with #5) 1`]
   "reference": "XLR10",
   "rental_price": /* Decimal Instance => */ "0.5",
   "replacement_price": /* Decimal Instance => */ "9.5",
+  "return_inventory_todo": null,
   "stock_quantity": 40,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 2,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
 }
 `;
@@ -2619,19 +3024,25 @@ exports[`Materials Api restore() parse the returned data correctly (with #6) 1`]
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+        "material",
+      ],
       "id": 5,
       "name": "Date d'achat",
       "type": "date",
       "value": /* Day Instance => */ "2021-01-28",
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Mélangeur numérique 18 canaux",
   "id": 6,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Behringer X Air XR18",
   "note": null,
   "out_of_order_quantity": 1,
@@ -2640,9 +3051,11 @@ exports[`Materials Api restore() parse the returned data correctly (with #6) 1`]
   "reference": "XR18",
   "rental_price": /* Decimal Instance => */ "49.99",
   "replacement_price": /* Decimal Instance => */ "419",
+  "return_inventory_todo": null,
   "stock_quantity": 3,
   "sub_category_id": 1,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
 }
 `;
@@ -2650,24 +3063,28 @@ exports[`Materials Api restore() parse the returned data correctly (with #6) 1`]
 exports[`Materials Api restore() parse the returned data correctly (with #7) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 3,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+  "degressive_rate_id": 2,
+  "departure_inventory_todo": null,
   "description": "Volume utile: 9.3 m3",
   "id": 7,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Volkswagen Transporter",
   "note": null,
   "out_of_order_quantity": 0,
-  "park_id": 1,
+  "park_id": 2,
   "picture": null,
   "reference": "Transporter",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "32000",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
 }
 `;
@@ -2675,13 +3092,15 @@ exports[`Materials Api restore() parse the returned data correctly (with #7) 1`]
 exports[`Materials Api restore() parse the returned data correctly (with #8) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 4,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Forêt mystique, typique des récits fantastiques.",
   "id": 8,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Décor Thème Forêt",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2690,9 +3109,11 @@ exports[`Materials Api restore() parse the returned data correctly (with #8) 1`]
   "reference": "Decor-Forest",
   "rental_price": /* Decimal Instance => */ "1500",
   "replacement_price": /* Decimal Instance => */ "8500",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 4,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
 }
 `;
@@ -2701,6 +3122,9 @@ exports[`Materials Api update() parse the returned data correctly (with #1) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2709,6 +3133,9 @@ exports[`Materials Api update() parse the returned data correctly (with #1) 1`] 
       "value": 36.5,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 2,
       "max_length": null,
       "name": "Couleur",
@@ -2716,6 +3143,9 @@ exports[`Materials Api update() parse the returned data correctly (with #1) 1`] 
       "value": "Grise",
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2724,13 +3154,15 @@ exports[`Materials Api update() parse the returned data correctly (with #1) 1`] 
       "value": 850,
     },
   ],
+  "available_quantity": 4,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Console numérique 64 entrées / 8 sorties + Master + Sub",
   "id": 1,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Console Yamaha CL3",
   "note": null,
   "out_of_order_quantity": 1,
@@ -2739,6 +3171,7 @@ exports[`Materials Api update() parse the returned data correctly (with #1) 1`] 
   "reference": "CL3",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "19400",
+  "return_inventory_todo": null,
   "stock_quantity": 5,
   "sub_category_id": 1,
   "tags": [
@@ -2747,6 +3180,7 @@ exports[`Materials Api update() parse the returned data correctly (with #1) 1`] 
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:00:00",
 }
 `;
@@ -2755,6 +3189,9 @@ exports[`Materials Api update() parse the returned data correctly (with #2) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2763,6 +3200,9 @@ exports[`Materials Api update() parse the returned data correctly (with #2) 1`] 
       "value": 2.2,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2771,13 +3211,15 @@ exports[`Materials Api update() parse the returned data correctly (with #2) 1`] 
       "value": 35,
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:01:00",
+  "degressive_rate_id": null,
+  "departure_inventory_todo": null,
   "description": "Système de diffusion numérique",
   "id": 2,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": false,
   "name": "Processeur DBX PA2",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2786,6 +3228,7 @@ exports[`Materials Api update() parse the returned data correctly (with #2) 1`] 
   "reference": "DBXPA2",
   "rental_price": /* Decimal Instance => */ "25.5",
   "replacement_price": /* Decimal Instance => */ "349.9",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 2,
   "tags": [
@@ -2794,6 +3237,7 @@ exports[`Materials Api update() parse the returned data correctly (with #2) 1`] 
       "name": "Premium",
     },
   ],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -2802,6 +3246,9 @@ exports[`Materials Api update() parse the returned data correctly (with #3) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2810,6 +3257,9 @@ exports[`Materials Api update() parse the returned data correctly (with #3) 1`] 
       "value": 0.85,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2818,13 +3268,15 @@ exports[`Materials Api update() parse the returned data correctly (with #3) 1`] 
       "value": 150,
     },
   ],
+  "available_quantity": 30,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Projecteur PAR64 à LED, avec son set de gélatines",
   "id": 3,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "PAR64 LED",
   "note": "Soyez délicats avec ces projos !",
   "out_of_order_quantity": 4,
@@ -2833,6 +3285,7 @@ exports[`Materials Api update() parse the returned data correctly (with #3) 1`] 
   "reference": "PAR64LED",
   "rental_price": /* Decimal Instance => */ "3.5",
   "replacement_price": /* Decimal Instance => */ "89",
+  "return_inventory_todo": null,
   "stock_quantity": 34,
   "sub_category_id": 3,
   "tags": [
@@ -2841,6 +3294,7 @@ exports[`Materials Api update() parse the returned data correctly (with #3) 1`] 
       "name": "Premium",
     },
   ],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:02:00",
 }
 `;
@@ -2849,6 +3303,9 @@ exports[`Materials Api update() parse the returned data correctly (with #4) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+      ],
       "id": 1,
       "is_totalisable": true,
       "name": "Poids",
@@ -2857,6 +3314,9 @@ exports[`Materials Api update() parse the returned data correctly (with #4) 1`] 
       "value": 3.15,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 3,
       "is_totalisable": true,
       "name": "Puissance",
@@ -2865,19 +3325,24 @@ exports[`Materials Api update() parse the returned data correctly (with #4) 1`] 
       "value": 60,
     },
     {
+      "entities": [
+        "material",
+      ],
       "id": 4,
       "name": "Conforme",
       "type": "boolean",
       "value": true,
     },
   ],
+  "available_quantity": 2,
   "category_id": 2,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Console DMX (jeu d'orgue) Showtec 6 canaux",
   "id": 4,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Showtec SDS-6",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2886,9 +3351,11 @@ exports[`Materials Api update() parse the returned data correctly (with #4) 1`] 
   "reference": "SDS-6-01",
   "rental_price": /* Decimal Instance => */ "15.95",
   "replacement_price": /* Decimal Instance => */ "59",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": 4,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:03:00",
 }
 `;
@@ -2896,13 +3363,15 @@ exports[`Materials Api update() parse the returned data correctly (with #4) 1`] 
 exports[`Materials Api update() parse the returned data correctly (with #5) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 32,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Câble audio XLR 10 mètres, mâle-femelle",
   "id": 5,
   "is_discountable": true,
   "is_hidden_on_bill": true,
-  "is_reservable": true,
   "name": "Câble XLR 10m",
   "note": null,
   "out_of_order_quantity": 8,
@@ -2911,9 +3380,11 @@ exports[`Materials Api update() parse the returned data correctly (with #5) 1`] 
   "reference": "XLR10",
   "rental_price": /* Decimal Instance => */ "0.5",
   "replacement_price": /* Decimal Instance => */ "9.5",
+  "return_inventory_todo": null,
   "stock_quantity": 40,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 2,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:14:00",
 }
 `;
@@ -2922,19 +3393,25 @@ exports[`Materials Api update() parse the returned data correctly (with #6) 1`] 
 {
   "attributes": [
     {
+      "entities": [
+        "material",
+        "material",
+      ],
       "id": 5,
       "name": "Date d'achat",
       "type": "date",
       "value": /* Day Instance => */ "2021-01-28",
     },
   ],
+  "available_quantity": 2,
   "category_id": 1,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
+  "degressive_rate_id": 1,
+  "departure_inventory_todo": null,
   "description": "Mélangeur numérique 18 canaux",
   "id": 6,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Behringer X Air XR18",
   "note": null,
   "out_of_order_quantity": 1,
@@ -2943,9 +3420,11 @@ exports[`Materials Api update() parse the returned data correctly (with #6) 1`] 
   "reference": "XR18",
   "rental_price": /* Decimal Instance => */ "49.99",
   "replacement_price": /* Decimal Instance => */ "419",
+  "return_inventory_todo": null,
   "stock_quantity": 3,
   "sub_category_id": 1,
   "tags": [],
+  "tax_id": 1,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:15:00",
 }
 `;
@@ -2953,24 +3432,28 @@ exports[`Materials Api update() parse the returned data correctly (with #6) 1`] 
 exports[`Materials Api update() parse the returned data correctly (with #7) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 3,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
+  "degressive_rate_id": 2,
+  "departure_inventory_todo": null,
   "description": "Volume utile: 9.3 m3",
   "id": 7,
   "is_discountable": false,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Volkswagen Transporter",
   "note": null,
   "out_of_order_quantity": 0,
-  "park_id": 1,
+  "park_id": 2,
   "picture": null,
   "reference": "Transporter",
   "rental_price": /* Decimal Instance => */ "300",
   "replacement_price": /* Decimal Instance => */ "32000",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": null,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:16:00",
 }
 `;
@@ -2978,13 +3461,15 @@ exports[`Materials Api update() parse the returned data correctly (with #7) 1`] 
 exports[`Materials Api update() parse the returned data correctly (with #8) 1`] = `
 {
   "attributes": [],
+  "available_quantity": 2,
   "category_id": 4,
   "created_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
+  "degressive_rate_id": 3,
+  "departure_inventory_todo": null,
   "description": "Forêt mystique, typique des récits fantastiques.",
   "id": 8,
   "is_discountable": true,
   "is_hidden_on_bill": false,
-  "is_reservable": true,
   "name": "Décor Thème Forêt",
   "note": null,
   "out_of_order_quantity": 0,
@@ -2993,9 +3478,11 @@ exports[`Materials Api update() parse the returned data correctly (with #8) 1`] 
   "reference": "Decor-Forest",
   "rental_price": /* Decimal Instance => */ "1500",
   "replacement_price": /* Decimal Instance => */ "8500",
+  "return_inventory_todo": null,
   "stock_quantity": 2,
   "sub_category_id": null,
   "tags": [],
+  "tax_id": 4,
   "updated_at": /* DateTime Instance => */ "2021-02-12 23:18:00",
 }
 `;

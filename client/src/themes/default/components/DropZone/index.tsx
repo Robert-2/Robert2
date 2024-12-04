@@ -24,10 +24,9 @@ type Props = {
 
 type Data = {
     isDragging: boolean,
-    errors: string[],
 };
 
-// @vue/component
+/** Zone de dépôt de fichiers. */
 const DropZone = defineComponent({
     name: 'DropZone',
     props: {
@@ -43,7 +42,6 @@ const DropZone = defineComponent({
     emits: ['input', 'dragStart', 'dragStop'],
     data: (): Data => ({
         isDragging: false,
-        errors: [],
     }),
     computed: {
         maxSize: () => formatBytes(config.maxFileUploadSize),

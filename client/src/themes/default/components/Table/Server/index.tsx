@@ -4,6 +4,7 @@ import generateUniqueId from 'lodash/uniqueId';
 import { defineComponent } from '@vue/composition-api';
 import config from '@/globals/config';
 import { initColumnsDisplay } from '../@utils';
+import { Variant } from '../@constants';
 
 import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
@@ -44,8 +45,13 @@ export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>>
      */
     columns: TColumns,
 
-    /** Permet d'activer ou de désactiver le champ de filtrage du tableau. */
-    filterable?: boolean,
+    /**
+     * Le nom de la clé contenant l'identifiant unique de chaque
+     * ligne dans le jeu de données.
+     *
+     * @default 'id'
+     */
+    uniqueKey?: string,
 
     /**
      * L'ordre dans lequel le tableau doit être triée initialement.
@@ -63,6 +69,18 @@ export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>>
      * La fonction permettant de récupérer le jeu de données.
      */
     fetcher: RequestFunction<Datum[]>,
+
+    /**
+     * Variante de la présentation du tableau.
+     *
+     * Valeur acceptées:
+     * - `default`: Variante par défaut.
+     * - `minimalist`: Présentation minimaliste, sans fond ni séparateurs.
+     */
+    variant?: Variant,
+
+    /** Permet d'activer ou de désactiver le champ de filtrage du tableau. */
+    filterable?: boolean,
 
     /**
      * Classe(s) qui seront ajoutées aux lignes du tableau.
@@ -105,9 +123,21 @@ const ServerTable = defineComponent({
             type: Array as PropType<Props['columns']>,
             required: true,
         },
+        uniqueKey: {
+            type: String as PropType<Required<Props>['uniqueKey']>,
+            default: 'id',
+        },
         fetcher: {
             type: Function as PropType<Props['fetcher']>,
             required: true,
+        },
+        variant: {
+            type: String as PropType<Required<Props>['variant']>,
+            default: Variant.DEFAULT,
+            validator: (value: unknown) => (
+                typeof value === 'string' &&
+                Object.values(Variant).includes(value as any)
+            ),
         },
         filterable: {
             type: Boolean as PropType<Required<Props>['filterable']>,
@@ -203,10 +233,19 @@ const ServerTable = defineComponent({
             return initColumnsDisplay(this.name, columnsDisplay);
         },
 
+        shouldPersistState(): boolean {
+            return this.name !== undefined;
+        },
+
+        withColumnsSelectorInferred(): boolean {
+            const { shouldPersistState } = this;
+            return shouldPersistState;
+        },
+
         options(): ServerTableOptions {
             const {
-                name,
                 fetcher,
+                uniqueKey,
                 rowClass,
                 filterable,
                 defaultOrderBy,
@@ -215,14 +254,16 @@ const ServerTable = defineComponent({
                 columnsDisplay,
                 columnsSortable,
                 columnsRenders,
+                shouldPersistState,
+                withColumnsSelectorInferred: withColumnsSelector,
                 perPage = config.defaultPaginationLimit,
             } = this;
 
-            const persistState = name !== undefined;
             const options: ServerTableOptions = {
-                columnsDropdown: persistState,
-                preserveState: persistState,
-                saveState: persistState,
+                uniqueKey,
+                columnsDropdown: withColumnsSelector,
+                preserveState: shouldPersistState,
+                saveState: shouldPersistState,
                 sortable: columnsSortable,
                 headings: columnsHeadings,
                 templates: columnsRenders,
@@ -306,14 +347,16 @@ const ServerTable = defineComponent({
         const {
             name,
             uniqueId,
+            variant,
             filterable,
             columnsKeys,
             options,
             handleRowClick,
+            withColumnsSelectorInferred: withColumnsSelector,
         } = this;
 
-        const className = ['Table', {
-            'Table--filterable': filterable,
+        const className = ['Table', `Table--${variant}`, {
+            'Table--static': !filterable && !withColumnsSelector,
         }];
 
         return (
@@ -330,5 +373,6 @@ const ServerTable = defineComponent({
     },
 });
 
+export { Variant };
 export type { Columns, Column };
 export default ServerTable;

@@ -2,155 +2,235 @@
 
 exports[`Session Api create() parse the returned data correctly (with #1) 1`] = `
 {
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
   "default_bookings_view": "calendar",
   "email": "tester@robertmanager.net",
   "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
   "full_name": "Jean Fountain",
-  "group": "admin",
+  "group": "administration",
   "id": 1,
   "language": "en",
   "last_name": "Fountain",
+  "locality": "Megacity",
   "phone": null,
+  "postal_code": "1234",
   "pseudo": "test1",
+  "street": "1, somewhere av.",
   "token": "__FAKE-TOKEN__",
 }
 `;
 
 exports[`Session Api create() parse the returned data correctly (with #2) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "default_bookings_view": "calendar",
   "email": "tester2@robertmanager.net",
   "first_name": "Roger",
+  "full_address": null,
   "full_name": "Roger Rabbit",
-  "group": "member",
+  "group": "management",
   "id": 2,
   "language": "fr",
   "last_name": "Rabbit",
+  "locality": null,
   "phone": null,
+  "postal_code": null,
   "pseudo": "test2",
+  "street": null,
   "token": "__FAKE-TOKEN__",
 }
 `;
 
 exports[`Session Api create() parse the returned data correctly (with #3) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "default_bookings_view": "listing",
   "email": "nobody@robertmanager.net",
   "first_name": "?",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
   "full_name": "?",
-  "group": "member",
+  "group": "management",
   "id": 3,
   "language": "fr",
   "last_name": "?",
+  "locality": "Wazzaville",
   "phone": null,
+  "postal_code": "88080",
   "pseudo": "nobody",
+  "street": "156 bis, avenue des tests poussés",
   "token": "__FAKE-TOKEN__",
 }
 `;
 
 exports[`Session Api create() parse the returned data correctly (with #4) 1`] = `
 {
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
   "default_bookings_view": "calendar",
   "email": "visitor@robertmanager.net",
   "first_name": "Henry",
+  "full_address": null,
   "full_name": "Henry Berluc",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 4,
   "language": "fr",
   "last_name": "Berluc",
+  "locality": null,
   "phone": "+33724000000",
+  "postal_code": null,
   "pseudo": "TheVisitor",
+  "street": null,
   "token": "__FAKE-TOKEN__",
 }
 `;
 
 exports[`Session Api create() parse the returned data correctly (with #5) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "default_bookings_view": "calendar",
   "email": "external@robertmanager.net",
   "first_name": "Caroline",
+  "full_address": null,
   "full_name": "Caroline Farol",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 5,
   "language": "en",
   "last_name": "Farol",
+  "locality": null,
   "phone": "+33786325500",
+  "postal_code": null,
   "pseudo": "caroline",
+  "street": null,
   "token": "__FAKE-TOKEN__",
 }
 `;
 
 exports[`Session Api get() parse the returned data correctly (with #1) 1`] = `
 {
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
   "default_bookings_view": "calendar",
   "email": "tester@robertmanager.net",
   "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
   "full_name": "Jean Fountain",
-  "group": "admin",
+  "group": "administration",
   "id": 1,
   "language": "en",
   "last_name": "Fountain",
+  "locality": "Megacity",
   "phone": null,
+  "postal_code": "1234",
   "pseudo": "test1",
+  "street": "1, somewhere av.",
 }
 `;
 
 exports[`Session Api get() parse the returned data correctly (with #2) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "default_bookings_view": "calendar",
   "email": "tester2@robertmanager.net",
   "first_name": "Roger",
+  "full_address": null,
   "full_name": "Roger Rabbit",
-  "group": "member",
+  "group": "management",
   "id": 2,
   "language": "fr",
   "last_name": "Rabbit",
+  "locality": null,
   "phone": null,
+  "postal_code": null,
   "pseudo": "test2",
+  "street": null,
 }
 `;
 
 exports[`Session Api get() parse the returned data correctly (with #3) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "default_bookings_view": "listing",
   "email": "nobody@robertmanager.net",
   "first_name": "?",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
   "full_name": "?",
-  "group": "member",
+  "group": "management",
   "id": 3,
   "language": "fr",
   "last_name": "?",
+  "locality": "Wazzaville",
   "phone": null,
+  "postal_code": "88080",
   "pseudo": "nobody",
+  "street": "156 bis, avenue des tests poussés",
 }
 `;
 
 exports[`Session Api get() parse the returned data correctly (with #4) 1`] = `
 {
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
   "default_bookings_view": "calendar",
   "email": "visitor@robertmanager.net",
   "first_name": "Henry",
+  "full_address": null,
   "full_name": "Henry Berluc",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 4,
   "language": "fr",
   "last_name": "Berluc",
+  "locality": null,
   "phone": "+33724000000",
+  "postal_code": null,
   "pseudo": "TheVisitor",
+  "street": null,
 }
 `;
 
 exports[`Session Api get() parse the returned data correctly (with #5) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "default_bookings_view": "calendar",
   "email": "external@robertmanager.net",
   "first_name": "Caroline",
+  "full_address": null,
   "full_name": "Caroline Farol",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 5,
   "language": "en",
   "last_name": "Farol",
+  "locality": null,
   "phone": "+33786325500",
+  "postal_code": null,
   "pseudo": "caroline",
+  "street": null,
 }
 `;

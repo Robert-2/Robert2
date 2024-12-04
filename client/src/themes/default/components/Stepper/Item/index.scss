@@ -1,0 +1,53 @@
+@use '~@/themes/default/style/globals';
+
+.StepperItem {
+    display: flex;
+    align-items: center;
+    padding: globals.$spacing-medium;
+    border: 1px solid globals.$text-muted-color;
+    border-radius: 1.5rem;
+    color: globals.$text-muted-color;
+    font-size: 1.1rem;
+    text-align: left;
+    gap: globals.$spacing-small;
+    transition: all 300ms;
+    user-select: none;
+
+    &__icon {
+        min-width: 15px;
+    }
+
+    &__index {
+        &::after {
+            content: '-';
+            margin-left: globals.$spacing-small;
+        }
+    }
+
+    &__name {
+        flex: 1;
+        font-weight: 600;
+    }
+
+    //
+    // - États
+    //
+
+    &--reachable {
+        border-color: globals.$text-soft-color;
+        color: globals.$text-soft-color;
+        cursor: pointer;
+    }
+
+    &--active {
+        border-color: globals.$text-base-color;
+        color: globals.$text-base-color;
+        cursor: default;
+    }
+
+    &--validated {
+        border-color: globals.$text-success-color;
+        color: globals.$text-success-color;
+        cursor: pointer;
+    }
+}

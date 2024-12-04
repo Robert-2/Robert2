@@ -1,0 +1,9 @@
+# - Formats simples.
+on-date: 'on {date}'
+from-date: "from\_{date}"
+to-date: "to\_{date}"
+from-date-to-date: "from\_{from} to\_{to}"
+
+# - Formats "dans une phrase".
+date-in-sentence: 'the {date}'
+period-in-sentence: 'the period from {from} to {to}'

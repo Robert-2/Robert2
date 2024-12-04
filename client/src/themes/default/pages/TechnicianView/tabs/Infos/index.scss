@@ -1,79 +1,77 @@
 @use '~@/themes/default/style/globals';
 
 .TechnicianViewInfos {
-    $icon-width: 25px;
-    font-size: 1.1rem;
+    color: globals.$text-base-color;
 
-    &__name,
-    &__reference {
-        margin-bottom: globals.$spacing-large;
-        color: globals.$text-base-color;
+    &__name {
+        margin: globals.$spacing-small 0 globals.$spacing-medium;
+        font-size: 1.6rem;
     }
 
-    &__reference {
-        @include globals.icon('hashtag') {
-            width: $icon-width;
+    &__main {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: globals.$spacing-medium;
+        gap: globals.$spacing-large;
+
+        &__contact,
+        &__extras {
+            flex: 1;
+        }
+
+        &__contact {
+            padding-right: globals.$spacing-large;
         }
     }
 
-    &__email {
-        @include globals.icon('at') {
-            width: $icon-width;
+    &__info {
+        display: flex;
+        align-items: baseline;
+        margin: 0;
+        padding: 5px 0;
+
+        &__label {
+            width: 150px;
+            font-weight: 600;
+        }
+
+        &__value {
+            flex: 1;
+            margin: 0;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+
+        &__empty {
+            color: globals.$text-light-color;
+            font-style: italic;
         }
     }
 
-    &__phone {
-        @include globals.icon('phone') {
-            width: $icon-width;
+    &__pseudo {
+        &__at {
+            color: globals.$text-soft-color;
         }
     }
 
-    &__section-title {
-        margin: globals.$spacing-large 0 globals.$spacing-small;
-
-        &--address {
-            @include globals.icon('envelope') {
-                width: $icon-width;
-            }
-        }
-
-        &--notes {
-            @include globals.icon('clipboard') {
-                width: $icon-width;
-            }
-        }
-
-        &--user {
-            @include globals.icon('user') {
-                width: $icon-width;
-            }
-        }
-
-        &--preparer {
-            @include globals.icon('dolly') {
-                width: $icon-width;
-            }
-        }
+    &__user-group {
+        margin-left: globals.$spacing-thin;
+        color: globals.$text-soft-color;
+        text-transform: lowercase;
     }
 
-    &__address {
-        white-space: pre-wrap;
+    &__user-edit-button {
+        margin-left: globals.$spacing-small;
     }
 
-    &__address,
-    &__note,
-    &__user {
-        margin-top: 0;
-        padding-left: $icon-width;
-        color: globals.$text-base-color;
-    }
-
-    &__note {
-        white-space: pre-wrap;
-    }
+    //
+    // - Responsive
+    //
 
     @media screen and (min-width: globals.$screen-tablet) {
-        flex-direction: row;
-        justify-content: flex-start;
+        &__main {
+            flex-direction: row;
+            justify-content: flex-start;
+        }
     }
 }

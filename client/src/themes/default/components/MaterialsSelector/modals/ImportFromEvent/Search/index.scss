@@ -1,0 +1,47 @@
+@use '~@/themes/default/style/globals';
+
+.ImportFromEventSearch {
+    width: 100%;
+
+    &__search {
+        display: flex;
+        justify-content: center;
+
+        &__input {
+            width: 300px;
+            border-radius: globals.$border-radius-normal 0 0 globals.$border-radius-normal;
+        }
+
+        &__button {
+            padding: 0.55rem 1.08rem;
+            border-radius: 0 globals.$border-radius-normal globals.$border-radius-normal 0;
+        }
+    }
+
+    &__response {
+        margin-top: globals.$spacing-large;
+    }
+
+    &__results {
+        padding-top: globals.$spacing-medium;
+        border-top: 1px solid globals.$divider-color;
+
+        &__list {
+            margin: 0;
+            padding: 0;
+        }
+
+        &__count {
+            color: globals.$text-light-color;
+            font-style: italic;
+            text-align: center;
+        }
+    }
+
+    &__no-result {
+        color: globals.$text-light-color;
+        font-size: 1.1rem;
+        font-style: italic;
+        text-align: center;
+    }
+}

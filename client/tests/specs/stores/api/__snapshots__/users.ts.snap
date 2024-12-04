@@ -7,7 +7,7 @@ exports[`Users Api all() parse the returned data correctly 1`] = `
       "email": "tester@robertmanager.net",
       "first_name": "Jean",
       "full_name": "Jean Fountain",
-      "group": "admin",
+      "group": "administration",
       "id": 1,
       "last_name": "Fountain",
       "phone": null,
@@ -17,7 +17,7 @@ exports[`Users Api all() parse the returned data correctly 1`] = `
       "email": "tester2@robertmanager.net",
       "first_name": "Roger",
       "full_name": "Roger Rabbit",
-      "group": "member",
+      "group": "management",
       "id": 2,
       "last_name": "Rabbit",
       "phone": null,
@@ -27,7 +27,7 @@ exports[`Users Api all() parse the returned data correctly 1`] = `
       "email": "nobody@robertmanager.net",
       "first_name": "?",
       "full_name": "?",
-      "group": "member",
+      "group": "management",
       "id": 3,
       "last_name": "?",
       "phone": null,
@@ -37,7 +37,7 @@ exports[`Users Api all() parse the returned data correctly 1`] = `
       "email": "visitor@robertmanager.net",
       "first_name": "Henry",
       "full_name": "Henry Berluc",
-      "group": "visitor",
+      "group": "readonly-planning-general",
       "id": 4,
       "last_name": "Berluc",
       "phone": "+33724000000",
@@ -47,7 +47,7 @@ exports[`Users Api all() parse the returned data correctly 1`] = `
       "email": "external@robertmanager.net",
       "first_name": "Caroline",
       "full_name": "Caroline Farol",
-      "group": "visitor",
+      "group": "readonly-planning-general",
       "id": 5,
       "last_name": "Farol",
       "phone": "+33786325500",
@@ -67,66 +67,106 @@ exports[`Users Api all() parse the returned data correctly 1`] = `
 
 exports[`Users Api create() parse the returned data correctly (with #1) 1`] = `
 {
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
   "email": "tester@robertmanager.net",
   "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
   "full_name": "Jean Fountain",
-  "group": "admin",
+  "group": "administration",
   "id": 1,
   "last_name": "Fountain",
+  "locality": "Megacity",
   "phone": null,
+  "postal_code": "1234",
   "pseudo": "test1",
+  "street": "1, somewhere av.",
 }
 `;
 
 exports[`Users Api create() parse the returned data correctly (with #2) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "tester2@robertmanager.net",
   "first_name": "Roger",
+  "full_address": null,
   "full_name": "Roger Rabbit",
-  "group": "member",
+  "group": "management",
   "id": 2,
   "last_name": "Rabbit",
+  "locality": null,
   "phone": null,
+  "postal_code": null,
   "pseudo": "test2",
+  "street": null,
 }
 `;
 
 exports[`Users Api create() parse the returned data correctly (with #3) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "nobody@robertmanager.net",
   "first_name": "?",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
   "full_name": "?",
-  "group": "member",
+  "group": "management",
   "id": 3,
   "last_name": "?",
+  "locality": "Wazzaville",
   "phone": null,
+  "postal_code": "88080",
   "pseudo": "nobody",
+  "street": "156 bis, avenue des tests poussés",
 }
 `;
 
 exports[`Users Api create() parse the returned data correctly (with #4) 1`] = `
 {
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
   "email": "visitor@robertmanager.net",
   "first_name": "Henry",
+  "full_address": null,
   "full_name": "Henry Berluc",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 4,
   "last_name": "Berluc",
+  "locality": null,
   "phone": "+33724000000",
+  "postal_code": null,
   "pseudo": "TheVisitor",
+  "street": null,
 }
 `;
 
 exports[`Users Api create() parse the returned data correctly (with #5) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "external@robertmanager.net",
   "first_name": "Caroline",
+  "full_address": null,
   "full_name": "Caroline Farol",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 5,
   "last_name": "Farol",
+  "locality": null,
   "phone": "+33786325500",
+  "postal_code": null,
   "pseudo": "caroline",
+  "street": null,
 }
 `;
 
@@ -174,209 +214,340 @@ exports[`Users Api getSettings() parse the returned data correctly 6`] = `
 
 exports[`Users Api one() parse the returned data correctly 1`] = `
 {
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
   "email": "tester@robertmanager.net",
   "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
   "full_name": "Jean Fountain",
-  "group": "admin",
+  "group": "administration",
   "id": 1,
   "last_name": "Fountain",
+  "locality": "Megacity",
   "phone": null,
+  "postal_code": "1234",
   "pseudo": "test1",
+  "street": "1, somewhere av.",
 }
 `;
 
 exports[`Users Api one() parse the returned data correctly 2`] = `
 {
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
   "email": "tester@robertmanager.net",
   "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
   "full_name": "Jean Fountain",
-  "group": "admin",
+  "group": "administration",
   "id": 1,
   "last_name": "Fountain",
+  "locality": "Megacity",
   "phone": null,
+  "postal_code": "1234",
   "pseudo": "test1",
+  "street": "1, somewhere av.",
 }
 `;
 
 exports[`Users Api one() parse the returned data correctly 3`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "tester2@robertmanager.net",
   "first_name": "Roger",
+  "full_address": null,
   "full_name": "Roger Rabbit",
-  "group": "member",
+  "group": "management",
   "id": 2,
   "last_name": "Rabbit",
+  "locality": null,
   "phone": null,
+  "postal_code": null,
   "pseudo": "test2",
+  "street": null,
 }
 `;
 
 exports[`Users Api one() parse the returned data correctly 4`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "nobody@robertmanager.net",
   "first_name": "?",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
   "full_name": "?",
-  "group": "member",
+  "group": "management",
   "id": 3,
   "last_name": "?",
+  "locality": "Wazzaville",
   "phone": null,
+  "postal_code": "88080",
   "pseudo": "nobody",
+  "street": "156 bis, avenue des tests poussés",
 }
 `;
 
 exports[`Users Api one() parse the returned data correctly 5`] = `
 {
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
   "email": "visitor@robertmanager.net",
   "first_name": "Henry",
+  "full_address": null,
   "full_name": "Henry Berluc",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 4,
   "last_name": "Berluc",
+  "locality": null,
   "phone": "+33724000000",
+  "postal_code": null,
   "pseudo": "TheVisitor",
+  "street": null,
 }
 `;
 
 exports[`Users Api one() parse the returned data correctly 6`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "external@robertmanager.net",
   "first_name": "Caroline",
+  "full_address": null,
   "full_name": "Caroline Farol",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 5,
   "last_name": "Farol",
+  "locality": null,
   "phone": "+33786325500",
+  "postal_code": null,
   "pseudo": "caroline",
+  "street": null,
 }
 `;
 
 exports[`Users Api restore() parse the returned data correctly (with #1) 1`] = `
 {
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
   "email": "tester@robertmanager.net",
   "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
   "full_name": "Jean Fountain",
-  "group": "admin",
+  "group": "administration",
   "id": 1,
   "last_name": "Fountain",
+  "locality": "Megacity",
   "phone": null,
+  "postal_code": "1234",
   "pseudo": "test1",
+  "street": "1, somewhere av.",
 }
 `;
 
 exports[`Users Api restore() parse the returned data correctly (with #2) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "tester2@robertmanager.net",
   "first_name": "Roger",
+  "full_address": null,
   "full_name": "Roger Rabbit",
-  "group": "member",
+  "group": "management",
   "id": 2,
   "last_name": "Rabbit",
+  "locality": null,
   "phone": null,
+  "postal_code": null,
   "pseudo": "test2",
+  "street": null,
 }
 `;
 
 exports[`Users Api restore() parse the returned data correctly (with #3) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "nobody@robertmanager.net",
   "first_name": "?",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
   "full_name": "?",
-  "group": "member",
+  "group": "management",
   "id": 3,
   "last_name": "?",
+  "locality": "Wazzaville",
   "phone": null,
+  "postal_code": "88080",
   "pseudo": "nobody",
+  "street": "156 bis, avenue des tests poussés",
 }
 `;
 
 exports[`Users Api restore() parse the returned data correctly (with #4) 1`] = `
 {
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
   "email": "visitor@robertmanager.net",
   "first_name": "Henry",
+  "full_address": null,
   "full_name": "Henry Berluc",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 4,
   "last_name": "Berluc",
+  "locality": null,
   "phone": "+33724000000",
+  "postal_code": null,
   "pseudo": "TheVisitor",
+  "street": null,
 }
 `;
 
 exports[`Users Api restore() parse the returned data correctly (with #5) 1`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "external@robertmanager.net",
   "first_name": "Caroline",
+  "full_address": null,
   "full_name": "Caroline Farol",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 5,
   "last_name": "Farol",
+  "locality": null,
   "phone": "+33786325500",
+  "postal_code": null,
   "pseudo": "caroline",
+  "street": null,
 }
 `;
 
 exports[`Users Api update() parse the returned data correctly 1`] = `
 {
+  "country": {
+    "code": "FR",
+    "id": 1,
+    "name": "France",
+  },
+  "country_id": 1,
   "email": "tester@robertmanager.net",
   "first_name": "Jean",
+  "full_address": "1, somewhere av.
+1234 Megacity",
   "full_name": "Jean Fountain",
-  "group": "admin",
+  "group": "administration",
   "id": 1,
   "last_name": "Fountain",
+  "locality": "Megacity",
   "phone": null,
+  "postal_code": "1234",
   "pseudo": "test1",
+  "street": "1, somewhere av.",
 }
 `;
 
 exports[`Users Api update() parse the returned data correctly 2`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "tester2@robertmanager.net",
   "first_name": "Roger",
+  "full_address": null,
   "full_name": "Roger Rabbit",
-  "group": "member",
+  "group": "management",
   "id": 2,
   "last_name": "Rabbit",
+  "locality": null,
   "phone": null,
+  "postal_code": null,
   "pseudo": "test2",
+  "street": null,
 }
 `;
 
 exports[`Users Api update() parse the returned data correctly 3`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "nobody@robertmanager.net",
   "first_name": "?",
+  "full_address": "156 bis, avenue des tests poussés
+88080 Wazzaville",
   "full_name": "?",
-  "group": "member",
+  "group": "management",
   "id": 3,
   "last_name": "?",
+  "locality": "Wazzaville",
   "phone": null,
+  "postal_code": "88080",
   "pseudo": "nobody",
+  "street": "156 bis, avenue des tests poussés",
 }
 `;
 
 exports[`Users Api update() parse the returned data correctly 4`] = `
 {
+  "country": {
+    "code": "CH",
+    "id": 2,
+    "name": "Suisse",
+  },
+  "country_id": 2,
   "email": "visitor@robertmanager.net",
   "first_name": "Henry",
+  "full_address": null,
   "full_name": "Henry Berluc",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 4,
   "last_name": "Berluc",
+  "locality": null,
   "phone": "+33724000000",
+  "postal_code": null,
   "pseudo": "TheVisitor",
+  "street": null,
 }
 `;
 
 exports[`Users Api update() parse the returned data correctly 5`] = `
 {
+  "country": null,
+  "country_id": null,
   "email": "external@robertmanager.net",
   "first_name": "Caroline",
+  "full_address": null,
   "full_name": "Caroline Farol",
-  "group": "visitor",
+  "group": "readonly-planning-general",
   "id": 5,
   "last_name": "Farol",
+  "locality": null,
   "phone": "+33786325500",
+  "postal_code": null,
   "pseudo": "caroline",
+  "street": null,
 }
 `;
 

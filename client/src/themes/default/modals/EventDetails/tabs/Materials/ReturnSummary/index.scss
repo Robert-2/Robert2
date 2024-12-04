@@ -2,24 +2,55 @@
 @use 'sass:color';
 
 .EventDetailsReturnSummary {
-    margin-bottom: globals.$spacing-medium;
-    padding-bottom: globals.$spacing-large;
-    border-bottom: 1px solid globals.$divider-color;
-    text-align: center;
+    $block: &;
 
-    &__title {
-        color: globals.$text-danger-color;
-        font-size: 1.3rem;
+    margin-bottom: globals.$spacing-medium;
+    padding: globals.$spacing-medium globals.$spacing-large;
+    border-radius: globals.$border-radius-normal;
+    background: globals.$bg-color-emphasis-success;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    &__all-ok {
-        margin-bottom: globals.$spacing-medium;
+    &__title {
+        margin: 0;
         color: globals.$text-success-color;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        font-weight: 500;
     }
 
     &__list {
-        padding: 0;
+        width: 100%;
+        margin-top: globals.$spacing-medium;
         text-align: left;
+        border-collapse: collapse;
+    }
+
+    &--centered {
+        text-align: center;
+
+        #{$block}__header {
+            justify-content: center;
+        }
+    }
+
+    //
+    // - State: Avec problèmes.
+    //
+
+    &--has-problems {
+        background-color: globals.$bg-color-emphasis-danger;
+        color: globals.$color-emphasis-danger-base;
+
+        #{$block}__title {
+            color: globals.$color-emphasis-danger-base;
+
+            @include globals.icon('exclamation-triangle') {
+                margin-right: globals.$spacing-small;
+            }
+        }
     }
 }

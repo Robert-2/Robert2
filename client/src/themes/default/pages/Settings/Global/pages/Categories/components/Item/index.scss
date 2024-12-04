@@ -1,0 +1,70 @@
+@use '~@/themes/default/style/globals';
+
+.CategoriesGlobalSettingsItem {
+    $block: &;
+
+    max-width: 470px;
+    margin: 5px;
+    padding: globals.$spacing-large;
+    border-radius: globals.$border-radius-large;
+    background: globals.$bg-color-emphasis;
+    list-style: none;
+
+    &__subcategories {
+        margin: 0;
+        padding: 0;
+    }
+
+    &__category,
+    &__subcategory {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+
+        &__name {
+            flex: 1;
+            color: globals.$text-base-color;
+        }
+
+        &__actions {
+            display: flex;
+            gap: globals.$spacing-small;
+        }
+
+        &__dropdown-action {
+            min-width: 280px;
+            margin: 0 0 3px;
+            list-style: none;
+
+            &__button {
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
+        }
+    }
+
+    &__category {
+        &__name {
+            font-size: 1.4rem;
+        }
+    }
+
+    &__subcategory {
+        list-style: none;
+
+        &__name {
+            @include globals.icon('arrow-right') {
+                margin-right: 8px;
+            }
+        }
+
+        &__actions {
+            min-height: 25px;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        margin: globals.$spacing-medium;
+    }
+}

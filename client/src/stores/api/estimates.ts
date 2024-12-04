@@ -9,14 +9,21 @@ import type { SchemaInfer } from '@/utils/validation';
 // -
 // ------------------------------------------------------
 
+const EstimateTaxSchema = z.strictObject({
+    name: z.string(),
+    is_rate: z.boolean(),
+    value: z.decimal(),
+    total: z.decimal(),
+});
+
 export const EstimateSchema = z.strictObject({
     id: z.number(),
     date: z.datetime(),
     url: z.string(),
-    discount_rate: z.decimal(),
     total_without_taxes: z.decimal(),
+    total_taxes: z.lazy(() => EstimateTaxSchema.array()),
     total_with_taxes: z.decimal(),
-    currency: z.string(),
+    currency: z.currency(),
 });
 
 // ------------------------------------------------------

@@ -25,7 +25,7 @@ export type SortableParams = {
      */
     // TODO: Modifier ça pour quelque chose du genre : `{ direction: Direction }`.
     //       (il faudra adapter le component de tableau qui utilise cette notation obsolète).
-    ascending?: 0 | 1,
+    ascending?: 0 | 1 | boolean,
 };
 
 export type PaginationParams = {
@@ -52,38 +52,6 @@ export type ListingParams = (
     & SortableParams
     & PaginationParams
 );
-
-//
-// - Types liés aux imports.
-//
-
-export type CsvDelimiter = ',' | ';' | ':' | `\t`;
-
-export type CsvMapping = Record<string, string | null>;
-
-export type CsvImport<T extends CsvMapping> = {
-    mapping: T,
-    file: File,
-    delimiter: CsvDelimiter,
-};
-
-export type CsvColumnError<T extends CsvMapping = CsvMapping> = {
-    field: keyof T | string,
-    value: string | null,
-    error: string,
-};
-
-export type CsvImportError<T extends CsvMapping = CsvMapping> = {
-    line: number,
-    message: string,
-    errors: Array<CsvColumnError<T>>,
-};
-
-export type CsvImportResults<T extends CsvMapping = CsvMapping> = {
-    total: number,
-    success: number,
-    errors: Array<CsvImportError<T>>,
-};
 
 //
 // - Enveloppes.

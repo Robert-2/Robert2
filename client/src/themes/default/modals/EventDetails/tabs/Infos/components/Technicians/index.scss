@@ -1,0 +1,31 @@
+@use '~@/themes/default/style/globals';
+
+.EventDetailsTechnicians {
+    font-size: 1.2rem;
+
+    &__nobody {
+        color: globals.$text-danger-color;
+    }
+
+    &__list {
+        &__label {
+            margin-right: globals.$spacing-thin;
+
+            &__icon {
+                width: 1.5rem;
+                margin-right: globals.$spacing-thin;
+                text-align: center;
+            }
+        }
+
+        &__item + &__item {
+            padding-left: globals.$spacing-thin;
+
+            &::before {
+                content: '|';
+                margin-right: globals.$spacing-thin;
+                color: globals.$text-base-color;
+            }
+        }
+    }
+}

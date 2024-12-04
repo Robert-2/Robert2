@@ -3,11 +3,11 @@ import { defineComponent } from '@vue/composition-api';
 import store from '../../../store';
 
 import type { PropType } from '@vue/composition-api';
-import type { MaterialWithAvailability as Material } from '@/stores/api/materials';
+import type { SourceMaterial } from '../../../_types';
 
 type Props = {
     /** Le matériel avec ses quantités disponibles. */
-    material: Material,
+    material: SourceMaterial,
 };
 
 const MaterialsSelectorListAvailability = defineComponent({
@@ -26,7 +26,7 @@ const MaterialsSelectorListAvailability = defineComponent({
 
             // - Calcule la quantité disponible en prenant en compte la quantité utilisée par toutes les listes.
             //   (et pas seulement celle dans laquelle on est actuellement)
-            const availableQuantity = (material.available_quantity ?? 0) - quantityUsed;
+            const availableQuantity = (material.available_quantity ?? 0);
 
             // - Pour le calcul du surplus, on récupère le surplus en prenant en compte toutes les listes
             //   puis on fait en sorte que ça ne dépasse pas la quantité utilisée dans la liste courante.

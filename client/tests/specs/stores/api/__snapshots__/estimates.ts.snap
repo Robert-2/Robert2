@@ -2,12 +2,44 @@
 
 exports[`Estimates Api Schema 1`] = `
 {
-  "currency": "EUR",
+  "currency": /* Currency Instance => */ "EUR",
   "date": /* DateTime Instance => */ "2021-01-30 14:00:00",
-  "discount_rate": /* Decimal Instance => */ "5",
   "id": 1,
+  "total_taxes": [
+    {
+      "is_rate": true,
+      "name": "T.V.A.",
+      "total": /* Decimal Instance => */ "176.42",
+      "value": /* Decimal Instance => */ "20",
+    },
+    {
+      "is_rate": true,
+      "name": "T.V.A.",
+      "total": /* Decimal Instance => */ "0.23",
+      "value": /* Decimal Instance => */ "5",
+    },
+  ],
+  "total_with_taxes": /* Decimal Instance => */ "1063.29",
+  "total_without_taxes": /* Decimal Instance => */ "886.64",
+  "url": "http://loxya.test/estimates/1/pdf",
+}
+`;
+
+exports[`Estimates Api Schema 2`] = `
+{
+  "currency": /* Currency Instance => */ "EUR",
+  "date": /* DateTime Instance => */ "2021-01-30 14:00:00",
+  "id": 2,
+  "total_taxes": [
+    {
+      "is_rate": true,
+      "name": "T.V.A.",
+      "total": /* Decimal Instance => */ "110.06",
+      "value": /* Decimal Instance => */ "20",
+    },
+  ],
   "total_with_taxes": /* Decimal Instance => */ "660.34",
   "total_without_taxes": /* Decimal Instance => */ "550.28",
-  "url": "http://loxya.test/estimates/1/pdf",
+  "url": "http://loxya.test/estimates/2/pdf",
 }
 `;

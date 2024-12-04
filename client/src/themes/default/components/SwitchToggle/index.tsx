@@ -2,6 +2,7 @@ import './index.scss';
 import invariant from 'invariant';
 import { z } from '@/utils/validation';
 import { defineComponent } from '@vue/composition-api';
+import Icon from '@/themes/default/components/Icon';
 
 import type { SchemaInfer } from '@/utils/validation';
 import type { PropType } from '@vue/composition-api';
@@ -16,7 +17,9 @@ const SwitchOptionSchema = z.strictObject({
 
 export type SwitchOption = SchemaInfer<typeof SwitchOptionSchema>;
 
-type Props = {
+type SwitchOptions = [left: SwitchOption, right: SwitchOption];
+
+type Props<T extends SwitchOptions = SwitchOptions> = {
     /**
      * Le nom du champ (attribut `[name]`).
      *
@@ -34,7 +37,7 @@ type Props = {
      * Par défaut, le champ utilisera un mode minimaliste Oui / Non ou seule
      * l'option actuelle est affichée.
      */
-    options?: [left: SwitchOption, right: SwitchOption],
+    options?: T,
 
     /**
      * Valeur actuelle du champ.
@@ -42,7 +45,7 @@ type Props = {
      * - Si le champ est un switch de base entres une position "Oui" et "Non", un booléen est attendue.
      * - Sinon, s'il y a deux options customs, la valeur (= `value`) d'une des options est attendue.
      */
-    value: string | number | boolean,
+    value: T[number]['value'],
 
     /**
      * Le champ est-il désactivé ?
@@ -63,7 +66,7 @@ type Props = {
 };
 
 /** Un sélecteur entre deux options exclusives. */
-export default defineComponent({
+const SwitchToggle = defineComponent({
     name: 'SwitchToggle',
     inject: {
         'input.disabled': { default: { value: false } },
@@ -222,9 +225,14 @@ export default defineComponent({
                     </div>
                     {renderRightLabel()}
                     {!!(disabled && disabledReason) && (
-                        <span class="SwitchToggle__disabled-reason">
-                            ({__('locked')}: {disabledReason})
-                        </span>
+                        <Icon
+                            name="question-circle"
+                            class="SwitchToggle__disabled-reason"
+                            tooltip={{
+                                content: __('locked-reason', { reason: disabledReason }),
+                                placement: 'bottom',
+                            }}
+                        />
                     )}
                 </div>
                 {!!(name && !disabled) && (
@@ -242,3 +250,5 @@ export default defineComponent({
         );
     },
 });
+
+export default SwitchToggle;

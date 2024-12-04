@@ -1,0 +1,36 @@
+unexpected: "Une erreur inattendue s'est produite, veuillez ré-essayer."
+unexpected-while-saving: >-
+    Une erreur inattendue s'est produite lors de l'enregistrement, veuillez ré-essayer.
+unexpected-while-deleting: >-
+    Une erreur inattendue s'est produite lors de la suppression, veuillez ré-essayer.
+unexpected-while-restoring: >-
+    Une erreur inattendue s'est produite lors de la restauration, veuillez ré-essayer.
+unexpected-while-calculating: >-
+    Une erreur inattendue s'est produite lors du calcul, veuillez ré-essayer.
+unexpected-while-selecting: >-
+    Une erreur inattendue s'est produite lors de la sélection, veuillez ré-essayer.
+unexpected-while-fetching: >-
+    Une erreur inattendue s'est produite lors de la récupération des données.
+api-unreachable: >-
+    Le service est actuellement injoignable. Veuillez vérifier votre
+    connexion réseau et réessayer.
+
+record-not-found: Cet enregistrement n'existe pas.
+page-not-found: La page demandée n'existe pas ou plus.
+validation: Veuillez vérifier les données saisies dans le formulaire.
+unknown: Erreur inconnue.
+already-exists: Cet enregistrement existe déjà.
+critical: |-
+    Une erreur s'est produite, veuillez actualiser la page.
+    Si le problème persiste, veuillez contacter un administrateur.
+
+#
+# - Erreurs liées à un fichier.
+#
+
+file-upload-failed: Une erreur inattendue s'est produite lors de l'envoi du fichier.
+file-type-not-allowed: Ce type de fichier n'est pas pris en charge.
+file-size-exceeded: 'Fichier trop gros. Maximum {max}.'
+file-already-exists: Ce fichier est déjà présent dans la liste.
+file-not-a-valid-image: Le fichier ne fait pas partie des types d'image acceptés.
+file-unknown-error: Erreur inconnue survenue avec le fichier

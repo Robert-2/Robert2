@@ -119,7 +119,7 @@ type Data = {
 };
 
 /**
- * ButtonDropdown
+ * Bouton avec sous-actions.
  *
  * Affiche un bouton qui permet de déclencher une action principale, et un menu
  * déroulant contenant des actions secondaires.

@@ -1,12 +1,12 @@
 import DateTime from '@/utils/datetime';
 import { BookingEntity } from '@/stores/api/bookings';
 import getBookingIcon from '@/utils/getBookingIcon';
-import getTimelineBookingClassNames from './utils/getClassNames';
-import getTimelineBookingStatuses from './utils/getStatuses';
+import getTimelineBookingClassNames from './_utils/getClassNames';
+import getTimelineBookingStatuses from './_utils/getStatuses';
 
 import type { BookingExcerpt, BookingSummary } from '@/stores/api/bookings';
 import type { TimelineItem } from '@/themes/default/components/Timeline';
-import type { BookingTimelineStatus } from './utils/getStatuses';
+import type { BookingTimelineStatus } from './_utils/getStatuses';
 import type { BookingContext } from './_types';
 import type { I18nTranslate } from 'vuex-i18n';
 import type { RawColor } from '../color';
@@ -132,7 +132,7 @@ const formatTimelineBookingEvent = (
                 }
                 return `${beneficiary.full_name} (${beneficiary.company.legal_name})`;
             });
-            borrowerText = withIcon('address-book', `${__('for')} ${beneficiariesNames.join(', ')}`);
+            borrowerText = withIcon('address-book', __('for', { beneficiary: beneficiariesNames.join(', ') }));
         }
 
         // - Techniciens
@@ -201,8 +201,7 @@ const factory = (__: I18nTranslate, now: DateTime = DateTime.now(), options: For
 
         switch (booking.entity) {
             case BookingEntity.EVENT: {
-                const _context = context;
-                return formatTimelineBookingEvent(_context, __, now, options);
+                return formatTimelineBookingEvent(context, __, now, options);
             }
             default: {
                 throw new Error(`Unsupported entity ${(booking as any).entity}`);

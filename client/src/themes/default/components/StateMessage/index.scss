@@ -27,6 +27,16 @@
     }
 
     //
+    // - Variantes
+    //
+
+    &--small {
+        #{$block}__illustration {
+            width: 8rem;
+        }
+    }
+
+    //
     // - Responsive
     //
 

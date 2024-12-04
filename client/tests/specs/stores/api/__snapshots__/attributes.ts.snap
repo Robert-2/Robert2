@@ -13,6 +13,9 @@ exports[`Attributes Api all() parse the returned data correctly 1`] = `
         "name": "Son",
       },
     ],
+    "entities": [
+      "material",
+    ],
     "id": 1,
     "is_totalisable": true,
     "name": "Poids",
@@ -21,6 +24,9 @@ exports[`Attributes Api all() parse the returned data correctly 1`] = `
   },
   {
     "categories": [],
+    "entities": [
+      "material",
+    ],
     "id": 2,
     "max_length": null,
     "name": "Couleur",
@@ -37,6 +43,9 @@ exports[`Attributes Api all() parse the returned data correctly 1`] = `
         "name": "Son",
       },
     ],
+    "entities": [
+      "material",
+    ],
     "id": 3,
     "is_totalisable": true,
     "name": "Puissance",
@@ -45,15 +54,66 @@ exports[`Attributes Api all() parse the returned data correctly 1`] = `
   },
   {
     "categories": [],
+    "entities": [
+      "material",
+    ],
     "id": 4,
     "name": "Conforme",
     "type": "boolean",
   },
   {
     "categories": [],
+    "entities": [
+      "material",
+      "material",
+    ],
     "id": 5,
     "name": "Date d'achat",
     "type": "date",
+  },
+  {
+    "categories": [
+      {
+        "id": 3,
+        "name": "Transport",
+      },
+      {
+        "id": 4,
+        "name": "Décors",
+      },
+    ],
+    "entities": [
+      "material",
+    ],
+    "id": 6,
+    "name": "Nettoyé le",
+    "type": "date",
+  },
+  {
+    "categories": [
+      {
+        "id": 3,
+        "name": "Transport",
+      },
+    ],
+    "entities": [
+      "material",
+    ],
+    "id": 7,
+    "max_length": null,
+    "name": "Immatriculation",
+    "type": "string",
+  },
+  {
+    "categories": [],
+    "entities": [
+      "material",
+    ],
+    "id": 8,
+    "is_totalisable": true,
+    "name": "Prix d'achat",
+    "type": "float",
+    "unit": "€",
   },
 ]
 `;
@@ -70,6 +130,9 @@ exports[`Attributes Api create() parse the returned data correctly (with #1) 1`]
       "name": "Son",
     },
   ],
+  "entities": [
+    "material",
+  ],
   "id": 1,
   "is_totalisable": true,
   "name": "Poids",
@@ -81,6 +144,9 @@ exports[`Attributes Api create() parse the returned data correctly (with #1) 1`]
 exports[`Attributes Api create() parse the returned data correctly (with #2) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+  ],
   "id": 2,
   "max_length": null,
   "name": "Couleur",
@@ -100,6 +166,9 @@ exports[`Attributes Api create() parse the returned data correctly (with #3) 1`]
       "name": "Son",
     },
   ],
+  "entities": [
+    "material",
+  ],
   "id": 3,
   "is_totalisable": true,
   "name": "Puissance",
@@ -111,6 +180,9 @@ exports[`Attributes Api create() parse the returned data correctly (with #3) 1`]
 exports[`Attributes Api create() parse the returned data correctly (with #4) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+  ],
   "id": 4,
   "name": "Conforme",
   "type": "boolean",
@@ -120,9 +192,66 @@ exports[`Attributes Api create() parse the returned data correctly (with #4) 1`]
 exports[`Attributes Api create() parse the returned data correctly (with #5) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+    "material",
+  ],
   "id": 5,
   "name": "Date d'achat",
   "type": "date",
+}
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #6) 1`] = `
+{
+  "categories": [
+    {
+      "id": 3,
+      "name": "Transport",
+    },
+    {
+      "id": 4,
+      "name": "Décors",
+    },
+  ],
+  "entities": [
+    "material",
+  ],
+  "id": 6,
+  "name": "Nettoyé le",
+  "type": "date",
+}
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #7) 1`] = `
+{
+  "categories": [
+    {
+      "id": 3,
+      "name": "Transport",
+    },
+  ],
+  "entities": [
+    "material",
+  ],
+  "id": 7,
+  "max_length": null,
+  "name": "Immatriculation",
+  "type": "string",
+}
+`;
+
+exports[`Attributes Api create() parse the returned data correctly (with #8) 1`] = `
+{
+  "categories": [],
+  "entities": [
+    "material",
+  ],
+  "id": 8,
+  "is_totalisable": true,
+  "name": "Prix d'achat",
+  "type": "float",
+  "unit": "€",
 }
 `;
 
@@ -138,6 +267,9 @@ exports[`Attributes Api one() parse the returned data correctly (with #1) 1`] = 
       "name": "Son",
     },
   ],
+  "entities": [
+    "material",
+  ],
   "id": 1,
   "is_totalisable": true,
   "name": "Poids",
@@ -149,6 +281,9 @@ exports[`Attributes Api one() parse the returned data correctly (with #1) 1`] = 
 exports[`Attributes Api one() parse the returned data correctly (with #2) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+  ],
   "id": 2,
   "max_length": null,
   "name": "Couleur",
@@ -168,6 +303,9 @@ exports[`Attributes Api one() parse the returned data correctly (with #3) 1`] = 
       "name": "Son",
     },
   ],
+  "entities": [
+    "material",
+  ],
   "id": 3,
   "is_totalisable": true,
   "name": "Puissance",
@@ -179,6 +317,9 @@ exports[`Attributes Api one() parse the returned data correctly (with #3) 1`] = 
 exports[`Attributes Api one() parse the returned data correctly (with #4) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+  ],
   "id": 4,
   "name": "Conforme",
   "type": "boolean",
@@ -188,9 +329,66 @@ exports[`Attributes Api one() parse the returned data correctly (with #4) 1`] = 
 exports[`Attributes Api one() parse the returned data correctly (with #5) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+    "material",
+  ],
   "id": 5,
   "name": "Date d'achat",
   "type": "date",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #6) 1`] = `
+{
+  "categories": [
+    {
+      "id": 3,
+      "name": "Transport",
+    },
+    {
+      "id": 4,
+      "name": "Décors",
+    },
+  ],
+  "entities": [
+    "material",
+  ],
+  "id": 6,
+  "name": "Nettoyé le",
+  "type": "date",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #7) 1`] = `
+{
+  "categories": [
+    {
+      "id": 3,
+      "name": "Transport",
+    },
+  ],
+  "entities": [
+    "material",
+  ],
+  "id": 7,
+  "max_length": null,
+  "name": "Immatriculation",
+  "type": "string",
+}
+`;
+
+exports[`Attributes Api one() parse the returned data correctly (with #8) 1`] = `
+{
+  "categories": [],
+  "entities": [
+    "material",
+  ],
+  "id": 8,
+  "is_totalisable": true,
+  "name": "Prix d'achat",
+  "type": "float",
+  "unit": "€",
 }
 `;
 
@@ -206,6 +404,9 @@ exports[`Attributes Api update() parse the returned data correctly (with #1) 1`]
       "name": "Son",
     },
   ],
+  "entities": [
+    "material",
+  ],
   "id": 1,
   "is_totalisable": true,
   "name": "Poids",
@@ -217,6 +418,9 @@ exports[`Attributes Api update() parse the returned data correctly (with #1) 1`]
 exports[`Attributes Api update() parse the returned data correctly (with #2) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+  ],
   "id": 2,
   "max_length": null,
   "name": "Couleur",
@@ -236,6 +440,9 @@ exports[`Attributes Api update() parse the returned data correctly (with #3) 1`]
       "name": "Son",
     },
   ],
+  "entities": [
+    "material",
+  ],
   "id": 3,
   "is_totalisable": true,
   "name": "Puissance",
@@ -247,6 +454,9 @@ exports[`Attributes Api update() parse the returned data correctly (with #3) 1`]
 exports[`Attributes Api update() parse the returned data correctly (with #4) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+  ],
   "id": 4,
   "name": "Conforme",
   "type": "boolean",
@@ -256,8 +466,65 @@ exports[`Attributes Api update() parse the returned data correctly (with #4) 1`]
 exports[`Attributes Api update() parse the returned data correctly (with #5) 1`] = `
 {
   "categories": [],
+  "entities": [
+    "material",
+    "material",
+  ],
   "id": 5,
   "name": "Date d'achat",
   "type": "date",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #6) 1`] = `
+{
+  "categories": [
+    {
+      "id": 3,
+      "name": "Transport",
+    },
+    {
+      "id": 4,
+      "name": "Décors",
+    },
+  ],
+  "entities": [
+    "material",
+  ],
+  "id": 6,
+  "name": "Nettoyé le",
+  "type": "date",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #7) 1`] = `
+{
+  "categories": [
+    {
+      "id": 3,
+      "name": "Transport",
+    },
+  ],
+  "entities": [
+    "material",
+  ],
+  "id": 7,
+  "max_length": null,
+  "name": "Immatriculation",
+  "type": "string",
+}
+`;
+
+exports[`Attributes Api update() parse the returned data correctly (with #8) 1`] = `
+{
+  "categories": [],
+  "entities": [
+    "material",
+  ],
+  "id": 8,
+  "is_totalisable": true,
+  "name": "Prix d'achat",
+  "type": "float",
+  "unit": "€",
 }
 `;

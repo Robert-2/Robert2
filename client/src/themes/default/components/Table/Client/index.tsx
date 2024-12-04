@@ -4,6 +4,7 @@ import { defineComponent } from '@vue/composition-api';
 import generateUniqueId from 'lodash/uniqueId';
 import { initColumnsDisplay } from '../@utils';
 import { defaultSearcher } from './_utils';
+import { Variant } from '../@constants';
 
 import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
@@ -47,6 +48,29 @@ export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>>
 
     /** Les données du tableau. */
     data: Datum[],
+
+    /**
+     * Le nom de la clé contenant l'identifiant unique de chaque
+     * ligne dans le jeu de données.
+     *
+     * @default 'id'
+     */
+    uniqueKey?: string,
+
+    /**
+     * Variante de la présentation du tableau.
+     *
+     * Valeur acceptées:
+     * - `default`: Variante par défaut.
+     * - `minimalist`: Présentation minimaliste, sans fond ni séparateurs.
+     */
+    variant?: Variant,
+
+    /** Permet d'activer ou de désactiver la pagination. */
+    paginated?: boolean,
+
+    /** Permet d'activer ou de désactiver le redimensionnement du tableau. */
+    resizable?: boolean,
 
     /**
      * L'ordre dans lequel le tableau doit être triée initialement.
@@ -104,9 +128,29 @@ const ClientTable = defineComponent({
             type: Array as PropType<Props['columns']>,
             required: true,
         },
+        uniqueKey: {
+            type: String as PropType<Required<Props>['uniqueKey']>,
+            default: 'id',
+        },
         data: {
             type: Array as PropType<Props['data']>,
             required: true,
+        },
+        variant: {
+            type: String as PropType<Required<Props>['variant']>,
+            default: Variant.DEFAULT,
+            validator: (value: unknown) => (
+                typeof value === 'string' &&
+                Object.values(Variant).includes(value as any)
+            ),
+        },
+        paginated: {
+            type: Boolean as PropType<Required<Props>['paginated']>,
+            default: true,
+        },
+        resizable: {
+            type: Boolean as PropType<Required<Props>['resizable']>,
+            default: true,
         },
         defaultOrderBy: {
             type: [Object, String] as PropType<Props['defaultOrderBy']>,
@@ -242,10 +286,21 @@ const ClientTable = defineComponent({
             return initColumnsDisplay(this.name, columnsDisplay);
         },
 
+        shouldPersistState(): boolean {
+            return this.name !== undefined;
+        },
+
+        withColumnsSelectorInferred(): boolean {
+            const { shouldPersistState, withColumnsSelector } = this;
+            return withColumnsSelector ?? shouldPersistState;
+        },
+
         options(): ClientTableOptions {
             const {
-                name,
+                uniqueKey,
                 rowClass,
+                paginated,
+                resizable,
                 defaultOrderBy,
                 columnsHeadings,
                 columnsClasses,
@@ -255,14 +310,15 @@ const ClientTable = defineComponent({
                 columnsSearches,
                 columnsSorting,
                 columnsRenders,
-                withColumnsSelector,
+                shouldPersistState,
+                withColumnsSelectorInferred: withColumnsSelector,
             } = this;
 
-            const persistState = name !== undefined;
             const options: ClientTableOptions = {
-                columnsDropdown: withColumnsSelector ?? persistState,
-                preserveState: persistState,
-                saveState: persistState,
+                uniqueKey,
+                columnsDropdown: withColumnsSelector,
+                preserveState: shouldPersistState,
+                saveState: shouldPersistState,
                 sortable: columnsSortable,
                 filterable: (
                     columnsSearchable.length > 0
@@ -274,12 +330,18 @@ const ClientTable = defineComponent({
                 customSorting: columnsSorting,
                 filterByColumn: false,
                 filterAlgorithm: columnsSearches,
+                resizableColumns: resizable,
+                pagination: { show: paginated },
                 columnsDisplay,
                 columnsClasses,
                 rowClassCallback: (row: any): ClassValue => (
                     clsx('Table__row', typeof rowClass === 'function' ? rowClass(row) : rowClass)
                 ),
             };
+
+            if (!paginated) {
+                options.perPage = Infinity;
+            }
 
             if (defaultOrderBy !== undefined) {
                 options.orderBy = typeof defaultOrderBy === 'string'
@@ -343,14 +405,16 @@ const ClientTable = defineComponent({
             name,
             data,
             uniqueId,
+            variant,
             columnsKeys,
             columnsSearchable,
             options,
             handleRowClick,
+            withColumnsSelectorInferred: withColumnsSelector,
         } = this;
 
-        const className = ['Table', {
-            'Table--filterable': columnsSearchable.length > 0,
+        const className = ['Table', `Table--${variant}`, {
+            'Table--static': columnsSearchable.length === 0 && !withColumnsSelector,
         }];
 
         return (
@@ -368,5 +432,6 @@ const ClientTable = defineComponent({
     },
 });
 
+export { Variant };
 export type { Columns, Column };
 export default ClientTable;
