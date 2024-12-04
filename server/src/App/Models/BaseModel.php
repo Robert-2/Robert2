@@ -250,7 +250,7 @@ abstract class BaseModel extends Model
         );
 
         foreach ($data as $field => $value) {
-            if (is_array($value)) {
+            if (is_array($value) && Arr::isAssoc($value)) {
                 unset($data[$field]);
             }
         }

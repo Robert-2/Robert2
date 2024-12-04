@@ -93,7 +93,12 @@ final class EventExtra extends BaseModel implements Serializable
 
     public function checkTaxes($value)
     {
-        V::nullable(V::json())->check($value);
+        if (!is_array($value)) {
+            if (!V::nullable(V::json())->validate($value)) {
+                return false;
+            }
+            $value = $value !== null ? json_decode($value, true) : null;
+        }
 
         if ($value === null) {
             return true;
@@ -130,7 +135,7 @@ final class EventExtra extends BaseModel implements Serializable
                 })),
             )
         )));
-        return $schema->validate(json_decode($value, true));
+        return $schema->validate($value);
     }
 
     // ------------------------------------------------------

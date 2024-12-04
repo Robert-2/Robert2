@@ -217,8 +217,6 @@ final class AttributesTest extends ApiTestCase
         $this->client->put('/api/attributes/1', [
             'name' => 'Masse',
             'entities' => [
-                // FIXME: Si une seule valeur est passée dans ce tableau, ça plante.
-                AttributeEntity::MATERIAL->value,
                 AttributeEntity::MATERIAL->value,
             ],
             'type' => AttributeType::INTEGER->value,

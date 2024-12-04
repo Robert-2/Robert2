@@ -209,10 +209,9 @@ final class BeneficiariesTest extends ApiTestCase
         // - Test avec un sens ascendant.
         $this->client->get('/api/beneficiaries/1/bookings?direction=asc');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        // FIXME: Ce résultat est inversé, il faut trouver pourquoi.
         $this->assertResponsePaginatedData(2, [
-            EventsTest::data(5, Event::SERIALIZE_BOOKING_EXCERPT),
             EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
+            EventsTest::data(5, Event::SERIALIZE_BOOKING_EXCERPT),
         ]);
     }
 
