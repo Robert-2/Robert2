@@ -164,8 +164,6 @@ final class AttributeTest extends TestCase
         $result = Attribute::findOrFail(1)->edit([
             'name' => 'Masse',
             'entities' => [
-                // FIXME: Si une seule valeur est passée dans ce tableau, ça plante.
-                AttributeEntity::MATERIAL->value,
                 AttributeEntity::MATERIAL->value,
             ],
             'type' => AttributeType::INTEGER->value,

@@ -130,6 +130,15 @@ final class QueryAggregator
                 $unionQueries?->unionAll($query) ?? $query
             ));
 
+        // - Dans le cas ou il y a moins de deux queries, les `orderBy`
+        //   ci-dessous s'appliqueront directement sur la requête (ça
+        //   ne sera donc par un order d'union, mais un order normal).
+        //   On doit donc réinitialiser les `orderBy` déjà définis
+        //   sans quoi l'ordre de sera pas l'ordre voulu.
+        if ($this->queries->count() <= 1) {
+            $unionQueries->reorder();
+        }
+
         foreach ($this->orders as $order) {
             $unionQueries = $unionQueries->orderBy($order[0], $order[1]);
         }
