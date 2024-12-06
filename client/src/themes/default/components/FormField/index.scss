@@ -51,11 +51,13 @@
     }
 
     &__help {
+        color: globals.$text-soft-color;
         font-style: italic;
     }
 
     &__error {
         color: globals.$text-danger-color;
+        white-space: pre-line;
     }
 
     & + & {
@@ -99,14 +101,12 @@
         &--switch {
             display: flex;
             flex-flow: row wrap;
-            align-items: center;
 
             #{$block}__label {
                 text-align: right;
 
                 /* stylelint-disable declaration-no-important, order/properties-order -- Pour surcharger la mise en forme verticale */
-                padding: 0 globals.$input-padding-horizontal 0 0 !important;
-                align-self: auto !important;
+                padding: 3px globals.$input-padding-horizontal 0 0 !important;
                 /* stylelint-enable declaration-no-important */
             }
 

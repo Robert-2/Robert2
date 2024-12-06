@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Loxya\Tests;
 
+use Illuminate\Support\Carbon;
 use Loxya\Models\Attribute;
+use Loxya\Models\Enums\AttributeEntity;
+use Loxya\Models\Enums\AttributeType;
 
 final class AttributeTest extends TestCase
 {
@@ -19,15 +22,18 @@ final class AttributeTest extends TestCase
         $testData = [
             'id' => 6,
             'name' => 'Testing',
-            'type' => 'date',
+            'entities' => [
+                AttributeEntity::MATERIAL->value,
+            ],
+            'type' => AttributeType::DATE->value,
             'unit' => 'kg',
             'max_length' => 100,
             'is_totalisable' => false,
         ];
         $testValidation($testData, [
-            'unit' => ['Ce champ ne devrait pas être spécifié.'],
-            'max_length' => ['Ce champ ne devrait pas être spécifié.'],
-            'is_totalisable' => ['Ce champ ne devrait pas être spécifié.'],
+            'unit' => "Ce champ ne devrait pas être spécifié.",
+            'max_length' => "Ce champ ne devrait pas être spécifié.",
+            'is_totalisable' => "Ce champ ne devrait pas être spécifié.",
         ]);
 
         // - Si `max_length`, `unit` et `is_totalisable` sont à `null` pour les
@@ -39,11 +45,12 @@ final class AttributeTest extends TestCase
         $testData = [
             'id' => 6,
             'name' => 'Testing',
-            'type' => 'string',
+            'entities' => [AttributeEntity::MATERIAL->value],
+            'type' => AttributeType::STRING->value,
             'max_length' => 'NOT_A_NUMBER',
         ];
         $testValidation($testData, [
-            'max_length' => ['Ce champ ne peut contenir que des nombres.'],
+            'max_length' => "Ce champ doit contenir un nombre entier.",
         ]);
 
         // - Test `max_length`: Si valide pour les attributs de type `string` => Pas d'erreur.
@@ -54,18 +61,23 @@ final class AttributeTest extends TestCase
         $baseTestData = [
             'id' => 6,
             'name' => 'Testing',
+            'entities' => [AttributeEntity::MATERIAL->value],
             'unit' => 'TROP_LOOOOOOOOOOOOOONG',
             'is_totalisable' => true,
         ];
-        foreach (['float', 'integer'] as $type) {
+        $numericTypes = [
+            AttributeType::INTEGER->value,
+            AttributeType::FLOAT->value,
+        ];
+        foreach ($numericTypes as $type) {
             $testData = array_replace($baseTestData, compact('type'));
             $testValidation($testData, [
-                'unit' => ['1 caractères min., 8 caractères max.'],
+                'unit' => "1 caractères min., 8 caractères max.",
             ]);
         }
 
         // - Test `unit`: si valide pour les attributs de type `float` ou `integer` => Pas d'erreur.
-        foreach (['float', 'integer'] as $type) {
+        foreach ($numericTypes as $type) {
             $testData = array_replace($baseTestData, compact('type'), ['unit' => 'kg']);
             (new Attribute($testData))->validate();
         }
@@ -74,49 +86,102 @@ final class AttributeTest extends TestCase
         $baseTestData = [
             'id' => 6,
             'name' => 'Testing',
+            'entities' => [AttributeEntity::MATERIAL->value],
             'unit' => 'cm',
             'is_totalisable' => 'not-a-boolean',
         ];
-        foreach (['float', 'integer'] as $type) {
+        foreach ($numericTypes as $type) {
             $testData = array_replace($baseTestData, compact('type'));
             $testValidation($testData, [
-                'is_totalisable' => ['Ce champ doit être un booléen.'],
+                'is_totalisable' => "Ce champ doit être un booléen.",
             ]);
         }
 
         // - Test `is_totalisable`: si valide pour les attributs de type `float` ou `integer` => Pas d'erreur.
-        foreach (['float', 'integer'] as $type) {
+        foreach ($numericTypes as $type) {
             $testData = array_replace($baseTestData, compact('type'), ['is_totalisable' => true]);
             (new Attribute($testData))->validate();
         }
+
+        // - Tests `entities`: doit être un sous-ensemble des valeurs possibles.
+        $baseTestData = [
+            'id' => 6,
+            'name' => 'Testing',
+            'type' => AttributeType::STRING->value,
+        ];
+        $invalidSets = [
+            '',
+            [],
+            null,
+            ['not-recognized'],
+            ['material', 'not-recognized'],
+            ['material', 'material-unit', 'not-recognized'],
+        ];
+        foreach ($invalidSets as $invalidSet) {
+            $testData = array_replace($baseTestData, ['entities' => $invalidSet]);
+            $testValidation($testData, [
+                'entities' => "Ce champ est invalide.",
+            ]);
+        }
+
+        // - Test avec des valeurs et sous-ensembles valides.
+        $validValues = [
+            [AttributeEntity::MATERIAL->value],
+        ];
+        foreach ($validValues as $validValue) {
+            $testData = array_replace($baseTestData, ['entities' => $validValue]);
+            (new Attribute($testData))->validationErrors();
+        }
+    }
+
+    public function testNew(): void
+    {
+        Carbon::setTestNow(Carbon::create(2024, 11, 20, 13, 30, 0));
+
+        // - Crée une caractéristique spéciale
+        $result = Attribute::new([
+            'name' => 'Testing',
+            'entities' => [AttributeEntity::MATERIAL->value],
+            'type' => AttributeType::DATE->value,
+        ]);
+        $expected = [
+            'id' => 9,
+            'name' => 'Testing',
+            'entities' => [AttributeEntity::MATERIAL->value],
+            'type' => AttributeType::DATE->value,
+            'unit' => null,
+            'max_length' => null,
+            'is_totalisable' => null,
+            'created_at' => '2024-11-20 13:30:00',
+            'updated_at' => '2024-11-20 13:30:00',
+        ];
+        $this->assertEquals($expected, $result->toArray());
     }
 
     public function testEdit(): void
     {
-        // - Crée une caractéristique spéciale
-        $result = Attribute::new(['name' => 'Testing', 'type' => 'date']);
-        $expected = [
-            'id' => 6,
-            'name' => 'Testing',
-            'type' => 'date',
-            'unit' => null,
-            'max_length' => null,
-            'is_totalisable' => false,
-        ];
-        unset($result->created_at, $result->updated_at, $result->deleted_at);
-        $this->assertEquals($expected, $result->toArray());
-
         // - Modifie une caractéristique spéciale
-        $result = Attribute::staticEdit(1, [
+        $result = Attribute::findOrFail(1)->edit([
             'name' => 'Masse',
-            'type' => 'integer',
+            'entities' => [
+                AttributeEntity::MATERIAL->value,
+            ],
+            'type' => AttributeType::INTEGER->value,
             'unit' => 'g',
             'categories' => [3, 4],
             'is_totalisable' => false,
         ]);
+
         // - Le type ne doit pas avoir changé
-        $this->assertNotEquals('integer', $result->type);
+        $this->assertNotEquals(AttributeType::INTEGER->value, $result->type);
+
         // - Mais tout le reste doit avoir été mis à jour
+        $this->assertSame(
+            [
+                AttributeEntity::MATERIAL->value,
+            ],
+            $result->entities,
+        );
         $this->assertEquals('Masse', $result->name);
         $this->assertEquals('g', $result->unit);
         $this->assertFalse($result->is_totalisable);

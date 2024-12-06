@@ -6,7 +6,7 @@ $color: globals.$link-base-color !default;
 
 /// Marge entre les éléments internes du lien (texte, icône(s)).
 /// @type Number
-$internal-spacing: 0.385rem !default;
+$internal-spacing: globals.$spacing-small !default;
 
 //
 // - Hover

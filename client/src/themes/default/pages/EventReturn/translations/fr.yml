@@ -59,7 +59,7 @@ confirm-rollback-text: |
 confirm-rollback-with-broken-text: |
     Cela entraînera l'annulation de la soumission, comme si l'inventaire n'avait jamais été finalisé.
 
-    Notez que les quantités du matériel marquées comme cassés seront remis en stock, si les quantités disponibles le permettent.
+    Notez que les quantités du matériel marquées comme cassées seront remis en stock, si les quantités disponibles le permettent.
     Veillez à éditer la fiche de ces matériels pour ajuster les quantités cassées si nécessaire.
 
 saved: Inventaire sauvegardé

@@ -9,7 +9,7 @@ type Props = {
     /** L'événement dont on veut obtenir le footer d'inventaire de départ. */
     event: EventDetails,
 
-    /** Indique si l'inventaire de départ peut-être "terminée" ou non. */
+    /** Indique si l'inventaire de départ peut-être "terminé" ou non. */
     canTerminate: boolean,
 
     /** L'inventaire de départ est-il en cours de sauvegarde ? */
@@ -35,7 +35,7 @@ const EventDepartureFooter = defineComponent({
     },
     emits: ['save', 'terminate'],
     computed: {
-        isMaterialEditable(): boolean {
+        isEditable(): boolean {
             const { event } = this;
 
             return (
@@ -85,7 +85,7 @@ const EventDepartureFooter = defineComponent({
         const {
             __,
             isSaving,
-            isMaterialEditable,
+            isEditable,
             canTerminate,
             handleClickSave,
             handleClickTerminate,
@@ -111,7 +111,7 @@ const EventDepartureFooter = defineComponent({
                     tooltip={(
                         !canTerminate
                             ? (
-                                isMaterialEditable
+                                isEditable
                                     ? __('incomplete-inventory-editable-help')
                                     : __('incomplete-inventory-help')
                             )

@@ -1,0 +1,27 @@
+@use '~@/themes/default/style/globals';
+
+.CategoriesGlobalSettings {
+    height: 100%;
+
+    &__list {
+        @extend %reset-list;
+
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-mobile) {
+        &__list {
+            flex-flow: row wrap;
+        }
+
+        &__item {
+            flex: 1 0 350px;
+        }
+    }
+}

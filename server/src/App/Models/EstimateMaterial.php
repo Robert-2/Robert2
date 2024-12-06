@@ -4,25 +4,33 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Loxya\Models\Casts\AsDecimal;
+use Respect\Validation\Rules as Rule;
 use Respect\Validation\Validator as V;
 
 /**
  * Matériel dans un devis.
  *
- * @property ?int $id
+ * @property-read ?int $id
  * @property int $estimate_id
  * @property-read Estimate $estimate
  * @property int|null $material_id
  * @property-read Material|null $material
- * @property-read string $name
- * @property-read string $reference
+ * @property string $name
+ * @property string $reference
  * @property int $quantity
  * @property Decimal $unit_price
- * @property Decimal $total_price
- * @property Decimal|null $replacement_price
+ * @property Decimal|null $degressive_rate
+ * @property Decimal|null $unit_price_period
+ * @property Decimal $discount_rate
+ * @property array|null $taxes
+ * @property Decimal $total_without_discount
+ * @property Decimal $total_discount
+ * @property Decimal $total_without_taxes
+ * @property Decimal|null $unit_replacement_price
+ * @property Decimal|null $total_replacement_price
  * @property bool $is_hidden_on_bill
- * @property bool $is_discountable
  */
 final class EstimateMaterial extends BaseModel
 {
@@ -38,12 +46,18 @@ final class EstimateMaterial extends BaseModel
             'material_id' => V::custom([$this, 'checkMaterialId']),
             'name' => V::notEmpty()->length(2, 191),
             'reference' => V::notEmpty()->length(2, 64),
-            'quantity' => V::intVal()->min(1),
+            'quantity' => V::intVal()->min(1)->max(65_000),
             'unit_price' => V::custom([$this, 'checkAmount']),
-            'total_price' => V::custom([$this, 'checkAmount']),
-            'replacement_price' => V::optional(V::custom([$this, 'checkAmount'])),
-            'is_hidden_on_bill' => V::optional(V::boolType()),
-            'is_discountable' => V::optional(V::boolType()),
+            'degressive_rate' => V::custom([$this, 'checkDegressiveRate']),
+            'unit_price_period' => V::custom([$this, 'checkAmount']),
+            'discount_rate' => V::custom([$this, 'checkDiscountRate']),
+            'taxes' => V::custom([$this, 'checkTaxes']),
+            'total_without_discount' => V::custom([$this, 'checkAmount']),
+            'total_discount' => V::custom([$this, 'checkAmount']),
+            'total_without_taxes' => V::custom([$this, 'checkAmount']),
+            'unit_replacement_price' => V::custom([$this, 'checkReplacementPrice']),
+            'total_replacement_price' => V::custom([$this, 'checkReplacementPrice']),
+            'is_hidden_on_bill' => V::boolType(),
         ];
     }
 
@@ -55,29 +69,115 @@ final class EstimateMaterial extends BaseModel
 
     public function checkEstimateId($value)
     {
+        V::nullable(V::intVal())->check($value);
+
         // - L'identifiant du devis n'est pas encore défini, on skip.
         if (!$this->exists && $value === null) {
             return true;
         }
-        return Estimate::staticExists($value);
+
+        $estimate = Estimate::withTrashed()->find($value);
+        if (!$estimate) {
+            return false;
+        }
+
+        return !$this->exists || $this->isDirty('estimate_id')
+            ? !$estimate->trashed()
+            : true;
     }
 
     public function checkMaterialId($value)
     {
-        V::optional(V::numericVal())->check($value);
+        V::nullable(V::intVal())->check($value);
 
         if ($value === null) {
             return true;
         }
 
-        $material = Material::find($value);
-        if (!$material) {
-            return false;
+        return Material::withTrashed()->find($value) !== null;
+    }
+
+    public function checkDegressiveRate($value)
+    {
+        V::nullable(V::floatVal())->check($value);
+        $value = $value !== null ? Decimal::of($value) : null;
+
+        // - Le devis parent n'est pas récupérable, on est obligé
+        //   de faire une vérification peu précise.
+        if ($this->estimate === null) {
+            if ($value === null) {
+                return true;
+            }
+
+        // - Sinon, seuls les devis non legacy sont concernés.
+        } elseif ($this->estimate->is_legacy) {
+            return V::nullType();
         }
 
-        return !$this->exists || $this->isDirty('material_id')
-            ? !$material->trashed()
-            : true;
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(100_000) &&
+            $value->getScale() <= 2
+        );
+    }
+
+    public function checkDiscountRate($value)
+    {
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThanOrEqualTo(100) &&
+            $value->getScale() <= 4
+        );
+    }
+
+    public function checkTaxes($value)
+    {
+        if (!is_array($value)) {
+            if (!V::nullable(V::json())->validate($value)) {
+                return false;
+            }
+            $value = $value !== null ? json_decode($value, true) : null;
+        }
+
+        if ($value === null) {
+            return true;
+        }
+
+        // Note: S'il n'y a pas de taxes, le champ doit être à `null` et non un tableau vide.
+        $schema = V::arrayType()->notEmpty()->each(V::custom(static fn ($taxValue) => (
+            new Rule\KeySetStrict(
+                new Rule\Key('name', V::notEmpty()->length(1, 30)),
+                new Rule\Key('is_rate', V::boolType()),
+                new Rule\Key('value', V::custom(static function ($subValue) use ($taxValue) {
+                    V::floatVal()->check($subValue);
+                    $subValue = Decimal::of($subValue);
+
+                    $isValid = (
+                        $subValue->isGreaterThanOrEqualTo(0) &&
+                        $subValue->isLessThan(1_000_000_000_000) &&
+                        $subValue->getScale() <= 3
+                    );
+                    if (!$isValid) {
+                        return false;
+                    }
+
+                    $isRate = array_key_exists('is_rate', $taxValue) ? $taxValue['is_rate'] : null;
+                    if (!V::boolType()->validate($isRate)) {
+                        return true;
+                    }
+
+                    return $isRate
+                        // - Si c'est un pourcentage, il doit être inférieur ou égal à 100%.
+                        ? $subValue->isLessThanOrEqualTo(100)
+                        // - Sinon si ce n'est pas un pourcentage, la précision doit être à 2 décimales max.
+                        : $subValue->getScale() <= 2;
+                })),
+            )
+        )));
+        return $schema->validate($value);
     }
 
     public function checkAmount($value)
@@ -85,11 +185,29 @@ final class EstimateMaterial extends BaseModel
         V::floatVal()->check($value);
         $value = Decimal::of($value);
 
-        return (
+        $isValid = (
             $value->isGreaterThanOrEqualTo(0) &&
             $value->isLessThan(1_000_000_000_000) &&
             $value->getScale() <= 2
         );
+        return $isValid ?: 'invalid-positive-amount';
+    }
+
+    public function checkReplacementPrice($value)
+    {
+        if ($value === null) {
+            return true;
+        }
+
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        $isValid = (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(1_000_000_000_000) &&
+            $value->getScale() <= 2
+        );
+        return $isValid ?: 'invalid-positive-amount';
     }
 
     // ------------------------------------------------------
@@ -98,13 +216,13 @@ final class EstimateMaterial extends BaseModel
     // -
     // ------------------------------------------------------
 
-    public function estimate()
+    public function estimate(): BelongsTo
     {
         return $this->belongsTo(Estimate::class)
             ->withTrashed();
     }
 
-    public function material()
+    public function material(): BelongsTo
     {
         return $this->belongsTo(Material::class)
             ->withTrashed();
@@ -125,11 +243,33 @@ final class EstimateMaterial extends BaseModel
         'reference' => 'string',
         'quantity' => 'integer',
         'unit_price' => AsDecimal::class,
-        'total_price' => AsDecimal::class,
-        'replacement_price' => AsDecimal::class,
+        'degressive_rate' => AsDecimal::class,
+        'unit_price_period' => AsDecimal::class,
+        'discount_rate' => AsDecimal::class,
+        'taxes' => 'array',
+        'total_without_discount' => AsDecimal::class,
+        'total_discount' => AsDecimal::class,
+        'total_without_taxes' => AsDecimal::class,
+        'unit_replacement_price' => AsDecimal::class,
+        'total_replacement_price' => AsDecimal::class,
         'is_hidden_on_bill' => 'boolean',
-        'is_discountable' => 'boolean',
     ];
+
+    public function getTaxesAttribute($value): array
+    {
+        $taxes = $this->castAttribute('taxes', $value);
+        if ($taxes === null) {
+            return [];
+        }
+
+        return array_map(
+            static fn ($tax) => array_replace($tax, [
+                'value' => Decimal::of($tax['value'])
+                    ->toScale($tax['is_rate'] ? 3 : 2),
+            ]),
+            $taxes,
+        );
+    }
 
     // ------------------------------------------------------
     // -
@@ -143,9 +283,22 @@ final class EstimateMaterial extends BaseModel
         'reference',
         'quantity',
         'unit_price',
-        'total_price',
-        'replacement_price',
+        'degressive_rate',
+        'unit_price_period',
+        'discount_rate',
+        'taxes',
+        'total_without_discount',
+        'total_discount',
+        'total_without_taxes',
+        'unit_replacement_price',
+        'total_replacement_price',
         'is_hidden_on_bill',
-        'is_discountable',
     ];
+
+    public function setTaxesAttribute(mixed $value): void
+    {
+        $value = is_array($value) && empty($value) ? null : $value;
+        $value = $value !== null ? $this->castAttributeAsJson('taxes', $value) : null;
+        $this->attributes['taxes'] = $value;
+    }
 }

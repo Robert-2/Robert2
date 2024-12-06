@@ -1,3 +1,4 @@
+@use '~@/themes/default/style/globals';
 @use './variables' as *;
 
 .Tabs {
@@ -17,6 +18,7 @@
         display: flex;
         align-items: flex-start;
         justify-content: flex-end;
+        gap: globals.$spacing-small;
     }
 
     &__panel {

@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Loxya\Tests\Fixtures;
 
+use Illuminate\Support\Collection;
 use Loxya\Config;
+use Loxya\Support\Arr;
 
 final class Dataseed
 {
@@ -81,7 +83,14 @@ final class Dataseed
         if ($value === null) {
             $value = "NULL";
         } elseif (is_array($value)) {
-            $value = sprintf('"%s"', addslashes(json_encode($value)));
+            $isConstantArray = !Arr::isList($value) || empty($value) ? false : (
+                (new Collection($value))->every(
+                    static fn ($v) => is_string($v)
+                )
+            );
+            $value = $isConstantArray
+                ? sprintf('"%s"', implode(',', $value))
+                : sprintf('"%s"', addslashes(json_encode($value)));
         } elseif (is_bool($value)) {
             $value = sprintf('%s', $value ? 1 : 0);
         } else {

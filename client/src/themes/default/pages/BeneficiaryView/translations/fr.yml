@@ -21,7 +21,7 @@ billing:
     no-invoices: Aucune facture émise pour ce bénéficiaire.
     invoices-title: Factures
     invoices-count: ["{count} facture", "{count} factures"]
-    invoices-total-excl-tax: Total {amount} H.T.
+    invoices-total-excl-tax: "Total H.T.\_: {amount}"
 
 borrowings:
     title: Emprunts ({count})

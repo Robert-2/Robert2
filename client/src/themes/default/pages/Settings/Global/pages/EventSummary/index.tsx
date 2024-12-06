@@ -13,7 +13,7 @@ import type { Settings } from '@/stores/api/settings';
 
 type Data = {
     isSaving: boolean,
-    validationErrors: Record<string, string[]> | null,
+    validationErrors: Record<string, string> | null,
     values: (
         & Omit<Settings['eventSummary'], 'customText'>
         & {
@@ -25,7 +25,7 @@ type Data = {
     ),
 };
 
-/** Page des paramètres des fiches de sortie des événements. */
+/** Page des paramètres des fiches de sortie des événements / réservations. */
 const EventSummaryGlobalSettings = defineComponent({
     name: 'EventSummaryGlobalSettings',
     data(): Data {
@@ -121,7 +121,7 @@ const EventSummaryGlobalSettings = defineComponent({
                         <FormField
                             type="switch"
                             label="page.settings.event-summary.display-legal-numbers"
-                            errors={validationErrors?.['eventSummary.showLegalNumbers']}
+                            error={validationErrors?.['eventSummary.showLegalNumbers']}
                             v-model={values.showLegalNumbers}
                         />
                     </Fieldset>
@@ -130,7 +130,7 @@ const EventSummaryGlobalSettings = defineComponent({
                             type="select"
                             label="page.settings.event-summary.display-mode"
                             options={listModeOptions}
-                            errors={validationErrors?.['eventSummary.materialDisplayMode']}
+                            error={validationErrors?.['eventSummary.materialDisplayMode']}
                             v-model={values.materialDisplayMode}
                             placeholder={false}
                         />
@@ -138,28 +138,28 @@ const EventSummaryGlobalSettings = defineComponent({
                             type="switch"
                             class="EventSummaryGlobalSettings__switch"
                             label="page.settings.event-summary.display-pictures"
-                            errors={validationErrors?.['eventSummary.showPictures']}
+                            error={validationErrors?.['eventSummary.showPictures']}
                             v-model={values.showPictures}
                         />
                         <FormField
                             type="switch"
                             class="EventSummaryGlobalSettings__switch"
                             label="page.settings.event-summary.display-replacement-prices"
-                            errors={validationErrors?.['eventSummary.showReplacementPrices']}
+                            error={validationErrors?.['eventSummary.showReplacementPrices']}
                             v-model={values.showReplacementPrices}
                         />
                         <FormField
                             type="switch"
                             class="EventSummaryGlobalSettings__switch"
                             label="page.settings.event-summary.display-descriptions"
-                            errors={validationErrors?.['eventSummary.showDescriptions']}
+                            error={validationErrors?.['eventSummary.showDescriptions']}
                             v-model={values.showDescriptions}
                         />
                         <FormField
                             type="switch"
                             class="EventSummaryGlobalSettings__switch"
                             label="page.settings.event-summary.display-tags"
-                            errors={validationErrors?.['eventSummary.showTags']}
+                            error={validationErrors?.['eventSummary.showTags']}
                             v-model={values.showTags}
                         />
                     </Fieldset>
@@ -167,14 +167,14 @@ const EventSummaryGlobalSettings = defineComponent({
                         <FormField
                             type="text"
                             label="page.settings.event-summary.custom-text-title"
-                            errors={validationErrors?.['eventSummary.customText.title']}
+                            error={validationErrors?.['eventSummary.customText.title']}
                             v-model={values.customText.title}
                         />
                         <FormField
                             type="textarea"
                             label="page.settings.event-summary.custom-text-content"
                             rows={10}
-                            errors={validationErrors?.['eventSummary.customText.content']}
+                            error={validationErrors?.['eventSummary.customText.content']}
                             v-model={values.customText.content}
                         />
                     </Fieldset>

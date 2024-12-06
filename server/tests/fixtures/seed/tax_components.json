@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "tax_id": 4,
+        "name": "T.V.A.",
+        "is_rate": true,
+        "value": "20.000"
+    },
+    {
+        "id": 2,
+        "tax_id": 4,
+        "name": "Éco-participation",
+        "is_rate": false,
+        "value": "2.00"
+    },
+    {
+        "id": 3,
+        "tax_id": 5,
+        "name": "TPS",
+        "is_rate": true,
+        "value": "5.000"
+    },
+    {
+        "id": 4,
+        "tax_id": 5,
+        "name": "TVQ",
+        "is_rate": true,
+        "value": "9.975"
+    }
+]

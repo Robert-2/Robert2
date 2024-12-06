@@ -39,6 +39,10 @@ final class SettingTest extends TestCase
             'returnInventory' => [
                 'mode' => 'start-empty',
             ],
+            'billing' => [
+                'defaultTax' => 1,
+                'defaultDegressiveRate' => 1,
+            ],
         ];
         $this->assertSameCanonicalize($expected, $result);
 
@@ -70,6 +74,10 @@ final class SettingTest extends TestCase
             'returnInventory' => [
                 'mode' => 'start-empty',
             ],
+            'billing' => [
+                'defaultTax' => 1,
+                'defaultDegressiveRate' => 1,
+            ],
         ];
         $this->assertSameCanonicalize($expected, $result);
     }
@@ -78,6 +86,14 @@ final class SettingTest extends TestCase
     {
         $result = Setting::get()->toArray();
         $expected = [
+            [
+                'key' => 'billing.defaultDegressiveRate',
+                'value' => 1,
+            ],
+            [
+                'key' => 'billing.defaultTax',
+                'value' => 1,
+            ],
             [
                 'key' => 'calendar.event.showBorrower',
                 'value' => false,
@@ -135,7 +151,7 @@ final class SettingTest extends TestCase
                 'value' => 'start-empty',
             ],
         ];
-        $this->assertSame($expected, $result);
+        $this->assertSameCanonicalize($expected, $result);
     }
 
     public function testGetWithKey(): void
@@ -169,21 +185,21 @@ final class SettingTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testUpdateBadKey(): void
+    public function testBulkEditBadKey(): void
     {
         $this->expectException(ValidationException::class);
-        Setting::staticEdit(null, ['inexistant' => 'some-text']);
+        Setting::bulkEdit(['inexistant' => 'some-text']);
     }
 
-    public function testUpdateBadValue(): void
+    public function testBulkEditBadValue(): void
     {
         $this->expectException(ValidationException::class);
-        Setting::staticEdit(null, ['eventSummary.materialDisplayMode' => 'not-valid']);
+        Setting::bulkEdit(['eventSummary.materialDisplayMode' => 'not-valid']);
     }
 
-    public function testUpdate(): void
+    public function testBulkEdit(): void
     {
-        Setting::staticEdit(null, [
+        Setting::bulkEdit([
             'eventSummary.materialDisplayMode' => 'flat',
             'eventSummary.customText.title' => 'test',
             'eventSummary.customText.content' => null,
@@ -195,6 +211,8 @@ final class SettingTest extends TestCase
             'calendar.event.showLocation' => false,
             'calendar.event.showBorrower' => true,
             'calendar.public.displayedPeriod' => 'both',
+            'billing.defaultDegressiveRate' => 3,
+            'billing.defaultTax' => 2,
         ]);
         $expected = [
             'eventSummary' => [
@@ -222,6 +240,10 @@ final class SettingTest extends TestCase
             ],
             'returnInventory' => [
                 'mode' => 'start-empty',
+            ],
+            'billing' => [
+                'defaultTax' => 2,
+                'defaultDegressiveRate' => 3,
             ],
         ];
         $this->assertEquals($expected, Setting::getList());

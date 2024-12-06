@@ -19,7 +19,7 @@ type Data = {
 
 /**
  * Page des paramètres des inventaires de départ / sortie
- * des événements.
+ * des événements / réservations.
  */
 const InventoriesGlobalSettings = defineComponent({
     name: 'InventoriesGlobalSettings',
@@ -105,7 +105,7 @@ const InventoriesGlobalSettings = defineComponent({
                             type="radio"
                             name="returnInventory.mode"
                             label={__('page.settings.inventories.return.fill-mode.label')}
-                            errors={validationErrors?.['returnInventory.mode']}
+                            error={validationErrors?.['returnInventory.mode']}
                             v-model={values.returnInventory.mode}
                             options={returnInventoryModeOptions}
                         />

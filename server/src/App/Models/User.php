@@ -8,13 +8,15 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Enums\BookingViewMode;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Support\Arr;
 use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
@@ -29,6 +31,12 @@ use Respect\Validation\Validator as V;
  * @property-read string $full_name
  * @property string $email
  * @property-read string|null $phone
+ * @property-read string|null $street
+ * @property-read string|null $postal_code
+ * @property-read string|null $locality
+ * @property-read int|null $country_id
+ * @property-read Country|null $country
+ * @property-read string|null $full_address
  * @property string $group
  * @property string $password
  * @property string $language
@@ -37,9 +45,9 @@ use Respect\Validation\Validator as V;
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
- * @property-read Person $person
- * @property-read Beneficiary $beneficiary
- * @property-read Technician $technician
+ * @property-read Person|null $person
+ * @property-read Beneficiary|null $beneficiary
+ * @property-read Technician|null $technician
  * @property-read Collection<array-key, Event> $events
  * @property-read array<string, mixed> $settings
  *
@@ -48,9 +56,10 @@ use Respect\Validation\Validator as V;
 final class User extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletable;
+    use SoftDeletes;
 
     // - Types de sérialisation.
+    public const SERIALIZE_SUMMARY = 'summary';
     public const SERIALIZE_DEFAULT = 'default';
     public const SERIALIZE_DETAILS = 'details';
     public const SERIALIZE_SETTINGS = 'settings';
@@ -69,17 +78,13 @@ final class User extends BaseModel implements Serializable
         $this->validation = [
             'pseudo' => V::custom([$this, 'checkPseudo']),
             'email' => V::custom([$this, 'checkEmail']),
-            'group' => V::notEmpty()->anyOf(
-                V::equals(Group::ADMIN),
-                V::equals(Group::MEMBER),
-                V::equals(Group::VISITOR),
-            ),
+            'group' => V::custom([$this, 'checkGroup']),
             'password' => V::notEmpty()->length(4, 191),
-            'language' => V::optional(V::anyOf(
+            'language' => V::nullable(V::anyOf(
                 V::equals('en'),
                 V::equals('fr'),
             )),
-            'default_bookings_view' => V::optional(V::anyOf(
+            'default_bookings_view' => V::nullable(V::anyOf(
                 V::equals(BookingViewMode::CALENDAR->value),
                 V::equals(BookingViewMode::LISTING->value),
             )),
@@ -110,6 +115,19 @@ final class User extends BaseModel implements Serializable
         return !$alreadyExists ?: 'user-pseudo-already-in-use';
     }
 
+    public function checkGroup($value)
+    {
+        return V::create()
+            ->notEmpty()
+            ->anyOf(
+                V::equals(Group::ADMINISTRATION),
+                V::equals(Group::MANAGEMENT),
+                V::equals(Group::READONLY_PLANNING_GENERAL),
+                V::equals(Group::READONLY_PLANNING_SELF),
+            )
+            ->validate($value);
+    }
+
     public function checkEmail($value)
     {
         V::notEmpty()
@@ -134,12 +152,12 @@ final class User extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function person()
+    public function person(): HasOne
     {
         return $this->hasOne(Person::class);
     }
 
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class)
             ->orderBy('mobilization_start_date');
@@ -174,50 +192,134 @@ final class User extends BaseModel implements Serializable
         'deleted_at' => 'immutable_datetime',
     ];
 
-    public function getFirstNameAttribute(): ?string
+    public function getFirstNameAttribute(): string
     {
         if (!$this->person) {
-            return null;
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
         }
         return $this->person->first_name;
     }
 
-    public function getLastNameAttribute(): ?string
+    public function getLastNameAttribute(): string
     {
         if (!$this->person) {
-            return null;
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
         }
         return $this->person->last_name;
     }
 
-    public function getFullNameAttribute(): ?string
+    public function getFullNameAttribute(): string
     {
         if (!$this->person) {
-            return null;
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
         }
         return $this->person->full_name;
     }
 
-    public function getPhoneAttribute(): ?string
+    public function getPhoneAttribute(): string|null
     {
         if (!$this->person) {
-            return null;
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
         }
         return $this->person->phone;
     }
 
-    public function getBeneficiaryAttribute(): ?Beneficiary
+    public function getStreetAttribute(): string|null
     {
         if (!$this->person) {
-            return null;
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
+        }
+        return $this->person->street;
+    }
+
+    public function getPostalCodeAttribute(): string|null
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
+        }
+        return $this->person->postal_code;
+    }
+
+    public function getLocalityAttribute(): string|null
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
+        }
+        return $this->person->locality;
+    }
+
+    public function getCountryIdAttribute(): int|null
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
+        }
+        return $this->person->country_id;
+    }
+
+    public function getCountryAttribute(): Country|null
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
+        }
+        return $this->person->country;
+    }
+
+    public function getFullAddressAttribute(): string|null
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The beneficiary\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
+        }
+        return $this->person->full_address;
+    }
+
+    public function getBeneficiaryAttribute(): Beneficiary|null
+    {
+        if (!$this->person) {
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
         }
         return $this->person->beneficiary;
     }
 
-    public function getTechnicianAttribute(): ?Technician
+    public function getTechnicianAttribute(): Technician|null
     {
         if (!$this->person) {
-            return null;
+            throw new \LogicException(
+                'The user\'s related person is missing, ' .
+                'this relation should always be defined.',
+            );
         }
         return $this->person->technician;
     }
@@ -277,9 +379,49 @@ final class User extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function hasAccessToPark(int $parkId): bool
+    public function edit(array $data): static
     {
-        return true;
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        } else {
+            unset($data['password']);
+        }
+
+        if (!$this->exists && !isset($data['language'])) {
+            $data['language'] = Config::get('defaultLang');
+        }
+
+        $personData = $data['person'] ?? [];
+        unset($data['person']);
+
+        return dbTransaction(function () use ($data, $personData) {
+            $hasFailed = false;
+            $validationErrors = [];
+
+            try {
+                $this->fill($data)->save();
+                $personData['email'] = $this->email;
+            } catch (ValidationException $e) {
+                $validationErrors = $e->getValidationErrors();
+                $hasFailed = true;
+            }
+
+            // - Personne
+            try {
+                Person::updateOrCreate(['user_id' => $this->id], $personData);
+            } catch (ValidationException $e) {
+                $hasFailed = true;
+                $validationErrors = array_merge($validationErrors, [
+                    'person' => $e->getValidationErrors(),
+                ]);
+            }
+
+            if ($hasFailed) {
+                throw new ValidationException($validationErrors);
+            }
+
+            return $this->refresh();
+        });
     }
 
     // ------------------------------------------------------
@@ -306,57 +448,6 @@ final class User extends BaseModel implements Serializable
         return static::where('email', $email)->first();
     }
 
-    public static function staticEdit($id = null, array $data = []): static
-    {
-        if ($id && !static::staticExists($id)) {
-            throw (new ModelNotFoundException())
-                ->setModel(self::class, $id);
-        }
-
-        if (isset($data['password']) && !empty($data['password'])) {
-            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        } else {
-            unset($data['password']);
-        }
-
-        if (!$id && !isset($data['language'])) {
-            $data['language'] = Config::get('defaultLang');
-        }
-
-        $personData = $data['person'] ?? [];
-        unset($data['person']);
-
-        return dbTransaction(static function () use ($id, $data, $personData) {
-            $user = null;
-            $userId = $id;
-            $hasFailed = false;
-            $validationErrors = [];
-
-            try {
-                $user = static::updateOrCreate(compact('id'), $data);
-                $userId = $user->id;
-            } catch (ValidationException $e) {
-                $validationErrors = $e->getValidationErrors();
-                $hasFailed = true;
-            }
-
-            try {
-                Person::updateOrCreate(['user_id' => $userId], $personData);
-            } catch (ValidationException $e) {
-                $hasFailed = true;
-                $validationErrors = array_merge($validationErrors, [
-                    'person' => $e->getValidationErrors(),
-                ]);
-            }
-
-            if ($hasFailed) {
-                throw new ValidationException($validationErrors);
-            }
-
-            return $user->refresh();
-        });
-    }
-
     // ------------------------------------------------------
     // -
     // -    Serialization
@@ -365,21 +456,37 @@ final class User extends BaseModel implements Serializable
 
     public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
-        $user = clone $this;
+        $user = tap(clone $this, static function (User $user) use ($format) {
+            if (in_array($format, [self::SERIALIZE_SESSION, self::SERIALIZE_DETAILS], true)) {
+                $user->append([
+                    'street',
+                    'postal_code',
+                    'locality',
+                    'country_id',
+                    'country',
+                    'full_address',
+                ]);
+            }
+        });
 
-        $data = (new DotArray($user->attributesForSerialization()))
-            ->delete([
-                'cas_identifier',
-                'saml2_identifier',
-                'notifications_enabled',
-                'created_at',
-                'updated_at',
-                'deleted_at',
-            ])
-            ->all();
+        $data = new DotArray($user->attributesForSerialization());
+        $data->delete([
+            'cas_identifier',
+            'saml2_identifier',
+            'notifications_enabled',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+        ]);
+
+        $data = $data->all();
 
         if ($format === self::SERIALIZE_SESSION) {
             return $data;
+        }
+
+        if ($format === self::SERIALIZE_SUMMARY) {
+            return Arr::only($data, ['id', 'full_name', 'email']);
         }
 
         return $format === self::SERIALIZE_SETTINGS

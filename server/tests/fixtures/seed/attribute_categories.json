@@ -18,5 +18,20 @@
         "id": 4,
         "attribute_id": 3,
         "category_id": 2
+    },
+    {
+        "id": 5,
+        "attribute_id": 6,
+        "category_id": 3
+    },
+    {
+        "id": 6,
+        "attribute_id": 6,
+        "category_id": 4
+    },
+    {
+        "id": 7,
+        "attribute_id": 7,
+        "category_id": 3
     }
 ]

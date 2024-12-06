@@ -4,21 +4,27 @@ declare(strict_types=1);
 namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
-use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Loxya\Config\Config;
+use Loxya\Contracts\Pdfable;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Casts\AsDecimal;
-use Loxya\Models\Traits\Pdfable;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
 use Loxya\Support\Assert;
 use Loxya\Support\Collections\MaterialsCollection;
+use Loxya\Support\Pdf\Pdf;
 use Loxya\Support\Period;
 use Loxya\Support\Str;
+use Respect\Validation\Rules as Rule;
 use Respect\Validation\Validator as V;
 
 /**
@@ -29,6 +35,7 @@ use Respect\Validation\Validator as V;
  * @property-read ?string $url
  * @property string $booking_type
  * @property int $booking_id
+ * @property-read array $seller
  * @property-read Event $booking
  * @property string|null $booking_title
  * @property CarbonImmutable $booking_start_date
@@ -38,15 +45,14 @@ use Respect\Validation\Validator as V;
  * @property-read string|null $booking_location
  * @property int $beneficiary_id
  * @property-read Beneficiary $beneficiary
- * @property Decimal $degressive_rate
- * @property Decimal $discount_rate
- * @property Decimal $vat_rate
- * @property Decimal $daily_total
- * @property Decimal $total_without_discount
- * @property Decimal $total_discountable
- * @property Decimal $total_discount
+ * @property bool $is_legacy
+ * @property Decimal|null $degressive_rate
+ * @property Decimal|null $daily_total
+ * @property Decimal $global_discount_rate
+ * @property Decimal $total_without_global_discount
+ * @property Decimal $total_global_discount
  * @property Decimal $total_without_taxes
- * @property Decimal $total_taxes
+ * @property array $total_taxes
  * @property Decimal $total_with_taxes
  * @property Decimal $total_replacement
  * @property string $currency
@@ -57,14 +63,16 @@ use Respect\Validation\Validator as V;
  * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Collection<array-key, EstimateMaterial> $materials
+ * @property-read Collection<array-key, EstimateExtra> $extras
  */
-final class Estimate extends BaseModel implements Serializable
+final class Estimate extends BaseModel implements Serializable, Pdfable
 {
-    use Pdfable;
     use Serializer;
-    use SoftDeletable;
+    use SoftDeletes;
 
-    protected const PDF_TEMPLATE = 'estimate-default';
+    protected $attributes = [
+        'is_legacy' => false,
+    ];
 
     public function __construct(array $attributes = [])
     {
@@ -72,27 +80,24 @@ final class Estimate extends BaseModel implements Serializable
 
         $this->validation = [
             'date' => V::notEmpty()->dateTime(),
-            'booking_type' => V::notEmpty()->anyOf(
-                V::equals(Event::TYPE),
-            ),
+            'booking_type' => V::custom([$this, 'checkBookingType']),
             'booking_id' => V::custom([$this, 'checkBookingId']),
-            'booking_title' => V::optional(V::length(2, 191)),
+            'booking_title' => V::nullable(V::length(2, 191)),
             'booking_start_date' => V::custom([$this, 'checkBookingStartDate']),
             'booking_end_date' => V::custom([$this, 'checkBookingEndDate']),
             'booking_is_full_days' => V::boolType(),
             'beneficiary_id' => V::custom([$this, 'checkBeneficiaryId']),
+            'is_legacy' => V::boolType(),
             'degressive_rate' => V::custom([$this, 'checkDegressiveRate']),
-            'discount_rate' => V::custom([$this, 'checkDiscountRate']),
-            'vat_rate' => V::custom([$this, 'checkVatRate']),
-            'daily_total' => V::custom([$this, 'checkAmount']),
-            'total_without_discount' => V::custom([$this, 'checkAmount']),
-            'total_discountable' => V::custom([$this, 'checkAmount']),
-            'total_discount' => V::custom([$this, 'checkAmount']),
+            'daily_total' => V::custom([$this, 'checkDailyTotal']),
+            'global_discount_rate' => V::custom([$this, 'checkGlobalDiscountRate']),
+            'total_without_global_discount' => V::custom([$this, 'checkAmount']),
+            'total_global_discount' => V::custom([$this, 'checkAmount'], false),
             'total_without_taxes' => V::custom([$this, 'checkAmount']),
-            'total_taxes' => V::custom([$this, 'checkAmount']),
+            'total_taxes' => V::custom([$this, 'checkTotalTaxes']),
             'total_with_taxes' => V::custom([$this, 'checkAmount']),
-            'total_replacement' => V::custom([$this, 'checkAmount']),
-            'currency' => V::notEmpty()->allOf(V::uppercase(), V::length(3, 3)),
+            'total_replacement' => V::custom([$this, 'checkAmount'], false),
+            'currency' => V::custom([$this, 'checkCurrency']),
             'author_id' => V::custom([$this, 'checkAuthorId']),
         ];
     }
@@ -103,12 +108,22 @@ final class Estimate extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
+    public function checkBookingType($value)
+    {
+        return V::create()
+            ->notEmpty()
+            ->anyOf(
+                V::equals(Event::TYPE),
+            )
+            ->validate($value);
+    }
+
     public function checkBookingId($value)
     {
-        V::notEmpty()->numericVal()->check($value);
+        V::notEmpty()->intVal()->check($value);
 
         return match ($this->booking_type) {
-            Event::TYPE => Event::staticExists($value),
+            Event::TYPE => Event::includes($value),
             default => false, // - Type inconnu.
         };
     }
@@ -154,9 +169,9 @@ final class Estimate extends BaseModel implements Serializable
 
     public function checkBeneficiaryId($value)
     {
-        V::notEmpty()->numericVal()->check($value);
+        V::notEmpty()->intVal()->check($value);
 
-        $beneficiary = Beneficiary::find($value);
+        $beneficiary = Beneficiary::withTrashed()->find($value);
         if (!$beneficiary) {
             return false;
         }
@@ -166,89 +181,159 @@ final class Estimate extends BaseModel implements Serializable
             : true;
     }
 
+    public function checkCurrency($value)
+    {
+        return V::create()
+            ->notEmpty()
+            ->allOf(V::uppercase(), V::length(3, 3))
+            ->validate($value);
+    }
+
     public function checkDegressiveRate($value)
     {
-        V::floatVal()->check($value);
-        $value = Decimal::of($value);
+        V::nullable(V::floatVal())->check($value);
+        $value = $value !== null ? Decimal::of($value) : null;
+
+        // - L'état "legacy" n'est pas récupérable, on est obligé
+        //   de faire une vérification peu précise.
+        $isLegacyRaw = $this->getAttributeUnsafeValue('is_legacy');
+        if (!$this->validation['is_legacy']->validate($isLegacyRaw)) {
+            if ($value === null) {
+                return true;
+            }
+
+        // - Sinon, seuls les devis legacy sont concernés.
+        } elseif (!$isLegacyRaw) {
+            return V::nullType();
+        }
 
         return (
+            $value !== null &&
             $value->isGreaterThanOrEqualTo(0) &&
             $value->isLessThan(100_000) &&
             $value->getScale() <= 2
         );
     }
 
-    public function checkDiscountRate($value)
+    public function checkDailyTotal($value)
     {
-        V::floatVal()->check($value);
-        $value = Decimal::of($value);
+        V::nullable(V::floatVal())->check($value);
+        $value = $value !== null ? Decimal::of($value) : null;
 
-        $totalWithoutDiscountRaw = $this->getAttributeUnsafeValue('total_without_discount');
-        if (!$this->validation['total_without_discount']->validate($totalWithoutDiscountRaw)) {
-            return true;
+        // - L'état "legacy" n'est pas récupérable, on est obligé
+        //   de faire une vérification peu précise.
+        $isLegacyRaw = $this->getAttributeUnsafeValue('is_legacy');
+        if (!$this->validation['is_legacy']->validate($isLegacyRaw)) {
+            if ($value === null) {
+                return true;
+            }
+
+        // - Sinon, seuls les devis legacy sont concernés.
+        } elseif (!$isLegacyRaw) {
+            return V::nullType();
         }
-        $totalWithoutDiscount = Decimal::of($totalWithoutDiscountRaw);
-
-        // - Si le total sans remise est à 0, la remise est forcément à 0 aussi.
-        if ($totalWithoutDiscount->isZero()) {
-            return $value->isZero();
-        }
-
-        $totalDiscountableRaw = $this->getAttributeUnsafeValue('total_discountable');
-        if ($totalDiscountableRaw === null) {
-            return $value->isLessThan(100) ?: 'discount-rate-exceeds-maximum';
-        }
-
-        if (!$this->validation['total_discountable']->validate($totalDiscountableRaw)) {
-            return true;
-        }
-        $totalDiscountable = Decimal::of($totalDiscountableRaw);
-
-        // - Si le total remisable est à 0, il ne peut pas y avoir de remise.
-        if ($totalDiscountable->isZero()) {
-            return $value->isZero();
-        }
-
-        $maxDiscountRate = $totalDiscountable
-            ->multipliedBy(100)
-            ->dividedBy($totalWithoutDiscount, 4, RoundingMode::HALF_UP);
-
-        return !$value->isGreaterThan($maxDiscountRate) ?: 'discount-rate-exceeds-maximum';
-    }
-
-    public function checkVatRate($value)
-    {
-        V::floatVal()->check($value);
-        $value = Decimal::of($value);
 
         return (
-            $value->isGreaterThanOrEqualTo(0) &&
-            $value->isLessThan(100) &&
-            $value->getScale() <= 2
-        );
-    }
-
-    public function checkAmount($value)
-    {
-        V::floatVal()->check($value);
-        $value = Decimal::of($value);
-
-        return (
+            $value !== null &&
             $value->isGreaterThanOrEqualTo(0) &&
             $value->isLessThan(1_000_000_000_000) &&
             $value->getScale() <= 2
         );
     }
 
-    public function checkAuthorId($value)
+    public function checkGlobalDiscountRate($value)
     {
-        V::optional(V::numericVal())->check($value);
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThanOrEqualTo(100) &&
+            $value->getScale() <= 4
+        );
+    }
+
+    public function checkAmount(mixed $value, bool $signed = true)
+    {
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo($signed ? -1_000_000_000_000 : 0) &&
+            $value->isLessThan(1_000_000_000_000) &&
+            $value->getScale() <= 2
+        );
+    }
+
+    public function checkTotalTaxes($value)
+    {
+        if (!is_array($value)) {
+            if (!V::nullable(V::json())->validate($value)) {
+                return false;
+            }
+            $value = $value !== null ? json_decode($value, true) : null;
+        }
 
         if ($value === null) {
             return true;
         }
 
-        $author = User::find($value);
+        // Note: S'il n'y a pas de taxes, le champ doit être à `null` et non un tableau vide.
+        $schema = V::arrayType()->notEmpty()->each(V::custom(static fn ($taxValue) => (
+            new Rule\KeySetStrict(
+                new Rule\Key('name', V::notEmpty()->length(1, 30)),
+                new Rule\Key('is_rate', V::boolType()),
+                new Rule\Key('value', V::custom(static function ($subValue) use ($taxValue) {
+                    V::floatVal()->check($subValue);
+                    $subValue = Decimal::of($subValue);
+
+                    $isValid = (
+                        $subValue->isGreaterThan(-1_000_000_000_000) &&
+                        $subValue->isLessThan(1_000_000_000_000) &&
+                        $subValue->getScale() <= 3
+                    );
+                    if (!$isValid) {
+                        return false;
+                    }
+
+                    $isRate = array_key_exists('is_rate', $taxValue) ? $taxValue['is_rate'] : null;
+                    if (!V::boolType()->validate($isRate)) {
+                        return true;
+                    }
+
+                    return !$isRate
+                        // - Si ce n'est pas un pourcentage, la précision doit être à 2 décimales max.
+                        ? $subValue->getScale() <= 2
+                        // - Sinon si c'est un pourcentage, il doit être inférieur ou égal à 100%.
+                        : (
+                            $subValue->isGreaterThanOrEqualTo(0) &&
+                            $subValue->isLessThanOrEqualTo(100)
+                        );
+                })),
+                new Rule\Key('total', V::custom(static function ($subValue) {
+                    V::floatVal()->check($subValue);
+                    $subValue = Decimal::of($subValue);
+
+                    return (
+                        $subValue->isGreaterThan(-1_000_000_000_000) &&
+                        $subValue->isLessThan(1_000_000_000_000) &&
+                        $subValue->getScale() <= 2
+                    );
+                })),
+            )
+        )));
+        return $schema->validate($value);
+    }
+
+    public function checkAuthorId($value)
+    {
+        V::nullable(V::intVal())->check($value);
+
+        if ($value === null) {
+            return true;
+        }
+
+        $author = User::withTrashed()->find($value);
         if (!$author) {
             return false;
         }
@@ -264,24 +349,30 @@ final class Estimate extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function booking()
+    public function booking(): MorphTo
     {
         return $this->morphTo('booking');
     }
 
-    public function materials()
+    public function materials(): HasMany
     {
         return $this->hasMany(EstimateMaterial::class, 'estimate_id')
             ->orderBy('id');
     }
 
-    public function beneficiary()
+    public function extras(): HasMany
+    {
+        return $this->hasMany(EstimateExtra::class, 'estimate_id')
+            ->orderBy('id');
+    }
+
+    public function beneficiary(): BelongsTo
     {
         return $this->belongsTo(Beneficiary::class)
             ->withTrashed();
     }
 
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id')
             ->withTrashed();
@@ -306,15 +397,14 @@ final class Estimate extends BaseModel implements Serializable
         'booking_end_date' => 'immutable_datetime',
         'booking_is_full_days' => 'boolean',
         'beneficiary_id' => 'integer',
+        'is_legacy' => 'boolean',
         'degressive_rate' => AsDecimal::class,
         'discount_rate' => AsDecimal::class,
-        'vat_rate' => AsDecimal::class,
-        'daily_total' => AsDecimal::class,
-        'total_without_discount' => AsDecimal::class,
-        'total_discountable' => AsDecimal::class,
-        'total_discount' => AsDecimal::class,
+        'global_discount_rate' => AsDecimal::class,
+        'total_without_global_discount' => AsDecimal::class,
+        'total_global_discount' => AsDecimal::class,
         'total_without_taxes' => AsDecimal::class,
-        'total_taxes' => AsDecimal::class,
+        'total_taxes' => 'array',
         'total_with_taxes' => AsDecimal::class,
         'total_replacement' => AsDecimal::class,
         'currency' => 'string',
@@ -343,16 +433,52 @@ final class Estimate extends BaseModel implements Serializable
         );
     }
 
-    public function getBookingLocationAttribute(): ?string
+    public function getBookingLocationAttribute(): string|null
     {
         return $this->booking instanceof Event
             ? $this->booking->location
             : null;
     }
 
+    public function getSellerAttribute(): array
+    {
+        $company = Config::get('companyData');
+
+        return array_replace($company, [
+            'country' => ($company['country'] ?? null) !== null
+                ? Country::where('code', $company['country'])->first()
+                : null,
+        ]);
+    }
+
+    /** @return Collection<array-key, EstimateMaterial> */
     public function getMaterialsAttribute(): Collection
     {
         return $this->getRelationValue('materials');
+    }
+
+    /** @return Collection<array-key, EstimateExtra> */
+    public function getExtrasAttribute(): Collection
+    {
+        return $this->getRelationValue('extras');
+    }
+
+    public function getTotalTaxesAttribute($value): array
+    {
+        $totalTaxes = $this->castAttribute('total_taxes', $value);
+        if ($totalTaxes === null) {
+            return [];
+        }
+
+        return array_map(
+            static fn ($tax) => array_replace($tax, [
+                'value' => Decimal::of($tax['value'])
+                    ->toScale($tax['is_rate'] ? 3 : 2),
+                'total' => Decimal::of($tax['total'])
+                    ->toScale(2),
+            ]),
+            $totalTaxes,
+        );
     }
 
     // ------------------------------------------------------
@@ -361,51 +487,77 @@ final class Estimate extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    protected function getPdfName(I18n $i18n): string
+    public function toPdf(I18n $i18n): Pdf
     {
-        $company = Config::get('companyData');
-        return Str::slugify(implode('-', [
+        $filename = Str::slugify(implode('-', [
             $i18n->translate('estimate'),
-            $company['name'],
+            $this->seller['name'],
             $this->date->format('Ymd-Hi'),
             $this->beneficiary->full_name,
         ]));
+
+        return Pdf::createFromTemplate('estimate', $i18n, $filename, $this->getPdfData());
     }
 
     protected function getPdfData(): array
     {
+        $categories = Category::get()->keyBy('id');
+
         $categoriesTotals = [];
-        $categories = Category::get()->pluck('name', 'id')->all();
-        foreach ($this->materials as $material) {
-            $isHiddenIfZero = $material->is_hidden_on_bill;
-            if ($isHiddenIfZero && $material->total_price->isZero()) {
+        foreach ($this->materials as $line) {
+            if ($line->is_hidden_on_bill && $line->total_without_taxes->isZero()) {
                 continue;
             }
 
-            $categoryId = $material->material?->category_id ?? 0;
-            if (!array_key_exists($categoryId, $categoriesTotals)) {
-                $name = $categoryId ? ($categories[$categoryId] ?? null) : null;
-                $categoriesTotals[$categoryId] = [
-                    'id' => $categoryId,
-                    'name' => $name,
+            /** @var Category|null $category */
+            $category = $line->material?->category_id !== null
+                ? $categories->get($line->material->category_id)
+                : null;
+
+            $categoryIdentifier = $category?->id ?? '__UNCATEGORIZED__';
+            if (!array_key_exists($categoryIdentifier, $categoriesTotals)) {
+                $categoriesTotals[$categoryIdentifier] = [
+                    'id' => $categoryIdentifier,
+                    'name' => $category?->name,
                     'quantity' => 0,
                     'subTotal' => Decimal::zero(),
                 ];
             }
 
-            $categoriesTotals[$categoryId]['quantity'] += $material->quantity;
-            $categoriesTotals[$categoryId]['subTotal'] = (
-                $categoriesTotals[$categoryId]['subTotal']
-                    ->plus($material->total_price)
+            $categoriesTotals[$categoryIdentifier]['quantity'] += $line->quantity;
+            $categoriesTotals[$categoryIdentifier]['subTotal'] = (
+                $categoriesTotals[$categoryIdentifier]['subTotal']
+                    ->plus($line->total_without_taxes)
             );
         }
+        foreach ($this->extras as $line) {
+            if (!array_key_exists('__OTHER__', $categoriesTotals)) {
+                $categoriesTotals['__OTHER__'] = [
+                    'id' => '__OTHER__',
+                    'name' => null,
+                    'quantity' => 0,
+                    'subTotal' => Decimal::zero(),
+                ];
+            }
+
+            $categoriesTotals['__OTHER__']['quantity'] += $line->quantity;
+            $categoriesTotals['__OTHER__']['subTotal'] = (
+                $categoriesTotals['__OTHER__']['subTotal']
+                    ->plus($line->total_without_taxes)
+            );
+        }
+
         $categoriesTotals = (new Collection($categoriesTotals))
             ->sort(static function ($a, $b) {
-                if ($a['name'] === null) {
-                    return 1;
-                }
-                if ($b['name'] === null) {
-                    return -1;
+                foreach (['__OTHER__', '__UNCATEGORIZED__'] as $specialGroup) {
+                    $isAInGroup = $a['id'] === $specialGroup;
+                    $isBInGroup = $b['id'] === $specialGroup;
+                    if ($isAInGroup || $isBInGroup) {
+                        if (!$isAInGroup || !$isBInGroup) {
+                            return $isAInGroup ? 1 : -1;
+                        }
+                        return strcasecmp($a['name'], $b['name']);
+                    }
                 }
                 return strcasecmp($a['name'], $b['name']);
             })
@@ -414,7 +566,7 @@ final class Estimate extends BaseModel implements Serializable
 
         return [
             'date' => $this->date,
-            'company' => Config::get('companyData'),
+            'seller' => $this->seller,
             'beneficiary' => $this->beneficiary,
             'currency' => $this->currency,
             'booking' => [
@@ -422,23 +574,30 @@ final class Estimate extends BaseModel implements Serializable
                 'period' => $this->booking_period,
                 'location' => $this->booking_location,
             ],
-            'hasVat' => !$this->vat_rate->isZero(),
-            'hasDiscount' => !$this->discount_rate->isZero(),
+            'isLegacy' => $this->is_legacy,
+            'hasTaxes' => !empty($this->total_taxes),
             'degressiveRate' => $this->degressive_rate,
-            'discountRate' => $this->discount_rate->dividedBy(100, 6),
-            'vatRate' => $this->vat_rate->dividedBy(100, 4),
             'dailyTotal' => $this->daily_total,
-            'totalWithoutDiscount' => $this->total_without_discount,
-            'totalDiscountable' => $this->total_discountable,
-            'totalDiscount' => $this->total_discount,
+            'hasGlobalDiscount' => !$this->global_discount_rate->isZero(),
+            'globalDiscountRate' => $this->global_discount_rate->dividedBy(100, 6),
+            'totalWithoutGlobalDiscount' => $this->total_without_global_discount,
+            'totalGlobalDiscount' => $this->total_global_discount,
             'totalWithoutTaxes' => $this->total_without_taxes,
-            'totalTaxes' => $this->total_taxes,
+            'totalTaxes' => array_map(
+                static fn ($tax) => array_replace($tax, [
+                    'value' => $tax['is_rate']
+                        ? $tax['value']->dividedBy(100, 5)
+                        : $tax['value'],
+                ]),
+                $this->total_taxes,
+            ),
             'totalWithTaxes' => $this->total_with_taxes,
             'categoriesSubTotals' => $categoriesTotals,
             'materials' => (
                 (new MaterialsCollection($this->materials))
                     ->bySubCategories()
             ),
+            'extras' => $this->extras,
         ];
     }
 
@@ -455,13 +614,9 @@ final class Estimate extends BaseModel implements Serializable
         'booking_end_date',
         'booking_is_full_days',
         'booking_period',
-        'degressive_rate',
-        'discount_rate',
-        'vat_rate',
-        'daily_total',
-        'total_without_discount',
-        'total_discountable',
-        'total_discount',
+        'global_discount_rate',
+        'total_without_global_discount',
+        'total_global_discount',
         'total_without_taxes',
         'total_taxes',
         'total_with_taxes',
@@ -478,11 +633,39 @@ final class Estimate extends BaseModel implements Serializable
         $this->booking_is_full_days = $period?->isFullDays() ?? false;
     }
 
+    public function setTotalTaxesAttribute(mixed $value): void
+    {
+        $value = is_array($value) && empty($value) ? null : $value;
+        $value = $value !== null ? $this->castAttributeAsJson('total_taxes', $value) : null;
+        $this->attributes['total_taxes'] = $value;
+    }
+
     // ------------------------------------------------------
     // -
     // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
+
+    /**
+     * Retourne un devis via son identifiant, uniquement
+     * s'il est accessible par l'utilisateur donné.
+     *
+     * @param int $id L'identifiant du devis à récupérer.
+     * @param User $user L'utilisateur pour lequel on effectue la récupération.
+     *
+     * @return static Le devis correspondant à l'identifiant.
+     */
+    public static function findOrFailForUser(int $id, User $user): static
+    {
+        return static::query()
+            ->when(
+                $user->group === Group::READONLY_PLANNING_SELF,
+                static fn (Builder $subQuery) => (
+                    $subQuery->where('beneficiary_id', $user->person?->beneficiary?->id)
+                ),
+            )
+            ->findOrFail($id);
+    }
 
     public static function createFromBooking(Event $booking, User $creator): Estimate
     {
@@ -496,33 +679,21 @@ final class Estimate extends BaseModel implements Serializable
             "A beneficiary must be defined in the booking to be able to generate an estimate."
         ));
 
-        /** @var Collection<array-key, EventMaterial> $materials */
-        $materials = $booking instanceof Event
-            ? $booking->materials->pluck('pivot')
-            : $booking->materials;
-
-        Assert::notEmpty($materials, (
-            "The booking must contain at least one material for an estimate to be generated."
+        Assert::notEmpty($booking->materials, (
+            "The booking must contain at least one material or line for an estimate to be generated from a booking."
         ));
 
-        return dbTransaction(static function () use ($booking, $beneficiary, $materials, $creator) {
+        return dbTransaction(static function () use ($booking, $beneficiary, $creator) {
             $estimate = new static([
                 'date' => CarbonImmutable::now(),
 
                 'booking_title' => $booking instanceof Event ? $booking->title : null,
                 'booking_period' => $booking->operation_period,
 
-                'degressive_rate' => $booking->degressive_rate,
-                'discount_rate' => $booking->discount_rate,
-                'vat_rate' => $booking->vat_rate,
-
-                // - Total / jour.
-                'daily_total' => $booking->daily_total,
-
                 // - Remise.
-                'total_without_discount' => $booking->total_without_discount,
-                'total_discountable' => $booking->total_discountable,
-                'total_discount' => $booking->total_discount,
+                'total_without_global_discount' => $booking->total_without_global_discount,
+                'global_discount_rate' => $booking->global_discount_rate,
+                'total_global_discount' => $booking->total_global_discount,
 
                 // - Totaux.
                 'total_without_taxes' => $booking->total_without_taxes,
@@ -541,20 +712,38 @@ final class Estimate extends BaseModel implements Serializable
             }
 
             // - Attache le matériel au devis.
-            foreach ($materials as $bookingMaterial) {
+            foreach ($booking->materials as $bookingMaterial) {
                 $material = $bookingMaterial->material;
                 $estimateMaterial = new EstimateMaterial([
                     'material_id' => $bookingMaterial->material_id,
-                    'name' => $material->name,
-                    'reference' => $material->reference,
+                    'name' => $bookingMaterial->name,
+                    'reference' => $bookingMaterial->reference,
                     'quantity' => $bookingMaterial->quantity,
                     'unit_price' => $bookingMaterial->unit_price,
-                    'total_price' => $bookingMaterial->total_price,
-                    'replacement_price' => $bookingMaterial->unit_replacement_price,
+                    'degressive_rate' => $bookingMaterial->degressive_rate,
+                    'unit_price_period' => $bookingMaterial->unit_price_period,
+                    'discount_rate' => $bookingMaterial->discount_rate,
+                    'taxes' => $bookingMaterial->taxes,
+                    'total_without_discount' => $bookingMaterial->total_without_discount,
+                    'total_discount' => $bookingMaterial->total_discount,
+                    'total_without_taxes' => $bookingMaterial->total_without_taxes,
+                    'unit_replacement_price' => $bookingMaterial->unit_replacement_price,
+                    'total_replacement_price' => $bookingMaterial->total_replacement_price,
                     'is_hidden_on_bill' => $material->is_hidden_on_bill,
-                    'is_discountable' => $bookingMaterial->is_discountable,
                 ]);
                 $estimate->materials()->save($estimateMaterial);
+            }
+
+            // - Attache les lignes extras au devis.
+            foreach ($booking->extras as $bookingExtraLine) {
+                $estimateExtraLine = new EstimateExtra([
+                    'description' => $bookingExtraLine->description,
+                    'quantity' => $bookingExtraLine->quantity,
+                    'unit_price' => $bookingExtraLine->unit_price,
+                    'taxes' => $bookingExtraLine->taxes,
+                    'total_without_taxes' => $bookingExtraLine->total_without_taxes,
+                ]);
+                $estimate->extras()->save($estimateExtraLine);
             }
 
             return $estimate->refresh();
@@ -574,8 +763,8 @@ final class Estimate extends BaseModel implements Serializable
             'id',
             'date',
             'url',
-            'discount_rate',
             'total_without_taxes',
+            'total_taxes',
             'total_with_taxes',
             'currency',
         ]);

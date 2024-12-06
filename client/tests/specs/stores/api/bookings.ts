@@ -21,6 +21,13 @@ describe('Bookings Api', () => {
         });
     });
 
+    describe('one()', () => {
+        it.each(data.default())('parse the returned data correctly', async (datum: any) => {
+            jest.spyOn(requester, 'get').mockResolvedValue({ data: datum });
+            expect(await apiBookings.one(datum.entity, datum.id)).toMatchSnapshot();
+        });
+    });
+
     describe('oneSummary()', () => {
         it.each(data.summary())('parse the returned data correctly', async (datum: any) => {
             jest.spyOn(requester, 'get').mockResolvedValue({ data: datum });
@@ -32,6 +39,29 @@ describe('Bookings Api', () => {
         it.each(data.default())('parse the returned data correctly', async (datum: any) => {
             jest.spyOn(requester, 'put').mockResolvedValue({ data: datum });
             expect(await apiBookings.updateMaterials(datum.entity, datum.id, [] as any)).toMatchSnapshot();
+        });
+    });
+
+    describe('updateBilling()', () => {
+        it.each(data.default())('parse the returned data correctly', async (datum: any) => {
+            jest.spyOn(requester, 'put').mockResolvedValue({ data: datum });
+            expect(await apiBookings.updateBilling(datum.entity, datum.id, {} as any)).toMatchSnapshot();
+        });
+    });
+
+    describe('resynchronizeMaterial()', () => {
+        it('parse the returned data correctly', async () => {
+            const datum = data.default(2);
+            jest.spyOn(requester, 'put').mockResolvedValue({ data: datum.materials[0] });
+            expect(await apiBookings.resynchronizeMaterial(datum.entity, datum.id, 2, ['name', 'reference'])).toMatchSnapshot();
+        });
+    });
+
+    describe('resynchronizeExtra()', () => {
+        it('parse the returned data correctly', async () => {
+            const datum = data.default(2);
+            jest.spyOn(requester, 'put').mockResolvedValue({ data: datum.extras[0] });
+            expect(await apiBookings.resynchronizeExtra(datum.entity, datum.id, 1, ['taxes'])).toMatchSnapshot();
         });
     });
 });

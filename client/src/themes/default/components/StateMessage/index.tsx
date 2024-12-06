@@ -27,6 +27,12 @@ export enum State {
     NOT_FOUND = 'not-found',
 
     /**
+     * État "rien à faire" / "déjà propre".
+     * (e.g. aucun action disponible, rien à synchroniser)
+     */
+    NOTHING_TO_DO = 'nothing-to-do',
+
+    /**
      * État "pas de résultat".
      * (e.g. Recherche infructueuse, ...).
      */
@@ -54,6 +60,7 @@ export enum State {
 const ILLUSTRATIONS = {
     [State.EMPTY]: EmptyIllustration,
     [State.NOT_FOUND]: GeneralIllustration,
+    [State.NOTHING_TO_DO]: GeneralIllustration,
     [State.NO_RESULT]: SearchIllustration,
     [State.TOO_SOON]: TimeIllustration,
     [State.TOO_LATE]: TimeIllustration,

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Estimate</title>
+    <title>Devis</title>
     <style type="text/css">
         html {
             margin: 9mm 8mm;
@@ -59,7 +59,7 @@
             vertical-align: top;
         }
         th {
-            text-align: center;
+            text-align: left;
         }
         th:last-child, td:last-child {
             border-right: 1pt solid #888;
@@ -79,6 +79,8 @@
         }
         .listing-table > thead > tr > th {
             font-size: 0.8rem;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
@@ -86,6 +88,8 @@
             padding: 2mm;
             font-size: 0.7rem;
             border: none;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
@@ -94,15 +98,40 @@
             font-size: 0.8rem;
             color: #888;
         }
+        .listing-table > thead > tr > th:first-child,
         .listing-table > tbody > tr > td:first-child {
-            border-left: 1pt solid #888;
+            border-left: 1pt solid #888 !important;
         }
+        .listing-table > thead > tr > th:last-child,
         .listing-table > tbody > tr > td:last-child {
-            border-right: 1pt solid #888;
+            border-right: 1pt solid #888 !important;
+        }
+        .listing-table__item__label {
+            font-weight: 600;
+        }
+        .listing-table__item__sub-name {
+            margin-top: 2px;
+            font-size: 0.6rem;
+        }
+        .listing-table__item__label,
+        .listing-table__item__sub-name {
+            display: block;
+        }
+        .totals-table {
+            width: 50%;
+            margin: 0 0 5mm auto;
+        }
+        .totals-table--legacy {
+            width: 100%;
+            margin: 0;
         }
         .totals-table > tbody > tr > td {
             border-bottom: 1pt solid #888;
+            text-align: right;
             vertical-align: middle;
+        }
+        .totals-table--legacy > tbody > tr > td {
+            text-align: center;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;
@@ -154,136 +183,112 @@
     France
 </p>
 <p>SIRET: 543 210 080 20145<br>APE: 947A<br></p>
-<p>Phone: +33123456789<br>E-mail: jean@testing-corp.dev</p>
-<p>VAT number: FR11223344556600</p>
+<p>T&eacute;l.&nbsp;: +33123456789<br>E-mail&nbsp;: jean@testing-corp.dev</p>
+<p>N&deg; TVA Intracom.&nbsp;: FR11223344556600</p>
 </td>
         <td class="half">
-            <h2 class="box center">Estimate in Euro</h2>
+            <h2 class="box center">Devis en Euro</h2>
             <table class="layout-table">
                 <tr>
-                    <td class="size12">On 22/10/2022</td>
+                    <td class="size12">Le 30/01/2021</td>
                     <td class="size12 right">Page 1</td>
                 </tr>
             </table>
-            <p>Beneficiary</p>
+            <p>B&eacute;n&eacute;ficiaire</p>
             <h2 class="vspace10 indent5">
-                <strong>Testing, Inc</strong><br>Contact: Jean Fountain<br>1, company st.<br>
-1234 Megacity<br><small>(Ref. 0001)</small><br><small>Phone: +4123456789</small><br><small>E-mail: tester@robertmanager.net</small><br>
+                <strong>Testing, Inc</strong><br>Contact&nbsp;: Jean Fountain<br>1, company st.<br>
+1234 Megacity<br><small>(R&eacute;f. 0001)</small><br><small>T&eacute;l.&nbsp;: +4123456789</small><br><small>E-mail&nbsp;: tester@robertmanager.net</small><br>
             </h2>
         </td>
     </tr>
 </table>
 
 <div class="vspace5">
-    <p>Event: Premier &eacute;v&eacute;nement</p>
+    <p>&Eacute;v&eacute;nement&nbsp;: Premier &eacute;v&eacute;nement</p>
     <p class="strong">
-        From Monday 17 December 2018 - 10:00 to Tuesday 18 December 2018 - 18:00, In Gap
+        Du lundi 17 d&eacute;cembre 2018 au mardi 18 d&eacute;cembre 2018, &Agrave; Gap
     </p>
     <table>
         <thead>
             <tr>
-                <th class="left">Category</th>
-                <th>Quantity</th>
-                <th>Total excl. VAT&nbsp;/&nbsp;day</th>
+                <th>Cat&eacute;gorie</th>
+                <th class="center">Quantit&eacute;</th>
+                <th class="right">Total H.T.</th>
             </tr>
         </thead>
         <tbody>
-                        <tr>
-                <td>
-                                        Lumi&egrave;re
-                                    </td>
-                <td class="center">1 item</td>
+            <tr>
+                <td>Son</td>
+                <td class="center">2 &eacute;l&eacute;ments</td>
                 <td class="right">
-                    &euro;15.95
+                    251,00&nbsp;&euro;
                 </td>
             </tr>
-                        <tr>
-                <td>
-                                        Son
-                                    </td>
-                <td class="center">2 items</td>
+            <tr>
+                <td>Non cat&eacute;goris&eacute;</td>
+                <td class="center">2 &eacute;l&eacute;ments</td>
                 <td class="right">
-                    &euro;325.50
+                    4,81&nbsp;&euro;
                 </td>
             </tr>
-                    </tbody>
+            <tr>
+                <td>Autre</td>
+                <td class="center">5 &eacute;l&eacute;ments</td>
+                <td class="right">
+                    677,50&nbsp;&euro;
+                </td>
+            </tr>
+        </tbody>
     </table>
-    <p class="size8 lighter">Note: you'll find the detail of materials in next pages.</p>
+    <p class="size8 lighter">Remarque&nbsp;: vous trouverez le d&eacute;tail aux pages suivantes.</p>
 </div>
 
-<div class="vspace5 size8">
-    <table class="totals-table">
-        <thead>
-            <tr>
-                <th>Total&nbsp;/&nbsp;day</th>
-                <th>Degressive rate</th>
-                <th colspan="2">Totals</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="center">
-                <td>
-                    <div class="vspace2">
-                        &euro;341.45
-                    </div>
+<table class="totals-table">
+    <tbody>
+        <tr>
+            <td>Dur&eacute;e</td>
+            <td>2 jours</td>
+        </tr>
+        <tr>
+            <td>Sous-total</td>
+            <td>933,31&nbsp;&euro;</td>
+        </tr>
+        <tr>
+            <td>Remise de 5&nbsp;%</td>
+            <td>- 46,67&nbsp;&euro;</td>
+        </tr>
+        <tr class="strong">
+            <td>Total H.T.</td>
+            <td>886,64&nbsp;&euro;</td>
+        </tr>
+                <tr>
+            <td>
+                T.V.A. (20&nbsp;%)
+            </td>
+            <td>176,42&nbsp;&euro;</td>
+        </tr>
+                <tr>
+            <td>
+                T.V.A. (5&nbsp;%)
+            </td>
+            <td>0,23&nbsp;&euro;</td>
+        </tr>
+        <tr>
+            <td>
+                Total T.T.C.<div class="strong size12">Montant net &agrave; payer</div>
                 </td>
-                <td>
-                    <div class="vspace2">
-                        &times;&nbsp;<strong>1.75</strong>
-                        <span class="lighter">(2 days)</span>
-                    </div>
-                </td>
-                <td rowspan="1">
-                    <div class="vspace2 center">
-                        Total excl. VAT
-                        </div>
-                </td>
-                <td rowspan="1">
-                    <div class="vspace2 right">
-                        &euro;597.54
-                    </div>
-                </td>
-            </tr>
-            <tr class="center">
-                <td rowspan="2" colspan="2">
-                    <div class="vspace5 strong">
-                        = &euro;597.54
-                    </div>
-                </td>
-                <td>
-                    <div class="vspace2 center">
-                        V.A.T.
-                        (20%)
-                    </div>
-                </td>
-                <td>
-                    <div class="vspace2 right">
-                        &euro;119.51
-                    </div>
-                </td>
-                </tr>
-            <tr>
-                <td>
-                    <div class="vspace2 strong center">
-                        Total incl. VAT<br>
-                        Amount due
-                    </div>
-                </td>
-                <td>
-                    <div class="vspace2 right strong">
-                        &euro;717.05
-                    </div>
-                </td>
-            </tr>
-                    </tbody>
-    </table>
-    <p class="vspace5 size10">
-        Date of acceptance of the estimate:
-    </p>
-    <p class="size10">
-        Signature of the beneficiary, preceded by the mention "Good for approval":
-    </p>
-</div>
+            <td class="size12 strong">
+                1&#8239;063,29&nbsp;&euro;
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p class="vspace5 size10">
+    Date d'acceptation du devis&nbsp;:
+</p>
+<p class="size10">
+    Signature du b&eacute;n&eacute;ficiaire, pr&eacute;c&eacute;d&eacute;e de la mention &laquo;&nbsp;Bon pour accord&nbsp;&raquo;&nbsp;:
+</p>
 <div class="changePage vspace5">
     <table class="layout-table">
         <tr>
@@ -294,13 +299,13 @@
     05555 Testville<br>
     France
 </p>
-<p>Phone: +33123456789<br>E-mail: jean@testing-corp.dev</p>
+<p>T&eacute;l.&nbsp;: +33123456789<br>E-mail&nbsp;: jean@testing-corp.dev</p>
 </td>
             <td class="half">
-                <h2 class="box center">Estimate details</h2>
+                <h2 class="box center">D&eacute;tails du devis</h2>
                 <table class="layout-table">
                     <tr>
-                        <td class="size12">On 22/10/2022</td>
+                        <td class="size12">Le 30/01/2021</td>
                         <td class="size12 right">Page 2</td>
                     </tr>
                 </table>
@@ -309,76 +314,100 @@
     </table>
 </div>
 
+<h2>Mat&eacute;riel</h2>
 <table class="listing-table">
     <thead>
         <tr>
-            <th>Ref.</th>
-            <th>Designation</th>
-            <th>Qty</th>
-            <th>Unit Price (excl. VAT)</th>
-            <th>Repl. Val.</th>
-            <th>Total excl. VAT</th>
+            <th>D&eacute;signation</th>
+            <th class="center">Qt&eacute;</th>
+            <th class="center">P.U. H.T.</th>
+            <th class="center">Remise</th>
+            <th class="right">Total H.T.</th>
         </tr>
     </thead>
     <tbody>
-                    <tr>
-                <td class="section-title" colspan="6">
-                                            Lumi&egrave;re - Gradateurs
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="5">Non cat&eacute;goris&eacute;</td>
             </tr>
-                        <tr>
-                <td>SDS-6-01</td>
-                <td>Showtec SDS-6</td>
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Cable XX1</span>
+                    <span class="listing-table__item__sub-name">R&eacute;f.: XX1 &bull; Val. Remp. unitaire: 10,00&nbsp;&euro;</span>
+                </td>
+                <td class="center">2</td>
+                <td class="center">
+                    4,81&nbsp;&euro;
+                </td>
+                <td class="center">
+                    5&#8239;000&nbsp;%
+                </td>
+                <td class="right">
+                    4,81&nbsp;&euro;
+                </td>
+            </tr>
+            <tr>
+                <td class="section-title" colspan="5">Son - Mixeurs</td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Console Yamaha CL3</span>
+                    <span class="listing-table__item__sub-name">R&eacute;f.: PM5D &bull; Val. Remp. unitaire: 19&#8239;400,00&nbsp;&euro;</span>
+                </td>
                 <td class="center">1</td>
-                <td class="right">
-                    &euro;15.95
+                <td class="center">
+                    200,00&nbsp;&euro;
+                </td>
+                <td class="center">
+                    0&nbsp;%
                 </td>
                 <td class="right">
-                    &euro;59.00
-                </td>
-                <td class="right">
-                    &euro;15.95
+                    200,00&nbsp;&euro;
                 </td>
             </tr>
-                                <tr>
-                <td class="section-title" colspan="6">
-                                            Son - Mixeurs
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="5">Son - Processeurs</td>
             </tr>
-                        <tr>
-                <td>CL3</td>
-                <td>Console Yamaha CL3</td>
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Processeur DBX PA2</span>
+                    <span class="listing-table__item__sub-name">R&eacute;f.: DBXPA2 &bull; Val. Remp. unitaire: 349,90&nbsp;&euro;</span>
+                </td>
                 <td class="center">1</td>
-                <td class="right">
-                    &euro;300.00
+                <td class="center">
+                    51,00&nbsp;&euro;
+                </td>
+                <td class="center">
+                    0&nbsp;%
                 </td>
                 <td class="right">
-                    &euro;19,400.00
-                </td>
-                <td class="right">
-                    &euro;300.00
-                </td>
-            </tr>
-                                <tr>
-                <td class="section-title" colspan="6">
-                                            Son - Processeurs
-                                    </td>
-            </tr>
-                        <tr>
-                <td>DBXPA2</td>
-                <td>Processeur DBX PA2</td>
-                <td class="center">1</td>
-                <td class="right">
-                    &euro;25.50
-                </td>
-                <td class="right">
-                    &euro;349.90
-                </td>
-                <td class="right">
-                    &euro;25.50
+                    51,00&nbsp;&euro;
                 </td>
             </tr>
-                        </tbody>
+
+    </tbody>
+</table>
+<h2>Autre</h2>
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th>D&eacute;signation</th>
+            <th class="center">Qt&eacute;</th>
+            <th class="center">P.U. H.T.</th>
+            <th class="right">Total H.T.</th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr>
+                <td>Nettoyage post-&eacute;v&eacute;nement</td>
+                <td class="center">5</td>
+                <td class="center">
+                    135,50&nbsp;&euro;
+                </td>
+                <td class="right">
+                    677,50&nbsp;&euro;
+                </td>
+            </tr>
+    </tbody>
 </table>
 </body>
 </html>

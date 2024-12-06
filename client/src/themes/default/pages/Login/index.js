@@ -64,6 +64,8 @@ const Login = defineComponent({
                     }
                     default: {
                         message = __('errors.api-unreachable');
+                        // eslint-disable-next-line no-console
+                        console.error(error);
                     }
                 }
                 this.message = { type: 'error', text: message, isLoading: false };

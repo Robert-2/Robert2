@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Loxya\Controllers;
 
+use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -10,8 +11,12 @@ use Loxya\Errors\Enums\ApiErrorCode;
 use Loxya\Errors\Exception\ApiBadRequestException;
 use Loxya\Errors\Exception\HttpUnprocessableEntityException;
 use Loxya\Http\Request;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
 use Loxya\Models\Park;
+use Loxya\Services\Auth;
+use Loxya\Services\Logger;
+use Loxya\Services\Mailer;
 use Loxya\Support\Database\QueryAggregator;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
@@ -27,6 +32,17 @@ final class BookingController extends BaseController
     public const BOOKING_TYPES = [
         Event::TYPE => Event::class,
     ];
+
+    protected Mailer $mailer;
+    protected Logger $logger;
+
+    public function __construct(Container $container, Mailer $mailer, Logger $logger)
+    {
+        parent::__construct($container);
+
+        $this->mailer = $mailer;
+        $this->logger = $logger;
+    }
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
@@ -46,7 +62,7 @@ final class BookingController extends BaseController
         }
 
         /** @var Event $booking */
-        $booking = self::BOOKING_TYPES[$entity]::findOrFail($id);
+        $booking = self::BOOKING_TYPES[$entity]::findOrFailForUser($id, Auth::user());
 
         $useMultipleParks = Park::count() > 1;
 
@@ -59,6 +75,21 @@ final class BookingController extends BaseController
             ],
         );
 
+        return $response->withJson($data, StatusCode::STATUS_OK);
+    }
+
+    public function getOne(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        $entity = $request->getAttribute('entity');
+        if (!array_key_exists($entity, self::BOOKING_TYPES)) {
+            throw new HttpNotFoundException($request, "Booking type (entity) not recognized.");
+        }
+
+        /** @var Event $booking */
+        $booking = self::BOOKING_TYPES[$entity]::findOrFailForUser($id, Auth::user());
+
+        $data = $booking->serialize($booking::SERIALIZE_BOOKING_DEFAULT);
         return $response->withJson($data, StatusCode::STATUS_OK);
     }
 
@@ -79,13 +110,43 @@ final class BookingController extends BaseController
 
         $rawMaterials = $request->getParsedBody();
         if (!is_array($rawMaterials)) {
-            throw new HttpBadRequestException($request, "Missing materials to update booking.");
+            throw new HttpBadRequestException($request, "No data was provided.");
         }
 
         try {
             $booking->syncMaterials($rawMaterials);
         } catch (\LengthException $e) {
             throw new ApiBadRequestException(ApiErrorCode::EMPTY_PAYLOAD, $e->getMessage());
+        } catch (\InvalidArgumentException $e) {
+            throw new HttpBadRequestException($request, $e->getMessage());
+        }
+
+        $data = $booking->serialize($booking::SERIALIZE_BOOKING_DEFAULT);
+        return $response->withJson($data, StatusCode::STATUS_OK);
+    }
+
+    public function updateBilling(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        $entity = $request->getAttribute('entity');
+        if (!array_key_exists($entity, self::BOOKING_TYPES)) {
+            throw new HttpNotFoundException($request, "Booking type (entity) not recognized.");
+        }
+
+        /** @var Event $booking */
+        $booking = self::BOOKING_TYPES[$entity]::findOrFail($id);
+
+        if (!$booking->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This booking is no longer editable.");
+        }
+
+        $rawBillingData = $request->getParsedBody();
+        if (!is_array($rawBillingData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        try {
+            $booking->syncBilling($rawBillingData);
         } catch (\InvalidArgumentException $e) {
             throw new HttpBadRequestException($request, $e->getMessage());
         }
@@ -107,7 +168,7 @@ final class BookingController extends BaseController
         $limit = $request->getIntegerQueryParam('limit');
 
         $search = $request->getStringQueryParam('search');
-        $categoryId = $request->getIntegerQueryParam('category');
+        $categoryId = $request->getQueryParam('category');
         $parkId = $request->getIntegerQueryParam('park');
         $period = $request->getPeriodQueryParam('period');
         $endingToday = $request->getBooleanQueryParam('endingToday', false);
@@ -117,36 +178,37 @@ final class BookingController extends BaseController
 
         $queries = [];
         $queries[Event::class] = Event::query()
-            ->when($categoryId !== null, static fn (Builder $builder) => (
+            ->when($categoryId === 'uncategorized' || is_numeric($categoryId), static fn (Builder $builder) => (
                 $builder->whereHas('materials', static fn (Builder $eventMaterialQuery) => (
-                    $eventMaterialQuery->where('materials.category_id', (
-                        $categoryId !== 'uncategorized' ? (int) $categoryId : null
+                    $eventMaterialQuery->whereHas('material', static fn (Builder $materialQuery) => (
+                        $materialQuery->where('category_id', (
+                            $categoryId !== 'uncategorized' ? (int) $categoryId : null
+                        ))
                     ))
                 ))
             ))
-            ->when(is_numeric($parkId), static fn (Builder $builder) => (
-                $builder->whereHas('materials', static fn (Builder $eventMaterialQuery) => (
-                    $eventMaterialQuery->where(static fn (Builder $materialQuery) => (
-                        $materialQuery->inPark((int) $parkId)
-                    ))
-                ))
+            ->when($parkId !== null, static fn (Builder $builder) => (
+                $builder->havingMaterialInPark($parkId)
             ))
             ->when($notConfirmed, static fn (Builder $builder) => (
                 $builder->where('is_confirmed', false)
             ))
-            ->with(['beneficiaries', 'technicians'])
-            ->with(['materials' => static fn ($q) => (
-                $q->reorder('name', 'asc')
-            )]);
+            ->with(['materials', 'beneficiaries', 'technicians']);
 
         $query = (new QueryAggregator())->orderBy($orderBy, $ascending ? 'asc' : 'desc');
         foreach ($queries as $modelClass => $modelQuery) {
             $modelQuery
                 ->when(
+                    Auth::is([Group::READONLY_PLANNING_SELF]),
+                    static fn (Builder $builder) => (
+                        $builder->withInvolvedUser(Auth::user())
+                    ),
+                )
+                ->when(
                     $search !== null && mb_strlen($search) >= 2,
                     static fn ($builder) => $builder->search($search),
                 )
-                ->when($period, static fn (Builder $builder) => (
+                ->when($period !== null, static fn (Builder $builder) => (
                     $builder->inPeriod($period)
                 ))
                 ->when($endingToday, static fn (Builder $builder) => (
@@ -182,7 +244,7 @@ final class BookingController extends BaseController
     protected function getAllInPeriod(Request $request, Response $response): ResponseInterface
     {
         $period = $request->getPeriodQueryParam('period');
-        if (!$period) {
+        if ($period === null) {
             throw new HttpException(
                 $request,
                 sprintf('The period is required for non-paginated data.'),
@@ -204,11 +266,13 @@ final class BookingController extends BaseController
             // - Événements.
             Event::class => (
                 Event::inPeriod($period)
-                    ->with('beneficiaries')
-                    ->with('technicians')
-                    ->with(['materials' => static function ($q) {
-                        $q->reorder('name', 'asc');
-                    }])
+                    ->when(
+                        Auth::is([Group::READONLY_PLANNING_SELF]),
+                        static fn (Builder $builder) => (
+                            $builder->withInvolvedUser(Auth::user())
+                        ),
+                    )
+                    ->with(['materials', 'beneficiaries', 'technicians'])
             ),
         ]);
 

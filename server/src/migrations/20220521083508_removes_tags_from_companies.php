@@ -25,7 +25,7 @@ final class RemovesTagsFromCompanies extends AbstractMigration
     public function down(): void
     {
         $prefix = Config::get('db.prefix');
-        $defaultTags = Config::get('defaultTags', []);
+        $defaultTags = Config::get('legacy.defaultTags', []);
 
         // - Récupère toutes les sociétés déjà en base.
         /** @var SelectQuery $qb */

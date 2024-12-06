@@ -89,11 +89,15 @@ const EventReturnInventory = defineComponent({
             const { isDepartureInventoryDone } = this;
 
             return this.event.materials.map(
-                ({ pivot: eventMaterial, ...material }: EventMaterial) => {
-                    const { quantity } = eventMaterial;
+                (eventMaterial: EventMaterial) => {
+                    const { id, name, reference, quantity, material } = eventMaterial;
 
                     return {
-                        ...material,
+                        id,
+                        name,
+                        reference,
+                        category_id: material.category_id,
+                        park_id: material.park_id,
                         awaitedQuantity: quantity,
                         comment: isDepartureInventoryDone
                             ? (eventMaterial.departure_comment ?? null)

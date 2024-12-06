@@ -5,7 +5,7 @@ import formatOptions from '@/utils/formatOptions';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
-import apiGroups, { Group } from '@/stores/api/groups';
+import { Group } from '@/stores/api/groups';
 
 const DEFAULT_VALUES = Object.freeze({
     first_name: '',
@@ -14,7 +14,7 @@ const DEFAULT_VALUES = Object.freeze({
     email: '',
     phone: '',
     password: '',
-    group: Group.MEMBER,
+    group: Group.MANAGEMENT,
 });
 
 // @vue/component
@@ -45,10 +45,13 @@ export default {
         },
 
         groupsOptions() {
-            const groups = apiGroups.all();
+            const groups = this.$store.state.groups.list;
 
             return formatOptions(groups);
         },
+    },
+    mounted() {
+        this.$store.dispatch('groups/fetch');
     },
     methods: {
         // ------------------------------------------------------
@@ -91,7 +94,7 @@ export default {
                         label="pseudo"
                         autocomplete="off"
                         v-model={data.pseudo}
-                        errors={errors?.pseudo}
+                        error={errors?.pseudo}
                         required
                     />
                     <FormField
@@ -99,7 +102,7 @@ export default {
                         type="email"
                         autocomplete="off"
                         v-model={data.email}
-                        errors={errors?.email}
+                        error={errors?.email}
                         required
                     />
                     {isNew && (
@@ -108,16 +111,16 @@ export default {
                             type="password"
                             autocomplete="new-password"
                             v-model={data.password}
-                            errors={errors?.password}
+                            error={errors?.password}
                             required
                         />
                     )}
                     <FormField
-                        label="group"
+                        label="access"
                         type="select"
                         v-model={data.group}
                         options={groupsOptions}
-                        errors={errors?.group}
+                        error={errors?.group}
                         onChange={handleGroupChange}
                         help={__('page.user.help-group')}
                         placeholder={false}
@@ -131,7 +134,7 @@ export default {
                             class="UserEditForm__first-name"
                             autocomplete="off"
                             v-model={data.first_name}
-                            errors={errors?.first_name}
+                            error={errors?.first_name}
                             required
                         />
                         <FormField
@@ -139,7 +142,7 @@ export default {
                             class="UserEditForm__last-name"
                             autocomplete="off"
                             v-model={data.last_name}
-                            errors={errors?.last_name}
+                            error={errors?.last_name}
                             required
                         />
                     </div>
@@ -148,7 +151,7 @@ export default {
                         type="tel"
                         autocomplete="off"
                         v-model={data.phone}
-                        errors={errors?.phone}
+                        error={errors?.phone}
                     />
                 </Fieldset>
                 <section class="Form__actions">

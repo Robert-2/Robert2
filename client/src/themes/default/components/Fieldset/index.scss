@@ -3,28 +3,37 @@
 .Fieldset {
     $block: &;
 
-    &__title {
-        margin: 0 0 globals.$spacing-medium;
-        font-size: 1.3rem;
-    }
+    &__header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: globals.$spacing-medium;
+        gap: globals.$spacing-small;
 
-    &__help {
-        margin: 0 0 globals.$spacing-medium;
-        color: globals.$text-light-color;
-        white-space: pre-line;
+        &__main {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: globals.$spacing-small;
+        }
+
+        &__title {
+            flex: 1;
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        &__actions {
+            margin-left: auto;
+        }
+
+        &__help {
+            margin: 0;
+            color: globals.$text-soft-color;
+            white-space: pre-line;
+        }
     }
 
     & + & {
         margin-top: globals.$spacing-large;
-    }
-
-    //
-    // - Variantes
-    //
-
-    &--with-help {
-        #{$block}__title {
-            margin-bottom: globals.$spacing-small;
-        }
     }
 }

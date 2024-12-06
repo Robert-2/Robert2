@@ -1,6 +1,7 @@
 import './index.scss';
 import axios from 'axios';
 import diff from 'lodash/difference';
+import parseInteger from '@/utils/parseInteger';
 import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
 import { isRequestErrorStatusCode } from '@/utils/errors';
@@ -22,19 +23,15 @@ type Data = {
     isSaving: boolean,
     attribute: AttributeDetails | null,
     criticalError: boolean,
-    validationErrors: Record<string, string[]> | undefined,
+    validationErrors: Record<string, string> | undefined,
 };
 
 /** Page d'edition d'un attribut de matériel. */
 const AttributeEdit = defineComponent({
     name: 'AttributeEdit',
     data(): Data {
-        const id = this.$route.params.id
-            ? parseInt(this.$route.params.id, 10)
-            : null;
-
         return {
-            id,
+            id: parseInteger(this.$route.params.id)!,
             isFetched: false,
             isSaving: false,
             attribute: null,
@@ -94,10 +91,9 @@ const AttributeEdit = defineComponent({
 
             try {
                 this.attribute = await apiAttributes.one(id!);
+                this.isFetched = true;
             } catch {
                 this.criticalError = true;
-            } finally {
-                this.isFetched = true;
             }
         },
 
@@ -108,17 +104,33 @@ const AttributeEdit = defineComponent({
 
             const { $t: __, attribute, isNew } = this;
 
-            const savedCategories = attribute?.categories?.map(({ id }: Category) => id) ?? [];
-            const hasCategories = data.categories.length > 0;
-            const hasRemovedCategories = diff(savedCategories, data.categories).length > 0;
-            const hasAddedCategories = diff(data.categories, savedCategories).length > 0;
+            if (!isNew) {
+                let isConfirmed = true;
 
-            if (!isNew && hasCategories && (hasRemovedCategories || hasAddedCategories)) {
-                const isConfirmed = await confirm({
-                    type: 'danger',
-                    text: __('page.attribute-edit.confirm-update-categories'),
-                    confirmButtonText: __('page.attribute-edit.yes-update'),
-                });
+                const savedEntities = attribute?.entities ?? [];
+                const haveEntitiesRemoved = diff(savedEntities, data.entities).length > 0;
+                if (haveEntitiesRemoved) {
+                    isConfirmed = await confirm({
+                        type: 'danger',
+                        text: __('page.attribute-edit.confirm-update-entities'),
+                        confirmButtonText: __('page.attribute-edit.yes-update'),
+                    });
+                }
+
+                const savedCategories = attribute?.categories?.map(({ id }: Category) => id) ?? [];
+                const haveCategoriesChanged = (
+                    data.categories.length > 0 && (
+                        diff(savedCategories, data.categories).length > 0 ||
+                        diff(data.categories, savedCategories).length > 0
+                    )
+                );
+                if (haveCategoriesChanged) {
+                    isConfirmed = await confirm({
+                        type: 'danger',
+                        text: __('page.attribute-edit.confirm-update-categories'),
+                        confirmButtonText: __('page.attribute-edit.yes-update'),
+                    });
+                }
 
                 if (!isConfirmed) {
                     return;

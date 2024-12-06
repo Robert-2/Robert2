@@ -1,24 +1,42 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import groupByCategories, { SortBy } from './utils/groupByCategories';
-import MaterialsCategoryItem from './components/CategoryItem';
+import Category from './components/Category';
+import Extras from './components/Extras';
 
+import type Currency from '@/utils/currency';
 import type { PropType } from '@vue/composition-api';
-import type { BookingMaterial } from './utils/_types';
-import type { MaterialsSection } from './utils/groupByCategories';
+import type { EmbeddedMaterialsByCategory } from './utils/groupByCategories';
+import type { EmbeddedExtra, EmbeddedMaterial } from './_types';
 
 type Props = {
-    /** La liste du matériel du booking à classer. */
-    data: BookingMaterial[],
+    /**
+     * La liste du matériel embarquée à classer.
+     *
+     * On entends par "embarquée" un matériel qui est en quantité définie, potentiellement
+     * avec certaines de ses unités, dans une liste, une réservation, un événement.
+     */
+    materials: EmbeddedMaterial[],
 
-    /** Permet de choisir si on veut afficher les montants de location ou non. */
-    withRentalPrices?: boolean,
+    /** La liste des extras embarqués à afficher en plus du matériel. */
+    extras: EmbeddedExtra[],
+
+    /** Doit-on afficher les informations liées à la facturation ? */
+    withBilling?: boolean,
+
+    /**
+     * La devise à utiliser pour les prix.
+     *
+     * - Uniquement si `withBilling` est utilisé.
+     * - Si non fournie, la devise par défaut sera utilisée.
+     */
+    currency?: Currency,
 };
 
 /**
  * Liste de matériel triée.
  *
- * Affiche la liste de matériel d'un booking (événement), classé
+ * Affiche une liste de matériel embarquée (événement, réservation), classé
  * par catégories (classement par défaut), ou par sous-liste de matériel.
  *
  * Le classement par sous-liste est réservé aux événements. Dans chaque sous-liste,
@@ -27,24 +45,32 @@ type Props = {
 const MaterialsSorted = defineComponent({
     name: 'MaterialsSorted',
     props: {
-        data: {
-            type: Array as PropType<Props['data']>,
+        materials: {
+            type: Array as PropType<Props['materials']>,
             required: true,
         },
-        withRentalPrices: {
-            type: Boolean as PropType<Required<Props>['withRentalPrices']>,
+        extras: {
+            type: Array as PropType<Required<Props>['extras']>,
+            default: () => [],
+        },
+        withBilling: {
+            type: Boolean as PropType<Required<Props>['withBilling']>,
             default: false,
+        },
+        currency: {
+            type: Object as PropType<Props['currency']>,
+            default: undefined,
         },
     },
     computed: {
-        sorted(): MaterialsSection[] {
-            const { data, withRentalPrices } = this;
+        sortedMaterials(): EmbeddedMaterialsByCategory[] {
+            const { materials } = this;
 
             const allCategories = this.$store.state.categories.list;
             return groupByCategories(
-                data,
+                materials,
                 allCategories ?? [],
-                withRentalPrices ? SortBy.PRICE : SortBy.NAME,
+                SortBy.NAME,
             );
         },
     },
@@ -52,18 +78,33 @@ const MaterialsSorted = defineComponent({
         this.$store.dispatch('categories/fetch');
     },
     render() {
-        const { sorted, withRentalPrices } = this;
+        const { sortedMaterials, extras, withBilling, currency } = this;
+
+        const renderMaterials = (): JSX.Element[] => (
+            sortedMaterials.map(
+                (category: EmbeddedMaterialsByCategory) => (
+                    <Category
+                        key={category.id}
+                        data={category}
+                        withBilling={withBilling}
+                        currency={currency}
+                    />
+                ),
+            )
+        );
 
         return (
             <div class="MaterialsSorted">
-                {sorted.map((category: MaterialsSection) => (
-                    <MaterialsCategoryItem
-                        key={category.id}
-                        data={category}
-                        withRentalPrices={withRentalPrices}
-                        class="MaterialsSorted__category"
-                    />
-                ))}
+                {renderMaterials()}
+                {extras.length > 0 && (
+                    <div class="MaterialsSorted__extras">
+                        <Extras
+                            data={extras}
+                            withBilling={withBilling}
+                            currency={currency}
+                        />
+                    </div>
+                )}
             </div>
         );
     },

@@ -34,7 +34,11 @@ type Props = {
     actions?: VNode[],
 };
 
-// @vue/component
+type Data = {
+    selectedIndex: number,
+};
+
+/** Un ensemble d'onglets avec une navigation contrôlée. */
 const Tabs = defineComponent({
     name: 'Tabs',
     props: {
@@ -48,7 +52,7 @@ const Tabs = defineComponent({
         },
     },
     emits: ['change', 'changed'],
-    data() {
+    data(): Data {
         return {
             selectedIndex: this.defaultIndex,
         };

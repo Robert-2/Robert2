@@ -1,0 +1,67 @@
+@use '~@/themes/default/style/globals';
+
+.EventEditStepInfos {
+    max-width: 800px;
+    min-width: 250px;
+    margin: 0 auto;
+
+    &__operation-period {
+        display: flex;
+        align-items: flex-start;
+        margin: 1rem 0;
+        gap: 10px;
+
+        &__dates {
+            flex: 1;
+        }
+
+        &__duration {
+            flex: 0 0 150px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 43px;
+            margin-top: 30px;
+        }
+    }
+
+    &__warning {
+        &--technician-transfer,
+        &--mobilization-period-readonly {
+            margin-top: globals.$spacing-medium;
+        }
+    }
+
+    &__is-billable {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+        gap: 10px;
+
+        &__input {
+            flex: 1;
+        }
+    }
+
+    &__color {
+        --input-width: 160px;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        padding: globals.$spacing-large 0;
+        gap: globals.$spacing-small;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__actions {
+            padding-left: globals.$form-label-width;
+        }
+    }
+}

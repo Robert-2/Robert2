@@ -1,0 +1,140 @@
+title-create: Nouvel événement
+title-simple: Modifier l'événement
+title: "Modifier l'événement «\_{title}\_»"
+cannot-be-modified: Cet événement ne peut plus être modifié.
+save-and-go-to-prev-step: Sauvegarder et retour à l'étape précédente
+save-and-go-to-next-step: Sauvegarder et continuer
+go-to-prev-step: Retour à l'étape précédente
+continue: Continuer
+step: Étape
+event-beneficiaries: Bénéficiaires
+event-technicians: Techniciens
+event-materials: Matériel
+event-confirmation: Confirmation
+
+no-technician-with-this-search: Aucun technicien n'a été trouvé avec cette recherche.
+no-technician-pass-this-step: |-
+    Il n'y a aucun technicien disponible pour cette période.
+    Vous pouvez passer cette étape.
+
+technician-item:
+    confirm-permanently-delete: Voulez-vous vraiment supprimer l'assignation de ce technicien ?
+
+assign-technician: 'Assigner {name} en tant que technicien(ne)'
+assign-name: 'Assigner {name}'
+modify-assignment: Modifier l'assignation
+remove-assignment: Supprimer l'assignation
+period-assigned: Période assignée
+start-end-dates-and-time: Dates et heures de début et fin
+saved: Événement sauvegardé.
+not-saved: L'événement comporte des modifications non sauvegardées
+beneficiary-billing-help: Seul le premier bénéficiaire de la liste apparaîtra sur la facture.
+technicians-help: >-
+    Double-cliquez sur la ligne d'un technicien à la date/heure de début voulue
+    pour l'assigner à l'événement.
+technicians-search-placeholder: Rechercher un nom ou adresse e-mail...
+clear-search: Effacer le terme de recherche
+
+steps:
+    informations:
+        title: Informations
+
+        operation-period: Dates de l'événement
+        mobilization-period: Période de mobilisation du matériel
+        mobilization-period-help: "Période pendant laquelle le matériel est mobilisé pour cet événement."
+        sync-mobilization-period: "Utiliser une période de mobilisation du matériel identique aux dates de l'événement\_?"
+        color-on-calendar: Couleur sur le calendrier
+
+        readonly-mobilization-period-warning:
+            entirely: |
+                Les inventaires de départ et de retour ayant été effectués, il n'est
+                plus possible de modifier la période de mobilisation du matériel.
+
+            start-only:
+                with-author-date: |
+                    L'inventaire de départ ayant été effectué le {date} par {author}, il n'est plus
+                    possible de modifier la date de début de mobilisation du matériel.
+
+                    La date de fin de mobilisation, quant à elle, reste modifiable jusqu'à ce que l'inventaire de retour soit effectué.
+
+                with-author: |
+                    L'inventaire de départ ayant été effectué par {author}, il n'est plus
+                    possible de modifier la date de début de mobilisation du matériel.
+
+                    La date de fin de mobilisation, quant à elle, reste modifiable jusqu'à ce que l'inventaire de retour soit effectué.
+
+                with-date: |
+                    L'inventaire de départ ayant été effectué le {date}, il n'est plus
+                    possible de modifier la date de début de mobilisation du matériel.
+
+                    La date de fin de mobilisation, quant à elle, reste modifiable jusqu'à ce que l'inventaire de retour soit effectué.
+
+                simple: |
+                    L'inventaire de départ ayant été effectué, il n'est plus possible de modifier
+                    la date de début de mobilisation du matériel.
+
+                    La date de fin de mobilisation, quant à elle, reste modifiable jusqu'à ce que l'inventaire de retour soit effectué.
+
+            end-only:
+                with-author-date: |
+                    L'inventaire de retour ayant été effectué le {date} par {author}, il n'est plus
+                    possible de modifier la date de fin de mobilisation du matériel.
+
+                with-author: |
+                    L'inventaire de retour ayant été effectué par {author}, il n'est plus
+                    possible de modifier la date de fin de mobilisation du matériel.
+
+                with-date: |
+                    L'inventaire de retour ayant été effectué le {date}, il n'est plus
+                    possible de modifier la date de fin de mobilisation du matériel.
+
+                simple: |
+                    L'inventaire de retour ayant été effectué, il n'est plus possible de modifier la date de fin de mobilisation du matériel.
+
+        technician-transfer-warning:
+            without-critical-impact: |
+                Attention, vous êtes sur le point de modifier les dates de l'événement alors que des techniciens sont assignés.
+
+                Il semble toutefois qu'aucune affectation des techniciens ne soit impactée par ce changement de date.
+                Ces assignations resteront donc inchangées et seront toujours applicables.
+
+                Toutefois, si vous désirez ajuster ces affectations selon les nouvelles dates, après avoir
+                validé vos changements, rendez-vous à l'étape 3 pour réajuster les affectations des techniciens.
+
+            with-critical-impact: |
+                Attention, vous êtes sur le point de modifier les dates de l'événement, ce qui affectera les techniciens assignés.
+
+                La nouvelle période pour l'assignation des techniciens après vos modifications est :
+                {period}
+
+                Lors de la validation des modifications, les assignations seront réexaminées pour vérifier leur faisabilité :
+                - Les assignations qui restent entièrement applicables seront conservées telles quelles.
+                - Les assignations partiellement applicables seront ajustées pour ne conserver que les portions réalisables.
+                - Les assignations qui ne correspondent plus aux nouvelles dates seront supprimées.
+
+                Quoi qu'il en soit, assurez-vous de revoir les affectations finales à l'étape 3 après avoir modifié les dates.
+
+    beneficiaries:
+        title: Bénéficiaires
+
+        numbered-label: "Bénéficiaire {number}"
+        add-beneficiary: Ajouter un bénéficiaire
+        remove-beneficiary: Enlever ce bénéficiaire
+        cancel-add-beneficiary: Annuler l'ajout du bénéficiaire
+        beneficiary-not-found: "Bénéficiaire introuvable. Peut-être a-t-il été supprimé\_?"
+        create-a-beneficiary: Créer un nouveau bénéficiaire
+
+    technicians:
+        title: Techniciens
+
+        assignation-saved: Assignation du technicien sauvegardée.
+        assignation-removed: Assignation du technicien supprimée.
+
+    materials:
+        title: Matériel
+
+    billing:
+        title: Facturation
+
+    summary:
+        title: Récapitulatif

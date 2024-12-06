@@ -6,6 +6,8 @@ namespace Loxya\Tests;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Loxya\Models\Enums\AttributeEntity;
+use Loxya\Models\Enums\AttributeType;
 use Loxya\Models\Event;
 use Loxya\Models\Material;
 use Loxya\Support\Arr;
@@ -24,22 +26,26 @@ final class MaterialsTest extends ApiTestCase
                 'park_id' => 1,
                 'category_id' => 1,
                 'sub_category_id' => 1,
-                'rental_price' => 300,
+                'rental_price' => '300.00',
+                'degressive_rate_id' => 3,
+                'tax_id' => 1,
                 'stock_quantity' => 5,
                 'out_of_order_quantity' => 1,
                 'available_quantity' => 4,
-                'replacement_price' => 19_400,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '19400.00',
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
-                'is_reservable' => true,
+                'is_deleted' => false,
                 'picture' => 'http://loxya.test/static/materials/1/picture',
                 'note' => null,
                 'attributes' => [
-                    array_merge(AttributesTest::data(1), [
-                        'value' => 36.5,
-                    ]),
                     array_merge(AttributesTest::data(2), [
                         'value' => 'Grise',
+                    ]),
+                    array_merge(AttributesTest::data(1), [
+                        'value' => 36.5,
                     ]),
                     array_merge(AttributesTest::data(3), [
                         'value' => 850,
@@ -59,14 +65,18 @@ final class MaterialsTest extends ApiTestCase
                 'park_id' => 1,
                 'category_id' => 1,
                 'sub_category_id' => 2,
-                'rental_price' => 25.5,
+                'rental_price' => '25.50',
+                'degressive_rate_id' => null,
+                'tax_id' => 1,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
                 'available_quantity' => 2,
-                'replacement_price' => 349.9,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '349.90',
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
-                'is_reservable' => false,
+                'is_deleted' => false,
                 'picture' => null,
                 'note' => null,
                 'attributes' => [
@@ -91,14 +101,18 @@ final class MaterialsTest extends ApiTestCase
                 'park_id' => 1,
                 'category_id' => 2,
                 'sub_category_id' => 3,
-                'rental_price' => 3.5,
+                'rental_price' => '3.50',
+                'degressive_rate_id' => 1,
+                'tax_id' => null,
                 'stock_quantity' => 34,
                 'out_of_order_quantity' => 4,
                 'available_quantity' => 30,
-                'replacement_price' => 89,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '89.00',
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
-                'is_reservable' => true,
+                'is_deleted' => false,
                 'picture' => null,
                 'note' => 'Soyez délicats avec ces projos !',
                 'attributes' => [
@@ -123,25 +137,29 @@ final class MaterialsTest extends ApiTestCase
                 'park_id' => 1,
                 'category_id' => 2,
                 'sub_category_id' => 4,
-                'rental_price' => 15.95,
+                'rental_price' => '15.95',
+                'degressive_rate_id' => 1,
+                'tax_id' => 1,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
                 'available_quantity' => 2,
-                'replacement_price' => 59,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '59.00',
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
-                'is_reservable' => true,
+                'is_deleted' => false,
                 'picture' => null,
                 'note' => null,
                 'attributes' => [
+                    array_merge(AttributesTest::data(4), [
+                        'value' => true,
+                    ]),
                     array_merge(AttributesTest::data(1), [
                         'value' => 3.15,
                     ]),
                     array_merge(AttributesTest::data(3), [
                         'value' => 60,
-                    ]),
-                    array_merge(AttributesTest::data(4), [
-                        'value' => true,
                     ]),
                 ],
                 'tags' => [],
@@ -154,16 +172,20 @@ final class MaterialsTest extends ApiTestCase
                 'reference' => 'XLR10',
                 'description' => 'Câble audio XLR 10 mètres, mâle-femelle',
                 'park_id' => 1,
-                'category_id' => 1,
+                'category_id' => null,
                 'sub_category_id' => null,
-                'rental_price' => 0.5,
+                'rental_price' => '0.50',
+                'degressive_rate_id' => 3,
+                'tax_id' => 2,
                 'stock_quantity' => 40,
                 'out_of_order_quantity' => 8,
                 'available_quantity' => 32,
-                'replacement_price' => 9.5,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '9.50',
                 'is_hidden_on_bill' => true,
                 'is_discountable' => true,
-                'is_reservable' => true,
+                'is_deleted' => false,
                 'picture' => null,
                 'note' => null,
                 'attributes' => [],
@@ -174,25 +196,32 @@ final class MaterialsTest extends ApiTestCase
             [
                 'id' => 6,
                 'name' => 'Behringer X Air XR18',
-                'description' => 'Mélangeur numérique 18 canaux',
                 'reference' => 'XR18',
+                'description' => 'Mélangeur numérique 18 canaux',
                 'park_id' => 1,
                 'category_id' => 1,
                 'sub_category_id' => 1,
-                'rental_price' => 49.99,
+                'rental_price' => '49.99',
+                'degressive_rate_id' => 1,
+                'tax_id' => 1,
                 'stock_quantity' => 3,
                 'out_of_order_quantity' => 1,
                 'available_quantity' => 2,
-                'replacement_price' => 419,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '419.00',
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
-                'is_reservable' => true,
+                'is_deleted' => false,
                 'picture' => null,
                 'note' => null,
                 'tags' => [],
                 'attributes' => [
                     array_merge(AttributesTest::data(5), [
                         'value' => '2021-01-28',
+                    ]),
+                    array_merge(AttributesTest::data(8), [
+                        'value' => 250,
                     ]),
                 ],
                 'created_at' => '2021-02-12 23:15:00',
@@ -201,19 +230,23 @@ final class MaterialsTest extends ApiTestCase
             [
                 'id' => 7,
                 'name' => 'Volkswagen Transporter',
-                'description' => 'Volume utile: 9.3 m3',
                 'reference' => 'Transporter',
+                'description' => 'Volume utile: 9.3 m3',
                 'park_id' => 2,
                 'category_id' => 3,
                 'sub_category_id' => null,
-                'rental_price' => 300,
+                'rental_price' => '300.00',
+                'degressive_rate_id' => 2,
+                'tax_id' => null,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
                 'available_quantity' => 2,
-                'replacement_price' => 32_000,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '32000.00',
                 'is_hidden_on_bill' => false,
                 'is_discountable' => false,
-                'is_reservable' => true,
+                'is_deleted' => false,
                 'picture' => null,
                 'note' => null,
                 'tags' => [],
@@ -229,14 +262,18 @@ final class MaterialsTest extends ApiTestCase
                 'park_id' => 1,
                 'category_id' => 4,
                 'sub_category_id' => null,
-                'rental_price' => 1500,
+                'rental_price' => '1500.00',
+                'degressive_rate_id' => 3,
+                'tax_id' => 4,
                 'stock_quantity' => 2,
                 'out_of_order_quantity' => 0,
                 'available_quantity' => 2,
-                'replacement_price' => 8500,
+                'departure_inventory_todo' => null,
+                'return_inventory_todo' => null,
+                'replacement_price' => '8500.00',
                 'is_hidden_on_bill' => false,
                 'is_discountable' => true,
-                'is_reservable' => true,
+                'is_deleted' => false,
                 'picture' => null,
                 'note' => null,
                 'tags' => [],
@@ -248,11 +285,29 @@ final class MaterialsTest extends ApiTestCase
 
         $materials = match ($format) {
             Material::SERIALIZE_DEFAULT => $materials->map(static fn ($material) => (
-                Arr::except($material, ['available_quantity'])
+                Arr::except($material, [
+                    'available_quantity',
+                    'departure_inventory_todo',
+                    'return_inventory_todo',
+                    'is_deleted',
+                ])
             )),
-            Material::SERIALIZE_WITH_AVAILABILITY => $materials,
+            Material::SERIALIZE_WITH_CONTEXT_EXCERPT => $materials->map(static fn ($material) => (
+                Arr::except($material, [
+                    'available_quantity',
+                    'departure_inventory_todo',
+                    'return_inventory_todo',
+                ])
+            )),
+            Material::SERIALIZE_WITH_CONTEXT,
+            Material::SERIALIZE_WITH_AVAILABILITY => $materials->map(static fn ($material) => (
+                Arr::except($material, [
+                    'departure_inventory_todo',
+                    'return_inventory_todo',
+                ])
+            )),
             Material::SERIALIZE_DETAILS => $materials->map(static fn ($material) => (
-                Arr::except($material, ['available_quantity'])
+                Arr::except($material, ['is_deleted'])
             )),
             Material::SERIALIZE_PUBLIC => $materials->map(static fn ($material) => (
                 Arr::only($material, [
@@ -312,7 +367,7 @@ final class MaterialsTest extends ApiTestCase
         $this->assertEquals(3, $results[0]['stock_quantity']);
         $this->assertEquals(2, $results[0]['available_quantity']);
 
-        $this->client->get('/api/materials?deleted=1');
+        $this->client->get('/api/materials?onlyDeleted=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(0);
     }
@@ -338,51 +393,75 @@ final class MaterialsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             array_replace_recursive(
-                self::data(1, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(1, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '1.00',
+                    'rental_price_period' => '300.00',
                     'available_quantity' => 1,
+                    'is_deleted' => false,
                 ],
             ),
             array_replace_recursive(
-                self::data(2, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(2, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '2.00',
+                    'rental_price_period' => '51.00',
                     'available_quantity' => 0,
+                    'is_deleted' => false,
                 ],
             ),
             array_replace_recursive(
-                self::data(8, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(8, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '1.00',
+                    'rental_price_period' => '1500.00',
                     'available_quantity' => 2,
+                    'is_deleted' => false,
                 ],
             ),
             array_replace_recursive(
-                self::data(3, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(3, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '1.75',
+                    'rental_price_period' => '6.13',
                     'available_quantity' => 30,
+                    'is_deleted' => false,
                 ],
             ),
             array_replace_recursive(
-                self::data(4, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(4, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '1.75',
+                    'rental_price_period' => '27.91',
                     'available_quantity' => 2,
+                    'is_deleted' => false,
                 ],
             ),
             array_replace_recursive(
-                self::data(7, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(7, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '1.50',
+                    'rental_price_period' => '450.00',
                     'available_quantity' => 2,
+                    'is_deleted' => false,
                 ],
             ),
             array_replace_recursive(
-                self::data(5, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(5, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '1.00',
+                    'rental_price_period' => '0.50',
                     'available_quantity' => 32,
+                    'is_deleted' => false,
                 ],
             ),
             array_replace_recursive(
-                self::data(6, Material::SERIALIZE_WITH_AVAILABILITY),
+                self::data(6, Material::SERIALIZE_WITH_CONTEXT),
                 [
+                    'degressive_rate' => '1.75',
+                    'rental_price_period' => '87.48',
                     'available_quantity' => 2,
+                    'is_deleted' => false,
                 ],
             ),
         ]);
@@ -457,55 +536,50 @@ final class MaterialsTest extends ApiTestCase
         }
     }
 
-    public function testCreateWithoutData(): void
+    public function testCreate(): void
     {
+        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
+
+        // - Test avec des données vides.
         $this->client->post('/api/materials');
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
-    }
 
-    public function testCreateBadData(): void
-    {
+        // - Test avec des données invalides.
         $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha RM800',
             'reference' => '',
             'park_id' => 1,
             'category_id' => 1,
             'sub_category_id' => 1,
-            'rental_price' => 100,
+            'rental_price' => '100.00',
             'stock_quantity' => 1,
         ]);
         $this->assertApiValidationError([
-            'reference' => ['This field is mandatory.'],
+            'reference' => "This field is mandatory.",
         ]);
-    }
 
-    public function testCreateDuplicate(): void
-    {
+        // - Test avec un matériel qui a déjà la même référence.
         $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha CL3',
             'reference' => 'CL3',
             'park_id' => 1,
             'category_id' => 1,
             'sub_category_id' => 1,
-            'rental_price' => 500,
+            'rental_price' => '500.00',
             'stock_quantity' => 1,
         ]);
         $this->assertApiValidationError();
-    }
 
-    public function testCreateWithTags(): void
-    {
-        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
-
+        // - Création d'un matériel en lui assignant des tags.
         $this->client->post('/api/materials', [
             'name' => 'Analog Mixing Console Yamaha RM800',
             'reference' => 'RM800',
             'park_id' => 1,
             'category_id' => 1,
             'sub_category_id' => 1,
-            'rental_price' => 100.0,
-            'replacement_price' => 357.0,
+            'rental_price' => '100.00',
+            'replacement_price' => '357.00',
             'stock_quantity' => 1,
             'tags' => [2, 1],
         ]);
@@ -517,13 +591,17 @@ final class MaterialsTest extends ApiTestCase
             'park_id' => 1,
             'category_id' => 1,
             'sub_category_id' => 1,
-            'rental_price' => 100,
-            'replacement_price' => 357,
+            'rental_price' => '100.00',
+            'degressive_rate_id' => null,
+            'tax_id' => null,
+            'replacement_price' => '357.00',
             'stock_quantity' => 1,
-            'out_of_order_quantity' => null,
+            'out_of_order_quantity' => 0,
+            'available_quantity' => 1,
+            'departure_inventory_todo' => null,
+            'return_inventory_todo' => null,
             'is_hidden_on_bill' => false,
             'is_discountable' => true,
-            'is_reservable' => true,
             'description' => null,
             'picture' => null,
             'note' => null,
@@ -535,20 +613,18 @@ final class MaterialsTest extends ApiTestCase
             'created_at' => '2022-10-22 18:42:36',
             'updated_at' => '2022-10-22 18:42:36',
         ]);
-    }
 
-    public function testCreateWithAttributes(): void
-    {
-        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
-
+        // - Création d'un matériel avec des caractéristiques spéciales.
         $this->client->post('/api/materials', [
             'name' => 'Console numérique Yamaha 01V96 V2',
             'reference' => '01V96-v2',
             'park_id' => 1,
             'category_id' => 1,
             'sub_category_id' => 1,
-            'rental_price' => 180.0,
-            'replacement_price' => 2000.0,
+            'rental_price' => '180.00',
+            'degressive_rate_id' => 3,
+            'tax_id' => 1,
+            'replacement_price' => '2000.00',
             'stock_quantity' => 2,
             'attributes' => [
                 ['id' => 1, 'value' => 12.5],
@@ -558,27 +634,39 @@ final class MaterialsTest extends ApiTestCase
         ]);
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
-            'id' => 9,
+            'id' => 10,
             'name' => 'Console numérique Yamaha 01V96 V2',
             'reference' => '01V96-v2',
             'park_id' => 1,
             'category_id' => 1,
             'sub_category_id' => 1,
-            'rental_price' => 180,
-            'replacement_price' => 2000,
+            'rental_price' => '180.00',
+            'replacement_price' => '2000.00',
+            'degressive_rate_id' => 3,
+            'tax_id' => 1,
             'stock_quantity' => 2,
-            'out_of_order_quantity' => null,
+            'out_of_order_quantity' => 0,
+            'available_quantity' => 2,
+            'departure_inventory_todo' => null,
+            'return_inventory_todo' => null,
             'is_hidden_on_bill' => false,
             'is_discountable' => true,
-            'is_reservable' => true,
             'description' => null,
             'picture' => null,
             'note' => null,
             'attributes' => [
                 [
+                    'id' => 4,
+                    'name' => 'Conforme',
+                    'entities' => [AttributeEntity::MATERIAL->value],
+                    'type' => AttributeType::BOOLEAN->value,
+                    'value' => true,
+                ],
+                [
                     'id' => 1,
                     'name' => 'Poids',
-                    'type' => 'float',
+                    'entities' => [AttributeEntity::MATERIAL->value],
+                    'type' => AttributeType::FLOAT->value,
                     'unit' => 'kg',
                     'value' => 12.5,
                     'is_totalisable' => true,
@@ -586,16 +674,11 @@ final class MaterialsTest extends ApiTestCase
                 [
                     'id' => 3,
                     'name' => 'Puissance',
-                    'type' => 'integer',
+                    'entities' => [AttributeEntity::MATERIAL->value],
+                    'type' => AttributeType::INTEGER->value,
                     'unit' => 'W',
                     'value' => 60,
                     'is_totalisable' => true,
-                ],
-                [
-                    'id' => 4,
-                    'name' => 'Conforme',
-                    'type' => 'boolean',
-                    'value' => true,
                 ],
             ],
             'tags' => [],
@@ -620,6 +703,7 @@ final class MaterialsTest extends ApiTestCase
             [
                 'reference' => 'CL3-v2',
                 'stock_quantity' => 6,
+                'available_quantity' => 3,
                 'updated_at' => '2023-05-26 16:00:00',
             ],
         ));
@@ -633,6 +717,7 @@ final class MaterialsTest extends ApiTestCase
             [
                 'reference' => 'CL3-v2',
                 'stock_quantity' => 0,
+                'available_quantity' => 0,
                 'updated_at' => '2023-05-26 16:00:00',
             ],
         ));
@@ -647,6 +732,7 @@ final class MaterialsTest extends ApiTestCase
                 'reference' => 'CL3-v2',
                 'stock_quantity' => 5,
                 'out_of_order_quantity' => 5,
+                'available_quantity' => 0,
                 'updated_at' => '2023-05-26 16:00:00',
             ],
         ));
@@ -780,7 +866,7 @@ final class MaterialsTest extends ApiTestCase
                     'Un fichier bien trop volumineux.pdf',
                     'application/pdf',
                 ),
-                'expected' => ['This file exceeds maximum size allowed.'],
+                'expected' => "This file exceeds maximum size allowed.",
             ],
             [
                 'file' => new UploadedFile(
@@ -790,7 +876,7 @@ final class MaterialsTest extends ApiTestCase
                     'échec-upload.csv',
                     'text/csv',
                 ),
-                'expected' => ['File upload failed.'],
+                'expected' => "File upload failed.",
             ],
             [
                 'file' => new UploadedFile(
@@ -800,7 +886,7 @@ final class MaterialsTest extends ApiTestCase
                     'app.dmg',
                     'application/octet-stream',
                 ),
-                'expected' => ['This file type is not allowed.'],
+                'expected' => "This file type is not allowed.",
             ],
         ];
         foreach ($invalidUploads as $invalidUpload) {

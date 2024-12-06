@@ -9,7 +9,10 @@ import Button from '@/themes/default/components/Button';
 import type { PropType } from '@vue/composition-api';
 import type { Options } from '@/utils/formatOptions';
 import type { Country } from '@/stores/api/countries';
-import type { Technician, TechnicianEdit } from '@/stores/api/technicians';
+import type {
+    TechnicianEdit,
+    TechnicianDetails as Technician,
+} from '@/stores/api/technicians';
 
 type Props = {
     /** Les données déjà sauvegardées du technicien (s'il existait déjà). */
@@ -19,7 +22,7 @@ type Props = {
     isSaving?: boolean,
 
     /** Liste des erreurs de validation éventuelles. */
-    errors?: Record<keyof TechnicianEdit, string[]>,
+    errors?: Record<keyof TechnicianEdit | 'user', string>,
 };
 
 type Data = {
@@ -64,13 +67,20 @@ const TechnicianEditForm = defineComponent({
         const data = {
             ...DEFAULT_VALUES,
             ...pick(this.savedData ?? {}, Object.keys(DEFAULT_VALUES)),
+            email: this.savedData?.user?.email ?? this.savedData?.email ?? null,
         };
 
-        return { data };
+        return {
+            data,
+        };
     },
     computed: {
         countriesOptions(): Options<Country> {
             return this.$store.getters['countries/options'];
+        },
+
+        hasUserAccount(): boolean {
+            return !!this.savedData?.user;
         },
     },
     created() {
@@ -86,7 +96,8 @@ const TechnicianEditForm = defineComponent({
         handleSubmit(e: SubmitEvent) {
             e?.preventDefault();
 
-            this.$emit('submit', cloneDeep(this.data));
+            const { data } = this;
+            this.$emit('submit', cloneDeep(data));
         },
 
         handleCancel() {
@@ -97,12 +108,48 @@ const TechnicianEditForm = defineComponent({
         const {
             $t: __,
             data,
+            hasUserAccount,
+            savedData,
             errors,
             countriesOptions,
             isSaving,
             handleSubmit,
             handleCancel,
         } = this;
+
+        const renderUserAccountSection = (): JSX.Element | null => {
+            if (hasUserAccount) {
+                const user = savedData!.user!;
+
+                return (
+                    <Fieldset title={__('page.technician-edit.user-account')}>
+                        <div class="TechnicianEditForm__existing-user-help">
+                            {__('page.technician-edit.existing-user-help')}
+                        </div>
+                        <div class="TechnicianEditForm__existing-user">
+                            <div class="TechnicianEditForm__existing-user__pseudo">
+                                <div class="TechnicianEditForm__existing-user__label">
+                                    {__('pseudo')}
+                                </div>
+                                <div class="TechnicianEditForm__existing-user__value">
+                                    {user.pseudo}
+                                </div>
+                            </div>
+                            <div class="TechnicianEditForm__existing-user__email">
+                                <div class="TechnicianEditForm__existing-user__label">
+                                    {__('email')}
+                                </div>
+                                <div class="TechnicianEditForm__existing-user__value">
+                                    {user.email}
+                                </div>
+                            </div>
+                        </div>
+                    </Fieldset>
+                );
+            }
+
+            return null;
+        };
 
         return (
             <form
@@ -115,7 +162,7 @@ const TechnicianEditForm = defineComponent({
                             label="first-name"
                             class="TechnicianEditForm__first-name"
                             v-model={data.first_name}
-                            errors={errors?.first_name}
+                            error={errors?.first_name}
                             autocomplete="off"
                             required
                         />
@@ -123,7 +170,7 @@ const TechnicianEditForm = defineComponent({
                             label="last-name"
                             class="TechnicianEditForm__last-name"
                             v-model={data.last_name}
-                            errors={errors?.last_name}
+                            error={errors?.last_name}
                             autocomplete="off"
                             required
                         />
@@ -131,7 +178,7 @@ const TechnicianEditForm = defineComponent({
                     <FormField
                         label="nickname"
                         v-model={data.nickname}
-                        errors={errors?.nickname}
+                        error={errors?.nickname}
                     />
                 </Fieldset>
                 <Fieldset title={__('contact-details')}>
@@ -140,20 +187,22 @@ const TechnicianEditForm = defineComponent({
                         type="tel"
                         autocomplete="off"
                         v-model={data.phone}
-                        errors={errors?.phone}
+                        error={errors?.phone}
                     />
-                    <FormField
-                        label="email"
-                        type="email"
-                        autocomplete="off"
-                        v-model={data.email}
-                        errors={errors?.email}
-                    />
+                    {!hasUserAccount && (
+                        <FormField
+                            label="email"
+                            type="email"
+                            autocomplete="off"
+                            v-model={data.email}
+                            error={errors?.email}
+                        />
+                    )}
                     <FormField
                         label="street"
                         autocomplete="off"
                         v-model={data.street}
-                        errors={errors?.street}
+                        error={errors?.street}
                     />
                     <div class="TechnicianEditForm__locality">
                         <FormField
@@ -161,14 +210,14 @@ const TechnicianEditForm = defineComponent({
                             class="TechnicianEditForm__postal-code"
                             autocomplete="off"
                             v-model={data.postal_code}
-                            errors={errors?.postal_code}
+                            error={errors?.postal_code}
                         />
                         <FormField
                             label="city"
                             class="TechnicianEditForm__city"
                             autocomplete="off"
                             v-model={data.locality}
-                            errors={errors?.locality}
+                            error={errors?.locality}
                         />
                     </div>
                     <FormField
@@ -177,7 +226,7 @@ const TechnicianEditForm = defineComponent({
                         autocomplete="off"
                         options={countriesOptions}
                         v-model={data.country_id}
-                        errors={errors?.country_id}
+                        error={errors?.country_id}
                     />
                 </Fieldset>
                 <Fieldset title={__('other-infos')}>
@@ -187,9 +236,10 @@ const TechnicianEditForm = defineComponent({
                         rows={5}
                         class="TechnicianEditForm__notes"
                         v-model={data.note}
-                        errors={errors?.note}
+                        error={errors?.note}
                     />
                 </Fieldset>
+                {renderUserAccountSection()}
                 <section class="Form__actions">
                     <Button htmlType="submit" type="primary" icon="save" loading={isSaving}>
                         {isSaving ? __('saving') : __('save')}

@@ -59,7 +59,7 @@
             vertical-align: top;
         }
         th {
-            text-align: center;
+            text-align: left;
         }
         th:last-child, td:last-child {
             border-right: 1pt solid #888;
@@ -79,6 +79,8 @@
         }
         .listing-table > thead > tr > th {
             font-size: 0.8rem;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
@@ -86,6 +88,8 @@
             padding: 2mm;
             font-size: 0.7rem;
             border: none;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
@@ -94,15 +98,40 @@
             font-size: 0.8rem;
             color: #888;
         }
+        .listing-table > thead > tr > th:first-child,
         .listing-table > tbody > tr > td:first-child {
-            border-left: 1pt solid #888;
+            border-left: 1pt solid #888 !important;
         }
+        .listing-table > thead > tr > th:last-child,
         .listing-table > tbody > tr > td:last-child {
-            border-right: 1pt solid #888;
+            border-right: 1pt solid #888 !important;
+        }
+        .listing-table__item__label {
+            font-weight: 600;
+        }
+        .listing-table__item__sub-name {
+            margin-top: 2px;
+            font-size: 0.6rem;
+        }
+        .listing-table__item__label,
+        .listing-table__item__sub-name {
+            display: block;
+        }
+        .totals-table {
+            width: 50%;
+            margin: 0 0 5mm auto;
+        }
+        .totals-table--legacy {
+            width: 100%;
+            margin: 0;
         }
         .totals-table > tbody > tr > td {
             border-bottom: 1pt solid #888;
+            text-align: right;
             vertical-align: middle;
+        }
+        .totals-table--legacy > tbody > tr > td {
+            text-align: center;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;
@@ -182,15 +211,34 @@
                 <th style="width: 30mm;">Reference</th>
                 <th>
                     Designation
-                                            <span class="normal lightest">- Park default</span>
+                                            <span class="right" span>- Park default</span>
                                     </th>
-                <th style="width: 20mm;">Repl. Val.</th>
-                <th style="width: 16mm;">Stock quantity</th>
-                <th style="width: 25mm;">Recount quantity</th>
+                <th class="right" style="width: 20mm;">Repl. Val.</th>
+                <th class="center" style="width: 16mm;">Stock quantity</th>
+                <th class="center" style="width: 25mm;">Recount quantity</th>
             </tr>
         </thead>
         <tbody>
                     <tr>
+                <td class="section-title" colspan="5">
+                                            Not categorized
+                                    </td>
+            </tr>
+                            <tr>
+    <td>XLR10</td>
+    <td>
+        C&acirc;ble XLR 10m
+            </td>
+    <td class="right lighter">
+        &euro;9.50
+    </td>
+    <td class="center">
+        40
+    </td>
+    <td class="center"></td>
+</tr>
+
+                                <tr>
                 <td class="section-title" colspan="5">
                                             D&eacute;cors - Other Materials
                                     </td>
@@ -206,7 +254,7 @@
     <td class="center">
         2
     </td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 
                                 <tr>
@@ -219,11 +267,11 @@
     <td>
         Showtec SDS-6
                     <br>
+                            <span class="lighter">Conforme&nbsp;:&nbsp;Yes.</span>
+
                             <span class="lighter">Poids&nbsp;:&nbsp;3.15&nbsp;kg.</span>
 
                             <span class="lighter">Puissance&nbsp;:&nbsp;60&nbsp;W.</span>
-
-                            <span class="lighter">Conforme&nbsp;:&nbsp;Yes.</span>
 
                         </td>
     <td class="right lighter">
@@ -232,7 +280,7 @@
     <td class="center">
         2
     </td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 
                                 <tr>
@@ -256,7 +304,7 @@
     <td class="center">
         34
     </td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 
                                 <tr>
@@ -269,9 +317,9 @@
     <td>
         Console Yamaha CL3
                     <br>
-                            <span class="lighter">Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
-
                             <span class="lighter">Couleur&nbsp;:&nbsp;Grise</span>
+
+                            <span class="lighter">Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
 
                             <span class="lighter">Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
 
@@ -282,7 +330,7 @@
     <td class="center">
         5
     </td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 
                             <tr>
@@ -292,6 +340,8 @@
                     <br>
                             <span class="lighter">Date d'achat&nbsp;:&nbsp;28/01/2021.</span>
 
+                            <span class="lighter">Prix d'achat&nbsp;:&nbsp;250&nbsp;&euro;.</span>
+
                         </td>
     <td class="right lighter">
         &euro;419.00
@@ -299,7 +349,7 @@
     <td class="center">
         3
     </td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 
                                 <tr>
@@ -323,26 +373,7 @@
     <td class="center">
         2
     </td>
-    <td></td>
-</tr>
-
-                                <tr>
-                <td class="section-title" colspan="5">
-                                            Son - Other Materials
-                                    </td>
-            </tr>
-                            <tr>
-    <td>XLR10</td>
-    <td>
-        C&acirc;ble XLR 10m
-            </td>
-    <td class="right lighter">
-        &euro;9.50
-    </td>
-    <td class="center">
-        40
-    </td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 
                             </tbody>
@@ -356,11 +387,11 @@
                 <th style="width: 30mm;">Reference</th>
                 <th>
                     Designation
-                                            <span class="normal lightest">- Park spare</span>
+                                            <span class="right" span>- Park spare</span>
                                     </th>
-                <th style="width: 20mm;">Repl. Val.</th>
-                <th style="width: 16mm;">Stock quantity</th>
-                <th style="width: 25mm;">Recount quantity</th>
+                <th class="right" style="width: 20mm;">Repl. Val.</th>
+                <th class="center" style="width: 16mm;">Stock quantity</th>
+                <th class="center" style="width: 25mm;">Recount quantity</th>
             </tr>
         </thead>
         <tbody>
@@ -380,7 +411,7 @@
     <td class="center">
         2
     </td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 
                             </tbody>

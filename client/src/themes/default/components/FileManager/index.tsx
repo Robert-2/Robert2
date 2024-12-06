@@ -31,9 +31,15 @@ type Props = {
 
     /** Le type de layout à utiliser (@see {@link FileManagerLayout}) */
     layout?: FileManagerLayout,
+
+    /** Est-ce que l'upload et la suppression des fichiers doivent être désactivés ? */
+    readonly?: boolean,
 };
 
-// @vue/component
+/**
+ * Gestionnaire de fichiers, avec zone de glisser-déposer
+ * pour uploader des documents.
+ */
 const FileManager = defineComponent({
     name: 'FileManager',
     props: {
@@ -48,6 +54,10 @@ const FileManager = defineComponent({
         layout: {
             type: String as PropType<Required<Props>['layout']>,
             default: FileManagerLayout.HORIZONTAL,
+        },
+        readonly: {
+            type: Boolean as PropType<Required<Props>['readonly']>,
+            default: false,
         },
     },
     emits: ['documentUploaded', 'documentDelete'],
@@ -64,10 +74,16 @@ const FileManager = defineComponent({
         // ------------------------------------------------------
 
         handleDocumentUploaded(document: DocumentType) {
+            if (this.readonly) {
+                return;
+            }
             this.$emit('documentUploaded', document);
         },
 
-        async handleDocumentDelete(id: DocumentType['id']) {
+        handleDocumentDelete(id: DocumentType['id']) {
+            if (this.readonly) {
+                return;
+            }
             this.$emit('documentDelete', id);
         },
 
@@ -105,6 +121,7 @@ const FileManager = defineComponent({
         const {
             __,
             isEmpty,
+            readonly,
             layout,
             documents,
             persister,
@@ -127,18 +144,21 @@ const FileManager = defineComponent({
                                     key={document.id}
                                     file={document}
                                     onDelete={handleDocumentDelete}
+                                    readonly={readonly}
                                 />
                             ))}
                         </ul>
                     )}
                 </section>
-                <section class="FileManager__upload-area">
-                    <UploadArea
-                        ref="uploadArea"
-                        persister={persister}
-                        onUpload={handleDocumentUploaded}
-                    />
-                </section>
+                {!readonly && (
+                    <section class="FileManager__upload-area">
+                        <UploadArea
+                            ref="uploadArea"
+                            persister={persister}
+                            onUpload={handleDocumentUploaded}
+                        />
+                    </section>
+                )}
             </div>
         );
     },

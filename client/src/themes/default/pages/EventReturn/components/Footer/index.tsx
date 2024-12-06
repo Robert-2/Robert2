@@ -10,14 +10,11 @@ type Props = {
     /** L'événement dont on veut obtenir le footer d'inventaire de retour. */
     event: EventDetails,
 
-    /** Indique si l'inventaire de retour peut-être "terminée" ou non. */
+    /** Indique si l'inventaire de retour peut-être "terminé" ou non. */
     canTerminate: boolean,
 
     /** L'inventaire de retour est-il en cours de sauvegarde ? */
     isSaving?: boolean,
-
-    /** Des notifications de non retour sont-elles en cours d'envoi ? */
-    isNotifying?: boolean,
 };
 
 /** Footer de la page d'inventaire de retour d'événement. */

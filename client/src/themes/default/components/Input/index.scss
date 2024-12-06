@@ -46,12 +46,16 @@
             box-shadow: 0 0 0 1000px globals.$input-autofill-background-color inset;
             transition: background-color 50000ms ease-in-out 0;
         }
+
+        &::-webkit-search-cancel-button {
+            display: none;
+        }
     }
 
     &__addon {
         flex: 0 0 auto;
         display: inline-block;
-        min-width: 2.7rem;
+        min-width: 40px;
         padding: globals.$input-padding-vertical globals.$input-padding-horizontal;
         border: globals.$input-border-width solid globals.$input-border-color;
         border-left: 0;
@@ -99,6 +103,22 @@
             padding-right: 0;
             border-right: 0;
             border-radius: globals.$input-border-radius 0 0 globals.$input-border-radius;
+        }
+    }
+
+    //
+    // -- Alignement du texte
+    //
+
+    &--align-center {
+        #{$block}__input {
+            text-align: center;
+        }
+    }
+
+    &--align-right {
+        #{$block}__input {
+            text-align: right;
         }
     }
 

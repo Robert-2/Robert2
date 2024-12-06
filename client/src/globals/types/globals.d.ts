@@ -1,35 +1,11 @@
-type GlobalConfig = {
-    baseUrl: string,
-    version: string,
-    billingMode: 'all' | 'partial' | 'none',
-    defaultLang: string,
-    api: {
-        url: string,
-        headers: Record<string, string>,
-    },
-    auth: {
-        cookie: string,
-        timeout: number | null,
-    },
-    currency: {
-        symbol: string,
-        name: string,
-        iso: string,
-    },
-    companyName: string | null,
-    defaultPaginationLimit: number,
-    maxConcurrentFetches: number,
-    maxFileUploadSize: number,
-    authorizedFileTypes: string[],
-    authorizedImageTypes: string[],
-    colorSwatches: string[] | null,
-};
+import type { RawGlobalConfig } from '../config';
 
-declare var __SERVER_CONFIG__: GlobalConfig | undefined;
+declare global {
+    type ServerMessage = {
+        type: 'success' | 'info' | 'error',
+        message: string,
+    };
 
-type ServerMessage = {
-    type: 'success' | 'info' | 'error',
-    message: string,
-};
-
-declare var __SERVER_MESSAGES__: ServerMessage[] | undefined;
+    declare var __SERVER_CONFIG__: RawGlobalConfig | undefined;
+    declare var __SERVER_MESSAGES__: ServerMessage[] | undefined;
+}

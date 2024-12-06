@@ -9,7 +9,7 @@ declare module 'vue' {
         | undefined
     );
 
-    export type RawComponent<Props, Methods = DefaultMethods<Vue>> = (
+    export type RawComponent<Props = Record<string, any>, Methods = DefaultMethods<Vue>> = (
         & ComponentOptions<Vue, DefaultData<Vue>, Methods, DefaultComputed, Props>
         & VueConstructor
     );

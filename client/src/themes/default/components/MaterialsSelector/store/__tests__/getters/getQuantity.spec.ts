@@ -13,7 +13,7 @@ describe('MaterialsSelector / Store / getQuantity()', () => {
         expect(getQuantity(state1)(1)).toBe(0);
     });
 
-    it('should the quantity in store for an existing material', () => {
+    it('should return the quantity in store for an existing material', () => {
         const state = createState({
             '1': {
                 quantity: 2,

@@ -59,7 +59,7 @@
             vertical-align: top;
         }
         th {
-            text-align: center;
+            text-align: left;
         }
         th:last-child, td:last-child {
             border-right: 1pt solid #888;
@@ -79,6 +79,8 @@
         }
         .listing-table > thead > tr > th {
             font-size: 0.8rem;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
@@ -86,6 +88,8 @@
             padding: 2mm;
             font-size: 0.7rem;
             border: none;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
@@ -94,15 +98,40 @@
             font-size: 0.8rem;
             color: #888;
         }
+        .listing-table > thead > tr > th:first-child,
         .listing-table > tbody > tr > td:first-child {
-            border-left: 1pt solid #888;
+            border-left: 1pt solid #888 !important;
         }
+        .listing-table > thead > tr > th:last-child,
         .listing-table > tbody > tr > td:last-child {
-            border-right: 1pt solid #888;
+            border-right: 1pt solid #888 !important;
+        }
+        .listing-table__item__label {
+            font-weight: 600;
+        }
+        .listing-table__item__sub-name {
+            margin-top: 2px;
+            font-size: 0.6rem;
+        }
+        .listing-table__item__label,
+        .listing-table__item__sub-name {
+            display: block;
+        }
+        .totals-table {
+            width: 50%;
+            margin: 0 0 5mm auto;
+        }
+        .totals-table--legacy {
+            width: 100%;
+            margin: 0;
         }
         .totals-table > tbody > tr > td {
             border-bottom: 1pt solid #888;
+            text-align: right;
             vertical-align: middle;
+        }
+        .totals-table--legacy > tbody > tr > td {
+            text-align: center;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;
@@ -196,10 +225,10 @@
         <tr>
             <th>Ref.</th>
             <th>Designation</th>
-            <th>Repl. Val.</th>
-            <th>Total Repl. Val.</th>
-            <th>Qty</th>
-            <th>Qty Return</th>
+            <th class="right">Repl. Val.</th>
+            <th class="right">Total Repl. Val.</th>
+            <th class="center">Qty</th>
+            <th class="center">Qty Returned</th>
         </tr>
     </thead>
     <tbody>
@@ -207,15 +236,15 @@
                     <td class="section-title" colspan="6">Son</td>
                 </tr>
                 <tr>
-    <td>CL3</td>
-    <td>Console Yamaha CL3 <em class="lighter">(default)</em><br><span class="lighter">Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
-<span class="lighter">Couleur&nbsp;:&nbsp;Grise</span>
+    <td>CL-3</td>
+    <td>Yamaha CL3 <em class="lighter">(default)</em><br><span class="lighter">Couleur&nbsp;:&nbsp;Grise</span>
+<span class="lighter">Poids&nbsp;:&nbsp;36.5&nbsp;kg.</span>
 <span class="lighter">Puissance&nbsp;:&nbsp;850&nbsp;W.</span>
 </td>
     <td class="right lighter">&euro;19,400.00</td>
     <td class="right lighter">&euro;58,200.00</td>
     <td class="center">3</td>
-    <td></td>
+    <td class="center"></td>
 </tr>
 <tr>
     <td>DBXPA2</td>
@@ -225,7 +254,7 @@
     <td class="right lighter">&euro;349.90</td>
     <td class="right lighter">&euro;699.80</td>
     <td class="center">2</td>
-    <td></td>
+    <td class="center"></td>
 </tr>
     </tbody>
 </table>

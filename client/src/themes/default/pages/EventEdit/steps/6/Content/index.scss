@@ -1,0 +1,183 @@
+@use '~@/themes/default/style/globals';
+@use '~@fortawesome/fontawesome-free/scss/mixins' as fa-mixins;
+@use 'sass:color';
+
+.EventEditStepOverviewContent {
+    $block: &;
+
+    color: globals.$text-base-color;
+
+    //
+    // - Layout
+    //
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+    }
+
+    //
+    // - Elements
+    //
+
+    &__title {
+        margin: 0;
+        font-size: 1.7rem;
+        text-align: center;
+    }
+
+    &__summary {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: globals.$spacing-small;
+        color: globals.$text-soft-color;
+        font-size: 1.2rem;
+        font-weight: 400;
+        gap: globals.$spacing-thin globals.$spacing-medium;
+
+        &__data {
+            display: inline-flex;
+            margin: 0;
+            font-size: inherit;
+            font-weight: inherit;
+            gap: globals.$spacing-small;
+
+            &__icon {
+                margin-top: 3px;
+                font-size: 1em;
+            }
+
+            &__content {
+                overflow: hidden;
+                max-width: 410px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+
+    &__description {
+        $icon-width: 20px;
+
+        margin: globals.$spacing-medium 0 0 0;
+        padding-left: globals.$spacing-small;
+        border-left: 3px solid globals.$divider-color;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+
+        &::first-letter {
+            text-transform: uppercase;
+        }
+    }
+
+    &__participants {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: globals.$spacing-large;
+        font-size: 1.1rem;
+        gap: globals.$spacing-medium globals.$spacing-small;
+
+        &__item {
+            $sub-block: &;
+
+            flex: 1;
+            flex-direction: column;
+            min-width: 350px;
+
+            &__title {
+                margin: 0 0 globals.$spacing-small;
+                font-size: 1.4rem;
+                font-weight: 400;
+
+                &::before {
+                    margin-right: globals.$spacing-small;
+                }
+            }
+
+            &__values {
+                display: flex;
+                flex-direction: column;
+                margin: 0 0 0 0.7rem;
+                padding: 0;
+                gap: globals.$spacing-thin;
+
+                &__item {
+                    padding-left: 0.4rem;
+                    word-break: break-all;
+
+                    &__link {
+                        color: globals.$text-base-color;
+                        font-weight: 600;
+                    }
+
+                    &::marker {
+                        content: '•';
+                        margin-right: globals.$spacing-thin;
+                        font-size: 1.1em;
+                        user-select: none;
+                    }
+                }
+            }
+
+            //
+            // - Variantes.
+            //
+
+            &--beneficiaries {
+                #{$sub-block}__title {
+                    @include globals.icon('address-book');
+                }
+            }
+
+            &--technicians {
+                #{$sub-block}__title {
+                    @include globals.icon('people-carry');
+                }
+            }
+        }
+
+        &__technician {
+            &__periods {
+                @extend %reset-list;
+
+                gap: globals.$spacing-thin;
+
+                &__item {
+                    color: globals.$text-soft-color;
+                }
+            }
+        }
+    }
+
+    &__materials {
+        margin-top: globals.$spacing-large;
+        padding-top: globals.$spacing-large;
+        border-top: 1px solid globals.$divider-color;
+
+        &__title {
+            margin: 0 0 globals.$spacing-medium;
+            font-size: 1.4rem;
+            font-weight: 400;
+
+            @include globals.icon('box') {
+                margin-right: globals.$spacing-small;
+            }
+        }
+
+        &__missing,
+        &__list {
+            margin-bottom: globals.$spacing-large;
+        }
+
+        &__empty {
+            margin: 0;
+            padding: globals.$spacing-large;
+            border-radius: globals.$border-radius-large;
+            background: globals.$bg-color-emphasis-light;
+            background-color: globals.$bg-color-emphasis-danger;
+            font-size: 1.1rem;
+        }
+    }
+}

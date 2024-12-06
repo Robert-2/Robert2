@@ -16,6 +16,10 @@ return [
 
         '/tags[/]' => 'TagController:getAll',
 
+        '/taxes[/]' => 'TaxController:getAll',
+
+        '/degressive-rates[/]' => 'DegressiveRateController:getAll',
+
         '/categories[/]' => 'CategoryController:getAll',
 
         '/persons[/]' => 'PersonController:getAll',
@@ -61,6 +65,10 @@ return [
 
         '/bookings[/]' => 'BookingController:getAll',
         sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
+        ) => 'BookingController:getOne',
+        sprintf(
             '/bookings/{entity:(?:%s)}/{id:[0-9]+}/summary[/]',
             implode('|', array_keys(BookingController::BOOKING_TYPES)),
         ) => 'BookingController:getOneSummary',
@@ -75,6 +83,10 @@ return [
         '/subcategories[/]' => 'SubCategoryController:create',
 
         '/tags[/]' => 'TagController:create',
+
+        '/taxes[/]' => 'TaxController:create',
+
+        '/degressive-rates[/]' => 'DegressiveRateController:create',
 
         '/technicians[/]' => 'TechnicianController:create',
         '/technicians/{id:[0-9]+}/documents[/]' => 'TechnicianController:attachDocument',
@@ -112,6 +124,10 @@ return [
         '/tags/{id:[0-9]+}[/]' => 'TagController:update',
         '/tags/restore/{id:[0-9]+}[/]' => 'TagController:restore',
 
+        '/taxes/{id:[0-9]+}[/]' => 'TaxController:update',
+
+        '/degressive-rates/{id:[0-9]+}[/]' => 'DegressiveRateController:update',
+
         '/technicians/{id:[0-9]+}[/]' => 'TechnicianController:update',
         '/technicians/restore/{id:[0-9]+}[/]' => 'TechnicianController:restore',
 
@@ -146,12 +162,26 @@ return [
             '/bookings/{entity:(?:%s)}/{id:[0-9]+}/materials[/]',
             implode('|', array_keys(BookingController::BOOKING_TYPES)),
         ) => 'BookingController:updateMaterials',
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/billing[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
+        ) => 'BookingController:updateBilling',
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/materials/{materialId:[0-9]+}/resynchronize[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
+        ) => 'BookingMaterialController:resynchronize',
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/extras/{extraId:[0-9]+}/resynchronize[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
+        ) => 'BookingExtraController:resynchronize',
     ],
     'delete' => [
         '/users/{id:[0-9]+}[/]' => 'UserController:delete',
         '/categories/{id:[0-9]+}[/]' => 'CategoryController:delete',
         '/subcategories/{id:[0-9]+}[/]' => 'SubCategoryController:delete',
         '/tags/{id:[0-9]+}[/]' => 'TagController:delete',
+        '/taxes/{id:[0-9]+}[/]' => 'TaxController:delete',
+        '/degressive-rates/{id:[0-9]+}[/]' => 'DegressiveRateController:delete',
         '/technicians/{id:[0-9]+}[/]' => 'TechnicianController:delete',
         '/beneficiaries/{id:[0-9]+}[/]' => 'BeneficiaryController:delete',
         '/companies/{id:[0-9]+}[/]' => 'CompanyController:delete',

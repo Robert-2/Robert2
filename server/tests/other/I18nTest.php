@@ -22,10 +22,10 @@ final class I18nTest extends TestCase
 
     public function testTranslatePlural(): void
     {
-        $result = (new I18n('fr'))->plural("items-count", 5);
-        $this->assertEquals("5 articles", $result);
+        $result = (new I18n('fr'))->plural('items-count', 5);
+        $this->assertEquals("5 éléments", $result);
 
-        $result = (new I18n('en'))->plural("items-count", 5);
+        $result = (new I18n('en'))->plural('items-count', 5);
         $this->assertEquals("5 items", $result);
     }
 

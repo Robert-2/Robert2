@@ -1,0 +1,68 @@
+@use '~@/themes/default/style/globals';
+
+.ModalDegressiveRateEdition {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 1rem;
+        background-color: globals.$bg-color-emphasis;
+        gap: globals.$spacing-medium;
+
+        &__title {
+            flex: 1;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        &__close-button {
+            flex: 0 0 auto;
+        }
+    }
+
+    &__body {
+        padding: globals.$spacing-large globals.$spacing-medium;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem globals.$spacing-medium;
+        background-color: rgba(0, 0, 0, 0.1);
+        gap: globals.$spacing-small;
+    }
+
+    //
+    // - Content
+    //
+
+    &__commons {
+        max-width: 610px;
+
+        .FormField {
+            --label-width: 200px;
+        }
+    }
+
+    &__tiers {
+        margin-top: globals.$spacing-large;
+
+        &__item {
+            &__is-rate {
+                // stylelint-disable-next-line declaration-no-important
+                text-align: center !important;
+            }
+
+            &__value {
+                width: 200px;
+            }
+        }
+
+        &__add-button {
+            margin-top: globals.$spacing-small;
+            margin-left: 10px;
+        }
+    }
+}

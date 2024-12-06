@@ -1,0 +1,18 @@
+@use '~@/themes/default/style/globals';
+
+.DefaultLayoutSidebarMainMenu {
+    @extend %reset-list;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: auto;
+    user-select: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

@@ -6,7 +6,7 @@ import axios from 'axios';
 import HttpCode from 'status-code-enum';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import Page from '@/themes/default/components/Page';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Form from './components/Form';
 
@@ -19,7 +19,7 @@ type Data = {
     isSaving: boolean,
     company: Company | null,
     criticalError: string | null,
-    validationErrors: Record<string, string[]> | null,
+    validationErrors: Record<string, string> | null,
 };
 
 /** Page d'edition d'une société bénéficiaire. */
@@ -91,12 +91,12 @@ const CompanyEdit = defineComponent({
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
                     console.error(`Error occurred while retrieving company #${this.id!} data`, error);
-                    this.criticalError = ERROR.UNKNOWN;
+                    this.criticalError = ErrorType.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
                     this.criticalError = status === HttpCode.ClientErrorNotFound
-                        ? ERROR.NOT_FOUND
-                        : ERROR.UNKNOWN;
+                        ? ErrorType.NOT_FOUND
+                        : ErrorType.UNKNOWN;
                 }
             }
         },

@@ -22,7 +22,7 @@
         position: sticky;
         z-index: 2;
         left: 0;
-        bottom: 0;
+        bottom: -(globals.$spacing-medium);
         right: 0;
     }
 }

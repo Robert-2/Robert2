@@ -51,7 +51,7 @@
 
         &--nickname,
         &--email,
-        &--is-preparer,
+        &--schedule-access,
         &--address,
         &--note {
             display: none;
@@ -61,7 +61,7 @@
             white-space: pre-line;
         }
 
-        &--is-preparer {
+        &--schedule-access {
             // - Important pour surcharger la définition du <th> de `.VueTables`.
             // stylelint-disable-next-line declaration-no-important
             text-align: center !important;
@@ -84,7 +84,7 @@
 
         @media (min-width: globals.$screen-desktop) {
             &--nickname,
-            &--is-preparer {
+            &--schedule-access {
                 display: table-cell;
             }
         }

@@ -3,6 +3,7 @@ import requester from '@/globals/requester';
 import { withPaginationEnvelope } from './@schema';
 import { MaterialSchema } from './materials';
 
+import type Decimal from 'decimal.js';
 import type { Material } from './materials';
 import type { SchemaInfer } from '@/utils/validation';
 import type { PaginatedData, ListingParams } from './@types';
@@ -88,9 +89,9 @@ const one = async (id: Park['id']): Promise<ParkDetails> => {
     return ParkDetailsSchema.parse(response.data);
 };
 
-const oneTotalAmount = async (id: Park['id']): Promise<number> => {
+const oneTotalAmount = async (id: Park['id']): Promise<Decimal> => {
     const response = await requester.get(`/parks/${id}/total-amount`);
-    return z.number().nonnegative().parse(response.data);
+    return z.decimal().parse(response.data);
 };
 
 const materials = async (id: Park['id']): Promise<Material[]> => {

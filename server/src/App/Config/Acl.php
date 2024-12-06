@@ -16,9 +16,6 @@ final class Acl
 
         '/static',
 
-        // - Permaliens publics.
-        '/p/',
-
         //
         // - Api
         //
@@ -27,8 +24,8 @@ final class Acl
     ];
 
     public const ALLOW_LIST = [
-        Group::ADMIN => '*',
-        Group::MEMBER => [
+        Group::ADMINISTRATION => '*',
+        Group::MANAGEMENT => [
             'Auth' => [
                 'getSelf',
                 'logout',
@@ -45,6 +42,12 @@ final class Acl
                 'updateSettings',
             ],
             'Tag' => [
+                'getAll',
+            ],
+            'DegressiveRate' => [
+                'getAll',
+            ],
+            'Tax' => [
                 'getAll',
             ],
             'Category' => [
@@ -129,8 +132,8 @@ final class Acl
                 'finishReturnInventory',
                 'cancelReturnInventory',
                 'delete',
-                'createInvoice',
                 'createEstimate',
+                'createInvoice',
                 'archive',
                 'unarchive',
             ],
@@ -152,8 +155,16 @@ final class Acl
             ],
             'Booking' => [
                 'getAll',
+                'getOne',
                 'getOneSummary',
                 'updateMaterials',
+                'updateBilling',
+            ],
+            'BookingMaterial' => [
+                'resynchronize',
+            ],
+            'BookingExtra' => [
+                'resynchronize',
             ],
             'Document' => [
                 'getFile',
@@ -168,7 +179,7 @@ final class Acl
             ],
             'api-catch-not-found',
         ],
-        Group::VISITOR => [
+        Group::READONLY_PLANNING_GENERAL => [
             'Auth' => [
                 'getSelf',
                 'logout',
@@ -181,6 +192,12 @@ final class Acl
                 'getSettings',
                 'update',
                 'updateSettings',
+            ],
+            'Tax' => [
+                'getAll',
+            ],
+            'DegressiveRate' => [
+                'getAll',
             ],
             'Tag' => [
                 'getAll',
@@ -248,6 +265,7 @@ final class Acl
             ],
             'Booking' => [
                 'getAll',
+                'getOne',
                 'getOneSummary',
             ],
             'Document' => [
@@ -255,6 +273,69 @@ final class Acl
             ],
             'Calendar' => [
                 'public',
+            ],
+            'Entry' => [
+                'external',
+                'default',
+            ],
+            'api-catch-not-found',
+        ],
+        Group::READONLY_PLANNING_SELF => [
+            'Auth' => [
+                'getSelf',
+                'logout',
+            ],
+            'Attribute' => [
+                'getAll',
+            ],
+            'User' => [
+                'getOne',
+                'getSettings',
+                'update',
+                'updateSettings',
+            ],
+            'Tag' => [
+                'getAll',
+            ],
+            'Category' => [
+                'getAll',
+            ],
+            'Country' => [
+                'getAll',
+                'getOne',
+            ],
+            'Park' => [
+                'getAll',
+                'getList',
+                'getOne',
+            ],
+            'Material' => [
+                'getPicture',
+            ],
+            'Event' => [
+                'getAll',
+                'getOne',
+                'getDocuments',
+                'getMissingMaterials',
+                'getOnePdf',
+                'update',
+            ],
+            'Setting' => [
+                'getAll',
+            ],
+            'Booking' => [
+                'getAll',
+                'getOne',
+                'getOneSummary',
+            ],
+            'Document' => [
+                'getFile',
+            ],
+            'Invoice' => [
+                'getOnePdf',
+            ],
+            'Estimate' => [
+                'getOnePdf',
             ],
             'Entry' => [
                 'external',

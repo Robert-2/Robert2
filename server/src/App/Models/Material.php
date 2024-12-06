@@ -3,18 +3,29 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
+use Brick\Math\BigDecimal as Decimal;
+use Brick\Math\RoundingMode;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection as CoreCollection;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\BillingMode;
 use Loxya\Contracts\PeriodInterface;
 use Loxya\Contracts\Serializable;
+use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Casts\AsDecimal;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
 use Loxya\Models\Traits\TransientAttributes;
 use Loxya\Support\Arr;
 use Loxya\Support\Assert;
+use Loxya\Support\Database\QueryAggregator;
 use Loxya\Support\Period;
 use Loxya\Support\Str;
 use Psr\Http\Message\UploadedFileInterface;
@@ -34,16 +45,27 @@ use Respect\Validation\Validator as V;
  * @property int|null $category_id
  * @property-read Category|null $category
  * @property int|null $sub_category_id
+ * @property-read SubCategory|null $sub_category
  * @property-read SubCategory|null $subCategory
- * @property float|null $rental_price
- * @property float|null $replacement_price
+ * @property Decimal|null $rental_price
+ * @property int|null $degressive_rate_id
+ * @property-read DegressiveRate|null $degressive_rate
+ * @property-read DegressiveRate|null $degressiveRate
+ * @property int|null $tax_id
+ * @property-read Tax|null $tax
+ * @property Decimal|null $replacement_price
  * @property int $stock_quantity
  * @property int $out_of_order_quantity
  * @property int $available_quantity
  * @property bool $is_hidden_on_bill
  * @property bool $is_discountable
- * @property bool $is_reservable
+ * @property-read bool $is_deleted
  * @property string|null $note
+ * @property-read Event|null $departure_inventory_todo
+ * @property-read Event|null $return_inventory_todo
+ * @property Event|null $context
+ * @property-read Decimal|null $degressive_rate_context
+ * @property-read Decimal|null $rental_price_context
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
@@ -55,11 +77,12 @@ use Respect\Validation\Validator as V;
  *
  * @method static Builder|static search(string $term)
  * @method static Builder|static inPark(int $parkId)
+ * @method static Builder|static notInPark(array $parks)
  */
 final class Material extends BaseModel implements Serializable
 {
     use Serializer;
-    use SoftDeletable;
+    use SoftDeletes;
     use TransientAttributes;
 
     /** L'identifiant unique du modèle. */
@@ -67,9 +90,11 @@ final class Material extends BaseModel implements Serializable
 
     // - Types de sérialisation.
     public const SERIALIZE_DEFAULT = 'default';
-    public const SERIALIZE_WITH_AVAILABILITY = 'with-availability';
     public const SERIALIZE_DETAILS = 'details';
     public const SERIALIZE_PUBLIC = 'public';
+    public const SERIALIZE_WITH_AVAILABILITY = 'with-availability';
+    public const SERIALIZE_WITH_CONTEXT = 'with-context';
+    public const SERIALIZE_WITH_CONTEXT_EXCERPT = 'with-context-excerpt';
 
     private const PICTURE_BASEPATH = (
         DATA_FOLDER . DS . 'materials' . DS . 'picture'
@@ -83,12 +108,13 @@ final class Material extends BaseModel implements Serializable
         'category_id' => null,
         'sub_category_id' => null,
         'rental_price' => null,
+        'degressive_rate_id' => null,
+        'tax_id' => null,
         'stock_quantity' => null,
         'out_of_order_quantity' => null,
         'replacement_price' => null,
         'is_hidden_on_bill' => false,
         'is_discountable' => true,
-        'is_reservable' => true,
         'picture' => null,
         'note' => null,
     ];
@@ -105,12 +131,13 @@ final class Material extends BaseModel implements Serializable
             'category_id' => V::custom([$this, 'checkCategoryId']),
             'sub_category_id' => V::custom([$this, 'checkSubCategoryId']),
             'rental_price' => V::custom([$this, 'checkRentalPrice']),
+            'degressive_rate_id' => V::custom([$this, 'checkDegressiveRateId']),
+            'tax_id' => V::custom([$this, 'checkTaxId']),
             'stock_quantity' => V::custom([$this, 'checkStockQuantity']),
             'out_of_order_quantity' => V::custom([$this, 'checkOutOfOrderQuantity']),
-            'replacement_price' => V::optional(V::floatVal()->min(0)->lessThan(1_000_000_000_000)),
-            'is_hidden_on_bill' => V::optional(V::boolType()),
-            'is_discountable' => V::optional(V::boolType()),
-            'is_reservable' => V::optional(V::boolType()),
+            'replacement_price' => V::custom([$this, 'checkReplacementPrice']),
+            'is_hidden_on_bill' => V::nullable(V::boolType()),
+            'is_discountable' => V::nullable(V::boolType()),
         ];
     }
 
@@ -180,7 +207,7 @@ final class Material extends BaseModel implements Serializable
 
     public function checkParkId($value)
     {
-        V::notEmpty()->numericVal()->check($value);
+        V::notEmpty()->intVal()->check($value);
 
         $park = Park::withTrashed()->find($value);
         if (!$park) {
@@ -194,20 +221,14 @@ final class Material extends BaseModel implements Serializable
 
     public function checkCategoryId($value)
     {
-        V::optional(V::numericVal())->check($value);
-
-        return $value !== null
-            ? Category::staticExists($value)
-            : true;
+        V::nullable(V::intVal())->check($value);
+        return $value === null || Category::includes($value);
     }
 
     public function checkSubCategoryId($value)
     {
-        V::optional(V::numericVal())->check($value);
-
-        return $value !== null
-            ? SubCategory::staticExists($value)
-            : true;
+        V::nullable(V::intVal())->check($value);
+        return $value === null || SubCategory::includes($value);
     }
 
     public function checkStockQuantity()
@@ -217,16 +238,54 @@ final class Material extends BaseModel implements Serializable
 
     public function checkOutOfOrderQuantity()
     {
-        return V::optional(V::intVal()->max(100_000));
+        return V::nullable(V::intVal()->max(100_000));
     }
 
-    public function checkRentalPrice()
+    public function checkRentalPrice($value)
     {
         $billingMode = Config::get('billingMode');
-        if ($billingMode === 'none') {
+        if ($billingMode === BillingMode::NONE) {
             return V::nullType();
         }
-        return V::floatVal()->min(0)->lessThan(1_000_000_000_000);
+
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        $isValid = (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(1_000_000_000_000) &&
+            $value->getScale() <= 2
+        );
+        return $isValid ?: 'invalid-positive-amount';
+    }
+
+    public function checkReplacementPrice($value)
+    {
+        if ($value === null) {
+            return true;
+        }
+
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        $isValid = (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThan(1_000_000_000_000) &&
+            $value->getScale() <= 2
+        );
+        return $isValid ?: 'invalid-positive-amount';
+    }
+
+    public function checkDegressiveRateId($value)
+    {
+        V::nullable(V::intVal())->check($value);
+        return $value === null || DegressiveRate::includes($value);
+    }
+
+    public function checkTaxId($value)
+    {
+        V::nullable(V::intVal())->check($value);
+        return $value === null || Tax::includes($value);
     }
 
     // ------------------------------------------------------
@@ -235,22 +294,32 @@ final class Material extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function park()
+    public function park(): BelongsTo
     {
         return $this->belongsTo(Park::class);
     }
 
-    public function category()
+    public function tax(): BelongsTo
+    {
+        return $this->belongsTo(Tax::class);
+    }
+
+    public function degressiveRate(): BelongsTo
+    {
+        return $this->belongsTo(DegressiveRate::class);
+    }
+
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function subCategory()
+    public function subCategory(): BelongsTo
     {
         return $this->belongsTo(SubCategory::class);
     }
 
-    public function attributes()
+    public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class, 'material_attributes')
             ->using(MaterialAttribute::class)
@@ -258,7 +327,7 @@ final class Material extends BaseModel implements Serializable
             ->orderByPivot('id');
     }
 
-    public function events()
+    public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'event_materials')
             ->using(EventMaterial::class)
@@ -266,13 +335,14 @@ final class Material extends BaseModel implements Serializable
             ->orderBy('mobilization_start_date', 'desc');
     }
 
-    public function documents()
+    public function documents(): MorphMany
     {
         return $this->morphMany(Document::class, 'entity')
-            ->orderBy('name', 'asc');
+            ->orderBy('name', 'asc')
+            ->orderBy('id', 'asc');
     }
 
-    public function tags()
+    public function tags(): MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
@@ -290,45 +360,106 @@ final class Material extends BaseModel implements Serializable
         'park_id' => 'integer',
         'category_id' => 'integer',
         'sub_category_id' => 'integer',
-        'rental_price' => 'float',
+        'rental_price' => AsDecimal::class,
+        'degressive_rate_id' => 'integer',
+        'tax_id' => 'integer',
         'stock_quantity' => 'integer',
         'out_of_order_quantity' => 'integer',
-        'replacement_price' => 'float',
+        'replacement_price' => AsDecimal::class,
         'is_hidden_on_bill' => 'boolean',
         'is_discountable' => 'boolean',
-        'is_reservable' => 'boolean',
         'note' => 'string',
         'created_at' => 'immutable_datetime',
         'updated_at' => 'immutable_datetime',
         'deleted_at' => 'immutable_datetime',
     ];
 
-    public function getStockQuantityAttribute($value)
+    public function getPictureAttribute($value): UploadedFileInterface|string|null
     {
-        return $this->castAttribute('stock_quantity', $value);
+        if (!$value || $value instanceof UploadedFileInterface) {
+            return $value;
+        }
+
+        // - Le chemin ne sera disponible qu'une fois le matériel sauvegardé.
+        if (!$this->exists) {
+            return null;
+        }
+
+        return (string) Config::getBaseUri()
+            ->withPath(sprintf('/static/materials/%s/picture', $this->id));
     }
 
-    public function getOutOfOrderQuantityAttribute($value)
+    public function getPictureRealPathAttribute(): string|null
     {
-        return $this->castAttribute('out_of_order_quantity', $value);
+        $picture = $this->getAttributeFromArray('picture');
+        if (empty($picture)) {
+            return null;
+        }
+
+        // - Dans le cas d'un fichier tout juste uploadé...
+        if ($picture instanceof UploadedFileInterface) {
+            throw new \LogicException("Unable to retrieve image path before having persisted it.");
+        }
+
+        return static::PICTURE_BASEPATH . DS . $picture;
     }
 
-    public function getParkAttribute()
+    public function getStockQuantityAttribute(mixed $value): int
+    {
+        return $this->castAttribute('stock_quantity', $value ?? 0);
+    }
+
+    public function getOutOfOrderQuantityAttribute(mixed $value): int
+    {
+        return $this->castAttribute('out_of_order_quantity', $value ?? 0);
+    }
+
+    public function getParkAttribute(): Park|null
     {
         return $this->getRelationValue('park');
     }
 
-    public function getTagsAttribute()
+    public function getDegressiveRateAttribute(): DegressiveRate|null
     {
-        return $this->getRelationValue('tags');
+        return $this->getRelationValue('degressiveRate');
     }
 
-    public function getCategoryAttribute()
+    public function getTaxAttribute(): Tax|null
+    {
+        return $this->getRelationValue('tax');
+    }
+
+    public function getCategoryAttribute(): Category|null
     {
         return $this->getRelationValue('category');
     }
 
-    public function getAttributesAttribute()
+    public function getIsDeletedAttribute(): bool
+    {
+        return $this->trashed();
+    }
+
+    public function getAvailableQuantityAttribute(): int
+    {
+        $availableQuantity = $this->getTransientAttribute('available_quantity');
+        if ($availableQuantity !== null) {
+            return $availableQuantity;
+        }
+
+        $withAvailabilities = $this->withAvailabilities(
+            new Period('now', 'now +1 minute'),
+        );
+        return $withAvailabilities->available_quantity;
+    }
+
+    /** @return Collection<array-key, Tag> */
+    public function getTagsAttribute(): Collection
+    {
+        return $this->getRelationValue('tags');
+    }
+
+    /** @return Collection<array-key, Attribute> */
+    public function getAttributesAttribute(): Collection
     {
         $attributes = $this->attributes()->get();
         if (!$attributes) {
@@ -350,46 +481,102 @@ final class Material extends BaseModel implements Serializable
                 $attribute->value = $attribute->pivot->value;
                 return $attribute->append(['value']);
             })
+            ->sortBy('name')
             ->values();
     }
 
-    public function getPictureAttribute($value)
+    public function getContextAttribute(): Event|null
     {
-        if (!$value || $value instanceof UploadedFileInterface) {
-            return $value;
-        }
+        return $this->getTransientAttribute('context');
+    }
 
-        // - Le chemin ne sera disponible qu'une fois le matériel sauvegardé.
-        if (!$this->exists) {
+    public function getDegressiveRateContextAttribute(): Decimal|null
+    {
+        if ($this->context === null) {
             return null;
         }
 
-        return (string) Config::getBaseUri()
-            ->withPath(sprintf('/static/materials/%s/picture', $this->id));
+        $contextPeriod = $this->context->operation_period;
+
+        $durationDays = $contextPeriod->asDays();
+
+        // - Pas de dégressivité.
+        if ($this->degressive_rate === null) {
+            return Decimal::of($durationDays)
+                ->toScale(2, RoundingMode::UNNECESSARY);
+        }
+
+        return $this->degressive_rate->computeForDays($durationDays);
     }
 
-    public function getPictureRealPathAttribute()
+    public function getRentalPriceContextAttribute(): Decimal|null
     {
-        $picture = $this->getAttributeFromArray('picture');
-        if (empty($picture)) {
+        $degressiveRate = $this->degressive_rate_context;
+        if (
+            $this->context === null ||
+            $degressiveRate === null ||
+            $this->rental_price === null
+        ) {
             return null;
         }
 
-        // - Dans le cas d'un fichier tout juste uploadé...
-        if ($picture instanceof UploadedFileInterface) {
-            throw new \LogicException("Unable to retrieve image path before having persisted it.");
-        }
-
-        return static::PICTURE_BASEPATH . DS . $picture;
+        return $this->rental_price
+            ->multipliedBy($degressiveRate)
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
     }
 
-    public function getAvailableQuantityAttribute(): int
+    public function getDepartureInventoryTodoAttribute(): Event|null
     {
-        $availableQuantity = $this->getTransientAttribute('available_quantity');
-        if ($availableQuantity !== null) {
-            return $availableQuantity;
+        $bookingsEntities = [
+            Event::class => Event::query(),
+        ];
+
+        $query = new QueryAggregator();
+        foreach ($bookingsEntities as $modelClass => $modelQuery) {
+            $modelQuery = $modelQuery
+                ->whereHas('materials', fn (Builder $bookingMaterialQuery) => (
+                    $bookingMaterialQuery
+                        ->where('material_id', $this->id)
+                        ->where(static fn (Builder $subQuery) => (
+                            $subQuery
+                                ->whereNull('quantity_departed')
+                                ->orWhereColumn('quantity_departed', '<', 'quantity')
+                        ))
+                ))
+                ->departureInventoryTodo();
+
+            $query->add($modelClass, $modelQuery);
         }
-        return (int) $this->stock_quantity - (int) $this->out_of_order_quantity;
+
+        return $query->orderBy('mobilization_start_date')->get()->first();
+    }
+
+    public function getReturnInventoryTodoAttribute(): Event|null
+    {
+        $bookingsEntities = [
+            Event::class => Event::query(),
+        ];
+
+        $query = new QueryAggregator();
+        foreach ($bookingsEntities as $modelClass => $modelQuery) {
+            $modelQuery = $modelQuery
+                ->whereHas('materials', fn (Builder $bookingMaterialQuery) => (
+                    $bookingMaterialQuery
+                        ->where('material_id', $this->id)
+                        ->where(static fn (Builder $subQuery) => (
+                            $subQuery
+                                ->whereNull('quantity_returned')
+                                ->orWhereColumn('quantity_returned', '<', 'quantity')
+                        ))
+                ))
+                ->where('mobilization_end_date', '>=', (Carbon::now()->subDays(30)))
+                ->returnInventoryTodo();
+
+            $query->add($modelClass, $modelQuery);
+        }
+
+        return $query->orderByDesc('mobilization_end_date')->get()->first();
     }
 
     // ------------------------------------------------------
@@ -406,6 +593,8 @@ final class Material extends BaseModel implements Serializable
         'category_id',
         'sub_category_id',
         'rental_price',
+        'degressive_rate_id',
+        'tax_id',
         'stock_quantity',
         'out_of_order_quantity',
         'replacement_price',
@@ -418,6 +607,11 @@ final class Material extends BaseModel implements Serializable
     public function setAvailableQuantityAttribute(int $value): void
     {
         $this->setTransientAttribute('available_quantity', $value);
+    }
+
+    public function setContextAttribute(Event|null $value): void
+    {
+        $this->setTransientAttribute('context', $value);
     }
 
     // ------------------------------------------------------
@@ -448,16 +642,16 @@ final class Material extends BaseModel implements Serializable
         $isFileUpload = $newPicture instanceof UploadedFileInterface;
         if (!empty($newPicture) && !$isFileUpload) {
             if (!is_string($newPicture)) {
-                throw new \Exception(
-                    "Une erreur est survenue lors de l'upload de l'image: " .
-                    "Le format de l'image à uploader n'est pas pris en charge.",
+                throw new \RuntimeException(
+                    "An error occurred while uploading the image: " .
+                    "The image format to be uploaded is not supported.",
                 );
             }
 
             if (!@file_exists(static::PICTURE_BASEPATH . DS . $newPicture)) {
-                throw new \Exception(
-                    "Une erreur est survenue lors de l'upload de l'image: " .
-                    "La chaîne passée ne correspond pas à un fichier existant dans le dossier de destination.",
+                throw new \RuntimeException(
+                    "An error occurred while uploading the image: " .
+                    "The string passed does not correspond to an existing file in the destination folder.",
                 );
             }
         }
@@ -476,8 +670,8 @@ final class Material extends BaseModel implements Serializable
                 $newPicture->moveTo(static::PICTURE_BASEPATH . DS . $filename);
             } catch (\Throwable) {
                 throw new \Exception(
-                    "Une erreur est survenue lors de l'upload de l'image: " .
-                    "L'image n'a pas pû être déplacée dans le dossier de destination.",
+                    "An error occurred while uploading the image: " .
+                    "The image could not be moved to the destination folder.",
                 );
             }
 
@@ -548,13 +742,98 @@ final class Material extends BaseModel implements Serializable
 
     // ------------------------------------------------------
     // -
-    // -    Custom Methods
+    // -    Méthodes liées à une "entity"
     // -
     // ------------------------------------------------------
 
-    public function withAvailabilities(?PeriodInterface $period = null, bool $strict = false): static
+    public function edit(array $data): static
     {
-        return static::allWithAvailabilities(new Collection([$this]), $period, $strict)->get(0);
+        if (array_key_exists('stock_quantity', $data)) {
+            $stockQuantity = $data['stock_quantity'];
+            if ($stockQuantity !== null && (int) $stockQuantity < 0) {
+                $data['stock_quantity'] = 0;
+            }
+        }
+
+        if (array_key_exists('out_of_order_quantity', $data)) {
+            $stockQuantity = (int) ($data['stock_quantity'] ?? 0);
+            $outOfOrderQuantity = (int) $data['out_of_order_quantity'];
+            if ($outOfOrderQuantity > $stockQuantity) {
+                $outOfOrderQuantity = $stockQuantity;
+                $data['out_of_order_quantity'] = $outOfOrderQuantity;
+            }
+            if ($outOfOrderQuantity <= 0) {
+                $data['out_of_order_quantity'] = null;
+            }
+        }
+
+        return dbTransaction(function () use ($data) {
+            $hasFailed = false;
+            $validationErrors = [];
+
+            try {
+                $this->fill(Arr::except($data, ['tags', 'approvers', 'attributes']))->save();
+            } catch (ValidationException $e) {
+                $validationErrors = $e->getValidationErrors();
+                $hasFailed = true;
+            }
+
+            // - Tags
+            if (isset($data['tags'])) {
+                Assert::isArray($data['tags'], "Key `tags` must be an array.");
+
+                $tags = [];
+                foreach ($data['tags'] as $tagId) {
+                    if (empty($tagId)) {
+                        continue;
+                    }
+
+                    $relatedTag = is_numeric($tagId) ? Tag::find($tagId) : null;
+                    if ($relatedTag === null) {
+                        $validationErrors['tags'] = __('field-contains-invalid-values');
+                        $hasFailed = true;
+                        break;
+                    }
+
+                    $tags[] = $relatedTag->id;
+                }
+
+                if (!$hasFailed) {
+                    $this->tags()->sync($tags);
+                }
+            }
+
+            // - Attributs
+            if (isset($data['attributes'])) {
+                Assert::isArray($data['attributes'], "Key `attributes` must be an array.");
+
+                $attributes = [];
+                foreach ($data['attributes'] as $attribute) {
+                    if (empty($attribute['value'])) {
+                        continue;
+                    }
+
+                    $attributes[$attribute['id']] = [
+                        'value' => (string) $attribute['value'],
+                    ];
+                }
+
+                if (!$hasFailed) {
+                    $this->attributes()->sync($attributes);
+                }
+            }
+
+            if ($hasFailed) {
+                throw new ValidationException($validationErrors);
+            }
+
+            return $this->refresh();
+        });
+    }
+
+    public function withAvailabilities(?PeriodInterface $period = null): static
+    {
+        return static::allWithAvailabilities(new Collection([$this]), $period)->get(0);
     }
 
     // ------------------------------------------------------
@@ -592,11 +871,12 @@ final class Material extends BaseModel implements Serializable
     {
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
-        $term = sprintf('%%%s%%', addcslashes($term, '%_'));
+        $safeTerm = addcslashes($term, '%_');
+        $likeTerm = sprintf('%%%s%%', $safeTerm);
         return $query->where(static fn (Builder $subQuery) => (
             $subQuery
-                ->orWhere('name', 'LIKE', $term)
-                ->orWhere('reference', 'LIKE', $term)
+                ->orWhere('name', 'LIKE', $likeTerm)
+                ->orWhere('reference', 'LIKE', $likeTerm)
         ));
     }
 
@@ -614,6 +894,21 @@ final class Material extends BaseModel implements Serializable
                     ->where('park_id', $parkId);
             });
         });
+    }
+
+    /**
+     * Permet de récupérer uniquement le matériel ne faisant pas partie d'un parc donné.
+     *
+     * @param Builder $query
+     * @param array $parks - Les identifiants des parcs dont on ne veut pas le matériel.
+     */
+    public function scopeNotInParks(Builder $query, array $parks): Builder
+    {
+        return $query
+            ->where(static fn (Builder $subQuery) => (
+                $subQuery
+                    ->whereNotIn('park_id', $parks)
+            ));
     }
 
     public function scopeCustomOrderBy(Builder $query, string $column, string $direction = 'asc'): Builder
@@ -660,14 +955,12 @@ final class Material extends BaseModel implements Serializable
      *
      * @param Collection<array-key, Material> $materials La liste du matériel.
      * @param PeriodInterface|null $period Le booking (ou simple Period) à utiliser comme limite de temps.
-     * @param bool $strict Passer à `true` pour prendre en compte le matériel en panne.
      *
      * @return Collection<array-key, Material>
      */
     public static function allWithAvailabilities(
         Collection $materials,
         ?PeriodInterface $period = null,
-        bool $strict = false,
     ): Collection {
         if ($materials->isEmpty()) {
             return new Collection([]);
@@ -675,27 +968,24 @@ final class Material extends BaseModel implements Serializable
 
         // - NOTE : Ne pas prefetch le materiel des bookables via `->with()`,
         //   car cela peut surcharger la mémoire rapidement.
-        // FIXME: Utiliser le principe du lazy-loading pou optimiser l'utilisation de la mémoire.
+        // FIXME: Utiliser le principe du lazy-loading pour optimiser l'utilisation de la mémoire.
         $otherBorrowings = new Collection();
         if ($period !== null) {
-            $otherBorrowings = $period->__cachedConcurrentBookables ?? null;
-            if ($otherBorrowings === null) {
-                $otherBorrowings = (new Collection())
-                    // - Événements.
-                    ->concat(
-                        Event::inPeriod($period)
-                            ->when(
-                                $period instanceof Event && $period->exists,
-                                static function (Builder $query) use ($period) {
-                                    /** @var Event $period */
-                                    $query->where('id', '!=', $period->id);
-                                },
-                            )
-                            ->get(),
-                    );
-            }
+            $otherBorrowings = (new Collection())
+                // - Événements.
+                ->concat(
+                    Event::inPeriod($period)
+                        ->when(
+                            $period instanceof Event && $period->exists,
+                            static function (Builder $query) use ($period) {
+                                /** @var Event $period */
+                                $query->where('id', '!=', $period->id);
+                            },
+                        )
+                        ->get(),
+                );
 
-            /** @var Collection $otherBorrowings */
+            /** @var CoreCollection<array-key, Event> $otherBorrowings */
             $otherBorrowings = $otherBorrowings
                 ->sortBy(static fn (PeriodInterface $otherBorrowing) => $otherBorrowing->getStartDate())
                 ->values();
@@ -722,7 +1012,7 @@ final class Material extends BaseModel implements Serializable
             ->sliding(2)
             ->mapSpread(static function ($startDate, $endDate) use ($otherBorrowings) {
                 $period = new Period($startDate, $endDate);
-                return $otherBorrowings->filter(static fn ($otherBorrowing) => (
+                return $otherBorrowings->filter(static fn (PeriodInterface $otherBorrowing) => (
                     $period->overlaps($otherBorrowing)
                 ));
             });
@@ -734,13 +1024,12 @@ final class Material extends BaseModel implements Serializable
         //   matériel pendant la période pour utilisation ultérieure.
         $materialsUsage = new CoreCollection([]);
         foreach ($otherBorrowingsByPeriods as $periodIndex => $otherBorrowingsPeriod) {
+            /** @var Event $otherBorrowing */
             foreach ($otherBorrowingsPeriod as $otherBorrowing) {
-                $borrowingMaterials = $otherBorrowing instanceof Event
-                    ? $otherBorrowing->materials->keyBy('id')->all()
-                    : $otherBorrowing->materials->keyBy('material_id')->all();
-
+                /** @var Collection<array-key, EventMaterial> $borrowingMaterials */
+                $borrowingMaterials = $otherBorrowing->materials->keyBy('material_id')->all();
                 foreach ($borrowingMaterials as $materialId => $borrowingMaterial) {
-                    $quantity = $borrowingMaterial->pivot->quantity;
+                    $quantity = $borrowingMaterial->quantity;
 
                     // - Si le matériel était déjà présent dans une autre période.
                     $existingUsage = $materialsUsage->get($materialId);
@@ -768,8 +1057,7 @@ final class Material extends BaseModel implements Serializable
             $usedCount = max($materialUsage['quantities']);
 
             $availableQuantity = (int) $material->stock_quantity - (int) $material->out_of_order_quantity;
-            $availableQuantity = max($availableQuantity - $usedCount, 0);
-            $material->available_quantity = $availableQuantity;
+            $material->available_quantity = max($availableQuantity - $usedCount, 0);
 
             return $material;
         });
@@ -783,16 +1071,70 @@ final class Material extends BaseModel implements Serializable
 
     public function serialize(string $format = self::SERIALIZE_DEFAULT): array
     {
+        $formatsWithContext = [
+            self::SERIALIZE_WITH_CONTEXT,
+            self::SERIALIZE_WITH_CONTEXT_EXCERPT,
+            self::SERIALIZE_PUBLIC,
+        ];
+        if (in_array($format, $formatsWithContext, true) && $this->context === null) {
+            throw new \LogicException(
+                'The `context` attribute should be specified ' .
+                'when using formats with contextual data.',
+            );
+        }
+
         /** @var Material $material */
         $material = tap(clone $this, static function (Material $material) use ($format) {
             $material->append(['tags', 'attributes']);
 
-            if (in_array($format, [self::SERIALIZE_WITH_AVAILABILITY, self::SERIALIZE_PUBLIC], true)) {
-                $material->append('available_quantity');
+            switch ($format) {
+                case self::SERIALIZE_WITH_AVAILABILITY:
+                case self::SERIALIZE_WITH_CONTEXT:
+                    $material->append([
+                        'available_quantity',
+                        'is_deleted',
+                    ]);
+                    break;
+
+                case self::SERIALIZE_WITH_CONTEXT_EXCERPT:
+                    $material->append(['is_deleted']);
+                    break;
+
+                case self::SERIALIZE_PUBLIC:
+                    $material->append(['available_quantity']);
+                    break;
+
+                case self::SERIALIZE_DETAILS:
+                    $material->append([
+                        'available_quantity',
+                        'departure_inventory_todo',
+                        'return_inventory_todo',
+                    ]);
+                    break;
             }
         });
 
         $data = $material->attributesForSerialization();
+        if (in_array($format, $formatsWithContext, true)) {
+            $data['degressive_rate'] = $material->degressive_rate_context;
+            $data['rental_price_period'] = $material->rental_price_context;
+        }
+
+        if ($format === self::SERIALIZE_DETAILS) {
+            if ($material->return_inventory_todo) {
+                $bookingClass = $material->return_inventory_todo::class;
+                $data['return_inventory_todo'] = $material
+                    ->return_inventory_todo
+                    ->serialize($bookingClass::SERIALIZE_BOOKING_SUMMARY);
+            }
+
+            if ($material->departure_inventory_todo) {
+                $bookingClass = $material->departure_inventory_todo::class;
+                $data['departure_inventory_todo'] = $material
+                    ->departure_inventory_todo
+                    ->serialize($bookingClass::SERIALIZE_BOOKING_SUMMARY);
+            }
+        }
 
         if ($format === self::SERIALIZE_PUBLIC) {
             return Arr::only($data, [
@@ -800,11 +1142,18 @@ final class Material extends BaseModel implements Serializable
                 'name',
                 'description',
                 'picture',
+                'degressive_rate',
                 'available_quantity',
                 'rental_price',
+                'rental_price_period',
             ]);
         }
 
-        return Arr::except($data, ['is_unitary', 'park_location_id', 'deleted_at']);
+        return Arr::except($data, [
+            'is_unitary',
+            'is_reservable',
+            'park_location_id',
+            'deleted_at',
+        ]);
     }
 }

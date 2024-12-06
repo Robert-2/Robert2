@@ -44,7 +44,7 @@ const MinimalistLayout = defineComponent({
                         target="_blank"
                         rel="noreferrer"
                     >
-                        {__('external-links.community-forum')}
+                        {__('external-links.support-platform')}
                     </a>
                     {' '}|{' '}
                     v{version}

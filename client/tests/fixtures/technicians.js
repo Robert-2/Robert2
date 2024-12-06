@@ -1,6 +1,7 @@
 import { dataFactory } from './@utils';
 import omit from 'lodash/omit';
 import countries from './countries';
+import users from './users';
 import events from './events';
 
 const data = [
@@ -20,6 +21,7 @@ const data = [
         full_address: null,
         country: null,
         note: null,
+        user: users.default(2),
         events: [
             {
                 id: 1,
@@ -51,6 +53,7 @@ const data = [
         full_address: null,
         country: countries.default(2),
         note: null,
+        user: null,
         events: [
             {
                 id: 2,
@@ -86,12 +89,17 @@ const data = [
 
 /** @type {import('./@utils').FactoryReturnType} */
 const asDefault = dataFactory(data, (technician) => (
+    omit(technician, ['events', 'user'])
+));
+
+/** @type {import('./@utils').FactoryReturnType} */
+const asDetails = dataFactory(data, (technician) => (
     omit(technician, ['events'])
 ));
 
 /** @type {import('./@utils').FactoryReturnType} */
 const withEvents = dataFactory(data, (technician) => ({
-    ...technician,
+    ...omit(technician, ['user']),
     events: technician.events.map((event) => (
         { ...event, event: event.event() }
     )),
@@ -99,5 +107,6 @@ const withEvents = dataFactory(data, (technician) => ({
 
 export default {
     default: asDefault,
+    details: asDetails,
     withEvents,
 };

@@ -2,10 +2,11 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
+import parseInteger from '@/utils/parseInteger';
 import apiTechnicians from '@/stores/api/technicians';
 import { confirm } from '@/utils/alert';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Page from '@/themes/default/components/Page';
 import Button from '@/themes/default/components/Button';
@@ -24,7 +25,7 @@ const TechnicianView = defineComponent({
     name: 'TechnicianView',
     data() {
         return {
-            id: parseInt(this.$route.params.id, 10),
+            id: parseInteger(this.$route.params.id),
             isLoading: false,
             isFetched: false,
             criticalError: null,
@@ -116,19 +117,18 @@ const TechnicianView = defineComponent({
         async fetchData() {
             this.isLoading = true;
             try {
-                const data = await apiTechnicians.one(this.id);
-                this.technician = data;
+                this.technician = await apiTechnicians.one(this.id);
                 this.isFetched = true;
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
                     console.error(`Error occurred while retrieving technician #${this.id} data`, error);
-                    this.criticalError = ERROR.UNKNOWN;
+                    this.criticalError = ErrorType.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
                     this.criticalError = status === HttpCode.ClientErrorNotFound
-                        ? ERROR.NOT_FOUND
-                        : ERROR.UNKNOWN;
+                        ? ErrorType.NOT_FOUND
+                        : ErrorType.UNKNOWN;
                 }
             } finally {
                 this.isLoading = false;

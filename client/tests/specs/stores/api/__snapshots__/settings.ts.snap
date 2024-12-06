@@ -2,6 +2,10 @@
 
 exports[`Settings Api all() parse the returned data correctly 1`] = `
 {
+  "billing": {
+    "defaultDegressiveRate": 1,
+    "defaultTax": 1,
+  },
   "calendar": {
     "event": {
       "showBorrower": false,
@@ -67,6 +71,10 @@ exports[`Settings Api all() parse the returned data correctly 1`] = `
 
 exports[`Settings Api reset() parse the returned data correctly 1`] = `
 {
+  "billing": {
+    "defaultDegressiveRate": 1,
+    "defaultTax": 1,
+  },
   "calendar": {
     "event": {
       "showBorrower": false,
@@ -132,6 +140,10 @@ exports[`Settings Api reset() parse the returned data correctly 1`] = `
 
 exports[`Settings Api update() parse the returned data correctly 1`] = `
 {
+  "billing": {
+    "defaultDegressiveRate": 1,
+    "defaultTax": 1,
+  },
   "calendar": {
     "event": {
       "showBorrower": false,

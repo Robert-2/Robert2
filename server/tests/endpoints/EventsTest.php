@@ -6,9 +6,12 @@ namespace Loxya\Tests;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
+use Loxya\Models\EventTechnician;
 use Loxya\Models\Material;
 use Loxya\Models\Setting;
+use Loxya\Models\Technician;
 use Loxya\Models\User;
 use Loxya\Support\Arr;
 use Loxya\Support\Filesystem\UploadedFile;
@@ -36,18 +39,22 @@ final class EventsTest extends ApiTestCase
                     'end' => '2018-12-18 18:00:00',
                     'isFullDays' => false,
                 ],
-                'degressive_rate' => '1.75',
-                'discount_rate' => '0',
-                'vat_rate' => '20.00',
+                'materials_count' => 3,
                 'currency' => 'EUR',
-                'daily_total' => '341.45',
-                'total_without_discount' => '597.54',
-                'total_discountable' => '72.54',
-                'total_discount' => '0.00',
-                'total_without_taxes' => '597.54',
-                'total_taxes' => '119.51',
-                'total_with_taxes' => '717.05',
-                'total_replacement' => '19808.90',
+                'total_without_global_discount' => '422.54',
+                'global_discount_rate' => '10.0000',
+                'total_global_discount' => '42.25',
+                'total_without_taxes' => '380.29',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '76.06',
+                    ],
+                ],
+                'total_with_taxes' => '456.35',
+                'total_replacement' => '19408.90',
                 'is_confirmed' => false,
                 'is_archived' => false,
                 'is_billable' => true,
@@ -59,6 +66,7 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_datetime' => null,
                 'return_inventory_author' => null,
                 'has_missing_materials' => null,
+                'has_deleted_materials' => false,
                 'has_not_returned_materials' => false,
                 'categories' => [1, 2],
                 'parks' => [1],
@@ -92,38 +100,115 @@ final class EventsTest extends ApiTestCase
                     BeneficiariesTest::data(1),
                 ],
                 'materials' => [
-                    array_merge(MaterialsTest::data(1), [
-                        'pivot' => [
-                            'quantity' => 1,
-                            'quantity_departed' => 1,
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
+                    [
+                        'id' => 1,
+                        'name' => "Console Yamaha CL3",
+                        'reference' => 'CL3',
+                        'category_id' => 1,
+                        'quantity' => 1,
+                        'unit_price' => '200.00',
+                        'degressive_rate' => '1.75',
+                        'unit_price_period' => '350.00',
+                        'total_without_discount' => '350.00',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '350.00',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
-                    array_merge(MaterialsTest::data(2), [
-                        'pivot' => [
-                            'quantity' => 1,
-                            'quantity_departed' => 1,
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => "Le matériel n'est pas en très bon état.",
+                        'unit_replacement_price' => '19000.00',
+                        'total_replacement_price' => '19000.00',
+                        'quantity_departed' => 1,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(1, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '300.00',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => "DBX PA2",
+                        'reference' => 'DBXPA2',
+                        'category_id' => 1,
+                        'quantity' => 1,
+                        'unit_price' => '25.50',
+                        'degressive_rate' => '1.75',
+                        'unit_price_period' => '44.63',
+                        'total_without_discount' => '44.63',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '44.63',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
-                    array_merge(MaterialsTest::data(4), [
-                        'pivot' => [
-                            'quantity' => 1,
-                            'quantity_departed' => 1,
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 1,
-                            'departure_comment' => null,
+                        'unit_replacement_price' => '349.90',
+                        'total_replacement_price' => '349.90',
+                        'quantity_departed' => 1,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => "Le matériel n'est pas en très bon état.",
+                        'material' => array_merge(
+                            MaterialsTest::data(2, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '2.00',
+                                'rental_price_period' => '51.00',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 4,
+                        'name' => "Showtec SDS-6",
+                        'reference' => 'SDS-6-01',
+                        'category_id' => 2,
+                        'quantity' => 1,
+                        'unit_price' => '15.95',
+                        'degressive_rate' => '1.75',
+                        'unit_price_period' => '27.91',
+                        'total_without_discount' => '27.91',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '27.91',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
+                        'unit_replacement_price' => '59.00',
+                        'total_replacement_price' => '59.00',
+                        'quantity_departed' => 1,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 1,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(4, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.75',
+                                'rental_price_period' => '27.91',
+                            ],
+                        ),
+                    ],
                 ],
+                'extras' => [],
                 'invoices' => [
                     InvoicesTest::data(1),
                 ],
                 'estimates' => [
+                    EstimatesTest::data(2),
                     EstimatesTest::data(1),
                 ],
                 'note' => null,
@@ -148,22 +233,33 @@ final class EventsTest extends ApiTestCase
                     'end' => '2018-12-19',
                     'isFullDays' => true,
                 ],
-                'degressive_rate' => '1.75',
-                'discount_rate' => '0',
-                'vat_rate' => '20.00',
+                'materials_count' => 5,
                 'currency' => 'EUR',
-                'daily_total' => '951.00',
-                'total_without_discount' => '1664.25',
-                'total_discountable' => '89.25',
-                'total_discount' => '0.00',
-                'total_without_taxes' => '1664.25',
-                'total_taxes' => '332.85',
-                'total_with_taxes' => '1997.10',
+                'total_without_global_discount' => '-909.67',
+                'global_discount_rate' => '0.0000',
+                'total_global_discount' => '0.00',
+                'total_without_taxes' => '-909.67',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '376.07',
+                    ],
+                    [
+                        'name' => 'Taxes diverses',
+                        'is_rate' => false,
+                        'value' => '10.00',
+                        'total' => '20.00',
+                    ],
+                ],
+                'total_with_taxes' => '-513.60',
                 'total_replacement' => '58899.80',
                 'is_archived' => false,
                 'is_billable' => true,
                 'is_confirmed' => false,
                 'has_missing_materials' => null,
+                'has_deleted_materials' => false,
                 'has_not_returned_materials' => true,
                 'is_departure_inventory_done' => false,
                 'departure_inventory_datetime' => null,
@@ -175,24 +271,100 @@ final class EventsTest extends ApiTestCase
                 'categories' => [1],
                 'parks' => [1],
                 'materials' => [
-                    array_merge(MaterialsTest::data(1), [
-                        'pivot' => [
-                            'quantity' => 3,
-                            'quantity_departed' => 2,
-                            'quantity_returned' => 2,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
+                    [
+                        'id' => 2,
+                        'name' => "Processeur DBX PA2",
+                        'reference' => 'DBXPA2',
+                        'category_id' => 1,
+                        'quantity' => 2,
+                        'unit_price' => '25.50',
+                        'degressive_rate' => '1.75',
+                        'unit_price_period' => '44.63',
+                        'total_without_discount' => '89.26',
+                        'discount_rate' => '10.0000',
+                        'total_discount' => '8.93',
+                        'total_without_taxes' => '80.33',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
-                    array_merge(MaterialsTest::data(2), [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_departed' => 2,
-                            'quantity_returned' => 2,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => "Validé avec le client.",
+                        'unit_replacement_price' => '349.90',
+                        'total_replacement_price' => '699.80',
+                        'quantity_departed' => 2,
+                        'quantity_returned' => 2,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => "Validé avec le client.",
+                        'material' => array_merge(
+                            MaterialsTest::data(2, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '2.00',
+                                'rental_price_period' => '51.00',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 1,
+                        'name' => "Yamaha CL3",
+                        'reference' => 'CL-3',
+                        'category_id' => 1,
+                        'quantity' => 3,
+                        'unit_price' => '300.00',
+                        'degressive_rate' => '2.00',
+                        'unit_price_period' => '600.00',
+                        'total_without_discount' => '1800.00',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '1800.00',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
+                        'unit_replacement_price' => '19400.00',
+                        'total_replacement_price' => '58200.00',
+                        'quantity_departed' => 2,
+                        'quantity_returned' => 2,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(1, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '300.00',
+                            ],
+                        ),
+                    ],
+                ],
+                'extras' => [
+                    [
+                        'id' => 1,
+                        'description' => 'Services additionnels',
+                        'quantity' => 2,
+                        'unit_price' => '155.00',
+                        'tax_id' => 2,
+                        'taxes' => [
+                            [
+                                'name' => 'Taxes diverses',
+                                'is_rate' => false,
+                                'value' => '10.00',
+                            ],
+                        ],
+                        'total_without_taxes' => '310.00',
+                    ],
+                    [
+                        'id' => 2,
+                        'description' => 'Avoir facture du 17/12/2018',
+                        'quantity' => 1,
+                        'unit_price' => '-3100.00',
+                        'tax_id' => null,
+                        'taxes' => [],
+                        'total_without_taxes' => '-3100.00',
+                    ],
                 ],
                 'beneficiaries' => [
                     BeneficiariesTest::data(3),
@@ -222,9 +394,11 @@ final class EventsTest extends ApiTestCase
                     'end' => '2018-12-17 00:00:00',
                     'isFullDays' => false,
                 ],
+                'materials_count' => 23,
                 'currency' => 'EUR',
-                'total_replacement' => '1353.90',
+                'total_replacement' => '1210.99',
                 'has_missing_materials' => null,
+                'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
                 'is_archived' => true,
                 'is_billable' => false,
@@ -239,33 +413,66 @@ final class EventsTest extends ApiTestCase
                 'categories' => [1, 2],
                 'parks' => [1],
                 'materials' => [
-                    array_merge(MaterialsTest::data(3), [
-                        'pivot' => [
-                            'quantity' => 10,
-                            'quantity_departed' => 10,
-                            'quantity_returned' => 0,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
-                        ],
-                    ]),
-                    array_merge(MaterialsTest::data(2), [
-                        'pivot' => [
-                            'quantity' => 1,
-                            'quantity_departed' => 1,
-                            'quantity_returned' => 0,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
-                        ],
-                    ]),
-                    array_merge(MaterialsTest::data(5), [
-                        'pivot' => [
-                            'quantity' => 12,
-                            'quantity_departed' => 12,
-                            'quantity_returned' => 0,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
-                        ],
-                    ]),
+                    [
+                        'id' => 5,
+                        'name' => "Câble XLR 10m",
+                        'reference' => 'XLR10',
+                        'category_id' => null,
+                        'quantity' => 12,
+                        'unit_replacement_price' => null,
+                        'total_replacement_price' => null,
+                        'quantity_departed' => 12,
+                        'quantity_returned' => 0,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(5, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '0.50',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 3,
+                        'name' => "PAR64 LED",
+                        'reference' => 'PAR64LED',
+                        'category_id' => 2,
+                        'quantity' => 10,
+                        'unit_replacement_price' => '89.00',
+                        'total_replacement_price' => '890.00',
+                        'quantity_departed' => 10,
+                        'quantity_returned' => 0,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(3, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.75',
+                                'rental_price_period' => '6.13',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => "Processeur DBX PA2",
+                        'reference' => 'DBXPA2',
+                        'category_id' => 1,
+                        'quantity' => 1,
+                        'unit_replacement_price' => '320.99',
+                        'total_replacement_price' => '320.99',
+                        'quantity_departed' => 1,
+                        'quantity_returned' => 0,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(2, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '2.00',
+                                'rental_price_period' => '51.00',
+                            ],
+                        ),
+                    ],
                 ],
                 'beneficiaries' => [],
                 'technicians' => [],
@@ -291,8 +498,9 @@ final class EventsTest extends ApiTestCase
                     'end' => '2019-04-10',
                     'isFullDays' => true,
                 ],
+                'materials_count' => 6,
                 'currency' => 'EUR',
-                'total_replacement' => '116238.00',
+                'total_replacement' => '115499.98',
                 'is_archived' => false,
                 'is_billable' => false,
                 'is_confirmed' => false,
@@ -304,37 +512,71 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_datetime' => null,
                 'return_inventory_author' => null,
                 'has_missing_materials' => true,
+                'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
                 'categories' => [1, 3],
                 'parks' => [1, 2],
                 'materials' => [
-                    array_merge(MaterialsTest::data(1), [
-                        'pivot' => [
-                            'quantity' => 1,
-                            'quantity_departed' => null,
-                            'quantity_returned' => 0,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
-                        ],
-                    ]),
-                    array_merge(MaterialsTest::data(6), [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_departed' => 1,
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
-                        ],
-                    ]),
-                    array_merge(MaterialsTest::data(7), [
-                        'pivot' => [
-                            'quantity' => 3,
-                            'quantity_departed' => null,
-                            'quantity_returned' => 0,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
-                        ],
-                    ]),
+                    [
+                        'id' => 6,
+                        'name' => "Behringer X Air XR18",
+                        'reference' => 'XR18',
+                        'category_id' => 1,
+                        'quantity' => 2,
+                        'unit_replacement_price' => '49.99',
+                        'total_replacement_price' => '99.98',
+                        'quantity_departed' => 1,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(6, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '30.93',
+                                'rental_price_period' => '1546.19',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 1,
+                        'name' => "Console Yamaha CL3",
+                        'reference' => 'CL',
+                        'category_id' => 1,
+                        'quantity' => 1,
+                        'unit_replacement_price' => '19400.00',
+                        'total_replacement_price' => '19400.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => 0,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(1, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '300.00',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 7,
+                        'name' => "Voiture 1",
+                        'reference' => 'V-1',
+                        'category_id' => 3,
+                        'quantity' => 3,
+                        'unit_replacement_price' => '32000.00',
+                        'total_replacement_price' => '96000.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => 0,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(7, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '30.75',
+                                'rental_price_period' => '9225.00',
+                            ],
+                        ),
+                    ],
                 ],
                 'beneficiaries' => [],
                 'technicians' => [],
@@ -360,6 +602,7 @@ final class EventsTest extends ApiTestCase
                     'end' => '2020-01-01',
                     'isFullDays' => true,
                 ],
+                'materials_count' => 2,
                 'currency' => 'EUR',
                 'total_replacement' => '17000.00',
                 'is_archived' => false,
@@ -373,19 +616,31 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_datetime' => null,
                 'return_inventory_author' => null,
                 'has_missing_materials' => false,
+                'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
                 'categories' => [4],
                 'parks' => [1],
                 'materials' => [
-                    array_merge(MaterialsTest::data(8), [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_departed' => 1,
-                            'quantity_returned' => null,
-                            'quantity_returned_broken' => null,
-                            'departure_comment' => null,
-                        ],
-                    ]),
+                    [
+                        'id' => 8,
+                        'name' => "Décor Thème Forêt",
+                        'reference' => 'Decor-Forest',
+                        'category_id' => 4,
+                        'quantity' => 2,
+                        'unit_replacement_price' => '8500.00',
+                        'total_replacement_price' => '17000.00',
+                        'quantity_departed' => 1,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(8, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '1500.00',
+                            ],
+                        ),
+                    ],
                 ],
                 'beneficiaries' => [
                     BeneficiariesTest::data(1),
@@ -413,6 +668,7 @@ final class EventsTest extends ApiTestCase
                     'end' => '2019-04-01',
                     'isFullDays' => true,
                 ],
+                'materials_count' => 0,
                 'currency' => 'EUR',
                 'total_replacement' => '0.00',
                 'is_archived' => false,
@@ -426,6 +682,7 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_datetime' => null,
                 'return_inventory_author' => null,
                 'has_missing_materials' => false,
+                'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
                 'categories' => [],
                 'parks' => [],
@@ -454,18 +711,22 @@ final class EventsTest extends ApiTestCase
                     'end' => '2023-05-28',
                     'isFullDays' => true,
                 ],
-                'degressive_rate' => '3.25',
-                'discount_rate' => '0',
-                'vat_rate' => '20.00',
+                'materials_count' => 7,
                 'currency' => 'EUR',
-                'daily_total' => '1031.88',
-                'total_without_discount' => '3353.61',
-                'total_discountable' => '103.68',
-                'total_discount' => '0.00',
-                'total_without_taxes' => '3353.61',
-                'total_taxes' => '670.72',
-                'total_with_taxes' => '4024.33',
-                'total_replacement' => '71756.00',
+                'total_without_global_discount' => '3353.62',
+                'global_discount_rate' => '0.0000',
+                'total_global_discount' => '0.00',
+                'total_without_taxes' => '3353.62',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '670.72',
+                    ],
+                ],
+                'total_with_taxes' => '4024.34',
+                'total_replacement' => '99099.98',
                 'is_archived' => false,
                 'is_billable' => true,
                 'is_confirmed' => true,
@@ -477,47 +738,149 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_datetime' => null,
                 'return_inventory_author' => null,
                 'has_missing_materials' => false,
+                'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
                 'categories' => [1, 2, 3],
                 'parks' => [1, 2],
                 'materials' => [
-                    array_merge(MaterialsTest::data(1), [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_departed' => null,
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
+                    [
+                        'id' => 6,
+                        'name' => "Behringer X Air XR18",
+                        'reference' => 'XR18',
+                        'category_id' => 1,
+                        'quantity' => 2,
+                        'unit_price' => '49.99',
+                        'degressive_rate' => '3.25',
+                        'unit_price_period' => '162.47',
+                        'total_without_discount' => '324.94',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '324.94',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
-                    array_merge(MaterialsTest::data(6), [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_departed' => null,
-                            'quantity_returned' => 2,
-                            'quantity_returned_broken' => 1,
-                            'departure_comment' => null,
+                        'unit_replacement_price' => '49.99',
+                        'total_replacement_price' => '99.98',
+                        'quantity_departed' => null,
+                        'quantity_returned' => 2,
+                        'quantity_returned_broken' => 1,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(6, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '3.25',
+                                'rental_price_period' => '162.47',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 1,
+                        'name' => "Console Yamaha CL3",
+                        'reference' => 'CL3',
+                        'category_id' => 1,
+                        'quantity' => 2,
+                        'unit_price' => '300.00',
+                        'degressive_rate' => '3.25',
+                        'unit_price_period' => '975.00',
+                        'total_without_discount' => '1950.00',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '1950.00',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
-                    array_merge(MaterialsTest::data(7), [
-                        'pivot' => [
-                            'quantity' => 1,
-                            'quantity_departed' => null,
-                            'quantity_returned' => null,
-                            'quantity_returned_broken' => null,
-                            'departure_comment' => null,
+                        'unit_replacement_price' => '19400.00',
+                        'total_replacement_price' => '38800.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(1, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '300.00',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 4,
+                        'name' => "Showtec SDS-6",
+                        'reference' => 'SDS-6-01',
+                        'category_id' => 2,
+                        'quantity' => 2,
+                        'unit_price' => '15.95',
+                        'degressive_rate' => '3.25',
+                        'unit_price_period' => '51.84',
+                        'total_without_discount' => '103.68',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '103.68',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
-                    array_merge(MaterialsTest::data(4), [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_departed' => null,
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 1,
-                            'departure_comment' => null,
+                        'unit_replacement_price' => '100.00',
+                        'total_replacement_price' => '200.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 1,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(4, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '3.25',
+                                'rental_price_period' => '51.84',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 7,
+                        'name' => "Volkswagen Transporter",
+                        'reference' => 'Transporter',
+                        'category_id' => 3,
+                        'quantity' => 1,
+                        'unit_price' => '300.00',
+                        'degressive_rate' => '3.25',
+                        'unit_price_period' => '975.00',
+                        'total_without_discount' => '975.00',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '975.00',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
                         ],
-                    ]),
+                        'unit_replacement_price' => '60000.00',
+                        'total_replacement_price' => '60000.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(7, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '3.00',
+                                'rental_price_period' => '900.00',
+                            ],
+                        ),
+                    ],
                 ],
+                'extras' => [],
                 'beneficiaries' => [],
                 'technicians' => [
                     [
@@ -540,6 +903,70 @@ final class EventsTest extends ApiTestCase
                 'created_at' => '2022-05-29 18:00:00',
                 'updated_at' => '2022-05-29 18:05:00',
             ],
+            [
+                'id' => 8,
+                'reference' => null,
+                'title' => 'Japan Festival 2024',
+                'description' => null,
+                'location' => 'Lausanne',
+                'color' => '#ffffff',
+                'mobilization_period' => [
+                    'start' => '2024-06-15 12:00:00',
+                    'end' => '2024-08-10 10:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2024-07-01 08:00:00',
+                    'end' => '2024-07-30 18:00:00',
+                    'isFullDays' => false,
+                ],
+                'materials_count' => 1,
+                'currency' => 'EUR',
+                'total_replacement' => '1000.00',
+                'is_archived' => false,
+                'is_billable' => false,
+                'is_confirmed' => false,
+                'is_departure_inventory_done' => false,
+                'departure_inventory_datetime' => null,
+                'departure_inventory_author' => null,
+                'is_return_inventory_started' => false,
+                'is_return_inventory_done' => false,
+                'return_inventory_datetime' => null,
+                'return_inventory_author' => null,
+                'has_missing_materials' => false,
+                'has_deleted_materials' => false,
+                'has_not_returned_materials' => null,
+                'categories' => [1],
+                'parks' => [1],
+                'materials' => [
+                    [
+                        'id' => 6,
+                        'name' => 'Behringer X Air XR18',
+                        'reference' => 'XR18',
+                        'category_id' => 1,
+                        'quantity' => 1,
+                        'unit_replacement_price' => '1000.00',
+                        'total_replacement_price' => '1000.00',
+                        'quantity_departed' => null,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                        'material' => array_merge(
+                            MaterialsTest::data(6, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '22.63',
+                                'rental_price_period' => '1131.27',
+                            ],
+                        ),
+                    ],
+                ],
+                'beneficiaries' => [],
+                'technicians' => [],
+                'note' => null,
+                'author' => UsersTest::data(1),
+                'created_at' => '2024-02-12 18:02:29',
+                'updated_at' => '2024-02-14 14:22:36',
+            ],
         ]);
 
         $events = match ($format) {
@@ -553,6 +980,7 @@ final class EventsTest extends ApiTestCase
                     'color',
                     'mobilization_period',
                     'operation_period',
+                    'materials_count',
                     'is_confirmed',
                     'is_billable',
                     'is_archived',
@@ -594,6 +1022,7 @@ final class EventsTest extends ApiTestCase
                         'operation_period',
                         'beneficiaries',
                         'technicians',
+                        'materials_count',
                         'is_confirmed',
                         'is_billable',
                         'is_archived',
@@ -637,14 +1066,13 @@ final class EventsTest extends ApiTestCase
         return static::dataFactory($id, $events->all());
     }
 
-    public function testGetEventNotFound(): void
+    public function testGetOne(): void
     {
+        // - Avec un événement inexistant.
         $this->client->get('/api/events/999');
         $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-    }
 
-    public function testGetOneEvent(): void
-    {
+        // - Avec des événements valides
         $ids = array_column(static::data(null), 'id');
         foreach ($ids as $id) {
             $this->client->get(sprintf('/api/events/%d', $id));
@@ -671,11 +1099,12 @@ final class EventsTest extends ApiTestCase
                 'end' => '2019-09-03',
                 'isFullDays' => true,
             ],
+            'is_billable' => true,
             'is_confirmed' => true,
             'location' => 'Avignon',
         ];
         $expected = [
-            'id' => 8,
+            'id' => 9,
             'reference' => null,
             'title' => "Un nouvel événement",
             'description' => null,
@@ -691,16 +1120,13 @@ final class EventsTest extends ApiTestCase
                 'end' => '2019-09-03',
                 'isFullDays' => true,
             ],
-            'degressive_rate' => '2.50',
-            'discount_rate' => '0',
-            'vat_rate' => '20.00',
+            'materials_count' => 0,
             'currency' => 'EUR',
-            'daily_total' => '0.00',
-            'total_without_discount' => '0.00',
-            'total_discountable' => '0.00',
-            'total_discount' => '0.00',
+            'total_without_global_discount' => '0.00',
+            'global_discount_rate' => '0.0000',
+            'total_global_discount' => '0.00',
             'total_without_taxes' => '0.00',
-            'total_taxes' => '0.00',
+            'total_taxes' => [],
             'total_with_taxes' => '0.00',
             'total_replacement' => '0.00',
             'is_confirmed' => true,
@@ -714,10 +1140,12 @@ final class EventsTest extends ApiTestCase
             'return_inventory_author' => null,
             'return_inventory_datetime' => null,
             'has_missing_materials' => false,
+            'has_deleted_materials' => false,
             'has_not_returned_materials' => null,
             'technicians' => [],
             'beneficiaries' => [],
             'materials' => [],
+            'extras' => [],
             'invoices' => [],
             'estimates' => [],
             'note' => null,
@@ -754,30 +1182,22 @@ final class EventsTest extends ApiTestCase
                 ],
             ],
             'materials' => [
-                ['id' => 1, 'quantity' => 1],
+                ['id' => 1, 'quantity' => 1, 'discount_rate' => '50.000'],
                 ['id' => 2, 'quantity' => 1],
                 ['id' => 4, 'quantity' => 2],
             ],
         ]));
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData(array_replace($expected, [
-            'id' => 9,
+            'id' => 10,
             'title' => "Encore un événement",
-            'daily_total' => '357.40',
-            'total_without_discount' => '893.50',
-            'total_discountable' => '143.50',
-            'total_discount' => '0.00',
-            'total_without_taxes' => '893.50',
-            'total_taxes' => '178.70',
-            'total_with_taxes' => '1072.20',
-            'total_replacement' => '19867.90',
             'beneficiaries' => [
                 BeneficiariesTest::data(3),
             ],
             'technicians' => [
                 [
                     'id' => 5,
-                    'event_id' => 9,
+                    'event_id' => 10,
                     'technician_id' => 2,
                     'period' => [
                         'start' => '2019-09-01 08:00:00',
@@ -789,7 +1209,7 @@ final class EventsTest extends ApiTestCase
                 ],
                 [
                     'id' => 4,
-                    'event_id' => 9,
+                    'event_id' => 10,
                     'technician_id' => 1,
                     'period' => [
                         'start' => '2019-09-01 10:00:00',
@@ -801,34 +1221,123 @@ final class EventsTest extends ApiTestCase
                 ],
             ],
             'materials' => [
-                array_merge(MaterialsTest::data(1), [
-                    'pivot' => [
-                        'quantity' => 1,
-                        'quantity_departed' => null,
-                        'quantity_returned' => null,
-                        'quantity_returned_broken' => null,
-                        'departure_comment' => null,
+                [
+                    'id' => 1,
+                    'name' => 'Console Yamaha CL3',
+                    'reference' => 'CL3',
+                    'category_id' => 1,
+                    'quantity' => 1,
+                    'unit_price' => '300.00',
+                    'degressive_rate' => '1.00',
+                    'unit_price_period' => '300.00',
+                    'total_without_discount' => '300.00',
+                    'discount_rate' => '50.0000',
+                    'total_discount' => '150.00',
+                    'total_without_taxes' => '150.00',
+                    'taxes' => [
+                        [
+                            'name' => 'T.V.A.',
+                            'is_rate' => true,
+                            'value' => '20.000',
+                        ],
                     ],
-                ]),
-                array_merge(MaterialsTest::data(2), [
-                    'pivot' => [
-                        'quantity' => 1,
-                        'quantity_departed' => null,
-                        'quantity_returned' => null,
-                        'quantity_returned_broken' => null,
-                        'departure_comment' => null,
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                    'unit_replacement_price' => '19400.00',
+                    'total_replacement_price' => '19400.00',
+                    'material' => array_merge(
+                        MaterialsTest::data(1, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                        [
+                            'degressive_rate' => '1.00',
+                            'rental_price_period' => '300.00',
+                        ],
+                    ),
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'Processeur DBX PA2',
+                    'reference' => 'DBXPA2',
+                    'category_id' => 1,
+                    'quantity' => 1,
+                    'unit_price' => '25.50',
+                    'degressive_rate' => '3.00',
+                    'unit_price_period' => '76.50',
+                    'total_without_discount' => '76.50',
+                    'discount_rate' => '0.0000',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '76.50',
+                    'taxes' => [
+                        [
+                            'name' => 'T.V.A.',
+                            'is_rate' => true,
+                            'value' => '20.000',
+                        ],
                     ],
-                ]),
-                array_merge(MaterialsTest::data(4), [
-                    'pivot' => [
-                        'quantity' => 2,
-                        'quantity_departed' => null,
-                        'quantity_returned' => null,
-                        'quantity_returned_broken' => null,
-                        'departure_comment' => null,
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                    'unit_replacement_price' => '349.90',
+                    'total_replacement_price' => '349.90',
+                    'material' => array_merge(
+                        MaterialsTest::data(2, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                        [
+                            'degressive_rate' => '3.00',
+                            'rental_price_period' => '76.50',
+                        ],
+                    ),
+                ],
+                [
+                    'id' => 4,
+                    'name' => 'Showtec SDS-6',
+                    'reference' => 'SDS-6-01',
+                    'category_id' => 2,
+                    'quantity' => 2,
+                    'unit_price' => '15.95',
+                    'degressive_rate' => '2.50',
+                    'unit_price_period' => '39.88',
+                    'total_without_discount' => '79.76',
+                    'discount_rate' => '0.0000',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '79.76',
+                    'taxes' => [
+                        [
+                            'name' => 'T.V.A.',
+                            'is_rate' => true,
+                            'value' => '20.000',
+                        ],
                     ],
-                ]),
+                    'quantity_departed' => null,
+                    'quantity_returned' => null,
+                    'quantity_returned_broken' => null,
+                    'departure_comment' => null,
+                    'unit_replacement_price' => '59.00',
+                    'total_replacement_price' => '118.00',
+                    'material' => array_merge(
+                        MaterialsTest::data(4, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                        [
+                            'degressive_rate' => '2.50',
+                            'rental_price_period' => '39.88',
+                        ],
+                    ),
+                ],
             ],
+            'materials_count' => 4,
+            'total_without_global_discount' => '306.26',
+            'total_global_discount' => '0.00',
+            'total_without_taxes' => '306.26',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'is_rate' => true,
+                    'value' => '20.000',
+                    'total' => '61.25',
+                ],
+            ],
+            'total_with_taxes' => '367.51',
+            'total_replacement' => '19867.90',
         ]));
     }
 
@@ -870,19 +1379,70 @@ final class EventsTest extends ApiTestCase
             $data,
             [
                 'has_missing_materials' => true,
-                'daily_total' => '1299.98',
-                'total_without_discount' => '40299.38',
-                'total_discountable' => '0.00',
-                'total_discount' => '0.00',
-                'degressive_rate' => '31.00',
-                'discount_rate' => '0',
-                'vat_rate' => '20.00',
-                'total_replacement' => '116238.00',
-                'total_taxes' => '8059.88',
-                'total_with_taxes' => '48359.26',
-                'total_without_taxes' => '40299.38',
+                'materials' => array_replace_recursive(
+                    self::data(4, Event::SERIALIZE_DETAILS)['materials'],
+                    [
+                        [
+                            'unit_price' => '49.99',
+                            'degressive_rate' => '30.93',
+                            'unit_price_period' => '1546.19',
+                            'total_without_discount' => '3092.38',
+                            'discount_rate' => '0.0000',
+                            'total_discount' => '0.00',
+                            'total_without_taxes' => '3092.38',
+                            'taxes' => [
+                                [
+                                    'name' => 'T.V.A.',
+                                    'is_rate' => true,
+                                    'value' => '20.000',
+                                ],
+                            ],
+                        ],
+                        [
+                            'unit_price' => '300.00',
+                            'degressive_rate' => '1.00',
+                            'unit_price_period' => '300.00',
+                            'total_without_discount' => '300.00',
+                            'discount_rate' => '0.0000',
+                            'total_discount' => '0.00',
+                            'total_without_taxes' => '300.00',
+                            'taxes' => [
+                                [
+                                    'name' => 'T.V.A.',
+                                    'is_rate' => true,
+                                    'value' => '20.000',
+                                ],
+                            ],
+                        ],
+                        [
+                            'unit_price' => '300.00',
+                            'degressive_rate' => '30.75',
+                            'unit_price_period' => '9225.00',
+                            'total_without_discount' => '27675.00',
+                            'discount_rate' => '0.0000',
+                            'total_discount' => '0.00',
+                            'total_without_taxes' => '27675.00',
+                            'taxes' => [],
+                        ],
+                    ],
+                ),
+                'extras' => [],
                 'estimates' => [],
                 'invoices' => [],
+                'total_without_global_discount' => '31067.38',
+                'total_global_discount' => '0.00',
+                'global_discount_rate' => '0.0000',
+                'total_without_taxes' => '31067.38',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '678.48',
+                    ],
+                ],
+                'total_with_taxes' => '31745.86',
+                'total_replacement' => '115499.98',
                 'updated_at' => '2019-03-15 18:42:36',
             ],
         ));
@@ -915,6 +1475,14 @@ final class EventsTest extends ApiTestCase
                 ['id' => 2, 'quantity' => 4],
                 ['id' => 4, 'quantity' => 3],
             ],
+            'extras' => [
+                [
+                    'description' => 'Nettoyage',
+                    'quantity' => 2,
+                    'unit_price' => '100.00',
+                    'tax_id' => 1,
+                ],
+            ],
         ]);
         $this->client->put('/api/events/4', $dataWithChildren);
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -923,48 +1491,7 @@ final class EventsTest extends ApiTestCase
             $data,
             [
                 'has_missing_materials' => true,
-                'daily_total' => '749.85',
-                'total_without_discount' => '23245.35',
-                'total_discountable' => '4645.35',
-                'total_discount' => '0.00',
-                'degressive_rate' => '31.00',
-                'discount_rate' => '0',
-                'vat_rate' => '20.00',
-                'total_replacement' => '40376.60',
-                'total_taxes' => '4649.07',
-                'total_with_taxes' => '27894.42',
-                'total_without_taxes' => '23245.35',
-                'estimates' => [],
-                'invoices' => [],
-                'materials' => [
-                    array_merge(MaterialsTest::data(1), [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_departed' => null,
-                            'quantity_returned' => 0,
-                            'quantity_returned_broken' => 0,
-                            'departure_comment' => null,
-                        ],
-                    ]),
-                    array_merge(MaterialsTest::data(2), [
-                        'pivot' => [
-                            'quantity' => 4,
-                            'quantity_departed' => null,
-                            'quantity_returned' => null,
-                            'quantity_returned_broken' => null,
-                            'departure_comment' => null,
-                        ],
-                    ]),
-                    array_merge(MaterialsTest::data(4), [
-                        'pivot' => [
-                            'quantity' => 3,
-                            'quantity_departed' => null,
-                            'quantity_returned' => null,
-                            'quantity_returned_broken' => null,
-                            'departure_comment' => null,
-                        ],
-                    ]),
-                ],
+                'materials_count' => 9,
                 'beneficiaries' => [
                     BeneficiariesTest::data(2),
                 ],
@@ -994,8 +1521,224 @@ final class EventsTest extends ApiTestCase
                         'technician' => TechniciansTest::data(2),
                     ],
                 ],
+                'materials' => [
+                    [
+                        'id' => 1,
+                        'name' => "Console Yamaha CL3",
+                        'reference' => 'CL',
+                        'category_id' => 1,
+                        'quantity' => 2,
+                        'unit_price' => '300.00',
+                        'degressive_rate' => '1.00',
+                        'unit_price_period' => '300.00',
+                        'total_without_discount' => '600.00',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '600.00',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
+                        ],
+                        'quantity_departed' => null,
+                        'quantity_returned' => 0,
+                        'quantity_returned_broken' => 0,
+                        'departure_comment' => null,
+                        'unit_replacement_price' => '19400.00',
+                        'total_replacement_price' => '38800.00',
+                        'material' => array_merge(
+                            MaterialsTest::data(1, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '300.00',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Processeur DBX PA2',
+                        'reference' => 'DBXPA2',
+                        'category_id' => 1,
+                        'quantity' => 4,
+                        'unit_price' => '25.50',
+                        'degressive_rate' => '41.00',
+                        'unit_price_period' => '1045.50',
+                        'total_without_discount' => '4182.00',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '4182.00',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
+                        ],
+                        'quantity_departed' => null,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                        'unit_replacement_price' => '349.90',
+                        'total_replacement_price' => '1399.60',
+                        'material' => array_merge(
+                            MaterialsTest::data(2, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '41.00',
+                                'rental_price_period' => '1045.50',
+                            ],
+                        ),
+                    ],
+                    [
+                        'id' => 4,
+                        'name' => 'Showtec SDS-6',
+                        'reference' => 'SDS-6-01',
+                        'category_id' => 2,
+                        'quantity' => 3,
+                        'unit_price' => '15.95',
+                        'degressive_rate' => '30.93',
+                        'unit_price_period' => '493.33',
+                        'total_without_discount' => '1479.99',
+                        'discount_rate' => '0.0000',
+                        'total_discount' => '0.00',
+                        'total_without_taxes' => '1479.99',
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
+                        ],
+                        'quantity_departed' => null,
+                        'quantity_returned' => null,
+                        'quantity_returned_broken' => null,
+                        'departure_comment' => null,
+                        'unit_replacement_price' => '59.00',
+                        'total_replacement_price' => '177.00',
+                        'material' => array_merge(
+                            MaterialsTest::data(4, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                            [
+                                'degressive_rate' => '30.93',
+                                'rental_price_period' => '493.33',
+                            ],
+                        ),
+                    ],
+                ],
+                'extras' => [
+                    [
+                        'id' => 3,
+                        'description' => 'Nettoyage',
+                        'quantity' => 2,
+                        'unit_price' => '100.00',
+                        'tax_id' => 1,
+                        'taxes' => [
+                            [
+                                'name' => 'T.V.A.',
+                                'is_rate' => true,
+                                'value' => '20.000',
+                            ],
+                        ],
+                        'total_without_taxes' => '200.00',
+                    ],
+                ],
+                'estimates' => [],
+                'invoices' => [],
+                'total_without_global_discount' => '6461.99',
+                'global_discount_rate' => '0.0000',
+                'total_global_discount' => '0.00',
+                'total_without_taxes' => '6461.99',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '1292.40',
+                    ],
+                ],
+                'total_with_taxes' => '7754.39',
+                'total_replacement' => '40376.60',
                 'updated_at' => '2019-03-15 18:42:36',
             ],
+        ));
+
+        // - Test quand l'utilisateur faisant la modification appartient au
+        //   groupe "readonly-planning-self" et qu'il fait partie des techniciens
+        //   assignés à l'événement : seul le champ "note" doit être modifiable.
+
+        Carbon::setTestNow(Carbon::create(2023, 5, 25, 12, 0, 0));
+
+        // - On crée un technicien lié à la personne de l'utilisateur courant.
+        $technician = Technician::create(['person_id' => 1]);
+        Event::find(7)->technicians()->saveMany([
+            new EventTechnician([
+                'event_id' => 7,
+                'technician_id' => $technician->id,
+                'position' => 'Testeur',
+                'period' => ['start' => '2023-05-25 09:15:00', 'end' => '2023-05-25 18:00:00'],
+            ]),
+        ]);
+        // - On passe l'utilisateur courant dans le groupe "readonly-planning-self".
+        User::findOrFail(1)->edit(['group' => Group::READONLY_PLANNING_SELF]);
+
+        $this->client->put('/api/events/7', array_merge($dataWithChildren, [
+            'note' => "Seul ce champ doit être modifié",
+        ]));
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(Arr::except(
+            array_replace_recursive(
+                self::data(7, Event::SERIALIZE_DETAILS),
+                [
+                    'note' => "Seul ce champ doit être modifié",
+                    'author' => [
+                        'group' => Group::READONLY_PLANNING_SELF,
+                    ],
+                    'technicians' => [
+                        [
+                            'id' => 3,
+                            'event_id' => 7,
+                            'technician_id' => 2,
+                            'period' => [
+                                'start' => '2023-05-25 00:00:00',
+                                'end' => '2023-05-29 00:00:00',
+                                'isFullDays' => false,
+                            ],
+                            'position' => 'Ingénieur du son',
+                            'technician' => TechniciansTest::data(2),
+                        ],
+                        [
+                            'id' => 6,
+                            'event_id' => 7,
+                            'technician_id' => 3,
+                            'period' => [
+                                'start' => '2023-05-25 09:15:00',
+                                'end' => '2023-05-25 18:00:00',
+                                'isFullDays' => false,
+                            ],
+                            'position' => 'Testeur',
+                            'technician' => [
+                                'id' => 3,
+                                'user_id' => 1,
+                                'first_name' => 'Jean',
+                                'last_name' => 'Fountain',
+                                'full_name' => 'Jean Fountain',
+                                'nickname' => null,
+                                'email' => 'tester@robertmanager.net',
+                                'phone' => null,
+                                'street' => '1, somewhere av.',
+                                'postal_code' => '1234',
+                                'locality' => 'Megacity',
+                                'country_id' => 1,
+                                'full_address' => "1, somewhere av.\n1234 Megacity",
+                                'country' => CountriesTest::data(1),
+                                'note' => null,
+                            ],
+                        ],
+                    ],
+                    'updated_at' => '2023-05-25 12:00:00',
+                ],
+            ),
+            ['invoices', 'estimates'],
         ));
     }
 
@@ -1011,8 +1754,8 @@ final class EventsTest extends ApiTestCase
             'operation_period' => 'invalid-date',
         ]);
         $this->assertApiValidationError([
-            'mobilization_period' => ['This field is invalid.'],
-            'operation_period' => ['This field is invalid.'],
+            'mobilization_period' => "This field is invalid.",
+            'operation_period' => "This field is invalid.",
         ]);
     }
 
@@ -1037,7 +1780,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace(
             self::data(1, Event::SERIALIZE_DETAILS),
             [
-                'id' => 8,
+                'id' => 9,
                 'mobilization_period' => [
                     'start' => '2021-07-01 00:00:00',
                     'end' => '2021-07-05 14:45:00',
@@ -1048,19 +1791,6 @@ final class EventsTest extends ApiTestCase
                     'end' => '2021-07-03',
                     'isFullDays' => true,
                 ],
-                'degressive_rate' => '2.50',
-                'total_without_discount' => '853.63',
-                'total_discountable' => '103.63',
-                'total_taxes' => '170.73',
-                'total_with_taxes' => '1024.36',
-                'total_without_taxes' => '853.63',
-                'is_departure_inventory_done' => false,
-                'departure_inventory_author' => null,
-                'departure_inventory_datetime' => null,
-                'is_return_inventory_started' => false,
-                'is_return_inventory_done' => false,
-                'return_inventory_author' => null,
-                'return_inventory_datetime' => null,
                 'has_missing_materials' => false,
                 'has_not_returned_materials' => null,
                 'beneficiaries' => [
@@ -1070,27 +1800,45 @@ final class EventsTest extends ApiTestCase
                     self::data(1, Event::SERIALIZE_DETAILS)['materials'],
                     [
                         [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
+                            'unit_price' => '300.00',
+                            'degressive_rate' => '1.00',
+                            'unit_price_period' => '300.00',
+                            'total_without_discount' => '300.00',
+                            'total_without_taxes' => '300.00',
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'unit_replacement_price' => '19400.00',
+                            'total_replacement_price' => '19400.00',
+                        ],
+                        [
+                            'name' => "Processeur DBX PA2",
+                            'degressive_rate' => '3.00',
+                            'unit_price_period' => '76.50',
+                            'total_without_discount' => '76.50',
+                            'total_without_taxes' => '76.50',
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'material' => [
+                                'degressive_rate' => '3.00',
+                                'rental_price_period' => '76.50',
                             ],
                         ],
                         [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
-                        ],
-                        [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
+                            'degressive_rate' => '2.50',
+                            'unit_price_period' => '39.88',
+                            'total_without_discount' => '39.88',
+                            'total_without_taxes' => '39.88',
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'material' => [
+                                'degressive_rate' => '2.50',
+                                'rental_price_period' => '39.88',
                             ],
                         ],
                     ],
@@ -1098,6 +1846,27 @@ final class EventsTest extends ApiTestCase
                 'technicians' => [],
                 'invoices' => [],
                 'estimates' => [],
+                'total_without_global_discount' => '416.38',
+                'global_discount_rate' => '0.0000',
+                'total_global_discount' => '0.00',
+                'total_with_taxes' => '499.66',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '83.28',
+                    ],
+                ],
+                'total_without_taxes' => '416.38',
+                'is_departure_inventory_done' => false,
+                'departure_inventory_author' => null,
+                'departure_inventory_datetime' => null,
+                'is_return_inventory_started' => false,
+                'is_return_inventory_done' => false,
+                'return_inventory_author' => null,
+                'return_inventory_datetime' => null,
+                'total_replacement' => '19808.90',
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
             ],
@@ -1120,7 +1889,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace(
             self::data(3, Event::SERIALIZE_DETAILS),
             [
-                'id' => 9,
+                'id' => 10,
                 'mobilization_period' => [
                     'start' => '2021-07-04 00:00:00',
                     'end' => '2021-07-05 00:00:00',
@@ -1144,37 +1913,44 @@ final class EventsTest extends ApiTestCase
                     self::data(3, Event::SERIALIZE_DETAILS)['materials'],
                     [
                         [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'unit_replacement_price' => '9.50',
+                            'total_replacement_price' => '114.00',
+                        ],
+                        [
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'material' => [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '3.50',
                             ],
                         ],
                         [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
-                        ],
-                        [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'unit_replacement_price' => '349.90',
+                            'total_replacement_price' => '349.90',
+                            'material' => [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '25.50',
                             ],
                         ],
                     ],
                 ),
+                'total_replacement' => '1353.90',
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
             ],
         ));
 
-        // - Duplication de l'événement n°4
+        // - Duplication de l'événement n°4 (avec unités)
         $this->client->post('/api/events/4/duplicate', [
             'operation_period' => [
                 'start' => '2021-07-04',
@@ -1191,7 +1967,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace(
             self::data(4, Event::SERIALIZE_DETAILS),
             [
-                'id' => 10,
+                'id' => 11,
                 'color' => '#ef5b5b',
                 'mobilization_period' => [
                     'start' => '2021-07-03 14:30:00',
@@ -1209,32 +1985,141 @@ final class EventsTest extends ApiTestCase
                     self::data(4, Event::SERIALIZE_DETAILS)['materials'],
                     [
                         [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'total_replacement_price' => '838.00',
+                            'unit_replacement_price' => '419.00',
+                            'material' => [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '49.99',
                             ],
                         ],
                         [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
+                            'reference' => 'CL3',
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
                         ],
                         [
-                            'pivot' => [
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
+                            'name' => "Volkswagen Transporter",
+                            'reference' => 'Transporter',
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'material' => [
+                                'degressive_rate' => '1.00',
+                                'rental_price_period' => '300.00',
                             ],
                         ],
                     ],
                 ),
                 'note' => "Penser à contacter Cap Canaveral fin janvier pour booker le pas de tir.",
+                'total_replacement' => '116238.00',
+                'created_at' => '2021-06-22 12:11:02',
+                'updated_at' => '2021-06-22 12:11:02',
+            ],
+        ));
+
+        // - Duplication de l'événement 7 (avec multi-listes + unités)
+        $this->client->post('/api/events/7/duplicate', [
+            'operation_period' => [
+                'start' => '2024-02-01',
+                'end' => '2024-02-04',
+                'isFullDays' => true,
+            ],
+            'mobilization_period' => [
+                'start' => '2024-02-01 00:00:00',
+                'end' => '2024-03-10 00:00:00',
+                'isFullDays' => true,
+            ],
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData(array_replace(
+            self::data(7, Event::SERIALIZE_DETAILS),
+            [
+                'id' => 12,
+                'mobilization_period' => [
+                    'start' => '2024-02-01 00:00:00',
+                    'end' => '2024-03-10 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2024-02-01',
+                    'end' => '2024-02-04',
+                    'isFullDays' => true,
+                ],
+                'has_missing_materials' => false,
+                'is_departure_inventory_done' => false,
+                'departure_inventory_datetime' => null,
+                'departure_inventory_author' => null,
+                'is_return_inventory_started' => false,
+                'is_return_inventory_done' => false,
+                'return_inventory_datetime' => null,
+                'return_inventory_author' => null,
+                'is_confirmed' => false,
+                'technicians' => [],
+                'materials' => [
+                    array_replace_recursive(
+                        self::data(7, Event::SERIALIZE_DETAILS)['materials'][0],
+                        [
+                            'departure_comment' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'unit_replacement_price' => '419.00',
+                            'total_replacement_price' => '838.00',
+                        ],
+                    ),
+                    array_replace_recursive(
+                        self::data(7, Event::SERIALIZE_DETAILS)['materials'][1],
+                        [
+                            'degressive_rate' => '1.00',
+                            'unit_price_period' => '300.00',
+                            'total_without_discount' => '600.00',
+                            'total_without_taxes' => '600.00',
+                            'departure_comment' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                        ],
+                    ),
+                    array_replace_recursive(
+                        self::data(7, Event::SERIALIZE_DETAILS)['materials'][2],
+                        [
+                            'departure_comment' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'unit_replacement_price' => '59.00',
+                            'total_replacement_price' => '118.00',
+                        ],
+                    ),
+                    array_replace(
+                        self::data(7, Event::SERIALIZE_DETAILS)['materials'][3],
+                        [
+                            'degressive_rate' => '3.00',
+                            'unit_price_period' => '900.00',
+                            'total_without_discount' => '900.00',
+                            'total_without_taxes' => '900.00',
+                            'taxes' => [],
+                            'unit_replacement_price' => '32000.00',
+                            'total_replacement_price' => '32000.00',
+                        ],
+                    ),
+                ],
+                'total_without_global_discount' => '1928.62',
+                'total_without_taxes' => '1928.62',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '205.72',
+                    ],
+                ],
+                'total_with_taxes' => '2134.34',
+                'total_replacement' => '71756.00',
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
             ],
@@ -1257,7 +2142,7 @@ final class EventsTest extends ApiTestCase
         $this->assertResponseData(array_replace(
             self::data(7, Event::SERIALIZE_DETAILS),
             [
-                'id' => 11,
+                'id' => 13,
                 'mobilization_period' => [
                     'start' => '2023-05-26 00:00:00',
                     'end' => '2023-05-30 00:00:00',
@@ -1277,57 +2162,84 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_datetime' => null,
                 'return_inventory_author' => null,
                 'is_confirmed' => false,
+                'technicians' => [],
                 'materials' => [
                     array_replace(
                         self::data(7, Event::SERIALIZE_DETAILS)['materials'][0],
                         [
-                            'pivot' => [
-                                'quantity' => 2,
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
+                            'name' => "Behringer X Air XR18",
+                            'reference' => 'XR18',
+                            'quantity' => 2,
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'unit_replacement_price' => '419.00',
+                            'total_replacement_price' => '838.00',
                         ],
                     ),
                     array_replace(
                         self::data(7, Event::SERIALIZE_DETAILS)['materials'][1],
                         [
-                            'pivot' => [
-                                'quantity' => 2,
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
+                            'name' => "Console Yamaha CL3",
+                            'reference' => 'CL3',
+                            'quantity' => 2,
+                            'degressive_rate' => '1.00',
+                            'unit_price_period' => '300.00',
+                            'total_without_discount' => '600.00',
+                            'total_without_taxes' => '600.00',
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
                         ],
                     ),
                     array_replace(
                         self::data(7, Event::SERIALIZE_DETAILS)['materials'][2],
                         [
-                            'pivot' => [
-                                'quantity' => 1,
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
+                            'name' => "Showtec SDS-6",
+                            'reference' => 'SDS-6-01',
+                            'quantity' => 2,
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'unit_replacement_price' => '59.00',
+                            'total_replacement_price' => '118.00',
                         ],
                     ),
                     array_replace(
                         self::data(7, Event::SERIALIZE_DETAILS)['materials'][3],
                         [
-                            'pivot' => [
-                                'quantity' => 2,
-                                'quantity_departed' => null,
-                                'quantity_returned' => null,
-                                'quantity_returned_broken' => null,
-                                'departure_comment' => null,
-                            ],
+                            'name' => "Volkswagen Transporter",
+                            'reference' => 'Transporter',
+                            'quantity' => 1,
+                            'degressive_rate' => '3.00',
+                            'unit_price_period' => '900.00',
+                            'total_without_discount' => '900.00',
+                            'total_without_taxes' => '900.00',
+                            'taxes' => [],
+                            'quantity_departed' => null,
+                            'quantity_returned' => null,
+                            'quantity_returned_broken' => null,
+                            'departure_comment' => null,
+                            'unit_replacement_price' => '32000.00',
+                            'total_replacement_price' => '32000.00',
                         ],
                     ),
                 ],
-                'technicians' => [],
+                'total_without_global_discount' => '1928.62',
+                'total_without_taxes' => '1928.62',
+                'total_taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                        'total' => '205.72',
+                    ],
+                ],
+                'total_with_taxes' => '2134.34',
+                'total_replacement' => '71756.00',
                 'created_at' => '2021-06-22 12:11:02',
                 'updated_at' => '2021-06-22 12:11:02',
             ],
@@ -1501,22 +2413,16 @@ final class EventsTest extends ApiTestCase
             [
                 'materials' => [
                     [
-                        'pivot' => [
-                            'quantity_departed' => 5,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 10,
+                        'departure_comment' => 'Bon état général.',
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 0,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 5,
+                        'departure_comment' => null,
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 10,
-                            'departure_comment' => 'Bon état général.',
-                        ],
+                        'quantity_departed' => 0,
+                        'departure_comment' => null,
                     ],
                 ],
             ],
@@ -1533,28 +2439,20 @@ final class EventsTest extends ApiTestCase
             [
                 'materials' => [
                     [
-                        'pivot' => [
-                            'quantity_departed' => 0,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 1,
+                        'departure_comment' => 'Ok, un des mélangeur en attente de réception.',
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 1,
-                            'departure_comment' => 'Ok, un des mélangeur en attente de réception.',
-                        ],
+                        'quantity_departed' => 0,
+                        'departure_comment' => null,
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 1,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 1,
+                        'departure_comment' => "Potard droit de l'une des deux console endommagé.",
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 1,
-                            'departure_comment' => "Potard droit de l'une des deux console endommagé.",
-                        ],
+                        'quantity_departed' => 1,
+                        'departure_comment' => null,
                     ],
                 ],
             ],
@@ -1741,22 +2639,16 @@ final class EventsTest extends ApiTestCase
                 'updated_at' => '2018-12-15 10:00:00',
                 'materials' => [
                     [
-                        'pivot' => [
-                            'quantity_departed' => 10,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 12,
+                        'departure_comment' => 'Bon état général.',
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 1,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 10,
+                        'departure_comment' => null,
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 12,
-                            'departure_comment' => 'Bon état général.',
-                        ],
+                        'quantity_departed' => 1,
+                        'departure_comment' => null,
                     ],
                 ],
             ],
@@ -1799,28 +2691,20 @@ final class EventsTest extends ApiTestCase
                 'updated_at' => '2023-05-25 10:00:00',
                 'materials' => [
                     [
-                        'pivot' => [
-                            'quantity_departed' => 2,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 2,
+                        'departure_comment' => 'Ok.',
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 2,
-                            'departure_comment' => 'Ok.',
-                        ],
+                        'quantity_departed' => 2,
+                        'departure_comment' => null,
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 1,
-                            'departure_comment' => null,
-                        ],
+                        'quantity_departed' => 2,
+                        'departure_comment' => "Potard droit de l'une des deux console endommagé.",
                     ],
                     [
-                        'pivot' => [
-                            'quantity_departed' => 2,
-                            'departure_comment' => "Potard droit de l'une des deux console endommagé.",
-                        ],
+                        'quantity_departed' => 1,
+                        'departure_comment' => null,
                     ],
                 ],
             ],
@@ -1955,7 +2839,7 @@ final class EventsTest extends ApiTestCase
         $event->operation_period = new Period('2022-12-18', '2022-12-19', true);
         $event->save();
 
-        $initialData = array_replace(
+        $initialData = array_replace_recursive(
             self::data(2, Event::SERIALIZE_DETAILS),
             [
                 'mobilization_period' => [
@@ -1968,11 +2852,32 @@ final class EventsTest extends ApiTestCase
                     'end' => '2022-12-19',
                     'isFullDays' => true,
                 ],
+                'materials' => [
+                    [
+                        'degressive_rate' => '2.00',
+                        'unit_price_period' => '51.00',
+                        'total_discount' => '10.20',
+                        'total_without_discount' => '102.00',
+                        'total_without_taxes' => '91.80',
+                    ],
+                    [
+                        'degressive_rate' => '1.00',
+                        'unit_price_period' => '300.00',
+                        'total_without_discount' => '900.00',
+                        'total_without_taxes' => '900.00',
+                    ],
+                ],
                 'has_missing_materials' => false,
                 'has_not_returned_materials' => null,
                 'is_return_inventory_done' => false,
                 'return_inventory_author' => null,
                 'return_inventory_datetime' => null,
+                'total_without_global_discount' => '-1798.20',
+                'total_without_taxes' => '-1798.20',
+                'total_taxes' => [
+                    ['total' => '198.36'],
+                ],
+                'total_with_taxes' => '-1579.84',
                 'updated_at' => '2023-02-01 10:00:00',
             ],
         );
@@ -1995,8 +2900,8 @@ final class EventsTest extends ApiTestCase
             ['id' => 2, 'actual' => 3, 'broken' => 0],
         ]);
         $this->assertApiValidationError([
-            ['id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity."],
             ['id' => 2, 'message' => "Returned quantity cannot be greater than output quantity."],
+            ['id' => 1, 'message' => "Broken quantity cannot be greater than returned quantity."],
         ]);
 
         // - Avec des données invalides (2)...
@@ -2017,18 +2922,14 @@ final class EventsTest extends ApiTestCase
             [
                 'materials' => [
                     [
-                        'pivot' => [
-                            'quantity' => 3,
-                            'quantity_returned' => 2,
-                            'quantity_returned_broken' => 0,
-                        ],
+                        'quantity' => 2,
+                        'quantity_returned' => 2,
+                        'quantity_returned_broken' => 1,
                     ],
                     [
-                        'pivot' => [
-                            'quantity' => 2,
-                            'quantity_returned' => 2,
-                            'quantity_returned_broken' => 1,
-                        ],
+                        'quantity' => 3,
+                        'quantity_returned' => 2,
+                        'quantity_returned_broken' => 0,
                     ],
                 ],
             ],
@@ -2065,6 +2966,45 @@ final class EventsTest extends ApiTestCase
         $event->operation_period = new Period('2022-12-18', '2022-12-19', true);
         $event->save();
 
+        $initialData = array_replace_recursive(
+            self::data(2, Event::SERIALIZE_DETAILS),
+            [
+                'mobilization_period' => [
+                    'start' => '2022-12-18 00:00:00',
+                    'end' => '2022-12-20 00:00:00',
+                    'isFullDays' => false,
+                ],
+                'operation_period' => [
+                    'start' => '2022-12-18',
+                    'end' => '2022-12-19',
+                    'isFullDays' => true,
+                ],
+                'is_confirmed' => true,
+                'materials' => [
+                    [
+                        'degressive_rate' => '2.00',
+                        'unit_price_period' => '51.00',
+                        'total_without_discount' => '102.00',
+                        'total_discount' => '10.20',
+                        'total_without_taxes' => '91.80',
+                    ],
+                    [
+                        'degressive_rate' => '1.00',
+                        'unit_price_period' => '300.00',
+                        'total_without_discount' => '900.00',
+                        'total_without_taxes' => '900.00',
+                    ],
+                ],
+                'total_taxes' => [
+                    ['total' => '198.36'],
+                ],
+                'total_without_global_discount' => '-1798.20',
+                'total_without_taxes' => '-1798.20',
+                'total_with_taxes' => '-1579.84',
+                'updated_at' => '2023-02-01 10:00:00',
+            ],
+        );
+
         // - Avec un payload invalide.
         foreach ([[['foo' => 'bar']], [1], [true]] as $invalidInventory) {
             $this->client->put('/api/events/2/return/finish', $invalidInventory);
@@ -2079,38 +3019,24 @@ final class EventsTest extends ApiTestCase
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData(array_replace_recursive(
-            self::data(2, Event::SERIALIZE_DETAILS),
+            $initialData,
             [
-                'mobilization_period' => [
-                    'start' => '2022-12-18 00:00:00',
-                    'end' => '2022-12-20 00:00:00',
-                    'isFullDays' => false,
-                ],
-                'operation_period' => [
-                    'start' => '2022-12-18',
-                    'end' => '2022-12-19',
-                    'isFullDays' => true,
-                ],
-                'is_confirmed' => true,
                 'is_return_inventory_done' => true,
                 'return_inventory_author' => UsersTest::data(1),
                 'return_inventory_datetime' => '2023-02-01 10:00:00',
                 'has_not_returned_materials' => false,
                 'materials' => [
                     [
-                        'pivot' => [
-                            'quantity_returned' => 3,
+                        'quantity_returned_broken' => 1,
+                        'material' => [
+                            'out_of_order_quantity' => 1,
+                            'updated_at' => '2023-02-01 10:00:00',
                         ],
                     ],
                     [
-                        'out_of_order_quantity' => 1,
-                        'updated_at' => '2023-02-01 10:00:00',
-                        'pivot' => [
-                            'quantity_returned_broken' => 1,
-                        ],
+                        'quantity_returned' => 3,
                     ],
                 ],
-                'updated_at' => '2023-02-01 10:00:00',
             ],
         ));
     }
@@ -2161,31 +3087,27 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_datetime' => '2024-05-05 23:43:15',
                 'updated_at' => '2024-05-05 23:43:15',
                 'materials' => [
-                    0 => [
-                        'pivot' => [
-                            'quantity_returned' => 2,
-                            'quantity_returned_broken' => 1,
-                        ],
-                        'updated_at' => '2024-05-05 23:43:15',
+                    [
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 1,
                     ],
-                    1 => [
-                        'pivot' => [
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 1,
+                    [
+                        'quantity_returned' => 2,
+                        'quantity_returned_broken' => 1,
+                        'material' => [
+                            'updated_at' => '2024-05-05 23:43:15',
                         ],
                     ],
-                    2 => [
-                        'pivot' => [
-                            'quantity_returned' => 1,
-                            'quantity_returned_broken' => 0,
+                    [
+                        'quantity_returned' => 2,
+                        'quantity_returned_broken' => 1,
+                        'material' => [
+                            'updated_at' => '2024-05-05 23:43:15',
                         ],
                     ],
-                    3 => [
-                        'pivot' => [
-                            'quantity_returned' => 2,
-                            'quantity_returned_broken' => 1,
-                        ],
-                        'updated_at' => '2024-05-05 23:43:15',
+                    [
+                        'quantity_returned' => 1,
+                        'quantity_returned_broken' => 0,
                     ],
                 ],
             ],
@@ -2213,13 +3135,19 @@ final class EventsTest extends ApiTestCase
             'updated_at' => '2024-05-10 12:12:34',
             'materials' => [
                 0 => [
-                    'updated_at' => '2024-05-10 12:12:34',
+                    'material' => [
+                        'updated_at' => '2024-05-10 12:12:34',
+                    ],
                 ],
                 1 => [
-                    'updated_at' => '2024-05-10 12:12:34',
+                    'material' => [
+                        'updated_at' => '2024-05-10 12:12:34',
+                    ],
                 ],
-                3 => [
-                    'updated_at' => '2024-05-10 12:12:34',
+                2 => [
+                    'material' => [
+                        'updated_at' => '2024-05-10 12:12:34',
+                    ],
                 ],
             ],
         ]));
@@ -2236,9 +3164,7 @@ final class EventsTest extends ApiTestCase
         // - Archivage de l'événement #4 impossible car inventaire de retour pas encore fait.
         $this->client->put('/api/events/4/archive');
         $this->assertApiValidationError([
-            'is_archived' => [
-                "An event cannot be archived if its return inventory is not done!",
-            ],
+            'is_archived' => "An event cannot be archived if its return inventory is not done!",
         ]);
     }
 
@@ -2312,32 +3238,68 @@ final class EventsTest extends ApiTestCase
         $this->client->get('/api/events/1/missing-materials');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            array_replace(MaterialsTest::data(2), [
-                'pivot' => [
-                    'quantity' => 1,
-                    'quantity_departed' => 1,
-                    'quantity_returned' => 1,
-                    'quantity_returned_broken' => 0,
-                    'quantity_missing' => 1,
-                    'departure_comment' => "Le matériel n'est pas en très bon état.",
+            [
+                'id' => 2,
+                'name' => "DBX PA2",
+                'reference' => 'DBXPA2',
+                'category_id' => 1,
+                'quantity' => 1,
+                'unit_price' => '25.50',
+                'degressive_rate' => '1.75',
+                'unit_price_period' => '44.63',
+                'total_without_discount' => '44.63',
+                'discount_rate' => '0.0000',
+                'total_discount' => '0.00',
+                'total_without_taxes' => '44.63',
+                'taxes' => [
+                    [
+                        'name' => 'T.V.A.',
+                        'is_rate' => true,
+                        'value' => '20.000',
+                    ],
                 ],
-            ]),
+                'quantity_departed' => 1,
+                'quantity_returned' => 1,
+                'quantity_returned_broken' => 0,
+                'quantity_missing' => 1,
+                'departure_comment' => "Le matériel n'est pas en très bon état.",
+                'unit_replacement_price' => '349.90',
+                'total_replacement_price' => '349.90',
+                'material' => array_merge(
+                    MaterialsTest::data(2, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                    [
+                        'degressive_rate' => '2.00',
+                        'rental_price_period' => '51.00',
+                    ],
+                ),
+            ],
         ]);
 
         // - Get missing materials for event #4
         $this->client->get('/api/events/4/missing-materials');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
-            array_replace(MaterialsTest::data(7), [
-                'pivot' => [
-                    'quantity' => 3,
-                    'quantity_departed' => null,
-                    'quantity_returned' => 0,
-                    'quantity_returned_broken' => 0,
-                    'quantity_missing' => 1,
-                    'departure_comment' => null,
-                ],
-            ]),
+            [
+                'id' => 7,
+                'name' => "Voiture 1",
+                'reference' => 'V-1',
+                'category_id' => 3,
+                'quantity' => 3,
+                'quantity_departed' => null,
+                'quantity_returned' => 0,
+                'quantity_returned_broken' => 0,
+                'quantity_missing' => 1,
+                'departure_comment' => null,
+                'unit_replacement_price' => '32000.00',
+                'total_replacement_price' => '96000.00',
+                'material' => array_merge(
+                    MaterialsTest::data(7, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                    [
+                        'degressive_rate' => '30.75',
+                        'rental_price_period' => '9225.00',
+                    ],
+                ),
+            ],
         ]);
 
         // - Event not found
@@ -2379,7 +3341,7 @@ final class EventsTest extends ApiTestCase
 
         // - Téléchargement du fichier PDF de l'événement n°1 avec un paramétrage
         //   différent des colonnes à afficher.
-        Setting::staticEdit(null, [
+        Setting::bulkEdit([
             'eventSummary.showReplacementPrices' => false,
             'eventSummary.showDescriptions' => true,
             'eventSummary.showTags' => true,
@@ -2426,38 +3388,22 @@ final class EventsTest extends ApiTestCase
             'number' => '2022-00001',
             'date' => '2022-10-22 18:42:36',
             'url' => 'http://loxya.test/invoices/2/pdf',
-            'discount_rate' => '0.0000',
-            'total_without_taxes' => '1664.25',
-            'total_with_taxes' => '1997.10',
-            'currency' => 'EUR',
-        ]);
-    }
-
-    public function testCreateInvoiceWithDiscount(): void
-    {
-        Carbon::setTestNow(Carbon::create(2020, 10, 22, 18, 42, 36));
-
-        // - Test avec un taux de remise dépassant le taux maximum (5.3628 %).
-        $this->client->post('/api/events/2/invoices', [
-            'discountRate' => '5.3629',
-        ]);
-        $this->assertApiValidationError([
-            'discount_rate' => ['The discount rate exceeds the maximum.'],
-        ]);
-
-        // - Test avec le taux de remise maximum possible.
-        $this->client->post('/api/events/2/invoices', [
-            'discountRate' => '5.3628',
-        ]);
-        $this->assertStatusCode(StatusCode::STATUS_CREATED);
-        $this->assertResponseData([
-            'id' => 2,
-            'number' => '2020-00002',
-            'date' => '2020-10-22 18:42:36',
-            'url' => 'http://loxya.test/invoices/2/pdf',
-            'discount_rate' => '5.3628',
-            'total_without_taxes' => '1575.00',
-            'total_with_taxes' => '1890.00',
+            'total_without_taxes' => '-909.67',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'is_rate' => true,
+                    'value' => '20.000',
+                    'total' => '376.07',
+                ],
+                [
+                    'name' => 'Taxes diverses',
+                    'is_rate' => false,
+                    'value' => '10.00',
+                    'total' => '20.00',
+                ],
+            ],
+            'total_with_taxes' => '-513.60',
             'currency' => 'EUR',
         ]);
     }
@@ -2469,40 +3415,25 @@ final class EventsTest extends ApiTestCase
         $this->client->post('/api/events/2/estimates');
         $this->assertStatusCode(StatusCode::STATUS_CREATED);
         $this->assertResponseData([
-            'id' => 2,
+            'id' => 3,
             'date' => '2022-10-22 18:42:36',
-            'url' => 'http://loxya.test/estimates/2/pdf',
-            'discount_rate' => '0.0000',
-            'total_without_taxes' => '1664.25',
-            'total_with_taxes' => '1997.10',
-            'currency' => 'EUR',
-        ]);
-    }
-
-    public function testCreateEstimateWithDiscount(): void
-    {
-        Carbon::setTestNow(Carbon::create(2022, 10, 22, 18, 42, 36));
-
-        // - Test avec un taux de remise dépassant le taux maximum (5.3628 %).
-        $this->client->post('/api/events/2/estimates', [
-            'discountRate' => '5.3629',
-        ]);
-        $this->assertApiValidationError([
-            'discount_rate' => ['The discount rate exceeds the maximum.'],
-        ]);
-
-        // - Test avec le taux de remise maximum possible.
-        $this->client->post('/api/events/2/estimates', [
-            'discountRate' => '5.3628',
-        ]);
-        $this->assertStatusCode(StatusCode::STATUS_CREATED);
-        $this->assertResponseData([
-            'id' => 2,
-            'date' => '2022-10-22 18:42:36',
-            'url' => 'http://loxya.test/estimates/2/pdf',
-            'discount_rate' => '5.3628',
-            'total_without_taxes' => '1575.00',
-            'total_with_taxes' => '1890.00',
+            'url' => 'http://loxya.test/estimates/3/pdf',
+            'total_without_taxes' => '-909.67',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'is_rate' => true,
+                    'value' => '20.000',
+                    'total' => '376.07',
+                ],
+                [
+                    'name' => 'Taxes diverses',
+                    'is_rate' => false,
+                    'value' => '10.00',
+                    'total' => '20.00',
+                ],
+            ],
+            'total_with_taxes' => '-513.60',
             'currency' => 'EUR',
         ]);
     }
@@ -2557,7 +3488,7 @@ final class EventsTest extends ApiTestCase
                     'Un fichier bien trop volumineux.pdf',
                     'application/pdf',
                 ),
-                'expected' => ['This file exceeds maximum size allowed.'],
+                'expected' => "This file exceeds maximum size allowed.",
             ],
             [
                 'file' => new UploadedFile(
@@ -2567,7 +3498,7 @@ final class EventsTest extends ApiTestCase
                     'échec-upload.csv',
                     'text/csv',
                 ),
-                'expected' => ['File upload failed.'],
+                'expected' => "File upload failed.",
             ],
             [
                 'file' => new UploadedFile(
@@ -2577,7 +3508,7 @@ final class EventsTest extends ApiTestCase
                     'app.dmg',
                     'application/octet-stream',
                 ),
-                'expected' => ['This file type is not allowed.'],
+                'expected' => "This file type is not allowed.",
             ],
         ];
         foreach ($invalidUploads as $invalidUpload) {

@@ -7,7 +7,7 @@ use Brick\Math\BigDecimal as Decimal;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes;
 
-class AsDecimal implements CastsAttributes, SerializesCastableAttributes
+final class AsDecimal implements CastsAttributes, SerializesCastableAttributes
 {
     public function get($model, string $key, $value, array $attributes)
     {

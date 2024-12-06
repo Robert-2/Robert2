@@ -42,6 +42,10 @@ const data = deepFreeze({
     returnInventory: {
         mode: ReturnInventoryMode.START_EMPTY,
     },
+    billing: {
+        defaultDegressiveRate: 1,
+        defaultTax: 1,
+    },
 });
 
 export default data;

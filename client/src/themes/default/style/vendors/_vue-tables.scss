@@ -124,6 +124,10 @@
         color: $text-light-color;
         font-style: italic;
         text-align: center;
+
+        // - Pour surcharger le style des cellules par défaut.
+        // stylelint-disable-next-line order/properties-order, declaration-no-important
+        border-bottom: none !important;
     }
 
     &__columns-dropdown-wrapper {

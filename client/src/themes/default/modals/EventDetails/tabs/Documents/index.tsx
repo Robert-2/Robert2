@@ -1,4 +1,5 @@
 import { defineComponent } from '@vue/composition-api';
+import { Group } from '@/stores/api/groups';
 import apiEvents from '@/stores/api/events';
 import apiDocuments from '@/stores/api/documents';
 import CriticalError from '@/themes/default/components/CriticalError';
@@ -37,6 +38,11 @@ const EventDetailsDocuments = defineComponent({
         isFetched: false,
         documents: [],
     }),
+    computed: {
+        isTeamMember(): boolean {
+            return this.$store.getters['auth/is']([Group.ADMINISTRATION, Group.MANAGEMENT]);
+        },
+    },
     mounted() {
         this.fetchDocuments();
 
@@ -119,6 +125,7 @@ const EventDetailsDocuments = defineComponent({
         const {
             isFetched,
             hasCriticalError,
+            isTeamMember,
             persistDocument,
             documents,
             handleDocumentUploaded,
@@ -140,6 +147,7 @@ const EventDetailsDocuments = defineComponent({
                     class="EventDetailsDocuments__manager"
                     layout={FileManagerLayout.VERTICAL}
                     documents={documents}
+                    readonly={!isTeamMember}
                     persister={persistDocument}
                     onDocumentUploaded={handleDocumentUploaded}
                     onDocumentDelete={handleDocumentDelete}

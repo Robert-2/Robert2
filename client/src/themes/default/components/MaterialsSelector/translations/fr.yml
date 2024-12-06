@@ -1,20 +1,9 @@
-error-occurred-while-import-lists-from-event: "Une erreur est survenue lors de l'import des listes depuis l'événement."
-error-occurred-while-deleting-list: "Une erreur est survenue lors de la suppression de la liste."
-
-new-sub-list: Nouvelle sous-liste
-new-sub-list-confirm: |
-    Vous êtes sur le point d'ajouter une sous-liste à cet événement.
-
-    Celui-ci contient déjà du matériel hors-liste, si vous créez une sous-liste, ces matériels déjà existants seront placés dans une liste "virtuelle" globale.
-
 add-materials-from:
     an-event: Ajouter du matériel depuis un événement
     dropdown:
         title: Ajouter du matériel depuis...
         choices:
             an-event: Un événement...
-
-list-deleted: La liste a été supprimée.
 
 #
 # - Filtres
@@ -35,3 +24,36 @@ list-availability:
     surplus-count:
         - "{count} en excédent / cassé"
         - "{count} en excédent / cassés"
+
+#
+# - Fenêtres modales
+#
+
+modals:
+    #
+    # - Import du matériel depuis un événement
+    #
+
+    import-from-event:
+        event-details: "Matériel de l'événement «\_{name}\_»"
+        global-list-title: Liste globale
+        list-name: "Liste «\_{name}\_»"
+        event-is-empty: Cet événement est vide, aucun matériel ne sera importé.
+        reuse-list-from-event-warning:
+            "Attention, cela va ajouter le matériel à celui déjà sélectionné\_!"
+
+    #
+    # - Resynchronisation des données d'un matériel
+    #
+
+    resync-material-data:
+        title: "Resynchronisation des données du matériel «\_{name}\_»"
+        nothing-to-resynchronize: Il n'y a aucune données à resynchroniser.
+        resynchronize-data: Resynchroniser les données sélectionnées
+        selected-data-resynchronized: Les données sélectionnées ont été resynchronisées.
+
+        fields:
+            name: Nom
+            reference: Référence
+            unit_price: Prix unitaire
+            degressive_rate: Coef. dégressif

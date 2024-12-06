@@ -1,6 +1,9 @@
 @use '~@/themes/default/style/globals';
+@use 'sass:color';
 
 .InputImage {
+    $block: &;
+
     max-width: 350px;
     text-align: center;
 
@@ -8,7 +11,15 @@
         display: flex;
         justify-content: center;
         max-height: 350px;
+        min-height: 225px;
         margin: 0 0 globals.$spacing-medium;
+        border-radius: globals.$border-radius-large;
+        background-color: color.adjust(globals.$input-background-color, $lightness: -5%);
+
+        &__placeholder {
+            width: 130px;
+            opacity: 0.6;
+        }
 
         &__image {
             display: block;
@@ -33,11 +44,21 @@
         font-weight: 600;
     }
 
-    .Progressbar {
+    &__progress {
         margin-top: globals.$spacing-medium;
     }
 
+    //
+    // - État: Vide.
+    //
+
     &--empty {
         max-width: 300px;
+
+        #{$block}__preview {
+            min-height: 225px;
+            border-radius: globals.$border-radius-large;
+            background-color: color.adjust(globals.$input-background-color, $lightness: -5%);
+        }
     }
 }

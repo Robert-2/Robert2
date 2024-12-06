@@ -1,9 +1,10 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
 import Queue from 'p-queue';
+import createDeferred from 'p-defer';
 import upperFirst from 'lodash/upperFirst';
 import config from '@/globals/config';
 import DateTime from '@/utils/datetime';
+import { defineComponent } from '@vue/composition-api';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
 import { UNCATEGORIZED } from '@/stores/api/materials';
 import isValidInteger from '@/utils/isValidInteger';
@@ -25,10 +26,11 @@ import ListFilters from './components/Filters';
 
 import type { ComponentRef, CreateElement, VNodeClass } from 'vue';
 import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
-import type { Column } from '@/themes/default/components/Table/Server';
+import type { Columns } from '@/themes/default/components/Table/Server';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
 import type { Filters, StateFilters } from './components/Filters';
 import type { BookingExcerpt, BookingSummary } from '@/stores/api/bookings';
+import type { DeferredPromise } from 'p-defer';
 
 type InstanceProperties = {
     nowTimer: ReturnType<typeof setInterval> | undefined,
@@ -42,6 +44,7 @@ type LazyBooking<F extends boolean = boolean> = (
 );
 
 type Data = {
+    ready: DeferredPromise<undefined>,
     isLoading: boolean,
     hasCriticalError: boolean,
     now: DateTime,
@@ -56,7 +59,7 @@ const MAX_ITEMS_PER_PAGE = 30;
  */
 export const MAX_FETCHES_PER_SECOND: number = 15;
 
-/** Page de listing des événements. */
+/** Page de listing des événements et réservations. */
 const ScheduleListing = defineComponent({
     name: 'ScheduleListing',
     setup: (): InstanceProperties => ({
@@ -64,6 +67,7 @@ const ScheduleListing = defineComponent({
         fetchSummariesQueue: undefined,
     }),
     data: (): Data => ({
+        ready: createDeferred(),
         isLoading: false,
         hasCriticalError: false,
         now: DateTime.now(),
@@ -111,10 +115,10 @@ const ScheduleListing = defineComponent({
             return this.$store.state.parks.list.length > 1;
         },
 
-        columns(): Array<Column<LazyBooking>> {
+        columns(): Columns<LazyBooking> {
             const { $t: __, now, hasMultipleParks, handleOpen } = this;
             const getCategoryName = this.$store.getters['categories/categoryName'];
-            const getParkName = this.$store.getters['parks/parkName'];
+            const getParkName = this.$store.getters['parks/getName'];
 
             return [
                 {
@@ -271,8 +275,8 @@ const ScheduleListing = defineComponent({
         },
     },
     created() {
-        this.$store.dispatch('categories/fetch');
-        this.$store.dispatch('parks/fetch');
+        // - Binding.
+        this.fetch = this.fetch.bind(this);
 
         this.fetchSummariesQueue = new Queue({
             interval: DateTime.duration(1, 'second').asMilliseconds(),
@@ -280,8 +284,8 @@ const ScheduleListing = defineComponent({
             intervalCap: MAX_FETCHES_PER_SECOND,
         });
 
-        // - Binding.
-        this.fetch = this.fetch.bind(this);
+        // - Initialisation.
+        this.init();
     },
     mounted() {
         // - Actualise le timestamp courant toutes les minutes.
@@ -366,7 +370,16 @@ const ScheduleListing = defineComponent({
         // -
         // ------------------------------------------------------
 
+        async init() {
+            this.$store.dispatch('categories/fetch');
+
+            // - L'initialisation est maintenant terminée.
+            this.ready.resolve();
+        },
+
         async fetch(pagination: PaginationParams): Promise<{ data: PaginatedData<LazyBooking[]> } | undefined> {
+            await this.ready.promise;
+
             this.isLoading = true;
             const { filters } = this;
 
@@ -448,11 +461,7 @@ const ScheduleListing = defineComponent({
 
         if (hasCriticalError) {
             return (
-                <Page
-                    name="schedule-listing"
-                    title={__('page.schedule.listing.title')}
-                    centered
-                >
+                <Page name="schedule-listing" title={__('page.schedule.listing.title')} centered>
                     <CriticalError />
                 </Page>
             );
@@ -483,18 +492,12 @@ const ScheduleListing = defineComponent({
         };
 
         return (
-            <Page
-                name="schedule-listing"
-                title={__('page.schedule.listing.title')}
-                loading={isLoading}
-                actions={actions}
-            >
+            <Page name="schedule-listing" title={__('page.schedule.listing.title')} loading={isLoading} actions={actions}>
                 <div class="ScheduleListing">
                     <div class="ScheduleListing__filters">
                         <ListFilters
                             values={filters}
                             onChange={handleFiltersChange}
-                            class="ScheduleListingHeader__filters"
                         />
                     </div>
                     <ServerTable

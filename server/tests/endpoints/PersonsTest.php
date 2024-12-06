@@ -22,8 +22,8 @@ final class PersonsTest extends ApiTestCase
                 'postal_code' => '1234',
                 'locality' => "Megacity",
                 'country_id' => 1,
-                'full_address' => "1, somewhere av.\n1234 Megacity",
                 'country' => CountriesTest::data(1),
+                'full_address' => "1, somewhere av.\n1234 Megacity",
             ],
             [
                 'id' => 2,
@@ -37,8 +37,8 @@ final class PersonsTest extends ApiTestCase
                 'postal_code' => null,
                 'locality' => null,
                 'country_id' => null,
-                'full_address' => null,
                 'country' => null,
+                'full_address' => null,
             ],
             [
                 'id' => 3,
@@ -51,9 +51,9 @@ final class PersonsTest extends ApiTestCase
                 'street' => '156 bis, avenue des tests poussés',
                 'postal_code' => '88080',
                 'locality' => 'Wazzaville',
-                'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                 'country_id' => null,
                 'country' => null,
+                'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
             ],
             [
                 'id' => 4,
@@ -67,8 +67,8 @@ final class PersonsTest extends ApiTestCase
                 'postal_code' => null,
                 'locality' => null,
                 'country_id' => 2,
-                'full_address' => null,
                 'country' => CountriesTest::data(2),
+                'full_address' => null,
             ],
             [
                 'id' => 5,
@@ -82,8 +82,8 @@ final class PersonsTest extends ApiTestCase
                 'postal_code' => null,
                 'locality' => null,
                 'country_id' => null,
-                'full_address' => null,
                 'country' => null,
+                'full_address' => null,
             ],
             [
                 'id' => 6,
@@ -97,8 +97,8 @@ final class PersonsTest extends ApiTestCase
                 'postal_code' => '75000',
                 'locality' => 'Paris',
                 'country_id' => 1,
-                'full_address' => "30 avenue du chateau\n75000 Paris",
                 'country' => CountriesTest::data(1),
+                'full_address' => "30 avenue du chateau\n75000 Paris",
             ],
             [
                 'id' => 7,
@@ -112,8 +112,23 @@ final class PersonsTest extends ApiTestCase
                 'postal_code' => null,
                 'locality' => null,
                 'country_id' => null,
-                'full_address' => null,
                 'country' => null,
+                'full_address' => null,
+            ],
+            [
+                'id' => 8,
+                'user_id' => 3,
+                'first_name' => 'Alexandre',
+                'last_name' => 'Dupont',
+                'full_name' => 'Alexandre Dupont',
+                'email' => 'alex.dupont@example.com',
+                'phone' => '+33678901234',
+                'street' => "15 Rue de l'Église",
+                'postal_code' => '75001',
+                'locality' => 'Paris',
+                'country_id' => 1,
+                'country' => CountriesTest::data(1),
+                'full_address' => "15 Rue de l'Église\n75001 Paris",
             ],
         ]);
     }
@@ -122,9 +137,10 @@ final class PersonsTest extends ApiTestCase
     {
         $this->client->get('/api/persons');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(7, [
+        $this->assertResponsePaginatedData(8, [
             self::data(3),
             self::data(6),
+            self::data(8),
             self::data(7),
             self::data(1),
             self::data(5),
@@ -161,7 +177,7 @@ final class PersonsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseHasKeyEquals('pagination.perPage', 2);
         $this->assertResponseHasKeyEquals('pagination.total.pages', 4);
-        $this->assertResponsePaginatedData(7, [
+        $this->assertResponsePaginatedData(8, [
             self::data(3),
             self::data(6),
         ]);

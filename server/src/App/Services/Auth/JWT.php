@@ -38,7 +38,18 @@ final class JWT implements AuthenticatorInterface
     public function clearPersistentData(): void
     {
         $cookieName = Config::get('auth.cookie');
-        setcookie($cookieName, '', time() - 42_000, '/');
+        $shouldSecureCookie = Config::isSslEnabled();
+
+        setcookie($cookieName, '', [
+            'expires' => time() - 42_000,
+            'path' => '/',
+            'secure' => $shouldSecureCookie,
+            'httponly' => false,
+
+            // - Note: Permet la création de cookies lorsque Loxya est
+            //   intégré dans des systèmes tiers (e.g. Notion).
+            'samesite' => $shouldSecureCookie ? 'None' : 'Lax',
+        ]);
     }
 
     // ------------------------------------------------------
@@ -106,7 +117,18 @@ final class JWT implements AuthenticatorInterface
         $token = static::generateToken($user);
 
         $cookieName = Config::get('auth.cookie');
-        setcookie($cookieName, $token, 0, '/');
+        $shouldSecureCookie = Config::isSslEnabled();
+
+        setcookie($cookieName, '', [
+            'expires' => 0,
+            'path' => '/',
+            'secure' => $shouldSecureCookie,
+            'httponly' => false,
+
+            // - Note: Permet la création de cookies lorsque Loxya est
+            //   intégré dans des systèmes tiers (e.g. Notion).
+            'samesite' => $shouldSecureCookie ? 'None' : 'Lax',
+        ]);
 
         return $token;
     }

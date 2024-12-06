@@ -5,19 +5,22 @@ import { debounce } from 'lodash';
 import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
-import MaterialsSelector, {
-    getEventMaterialsQuantities,
-} from '@/themes/default/components/MaterialsSelector';
 import Button from '@/themes/default/components/Button';
+import MaterialsSelector, {
+    getEmbeddedMaterialsQuantities,
+} from '@/themes/default/components/MaterialsSelector';
 
 import type { DebouncedMethod } from 'lodash';
 import type { PropType } from '@vue/composition-api';
-import type { Booking, MaterialQuantity } from '@/stores/api/bookings';
+import type { Booking } from '@/stores/api/bookings';
 import type { SelectedMaterial } from '@/themes/default/components/MaterialsSelector';
 
 type Props = {
-    /** Le booking (événement) dont on veut modifier le matériel. */
-    booking: Booking,
+    /**
+     * Le booking (événement ou réservation) dont
+     * on veut modifier le matériel, dans son état initial.
+     */
+    defaultBooking: Booking,
 };
 
 type InstanceProperties = {
@@ -27,15 +30,16 @@ type InstanceProperties = {
 type Data = {
     isReady: boolean,
     isSaving: boolean,
-    quantities: MaterialQuantity[],
+    booking: Booking,
+    materials: SelectedMaterial[],
 };
 
 /** Fenêtre modale pour modifier la liste du matériel d'un booking. */
 const UpdateBookingMaterialsModal = defineComponent({
     name: 'UpdateBookingMaterialsModal',
     props: {
-        booking: {
-            type: Object as PropType<Props['booking']>,
+        defaultBooking: {
+            type: Object as PropType<Props['defaultBooking']>,
             required: true,
         },
     },
@@ -48,16 +52,13 @@ const UpdateBookingMaterialsModal = defineComponent({
         debouncedSave: undefined,
     }),
     data(): Data {
-        const { entity, materials } = this.booking;
-        let quantities: MaterialQuantity[] = [];
-        if (entity === BookingEntity.EVENT) {
-            quantities = getEventMaterialsQuantities(materials);
-        }
+        const { materials } = this.defaultBooking;
 
         return {
             isReady: false,
             isSaving: false,
-            quantities,
+            booking: this.defaultBooking,
+            materials: getEmbeddedMaterialsQuantities(materials),
         };
     },
     computed: {
@@ -70,14 +71,6 @@ const UpdateBookingMaterialsModal = defineComponent({
             }
 
             return __('modal.update-booking-materials.title');
-        },
-
-        selectedMaterials(): SelectedMaterial[] {
-            const { entity, materials } = this.booking;
-            if (entity === BookingEntity.EVENT) {
-                return getEventMaterialsQuantities(materials);
-            }
-            return [];
         },
     },
     created() {
@@ -100,8 +93,18 @@ const UpdateBookingMaterialsModal = defineComponent({
             this.isReady = true;
         },
 
-        handleChange(newList: SelectedMaterial[]) {
-            this.quantities = newList;
+        handleChange(materials: SelectedMaterial[]) {
+            this.materials = materials;
+        },
+
+        async handleGlobalChange() {
+            const { $t: __, booking } = this;
+
+            try {
+                this.booking = await apiBookings.one(booking.entity, booking.id);
+            } catch {
+                this.$toasted.error(__('errors.unexpected-while-fetching'));
+            }
         },
 
         handleSave() {
@@ -125,7 +128,9 @@ const UpdateBookingMaterialsModal = defineComponent({
             }
 
             const { id, entity } = booking;
-            const materials = this.quantities.filter(({ quantity }: MaterialQuantity) => quantity > 0);
+            const materials = this.materials.filter(
+                ({ quantity }: SelectedMaterial) => quantity > 0,
+            );
 
             this.isSaving = true;
 
@@ -152,12 +157,13 @@ const UpdateBookingMaterialsModal = defineComponent({
             $t: __,
             modalTitle,
             handleClose,
-            selectedMaterials,
+            materials,
             booking,
             isReady,
             isSaving,
             handleReady,
             handleChange,
+            handleGlobalChange,
             handleSave,
         } = this;
 
@@ -176,9 +182,10 @@ const UpdateBookingMaterialsModal = defineComponent({
                 <div class="UpdateBookingMaterialsModal__body">
                     <MaterialsSelector
                         booking={booking}
-                        defaultValues={selectedMaterials}
+                        defaultValues={materials}
                         onReady={handleReady}
                         onChange={handleChange}
+                        onMaterialResynced={handleGlobalChange}
                     />
                 </div>
                 {isReady && (

@@ -1,0 +1,75 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.SwitchHeroItem {
+    $block: &;
+    $background-color: globals.$input-background-color;
+    $background-color-accent: color.adjust($background-color, $lightness: -8%);
+    $border-color: color.adjust($background-color-accent, $lightness: -1%);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: globals.$spacing-medium globals.$spacing-small;
+    border: 2px solid $border-color;
+    border-radius: globals.$border-radius-large;
+    background: linear-gradient(180deg, $background-color, $background-color-accent);
+    text-align: center;
+    cursor: pointer;
+    gap: globals.$spacing-small;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: globals.$spacing-small;
+    }
+
+    &__illustration {
+        font-size: 1.1rem;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    &__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        font-size: 0.9rem;
+        gap: 15px;
+    }
+
+    &__description {
+        margin: 0;
+    }
+
+    &__examples {
+        margin: auto 0 0;
+        font-style: italic;
+        text-align: left;
+    }
+
+    &--large {
+        padding: 20px 18px;
+
+        #{$block}__header {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #{$block}__illustration {
+            font-size: 2rem;
+        }
+
+        #{$block}__title {
+            font-size: 1.3rem;
+        }
+    }
+
+    &--selected {
+        border-color: globals.$primary-color;
+    }
+}

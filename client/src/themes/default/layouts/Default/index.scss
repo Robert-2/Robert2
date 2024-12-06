@@ -2,8 +2,7 @@
 
 .DefaultLayout {
     display: flex;
-    flex-direction: column;
-    overflow: auto;
+    overflow: hidden;
     height: 100vh;
     min-width: 375px;
     color: globals.$text-soft-color;
@@ -11,12 +10,14 @@
     &__body {
         flex: 1;
         display: flex;
-        align-items: stretch;
-        overflow: auto;
+        flex-direction: column;
+        overflow: hidden;
         height: 100%;
 
         &__content {
             flex: 1;
+            overflow: auto;
+            height: 100%;
         }
     }
 }

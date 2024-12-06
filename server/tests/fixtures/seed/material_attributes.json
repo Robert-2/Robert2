@@ -64,5 +64,11 @@
         "material_id": 6,
         "attribute_id": 5,
         "value": "2021-01-28"
+    },
+    {
+        "id": 12,
+        "material_id": 6,
+        "attribute_id": 8,
+        "value": "250"
     }
 ]

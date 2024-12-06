@@ -36,12 +36,18 @@ trait SoftDelete
         $id = $request->getIntegerAttribute('id');
 
         // @phpstan-ignore-next-line
-        $model = $this->getModelClass()::staticRestore($id);
+        $entity = $this->getModelClass()::query()
+            ->onlyTrashed()
+            ->findOrFail($id);
 
-        if (method_exists(static::class, '_formatOne')) {
-            $model = static::_formatOne($model);
+        if (!$entity->restore()) {
+            throw new \RuntimeException(sprintf("Unable to restore the record %d.", $id));
         }
 
-        return $response->withJson($model, StatusCode::STATUS_OK);
+        $data = method_exists(static::class, '_formatOne')
+            ? static::_formatOne($entity)
+            : $entity;
+
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 }

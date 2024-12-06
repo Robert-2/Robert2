@@ -1,9 +1,9 @@
 title: Material special attributes
-help: The special attributes allow you to describe your material according to your own criteria.
+help: The special attributes allow you to add custom fields to materials.
 
 name: Name of the attribute
 type: Attribute type
-unit: Unit
+unit: Unit of measure
 max-length: Max. length
 is-totalisable: "Totalisable\_?"
 
@@ -14,6 +14,7 @@ limited-to-categories: Limited to categories
 all-categories-not-limited: All categories (not limited)
 
 type-string: Text
+type-text: Multi-line text
 type-integer: Integer number
 type-float: Decimal number
 type-boolean: Boolean (Yes/No)

@@ -33,12 +33,19 @@
 
     &__rental-price,
     &__stock-quantity {
-        margin-bottom: 0.3rem;
+        margin-bottom: globals.$spacing-thin;
         font-weight: 700;
     }
 
     &__out-of-order {
+        margin-bottom: globals.$spacing-thin;
         color: globals.$text-danger-color;
+    }
+
+    &__available-quantity {
+        &--warning {
+            color: globals.$text-warning-color;
+        }
     }
 
     &__picture {
@@ -56,6 +63,27 @@
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
+        }
+    }
+
+    &__info {
+        $sub-block: &;
+
+        @extend %reset-dl;
+
+        display: flex;
+        align-items: flex-end;
+        margin: 0 0 globals.$spacing-small;
+        gap: globals.$spacing-thin;
+
+        &__value {
+            @extend %reset-dd;
+        }
+
+        &--highlight {
+            #{$sub-block}__value {
+                font-weight: 600;
+            }
         }
     }
 
@@ -77,6 +105,7 @@
 
             flex: 1;
             font-weight: 600;
+            white-space: pre-wrap;
         }
     }
 

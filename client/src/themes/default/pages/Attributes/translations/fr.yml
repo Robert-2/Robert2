@@ -1,9 +1,9 @@
-title: Caractéristiques spéciales du matériel
-help: Les caractéristiques spéciales permettent de décrire votre matériel selon vos propres critères.
+title: Caractéristiques spéciales
+help: Les caractéristiques spéciales permettent d'ajouter des champs personnalisés dans le matériel.
 
 name: Nom de la caractéristique
 type: Type de donnée
-unit: Unité
+unit: Unité de mesure
 max-length: Taille max.
 is-totalisable: "Totalisable\_?"
 
@@ -14,6 +14,7 @@ limited-to-categories: Limitée aux catégories
 all-categories-not-limited: Toutes catégories (non limité)
 
 type-string: Texte
+type-text: Texte multi-lignes
 type-integer: Nombre entier
 type-float: Nombre décimal
 type-boolean: Booléen (Oui / Non)
