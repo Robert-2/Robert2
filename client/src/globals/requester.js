@@ -78,9 +78,9 @@ requester.interceptors.request.use(
             request.params = params;
         }
 
-        const token = cookies.get(config.auth.cookie);
-        if (token) {
-            request.headers.Authorization = `Bearer ${token}`;
+        const authToken = cookies.get(config.auth.cookie);
+        if (authToken) {
+            request.headers.Authorization = `Bearer ${authToken}`;
         }
         return request;
     },

@@ -1,0 +1,148 @@
+{% extends 'pdf/base.twig' %}
+
+{% block title %}{{ __('release-sheet') }}{% endblock %}
+
+{% block content %}
+<table class="layout-table">
+    <tr>
+        <td class="half">
+            {{-
+                include('blocks/company-address.twig', {
+                    company,
+                    showLegalNumbers,
+                    showLogo: true,
+                })
+            -}}
+        </td>
+        <td class="half">
+            <h1 class="box center spaceBottom5">{{ __('release-sheet') }}</h1>
+            <h2>{{ event.title }}</h2>
+            <h3>{{ event.operation_period|format_period('short', locale=locale)|ucfirst }}</h3>
+            {% if beneficiaries is not empty -%}
+            <table class="layout-table">
+                <tr>
+                    <td class="third">
+                        <h3>{{ __('beneficiary') }}</h3>
+                    </td>
+                    <td>
+                        <p class="size12 spaceBottom5">
+                            {{ include('blocks/beneficiary.twig', { beneficiary: beneficiaries[0] }) }}
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            {% endif -%}
+        </td>
+    </tr>
+</table>
+
+<table class="layout-table">
+    <tr>
+        <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }} size11">
+            {%- if event.location -%}
+                <h3>{{ __('location', event.location) }}</h3>
+            {%- endif -%}
+            {%- if event.is_confirmed -%}
+                <p class="lighter">{{ __('this-event-is-confirmed') }}</p>
+            {% endif %}
+            {%- if event.total_replacement -%}
+                <p class="lighter">
+                    {{-
+                        __('total-replacement-amount', [
+                            event.total_replacement|format_currency(event.currency, locale=locale),
+                        ])
+                    -}}
+                </p>
+            {%- endif -%}
+            <p class="lighter">
+                {{- __('printed-on-date', [now|format_date('long', locale=locale)]) -}}
+            </p>
+        </td>
+        <td class="{{ beneficiaries|length > 1 ? 'third' : 'half' }}">
+            {%- if technicians is not empty -%}
+                <h3>{{ __('technicians') }}</h3>
+                <ul class="spaceBottom5">
+                    {% for technician in technicians -%}
+                    <li class="spaceBottom2">
+                        {{ technician['name'] -}}
+                        {%- if technician['phone'] is not empty -%}
+                            <span class="lighter"> - {{ technician['phone'] }}</span>
+                        {%- endif -%}
+                        {%- for assignment in technician['assignments'] -%}
+                            <br />
+                            <span class="lighter size8">
+                                {{- assignment.period|format_period('minimalist', locale=locale)|ucfirst -}}
+                            </span>
+                            {%- if assignment.position is not empty -%}
+                                <span class="lighter size8">&#32;-&#32;{{ assignment.position }}</span>
+                            {%- endif -%}
+                        {%- endfor -%}
+                    </li>
+                    {% endfor -%}
+                </ul>
+            {%- endif -%}
+        </td>
+        {%- if beneficiaries|length > 1 -%}
+        <td class="third">
+            <h3>{{ __('other-beneficiaries') }}</h3>
+            <ul class="spaceBottom5">
+                {%- for otherBeneficiary in beneficiaries|slice(1) -%}
+                <li class="spaceBottom2">
+                    {{- include('blocks/beneficiary.twig', { beneficiary: otherBeneficiary }) -}}
+                </li>
+                {%- endfor -%}
+            </ul>
+        </td>
+        {%- endif -%}
+    </tr>
+</table>
+
+{% if event.description is not empty %}
+<h2>{{ __('description-notes') }}</h2>
+<p>{{ event.description|nl2br }}</p>
+{% endif %}
+
+{% if sortedBy == 'lists' %}
+{{ include('blocks/materials/event-summary-by-lists.twig') }}
+{% elseif sortedBy == 'parks' %}
+{{ include('blocks/materials/event-summary-by-parks.twig') }}
+{% endif %}
+
+{% if totalisableAttributes is not empty %}
+<h2>{{ __('material-attributes-totals') }}</h2>
+<table class="half spaceBottom5 size8">
+    <tbody>
+        {% for attribute in totalisableAttributes -%}
+        <tr>
+            <td>{{ attribute.name }}</td>
+            <td>{{ attribute.value|format_number(locale=locale) }}&nbsp;{{ attribute.unit }}</td>
+        </tr>
+        {% endfor -%}
+    </tbody>
+</table>
+{% endif %}
+
+{% if customText and customText.content is not empty %}
+<div class="vspace2 spaceBottom5">
+    {% if customText.title is not empty -%}
+    <h2>{{ customText.title }}</h2>
+    {% endif -%}
+    <p>{{ customText.content|nl2br }}</p>
+</div>
+{% endif %}
+
+<table class="layout-table">
+    <tr>
+        <td class="half inset">
+            <h3 class="center">{{ __('output') }}</h3>
+            <p>{{ __('date-dots') }}</p>
+            <p class="strong vspace5 spaceBottom5">{{ __('signature') }}</p>
+        </td>
+        <td class="inset">
+            <h3 class="center">{{ __('return') }}</h3>
+            <p>{{ __('date-dots') }}</p>
+            <p class="strong vspace5 spaceBottom5">{{ __('signature') }}</p>
+        </td>
+    </tr>
+</table>
+{% endblock %}

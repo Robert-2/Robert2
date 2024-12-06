@@ -1,9 +1,11 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import apiGroups from '@/stores/api/groups';
+import { Group } from '@/stores/api/groups';
+import Button from '@/themes/default/components/Button';
 import NextBookings from './NextBookings';
 
 import type { PropType } from '@vue/composition-api';
+import type { GroupDetails } from '@/stores/api/groups';
 import type { BeneficiaryDetails } from '@/stores/api/beneficiaries';
 
 type Props = {
@@ -21,23 +23,39 @@ const BeneficiaryViewInfos = defineComponent({
         },
     },
     computed: {
-        userGroup(): string | undefined {
+        email(): string | null {
+            const { email, user } = this.beneficiary;
+            return email ?? user?.email ?? null;
+        },
+
+        userGroup(): GroupDetails | null {
             const { user } = this.beneficiary;
             if (!user) {
-                return undefined;
+                return null;
             }
+            return this.$store.getters['groups/get'](user.group);
+        },
 
-            return apiGroups.one(user.group)?.name;
+        isAdmin(): boolean {
+            return this.$store.getters['auth/is'](Group.ADMINISTRATION);
         },
     },
+    mounted() {
+        this.$store.dispatch('groups/fetch');
+    },
     render() {
-        const { $t: __, beneficiary, userGroup } = this;
+        const {
+            $t: __,
+            beneficiary,
+            email,
+            userGroup,
+            isAdmin,
+        } = this;
         const {
             id,
             full_name: fullName,
             reference,
             phone,
-            email,
             full_address: address,
             country,
             stats: { borrowings },
@@ -121,10 +139,22 @@ const BeneficiaryViewInfos = defineComponent({
                                     {__('page.beneficiary-view.infos.user-account')}
                                 </dt>
                                 <dd class="BeneficiaryViewInfos__info__value">
-                                    <span class="BeneficiaryViewInfos__user-pseudo-at">@</span>{user.pseudo}
-                                    <span class="BeneficiaryViewInfos__user-group">
-                                        ({userGroup})
+                                    <span class="BeneficiaryViewInfos__pseudo">
+                                        <span class="BeneficiaryViewInfos__pseudo__at">@</span>
+                                        <span class="BeneficiaryViewInfos__pseudo__value">{user.pseudo}</span>
                                     </span>
+                                    {userGroup !== null && (
+                                        <span class="BeneficiaryViewInfos__user-group">({userGroup.name})</span>
+                                    )}
+                                    {isAdmin && (
+                                        <Button
+                                            type="transparent"
+                                            icon="edit"
+                                            to={{ name: 'edit-user', params: { id: user.id } }}
+                                            tooltip={__('page.technician-view.infos.modify-associated-user')}
+                                            class="BeneficiaryViewInfos__user-edit-button"
+                                        />
+                                    )}
                                 </dd>
                             </dl>
                         )}

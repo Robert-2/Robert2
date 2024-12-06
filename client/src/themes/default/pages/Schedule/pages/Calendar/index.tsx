@@ -78,7 +78,7 @@ type Data = {
     now: DateTime,
 };
 
-/** Page du calendrier des événements. */
+/** Page du calendrier des réservations / événements. */
 const ScheduleCalendar = defineComponent({
     name: 'ScheduleCalendar',
     setup: (): InstanceProperties => ({
@@ -115,7 +115,7 @@ const ScheduleCalendar = defineComponent({
     },
     computed: {
         isTeamMember(): boolean {
-            return this.$store.getters['auth/is']([Group.MEMBER, Group.ADMIN]);
+            return this.$store.getters['auth/is']([Group.ADMINISTRATION, Group.MANAGEMENT]);
         },
 
         filteredBookings(): LazyBooking[] {
@@ -128,12 +128,13 @@ const ScheduleCalendar = defineComponent({
                     return false;
                 }
 
-                // - Si on a un filtrage sur un parc, on vérifie que le parc est présent
-                //   parmi les parcs de l'événement.
+                // - Si on a un filtrage sur un parc,
+                //   on vérifie que ce parc est présent parmi les parcs de l'événement.
+                const parkFilter = filters.parkId;
                 if (
-                    filters.parkId !== null &&
+                    parkFilter !== null &&
                     booking.parks !== null &&
-                    !booking.parks.includes(filters.parkId)
+                    !booking.parks.includes(parkFilter)
                 ) {
                     return false;
                 }
@@ -465,8 +466,8 @@ const ScheduleCalendar = defineComponent({
                         onRefresh={handleRefresh}
                         onChangeCenterDate={handleChangeCenterDate}
                         onFilterMissingMaterials={handleFilterMissingMaterial}
-                        onFilterByCategory={handleFilterByCategory}
                         onFilterByPark={handleFilterByPark}
+                        onFilterByCategory={handleFilterByCategory}
                     />
                     <Timeline
                         ref="timeline"

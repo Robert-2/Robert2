@@ -27,7 +27,7 @@ describe('Materials Api', () => {
 
     describe('allWhileEvent()', () => {
         it('parse the returned data correctly', async () => {
-            jest.spyOn(requester, 'get').mockResolvedValue({ data: data.withAvailability() });
+            jest.spyOn(requester, 'get').mockResolvedValue({ data: data.withContext() });
             expect(await apiMaterials.allWhileEvent(1)).toMatchSnapshot();
         });
     });

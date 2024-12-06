@@ -59,7 +59,7 @@
             vertical-align: top;
         }
         th {
-            text-align: center;
+            text-align: left;
         }
         th:last-child, td:last-child {
             border-right: 1pt solid #888;
@@ -79,6 +79,8 @@
         }
         .listing-table > thead > tr > th {
             font-size: 0.8rem;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
@@ -86,6 +88,8 @@
             padding: 2mm;
             font-size: 0.7rem;
             border: none;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
@@ -94,15 +98,40 @@
             font-size: 0.8rem;
             color: #888;
         }
+        .listing-table > thead > tr > th:first-child,
         .listing-table > tbody > tr > td:first-child {
-            border-left: 1pt solid #888;
+            border-left: 1pt solid #888 !important;
         }
+        .listing-table > thead > tr > th:last-child,
         .listing-table > tbody > tr > td:last-child {
-            border-right: 1pt solid #888;
+            border-right: 1pt solid #888 !important;
+        }
+        .listing-table__item__label {
+            font-weight: 600;
+        }
+        .listing-table__item__sub-name {
+            margin-top: 2px;
+            font-size: 0.6rem;
+        }
+        .listing-table__item__label,
+        .listing-table__item__sub-name {
+            display: block;
+        }
+        .totals-table {
+            width: 50%;
+            margin: 0 0 5mm auto;
+        }
+        .totals-table--legacy {
+            width: 100%;
+            margin: 0;
         }
         .totals-table > tbody > tr > td {
             border-bottom: 1pt solid #888;
+            text-align: right;
             vertical-align: middle;
+        }
+        .totals-table--legacy > tbody > tr > td {
+            text-align: center;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;
@@ -182,117 +211,84 @@
     <table>
         <thead>
             <tr>
-                <th class="left">Category</th>
-                <th>Quantity</th>
-                <th>Total excl. VAT&nbsp;/&nbsp;day</th>
+                <th>Category</th>
+                <th class="center">Quantity</th>
+                <th class="right">Total excl. taxes</th>
             </tr>
         </thead>
         <tbody>
-                        <tr>
-                <td>
-                                        Son
-                                    </td>
+            <tr>
+                <td>Son</td>
                 <td class="center">2 items</td>
                 <td class="right">
-                    &euro;325.50
+                    &euro;251.00
                 </td>
             </tr>
-                        <tr>
-                <td>
-                                        Not categorized
-                                    </td>
+            <tr>
+                <td>Not categorized</td>
                 <td class="center">2 items</td>
                 <td class="right">
-                    &euro;5.50
+                    &euro;4.81
                 </td>
             </tr>
-                    </tbody>
+            <tr>
+                <td>Other</td>
+                <td class="center">5 items</td>
+                <td class="right">
+                    &euro;677.50
+                </td>
+            </tr>
+        </tbody>
     </table>
-    <p class="size8 lighter">Note: you'll find the detail of materials in next pages.</p>
+    <p class="size8 lighter">Note: you'll find the detail in next pages.</p>
 </div>
 
-<div class="vspace5 size8">
-    <table class="totals-table">
-        <thead>
-            <tr>
-                <th>Total&nbsp;/&nbsp;day</th>
-                <th>Degressive rate</th>
-                <th>Discount</th>
-                <th colspan="2">Totals</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="center">
-                <td>
-                    <div class="vspace2">
-                        &euro;331.00
-                    </div>
+<table class="totals-table">
+    <tbody>
+        <tr>
+            <td>Duration</td>
+            <td>2 days</td>
+        </tr>
+        <tr>
+            <td>Subtotal</td>
+            <td>&euro;933.31</td>
+        </tr>
+        <tr>
+            <td>5% discount</td>
+            <td>- &euro;46.67</td>
+        </tr>
+        <tr class="strong">
+            <td>Total excl. taxes</td>
+            <td>&euro;886.64</td>
+        </tr>
+                <tr>
+            <td>
+                T.V.A. (20%)
+            </td>
+            <td>&euro;176.42</td>
+        </tr>
+                <tr>
+            <td>
+                T.V.A. (5%)
+            </td>
+            <td>&euro;0.23</td>
+        </tr>
+        <tr>
+            <td>
+                Total incl. taxes<div class="strong size12">Amount due</div>
                 </td>
-                <td>
-                    <div class="vspace2">
-                        &times;&nbsp;<strong>1.75</strong>
-                        <span class="lighter">(2 days)</span>
-                    </div>
-                </td>
-                <td rowspan="3">
-                    <div class="vspace2">
-                        5% of &euro;579.25
-                    </div>
-                    <div class="vspace5 strong">
-                        - &euro;28.97
-                    </div>
-                </td>
-                <td rowspan="1">
-                    <div class="vspace2 center">
-                        Total excl. VAT
-                        </div>
-                </td>
-                <td rowspan="1">
-                    <div class="vspace2 right">
-                        &euro;550.28
-                    </div>
-                </td>
-            </tr>
-            <tr class="center">
-                <td rowspan="2" colspan="2">
-                    <div class="vspace5 strong">
-                        = &euro;579.25
-                    </div>
-                </td>
-                <td>
-                    <div class="vspace2 center">
-                        V.A.T.
-                        (20%)
-                    </div>
-                </td>
-                <td>
-                    <div class="vspace2 right">
-                        &euro;110.06
-                    </div>
-                </td>
-                </tr>
-            <tr>
-                <td>
-                    <div class="vspace2 strong center">
-                        Total incl. VAT<br>
-                        Amount due
-                    </div>
-                </td>
-                <td>
-                    <div class="vspace2 right strong">
-                        &euro;660.34
-                    </div>
-                </td>
-            </tr>
-                    </tbody>
-    </table>
-    <p class="vspace5 size10">
-        Date of acceptance of the estimate:
-    </p>
-    <p class="size10">
-        Signature of the beneficiary, preceded by the mention "Good for approval":
-    </p>
-</div>
+            <td class="size12 strong">
+                &euro;1,063.29
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p class="vspace5 size10">
+    Date of acceptance of the estimate:
+</p>
+<p class="size10">
+    Signature of the beneficiary, preceded by the mention "Good for approval":
+</p>
 <div class="changePage vspace5">
     <table class="layout-table">
         <tr>
@@ -318,76 +314,100 @@
     </table>
 </div>
 
+<h2>Materials</h2>
 <table class="listing-table">
     <thead>
         <tr>
-            <th>Ref.</th>
             <th>Designation</th>
-            <th>Qty</th>
-            <th>Unit Price (excl. VAT)</th>
-            <th>Repl. Val.</th>
-            <th>Total excl. VAT</th>
+            <th class="center">Qty</th>
+            <th class="center">Unit Price (excl. taxes)</th>
+            <th class="center">Discount</th>
+            <th class="right">Total excl. taxes</th>
         </tr>
     </thead>
     <tbody>
-                    <tr>
-                <td class="section-title" colspan="6">
-                                            Not categorized
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="5">Not categorized</td>
             </tr>
-                        <tr>
-                <td>XX1</td>
-                <td>Cable XX1</td>
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Cable XX1</span>
+                    <span class="listing-table__item__sub-name">Ref.: XX1 &bull; Unit repl. value: &euro;10.00</span>
+                </td>
                 <td class="center">2</td>
-                <td class="right">
-                    &euro;2.75
+                <td class="center">
+                    &euro;4.81
+                </td>
+                <td class="center">
+                    5,000%
                 </td>
                 <td class="right">
-                    &euro;10.00
-                </td>
-                <td class="right">
-                    &euro;5.50
+                    &euro;4.81
                 </td>
             </tr>
-                                <tr>
-                <td class="section-title" colspan="6">
-                                            Son - Mixeurs
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="5">Son - Mixeurs</td>
             </tr>
-                        <tr>
-                <td>PM5D</td>
-                <td>Console Yamaha CL3</td>
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Console Yamaha CL3</span>
+                    <span class="listing-table__item__sub-name">Ref.: PM5D &bull; Unit repl. value: &euro;19,400.00</span>
+                </td>
                 <td class="center">1</td>
-                <td class="right">
-                    &euro;300.00
+                <td class="center">
+                    &euro;200.00
+                </td>
+                <td class="center">
+                    0%
                 </td>
                 <td class="right">
-                    &euro;19,400.00
-                </td>
-                <td class="right">
-                    &euro;300.00
+                    &euro;200.00
                 </td>
             </tr>
-                                <tr>
-                <td class="section-title" colspan="6">
-                                            Son - Processeurs
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="5">Son - Processeurs</td>
             </tr>
-                        <tr>
-                <td>DBXPA2</td>
-                <td>Processeur DBX PA2</td>
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Processeur DBX PA2</span>
+                    <span class="listing-table__item__sub-name">Ref.: DBXPA2 &bull; Unit repl. value: &euro;349.90</span>
+                </td>
                 <td class="center">1</td>
-                <td class="right">
-                    &euro;25.50
+                <td class="center">
+                    &euro;51.00
+                </td>
+                <td class="center">
+                    0%
                 </td>
                 <td class="right">
-                    &euro;349.90
-                </td>
-                <td class="right">
-                    &euro;25.50
+                    &euro;51.00
                 </td>
             </tr>
-                        </tbody>
+
+    </tbody>
+</table>
+<h2>Other</h2>
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th>Designation</th>
+            <th class="center">Qty</th>
+            <th class="center">Unit Price (excl. taxes)</th>
+            <th class="right">Total excl. taxes</th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr>
+                <td>Nettoyage post-&eacute;v&eacute;nement</td>
+                <td class="center">5</td>
+                <td class="center">
+                    &euro;135.50
+                </td>
+                <td class="right">
+                    &euro;677.50
+                </td>
+            </tr>
+    </tbody>
 </table>
 </body>
 </html>

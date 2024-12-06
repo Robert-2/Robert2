@@ -1,8 +1,6 @@
 @use '~@/themes/default/style/globals';
 
 .EventDetailsEstimates {
-    $block: &;
-
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -71,12 +69,5 @@
         &__button {
             margin-top: 5px;
         }
-    }
-
-    &__warning-has-invoice {
-        margin: 0 0 globals.$spacing-large;
-        color: globals.$text-warning-color;
-        font-size: 1.1rem;
-        text-align: center;
     }
 }

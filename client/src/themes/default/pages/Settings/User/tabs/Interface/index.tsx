@@ -1,7 +1,7 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
-import axios from 'axios';
 import Vue from 'vue';
+import axios from 'axios';
+import { defineComponent } from '@vue/composition-api';
 import apiUsers, { BookingsViewMode } from '@/stores/api/users';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
@@ -12,7 +12,7 @@ import { ApiErrorCode } from '@/stores/api/@codes';
 import type { UserSettings } from '@/stores/api/users';
 import type { Options } from '@/utils/formatOptions';
 
-type InterfaceSettings = Pick<UserSettings, (
+type FormData = Pick<UserSettings, (
     | 'language'
     | 'default_bookings_view'
 )>;
@@ -21,9 +21,14 @@ type Data = {
     hasCriticalError: boolean,
     isFetching: boolean,
     isSaving: boolean,
-    settings: InterfaceSettings,
-    validationErrors: Record<keyof InterfaceSettings, string[]> | undefined,
+    data: FormData,
+    validationErrors: Record<keyof FormData, string> | undefined,
 };
+
+const normalizeFormData = (savedData?: UserSettings): FormData => ({
+    language: savedData?.language ?? '',
+    default_bookings_view: savedData?.default_bookings_view ?? BookingsViewMode.CALENDAR,
+});
 
 /** Onglet "interface" des paramètres utilisateur. */
 const InterfaceUserSettings = defineComponent({
@@ -35,10 +40,7 @@ const InterfaceUserSettings = defineComponent({
         hasCriticalError: false,
         isFetching: false,
         isSaving: false,
-        settings: {
-            language: '',
-            default_bookings_view: BookingsViewMode.CALENDAR,
-        },
+        data: normalizeFormData(),
         validationErrors: undefined,
     }),
     computed: {
@@ -88,7 +90,7 @@ const InterfaceUserSettings = defineComponent({
             this.isFetching = true;
 
             try {
-                this.settings = await apiUsers.getSettings('self');
+                this.data = normalizeFormData(await apiUsers.getSettings('self'));
             } catch {
                 this.hasCriticalError = true;
             } finally {
@@ -98,18 +100,22 @@ const InterfaceUserSettings = defineComponent({
 
         async save() {
             const { $t: __ } = this;
+
+            if (this.isSaving) {
+                return;
+            }
             this.isSaving = true;
 
             try {
-                this.settings = await apiUsers.updateSettings('self', this.settings);
+                const updatedSettings = await apiUsers.updateSettings('self', this.data);
+                this.data = normalizeFormData(updatedSettings);
                 this.$toasted.success(__('page.user-settings.saved'));
                 this.validationErrors = undefined;
 
-                localStorage.setItem('userLocale', this.settings.language);
-                this.$store.commit('auth/setLocale', this.settings.language);
-                this.$store.commit('auth/setInterfaceSettings', this.settings);
-
-                Vue.i18n.set(this.settings.language);
+                localStorage.setItem('userLocale', updatedSettings.language);
+                this.$store.commit('auth/setLocale', updatedSettings.language);
+                this.$store.commit('auth/setInterfaceSettings', updatedSettings);
+                Vue.i18n.set(updatedSettings.language);
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
                     this.$toasted.error(__('errors.unexpected-while-saving'));
@@ -131,7 +137,7 @@ const InterfaceUserSettings = defineComponent({
             $t: __,
             hasCriticalError,
             isFetching,
-            settings,
+            data,
             langsOptions,
             bookingsViewModesOptions,
             validationErrors,
@@ -153,8 +159,8 @@ const InterfaceUserSettings = defineComponent({
                     <FormField
                         type="select"
                         options={langsOptions}
-                        v-model={settings.language}
-                        errors={validationErrors?.language}
+                        v-model={data.language}
+                        error={validationErrors?.language}
                         label="page.user-settings.interface.language"
                         class="InterfaceUserSettings__language"
                         placeholder={false}
@@ -162,8 +168,8 @@ const InterfaceUserSettings = defineComponent({
                     <FormField
                         type="select"
                         options={bookingsViewModesOptions}
-                        v-model={settings.default_bookings_view}
-                        errors={validationErrors?.default_bookings_view}
+                        v-model={data.default_bookings_view}
+                        error={validationErrors?.default_bookings_view}
                         label="page.user-settings.interface.default-bookings-view"
                         class="InterfaceUserSettings__default-bookings-view"
                         placeholder={false}

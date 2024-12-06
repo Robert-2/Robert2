@@ -1,10 +1,9 @@
+import Decimal from 'decimal.js';
 import invariant from 'invariant';
 import stringCompare from '@/utils/stringCompare';
-import getMaterialQuantity from './getMaterialQuantity';
-import getMaterialUnitPrice from './getMaterialUnitPrice';
 
-import type { BookingMaterial } from './_types';
 import type { Category } from '@/stores/api/categories';
+import type { EmbeddedMaterial } from '../_types';
 
 export enum SortBy {
     /** Le matériel sera trié via son nom. */
@@ -12,41 +11,54 @@ export enum SortBy {
 
     /**
      * Le matériel sera trié via son prix.
-     * (Ceci suppose que la facturation est activée)
+     *
+     * Ceci suppose que le prix des matériels embarqués est fourni,
+     * sans quoi le prix sera considéré comme étant à 0.
      */
     PRICE = 'price',
 }
 
-export type MaterialsSection = {
+export type EmbeddedMaterialsByCategory = {
     id: Category['id'] | null,
     name: Category['name'] | null,
-    materials: BookingMaterial[],
+    materials: EmbeddedMaterial[],
 };
 
+const getEmbeddedMaterialTotalPrice = (embeddedMaterial: EmbeddedMaterial): Decimal => (
+    'total_without_taxes' in embeddedMaterial
+        ? embeddedMaterial.total_without_taxes
+        : new Decimal(0)
+);
+
 /**
- * Permet de grouper et trier du matériel de booking par catégories.
+ * Permet de grouper et trier du matériel embarqué par catégories.
  *
- * @param materials - Le matériel de booking à trier.
+ * @param embeddedMaterials - Le matériel à trier.
  * @param categories - Les catégories dans lesquelles répartir le matériel.
  * @param sortBy - La colonne sur laquelle le tri est opéré à l'intérieur des catégories.
  *
  * @returns La liste du matériel, triée et groupée par catégories.
  */
 const groupByCategories = (
-    materials: BookingMaterial[],
+    embeddedMaterials: EmbeddedMaterial[],
     categories: Category[],
     sortBy: SortBy = SortBy.NAME,
-): MaterialsSection[] => {
-    if (materials.length === 0) {
+): EmbeddedMaterialsByCategory[] => {
+    invariant(
+        Object.values(SortBy).includes(sortBy),
+        `The \`${sortBy}\` sort type is not supported.`,
+    );
+
+    if (embeddedMaterials.length === 0) {
         return [];
     }
 
-    const sections = new Map<Category['id'] | null, MaterialsSection>();
+    const sections = new Map<Category['id'] | null, EmbeddedMaterialsByCategory>();
 
-    materials.forEach((material: BookingMaterial) => {
+    embeddedMaterials.forEach((embeddedMaterial: EmbeddedMaterial) => {
         const { id: categoryId = null, name: categoryName = null } = (
-            material.category_id !== null
-                ? (categories.find(({ id }: Category) => id === material.category_id) ?? {})
+            embeddedMaterial.category_id !== null
+                ? (categories.find(({ id }: Category) => id === embeddedMaterial.category_id) ?? {})
                 : {}
         );
 
@@ -59,28 +71,21 @@ const groupByCategories = (
         }
 
         const section = sections.get(categoryId);
-        section!.materials.push(material);
+        section!.materials.push(embeddedMaterial);
     });
 
     const result = Array.from(sections.values());
 
     // - Tri.
-    result.sort((a: MaterialsSection, b: MaterialsSection) => (
+    result.sort((a: EmbeddedMaterialsByCategory, b: EmbeddedMaterialsByCategory) => (
         stringCompare(a.name ?? '', b.name ?? '')
     ));
-    result.forEach((section: MaterialsSection) => {
-        section.materials.sort((a: BookingMaterial, b: BookingMaterial) => {
-            invariant(
-                Object.values(SortBy).includes(sortBy),
-                `La clé de tri "${sortBy}" n'est pas prise en charge.`,
-            );
-
+    result.forEach((section: EmbeddedMaterialsByCategory) => {
+        section.materials.sort((a: EmbeddedMaterial, b: EmbeddedMaterial) => {
             if (sortBy === SortBy.PRICE) {
-                const subtotalA = getMaterialUnitPrice(a).times(getMaterialQuantity(a));
-                const subtotalB = getMaterialUnitPrice(b).times(getMaterialQuantity(b));
-                return subtotalA.greaterThan(subtotalB) ? -1 : 1;
+                return getEmbeddedMaterialTotalPrice(a)
+                    .greaterThan(getEmbeddedMaterialTotalPrice(b)) ? -1 : 1;
             }
-
             return stringCompare(a.name, b.name);
         });
     });

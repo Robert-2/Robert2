@@ -3,37 +3,36 @@ declare(strict_types=1);
 
 namespace Loxya\Controllers;
 
-use Brick\Math\BigDecimal as Decimal;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
-use Loxya\Config\Config;
-use Loxya\Controllers\Traits\WithCrud;
+use Illuminate\Database\Eloquent\Builder;
+use Loxya\Controllers\Traits\Crud;
 use Loxya\Errors\Exception\HttpConflictException;
 use Loxya\Errors\Exception\HttpUnprocessableEntityException;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
 use Loxya\Models\Document;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Estimate;
 use Loxya\Models\Event;
 use Loxya\Models\EventMaterial;
 use Loxya\Models\Invoice;
-use Loxya\Models\Material;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
 use Loxya\Services\Logger;
 use Loxya\Services\Mailer;
-use Loxya\Services\View;
-use Monolog\Level as LogLevel;
+use Loxya\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Response;
 
 final class EventController extends BaseController
 {
-    use WithCrud;
+    use Crud\SoftDelete;
 
     private I18n $i18n;
     protected Mailer $mailer;
@@ -64,11 +63,21 @@ final class EventController extends BaseController
                 $search !== null && mb_strlen($search) >= 2,
                 static fn ($builder) => $builder->search($search),
             )
-            ->when($exclude !== null, static fn ($builder) => (
-                $builder->where('id', '<>', $exclude)
+            ->when($exclude !== null, static fn (Builder $subQuery) => (
+                $subQuery->where('id', '<>', $exclude)
             ))
+            ->when(
+                Auth::is([Group::READONLY_PLANNING_SELF]),
+                static fn (Builder $subQuery) => (
+                    $subQuery->withInvolvedUser(Auth::user())
+                ),
+            )
             ->orderBy('mobilization_start_date', 'desc')
-            ->whereHas('materials');
+            ->whereHas('materials', static fn (Builder $eventMaterialQuery) => (
+                $eventMaterialQuery->whereHas('material', static fn (Builder $materialQuery) => (
+                    $materialQuery->withoutTrashed()
+                ))
+            ));
 
         return $response->withJson([
             'count' => $query->count(),
@@ -80,18 +89,22 @@ final class EventController extends BaseController
         ]);
     }
 
+    public function getOne(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        $event = Event::findOrFailForUser($id, Auth::user());
+
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
+    }
+
     public function getMissingMaterials(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
 
-        $missingMaterials = Event::findOrFail($id)
+        $missingMaterials = Event::findOrFailForUser($id, Auth::user())
             ->missingMaterials()
-            ->map(static fn ($material) => (
-                array_replace($material->serialize(), [
-                    'pivot' => $material->pivot->serialize(
-                        EventMaterial::SERIALIZE_WITH_QUANTITY_MISSING,
-                    ),
-                ])
+            ->map(static fn (EventMaterial $material) => (
+                $material->serialize(EventMaterial::SERIALIZE_WITH_QUANTITY_MISSING)
             ));
 
         return $response->withJson($missingMaterials, StatusCode::STATUS_OK);
@@ -100,23 +113,15 @@ final class EventController extends BaseController
     public function getDocuments(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFail($id);
+        $event = Event::findOrFailForUser($id, Auth::user());
 
         return $response->withJson($event->documents, StatusCode::STATUS_OK);
-    }
-
-    public function getReminders(Request $request, Response $response): ResponseInterface
-    {
-        $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFail($id);
-
-        return $response->withJson($event->reminders, StatusCode::STATUS_OK);
     }
 
     public function getOnePdf(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFail($id);
+        $event = Event::findOrFailForUser($id, Auth::user());
 
         $sortedBy = $request->getRawEnumQueryParam('sortedBy', ['lists', 'parks'], 'lists');
         $pdf = $event->toPdf($this->i18n, $sortedBy);
@@ -132,9 +137,7 @@ final class EventController extends BaseController
         }
 
         try {
-            $event = Event::new(array_replace($postData, [
-                'author_id' => Auth::user()->id,
-            ]));
+            $event = Event::new(array_replace($postData, ['author_id' => Auth::user()->id]));
         } catch (ValidationException $e) {
             $errors = Event::serializeValidation($e->getValidationErrors());
             throw new ValidationException($errors);
@@ -143,18 +146,54 @@ final class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_CREATED);
     }
 
-    public function duplicate(Request $request, Response $response): ResponseInterface
+    public function update(Request $request, Response $response): ResponseInterface
     {
-        $id = $request->getIntegerAttribute('id');
-        $originalEvent = Event::findOrFail($id);
-
         $postData = Event::unserialize((array) $request->getParsedBody());
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
+        $id = $request->getIntegerAttribute('id');
+        $event = Event::findOrFailForUser($id, Auth::user());
+
+        if (Auth::is(Group::READONLY_PLANNING_SELF)) {
+            // - Si l'utilisateur n'est pas un technicien assigné à l'événement ⇒ requête non autorisée.
+            $technician = Auth::user()->technician;
+            if (!$technician?->isAssignedToEvent($event)) {
+                throw new HttpForbiddenException($request);
+            }
+
+            // - Sinon, on autorise uniquement la modification du champ "note".
+            $postData = Arr::only($postData, ['note']);
+        }
+
         try {
-            $newEvent = $originalEvent->duplicate($postData, Auth::user());
+            $event->edit($postData);
+        } catch (ValidationException $e) {
+            $errors = Event::serializeValidation($e->getValidationErrors());
+            throw new ValidationException($errors);
+        }
+
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
+    }
+
+    public function duplicate(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        $originalEvent = Event::findOrFail($id);
+
+        $postData = (array) $request->getParsedBody();
+        $eventData = Event::unserialize(Arr::except($postData, ['keepBillingData']));
+        $keepBillingData = is_bool($postData['keepBillingData'] ?? null)
+            ? $postData['keepBillingData']
+            : false;
+
+        if (empty($eventData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        try {
+            $newEvent = $originalEvent->duplicate($eventData, $keepBillingData, Auth::user());
         } catch (ValidationException $e) {
             $errors = Event::serializeValidation($e->getValidationErrors());
             throw new ValidationException($errors);
@@ -218,8 +257,8 @@ final class EventController extends BaseController
 
         try {
             $event->updateDepartureInventory($rawInventory);
-        } catch (\InvalidArgumentException) {
-            throw new HttpBadRequestException($request, "Invalid data format.");
+        } catch (\InvalidArgumentException $e) {
+            throw new HttpBadRequestException($request, $e->getMessage());
         }
 
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
@@ -370,8 +409,8 @@ final class EventController extends BaseController
 
         try {
             $event->updateReturnInventory($rawInventory);
-        } catch (\InvalidArgumentException) {
-            throw new HttpBadRequestException($request, "Invalid data format.");
+        } catch (\InvalidArgumentException $e) {
+            throw new HttpBadRequestException($request, $e->getMessage());
         }
 
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
@@ -436,69 +475,6 @@ final class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
 
-    public function notifyAboutReturnInventory(Request $request, Response $response): ResponseInterface
-    {
-        $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFail($id);
-
-        if ($event->is_archived) {
-            throw new HttpUnprocessableEntityException($request, "This event is archived.");
-        }
-
-        // - Si l'inventaire est terminé, on ne peut plus notifier.
-        //   (lorsque l'on termine, on acte le fait que l'inventaire ne bougera
-        //   plus et donc qu'il ne pourra plus y avoir de retour, c'est donc inutile
-        //   de notifier qui que ce soit)
-        if ($event->is_return_inventory_done) {
-            throw new HttpBadRequestException($request, "This event's return inventory is already done.");
-        }
-
-        // - Si l'inventaire de retour n'est pas encore ouvert, on ne peut pas notifier à son propos.
-        if (!$event->is_return_inventory_period_open) {
-            throw new HttpUnprocessableEntityException($request, "This event's return inventory cannot be done yet.");
-        }
-
-        $eventFiltered = tap($event, static function (Event $rawEvent) {
-            $rawEvent->setRelation(
-                'materials',
-                $rawEvent->materials->filter(static fn (Material $material) => (
-                    ($material->pivot->quantity - ($material->pivot->quantity_returned ?? 0)) > 0
-                )),
-            );
-        });
-
-        // - Si l'inventaire est complet, pas besoin de notification.
-        if ($eventFiltered->materials->isEmpty()) {
-            throw new HttpBadRequestException($request, "All materials of this event are returned.");
-        }
-
-        // - Si pas de technicians, pas de notification.
-        if ($event->technicians->isEmpty()) {
-            throw new HttpBadRequestException($request, "This event has no technician assigned.");
-        }
-
-        $data = [
-            'company' => Config::get('companyData'),
-            'event' => $eventFiltered,
-        ];
-
-        $sentCount = 0;
-        foreach ($event->technicians as $technician) {
-            $email = $technician->technician->email;
-            if (empty($email)) {
-                continue;
-            }
-
-            $subject = $this->i18n->translate('not-returned-materials-notification');
-            $message = (new View($this->i18n, 'emails'))
-                ->fetch('notifications/not-returned/event-technician', $data);
-            $this->mailer->send($email, $subject, $message);
-            $sentCount += 1;
-        }
-
-        return $response->withJson($sentCount, StatusCode::STATUS_CREATED);
-    }
-
     public function cancelReturnInventory(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
@@ -539,11 +515,6 @@ final class EventController extends BaseController
         $id = $request->getIntegerAttribute('id');
         $event = Event::findOrFail($id);
 
-        $discountRate = $request->getParsedBodyParam('discountRate', 0);
-        $event->discount_rate = is_numeric($discountRate)
-            ? Decimal::of($discountRate)
-            : Decimal::zero();
-
         $estimate = Estimate::createFromBooking($event, Auth::user());
         return $response->withJson($estimate, StatusCode::STATUS_CREATED);
     }
@@ -552,11 +523,6 @@ final class EventController extends BaseController
     {
         $id = $request->getIntegerAttribute('id');
         $event = Event::findOrFail($id);
-
-        $discountRate = $request->getParsedBodyParam('discountRate', 0);
-        $event->discount_rate = is_numeric($discountRate)
-            ? Decimal::of($discountRate)
-            : Decimal::zero();
 
         $invoice = Invoice::createFromBooking($event, Auth::user());
         return $response->withJson($invoice, StatusCode::STATUS_CREATED);
@@ -623,51 +589,6 @@ final class EventController extends BaseController
         }
 
         return $response->withStatus(StatusCode::STATUS_NO_CONTENT);
-    }
-
-    public function sendSummaryToTechnicians(Request $request, Response $response): ResponseInterface
-    {
-        $id = $request->getIntegerAttribute('id');
-
-        $event = Event::findOrFail($id);
-        if ($event->technicians->isEmpty()) {
-            throw new HttpUnprocessableEntityException($request, "No technician to send summary to.");
-        }
-
-        $data = [
-            'event' => $event,
-            'company' => Config::get('companyData'),
-        ];
-        $subject = $this->i18n->translate('event-summary', [$event->title]);
-        $message = (new View($this->i18n, 'emails'))->fetch('bookings/event/summary', $data);
-        $pdf = $event->toPdf($this->i18n);
-        $attachments = [
-            [
-                'content' => $pdf->getContent(),
-                'filename' => $pdf->getName(),
-                'mimeType' => 'application/pdf',
-            ],
-        ];
-
-        $sentCount = 0;
-        foreach ($event->technicians as $technician) {
-            $email = $technician->technician->email;
-            if (empty($email)) {
-                continue;
-            }
-
-            try {
-                $this->mailer->send($email, $subject, $message, $attachments);
-                $sentCount += 1;
-            } catch (\Throwable $e) {
-                $this->logger->log(LogLevel::Error, vsprintf(
-                    "[Event] Failed to send event #%s's summary to technician (%s). %s",
-                    [$event->id, $email, $e->getMessage()],
-                ));
-            }
-        }
-
-        return $response->withJson($sentCount, StatusCode::STATUS_OK);
     }
 
     // ------------------------------------------------------

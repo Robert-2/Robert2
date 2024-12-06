@@ -49,6 +49,10 @@ final class SettingsTest extends ApiTestCase
             'returnInventory' => [
                 'mode' => 'start-empty',
             ],
+            'billing' => [
+                'defaultDegressiveRate' => 1,
+                'defaultTax' => 1,
+            ],
         ]);
     }
 
@@ -59,7 +63,7 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.customText.title' => null,
         ]);
         $this->assertApiValidationError([
-            'inexistant_settings' => ["This setting does not exists."],
+            'inexistant_settings' => "This setting does not exists.",
         ]);
     }
 
@@ -71,30 +75,17 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.customText.title' => str_repeat('A', 192),
             'calendar.public.uuid' => 'not-valid',
             'calendar.public.displayedPeriod' => 'not-valid',
+            'billing.defaultDegressiveRate' => 1000,
+            'billing.defaultTax' => 1000,
         ]);
         $this->assertApiValidationError([
-            'calendar.event.showBorrower' => [
-                'This field should be a boolean.',
-            ],
-            'eventSummary.materialDisplayMode' => [
-                'One of the following rules must be verified:',
-                'Must equal "categories".',
-                'Must equal "sub-categories".',
-                'Must equal "parks".',
-                'Must equal "flat".',
-            ],
-            'eventSummary.customText.title' => [
-                '191 max. characters.',
-            ],
-            'calendar.public.uuid' => [
-                'This unique identifier (UUID) is invalid.',
-            ],
-            'calendar.public.displayedPeriod' => [
-                'One of the following rules must be verified:',
-                'Must equal "mobilization".',
-                'Must equal "operation".',
-                'Must equal "both".',
-            ],
+            'calendar.event.showBorrower' => "This field should be a boolean.",
+            'eventSummary.materialDisplayMode' => "This field is invalid.",
+            'eventSummary.customText.title' => "191 max. characters.",
+            'calendar.public.uuid' => "This unique identifier (UUID) is invalid.",
+            'calendar.public.displayedPeriod' => "This field is invalid.",
+            'billing.defaultTax' => "This field is invalid.",
+            'billing.defaultDegressiveRate' => "This field is invalid.",
         ]);
     }
 
@@ -125,6 +116,10 @@ final class SettingsTest extends ApiTestCase
             ],
             'returnInventory' => [
                 'mode' => 'start-full',
+            ],
+            'billing' => [
+                'defaultDegressiveRate' => 3,
+                'defaultTax' => 5,
             ],
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -164,6 +159,10 @@ final class SettingsTest extends ApiTestCase
             'returnInventory' => [
                 'mode' => 'start-full',
             ],
+            'billing' => [
+                'defaultDegressiveRate' => 3,
+                'defaultTax' => 5,
+            ],
         ]);
 
         // - Syntaxe alternative
@@ -179,6 +178,8 @@ final class SettingsTest extends ApiTestCase
             'eventSummary.showPictures' => true,
             'calendar.public.enabled' => true,
             'calendar.public.displayedPeriod' => 'mobilization',
+            'billing.defaultDegressiveRate' => null,
+            'billing.defaultTax' => null,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
@@ -218,6 +219,10 @@ final class SettingsTest extends ApiTestCase
             ],
             'returnInventory' => [
                 'mode' => 'start-full',
+            ],
+            'billing' => [
+                'defaultDegressiveRate' => null,
+                'defaultTax' => null,
             ],
         ]);
     }

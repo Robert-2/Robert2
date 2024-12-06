@@ -3,19 +3,18 @@ import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
 import Page from '@/themes/default/components/Page';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Form from './components/Form';
 import apiParks from '@/stores/api/parks';
 import { ApiErrorCode } from '@/stores/api/@codes';
+import parseInteger from '@/utils/parseInteger';
 
 /** Page d'edition d'un parc. */
 const ParkEdit = defineComponent({
     name: 'ParkEdit',
     data() {
-        const id = this.$route.params.id
-            ? parseInt(this.$route.params.id, 10)
-            : null;
+        const id = parseInteger(this.$route.params.id);
 
         return {
             id,
@@ -80,12 +79,12 @@ const ParkEdit = defineComponent({
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
                     console.error(`Error occurred while retrieving park #${this.id} data`, error);
-                    this.criticalError = ERROR.UNKNOWN;
+                    this.criticalError = ErrorType.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
                     this.criticalError = status === HttpCode.ClientErrorNotFound
-                        ? ERROR.NOT_FOUND
-                        : ERROR.UNKNOWN;
+                        ? ErrorType.NOT_FOUND
+                        : ErrorType.UNKNOWN;
                 }
             }
         },

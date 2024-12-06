@@ -1,0 +1,21 @@
+@use '~@/themes/default/style/globals';
+
+.ImportFromEventSelected {
+    width: 100%;
+
+    &__title {
+        margin-top: 0;
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    &__description,
+    &__summary {
+        margin-bottom: globals.$spacing-large;
+    }
+
+    &__summary {
+        overflow-y: auto;
+        max-height: 500px;
+    }
+}

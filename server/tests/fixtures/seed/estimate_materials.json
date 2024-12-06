@@ -6,11 +6,23 @@
         "name": "Console Yamaha CL3",
         "reference": "PM5D",
         "quantity": 1,
-        "unit_price": 300,
-        "total_price": 300,
-        "replacement_price": 19400,
-        "is_hidden_on_bill": false,
-        "is_discountable": false
+        "unit_price": "200.00",
+        "degressive_rate": "1.00",
+        "unit_price_period": "200.00",
+        "discount_rate": "0.0000",
+        "taxes": [
+            {
+                "name": "T.V.A.",
+                "is_rate": true,
+                "value": "20.000"
+            }
+        ],
+        "total_without_discount": "200.00",
+        "total_discount": "0.00",
+        "total_without_taxes": "200.00",
+        "unit_replacement_price": "19400.00",
+        "total_replacement_price": "19400.00",
+        "is_hidden_on_bill": false
     },
     {
         "id": 2,
@@ -19,11 +31,23 @@
         "name": "Processeur DBX PA2",
         "reference": "DBXPA2",
         "quantity": 1,
-        "unit_price": 25.5,
-        "total_price": 25.5,
-        "replacement_price": 349.9,
-        "is_hidden_on_bill": false,
-        "is_discountable": true
+        "unit_price": "25.50",
+        "degressive_rate": "2.00",
+        "unit_price_period": "51.00",
+        "discount_rate": "0.0000",
+        "taxes": [
+            {
+                "name": "T.V.A.",
+                "is_rate": true,
+                "value": "20.000"
+            }
+        ],
+        "total_without_discount": "51.00",
+        "total_discount": "0.00",
+        "total_without_taxes": "51.00",
+        "unit_replacement_price": "349.90",
+        "total_replacement_price": "349.90",
+        "is_hidden_on_bill": false
     },
     {
         "id": 3,
@@ -32,10 +56,79 @@
         "name": "Cable XX1",
         "reference": "XX1",
         "quantity": 2,
-        "unit_price": 2.75,
-        "total_price": 5.5,
-        "replacement_price": 10,
-        "is_hidden_on_bill": false,
-        "is_discountable": true
+        "unit_price": "2.75",
+        "degressive_rate": "1.75",
+        "unit_price_period": "4.81",
+        "discount_rate": "50.0000",
+        "taxes": [
+            {
+                "name": "T.V.A.",
+                "is_rate": true,
+                "value": "5.000"
+            }
+        ],
+        "total_without_discount": "9.62",
+        "total_discount": "4.81",
+        "total_without_taxes": "4.81",
+        "unit_replacement_price": "10.00",
+        "total_replacement_price": "20.00",
+        "is_hidden_on_bill": false
+    },
+    {
+        "id": 4,
+        "estimate_id": 2,
+        "material_id": 1,
+        "name": "Console Yamaha CL3",
+        "reference": "PM5D",
+        "quantity": 1,
+        "unit_price": "300.00",
+        "degressive_rate": null,
+        "unit_price_period": null,
+        "discount_rate": "0.0000",
+        "taxes": null,
+        "total_without_discount": "300.00",
+        "total_discount": "0.00",
+        "total_without_taxes": "300.00",
+        "unit_replacement_price": "19400.00",
+        "total_replacement_price": "19400.00",
+        "is_hidden_on_bill": false
+    },
+    {
+        "id": 5,
+        "estimate_id": 2,
+        "material_id": 2,
+        "name": "Processeur DBX PA2",
+        "reference": "DBXPA2",
+        "quantity": 1,
+        "unit_price": "25.50",
+        "degressive_rate": null,
+        "unit_price_period": null,
+        "discount_rate": "0.0000",
+        "taxes": null,
+        "total_without_discount": "25.50",
+        "total_discount": "0.00",
+        "total_without_taxes": "25.50",
+        "unit_replacement_price": "349.90",
+        "total_replacement_price": "349.90",
+        "is_hidden_on_bill": false
+    },
+    {
+        "id": 6,
+        "estimate_id": 2,
+        "material_id": null,
+        "name": "Cable XX1",
+        "reference": "XX1",
+        "quantity": 2,
+        "unit_price": "2.75",
+        "degressive_rate": null,
+        "unit_price_period": null,
+        "discount_rate": "0.0000",
+        "taxes": null,
+        "total_without_discount": "5.50",
+        "total_discount": "0.00",
+        "total_without_taxes": "5.50",
+        "unit_replacement_price": "10.00",
+        "total_replacement_price": "20.00",
+        "is_hidden_on_bill": false
     }
 ]

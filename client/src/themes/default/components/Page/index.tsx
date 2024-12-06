@@ -1,5 +1,4 @@
 import './index.scss';
-import clsx from 'clsx';
 import { defineComponent } from '@vue/composition-api';
 import Loading from '@/themes/default/components/Loading';
 
@@ -92,7 +91,7 @@ const Page = defineComponent({
         this.updateTitle(undefined);
     },
     methods: {
-        updateTitle(newTitle: Props['title']) {
+        updateTitle(newTitle: string | undefined) {
             this.$store.commit('setPageRawTitle', newTitle ?? null);
             document.title = [newTitle, 'Loxya'].filter(Boolean).join(' - ');
         },
@@ -172,9 +171,9 @@ const Page = defineComponent({
             );
         };
 
-        const className = clsx('Page', `Page--${name}`, {
+        const className = ['Page', `Page--${name}`, {
             'Page--centered': centered,
-        });
+        }];
 
         return (
             <div class={className} ref="container">

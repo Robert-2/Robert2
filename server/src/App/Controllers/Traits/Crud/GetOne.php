@@ -18,11 +18,12 @@ trait GetOne
         $id = $request->getIntegerAttribute('id');
 
         // @phpstan-ignore-next-line
-        $model = $this->getModelClass()::findOrFail($id);
-        if (method_exists(static::class, '_formatOne')) {
-            $model = static::_formatOne($model);
-        }
+        $entity = $this->getModelClass()::findOrFail($id);
 
-        return $response->withJson($model, StatusCode::STATUS_OK);
+        $data = method_exists(static::class, '_formatOne')
+            ? static::_formatOne($entity)
+            : $entity;
+
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 }

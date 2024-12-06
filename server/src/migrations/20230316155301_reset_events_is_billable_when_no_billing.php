@@ -4,6 +4,7 @@ declare(strict_types=1);
 use Cake\Database\Query;
 use Cake\Database\Query\UpdateQuery;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\BillingMode;
 use Phinx\Migration\AbstractMigration;
 
 final class ResetEventsIsBillableWhenNoBilling extends AbstractMigration
@@ -11,7 +12,7 @@ final class ResetEventsIsBillableWhenNoBilling extends AbstractMigration
     public function up(): void
     {
         $billingMode = Config::get('billingMode');
-        if ($billingMode !== 'none') {
+        if ($billingMode !== BillingMode::NONE) {
             return;
         }
 

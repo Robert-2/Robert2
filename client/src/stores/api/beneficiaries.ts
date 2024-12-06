@@ -81,6 +81,7 @@ export type BeneficiaryEdit = {
     postal_code: string | null,
     locality: string | null,
     country_id: number | null,
+    user_id?: number,
     pseudo?: string,
     password?: string,
     note: string | null,

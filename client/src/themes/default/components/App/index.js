@@ -2,9 +2,10 @@ import invariant from 'invariant';
 import HttpCode from 'status-code-enum';
 import layouts from '@/themes/default/layouts';
 import { isRequestErrorStatusCode } from '@/utils/errors';
+import { defineComponent } from '@vue/composition-api';
 
 // @vue/component
-const App = {
+const App = defineComponent({
     name: 'App',
     computed: {
         layout() {
@@ -68,6 +69,6 @@ const App = {
             </Layout>
         );
     },
-};
+});
 
 export default App;

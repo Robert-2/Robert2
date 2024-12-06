@@ -3,60 +3,51 @@
 .DefaultLayoutSidebar {
     position: absolute;
     z-index: 100;
+    top: globals.$main-header-height;
     left: -(globals.$sidebar-full-width);
     display: flex;
     flex-flow: column nowrap;
+    overflow-x: hidden;
+    overflow-y: auto;
     width: globals.$sidebar-full-width;
     height: calc(100% - #{globals.$main-header-height});
     background-color: globals.$bg-color-emphasis;
     transition: left 300ms cubic-bezier(0, 0.72, 0.43, 1);
 
-    &__logo {
-        padding: globals.$spacing-small 0;
-        text-align: center;
-
-        .Logo {
-            height: globals.$main-header-height * 0.5;
-        }
+    &__main-menu {
+        flex: 1 0 auto;
     }
 
-    &__menu {
-        flex: 1;
-        display: flex;
-        flex-flow: column nowrap;
-        align-items: flex-start;
-        justify-content: flex-start;
-        overflow: auto;
-        user-select: none;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
+    &__user-menu {
+        flex: 0 0 auto;
     }
 
     &__footer {
         flex: 0 0 auto;
-        padding: 10px 5px;
-        font-size: 0.7rem;
-        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        padding: globals.$spacing-small;
+        font-size: 0.74rem;
     }
 
     &--opened {
         left: 0;
     }
 
+    //
+    // - Responsive
+    //
+
     @media (min-width: globals.$screen-mobile) {
         position: initial;
         left: 0;
-        flex: 0 0 globals.$sidebar-width;
         display: flex;
         height: auto;
+    }
 
-        &__logo {
-            display: none;
-        }
+    @media (min-width: globals.$screen-mobile) and (max-width: globals.$screen-desktop) {
+        flex: 0 0 globals.$sidebar-width;
+        max-width: globals.$sidebar-width;
 
         &__footer {
             display: none;
@@ -65,9 +56,5 @@
 
     @media (min-width: globals.$screen-desktop) {
         flex: 0 0 globals.$sidebar-full-width;
-
-        &__footer {
-            display: block;
-        }
     }
 }

@@ -6,6 +6,8 @@ namespace Loxya\Models;
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
@@ -68,20 +70,14 @@ final class Person extends BaseModel implements Serializable
 
     public function checkUserId($value)
     {
-        V::optional(V::numericVal())->check($value);
-
-        return $value !== null
-            ? User::staticExists($value)
-            : true;
+        V::nullable(V::intVal())->check($value);
+        return $value === null || User::includes($value);
     }
 
     public function checkCountryId($value)
     {
-        V::optional(V::numericVal())->check($value);
-
-        return $value !== null
-            ? Country::staticExists($value)
-            : true;
+        V::nullable(V::intVal())->check($value);
+        return $value === null || Country::includes($value);
     }
 
     // ------------------------------------------------------
@@ -90,22 +86,22 @@ final class Person extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function beneficiary()
+    public function beneficiary(): HasOne
     {
         return $this->hasOne(Beneficiary::class);
     }
 
-    public function technician()
+    public function technician(): HasOne
     {
         return $this->hasOne(Technician::class);
     }
 
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
     }
@@ -180,9 +176,12 @@ final class Person extends BaseModel implements Serializable
         'country_id',
     ];
 
-    public function setPhoneAttribute($value): void
+    public function setPhoneAttribute(mixed $value): void
     {
-        $value = !empty($value) ? Str::remove(' ', $value) : $value;
+        $value = !empty($value) && is_string($value)
+            ? Str::remove(' ', $value)
+            : $value;
+
         $this->attributes['phone'] = $value === '' ? null : $value;
     }
 

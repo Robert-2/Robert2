@@ -18,7 +18,7 @@ final class SettingController extends BaseController
 {
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $isAdmin = Auth::is(Group::ADMIN);
+        $isAdmin = Auth::is(Group::ADMINISTRATION);
         $settings = Setting::getList($isAdmin);
 
         // - Ajout des horaires d'ouverture.
@@ -55,7 +55,7 @@ final class SettingController extends BaseController
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
-        Setting::staticEdit(null, $postData);
+        Setting::bulkEdit($postData);
 
         return $this->getAll($request, $response);
     }

@@ -19,7 +19,8 @@ export enum AppContext {
     INTERNAL = 'internal',
 }
 
-const SessionSchema = UserDetailsSchema.merge(UserSettingsSchema);
+const SessionSchema = UserDetailsSchema
+    .merge(UserSettingsSchema);
 
 const NewSessionSchema = SessionSchema.extend({
     token: z.string(),

@@ -3,6 +3,10 @@
 .ProfileUserSettings {
     $block: &;
 
+    &__loading {
+        margin-top: globals.$spacing-medium;
+    }
+
     &__section {
         margin-top: globals.$spacing-large;
 

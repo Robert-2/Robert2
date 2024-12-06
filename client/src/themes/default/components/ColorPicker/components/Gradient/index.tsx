@@ -19,6 +19,7 @@ type Props = {
     color: Color,
 };
 
+/** Sélecteur de couleur à partir d'un dégradé. */
 const ColorPickerGradient = defineComponent({
     name: 'ColorPickerGradient',
     props: {

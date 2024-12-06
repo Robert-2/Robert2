@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "event_id": 2,
+        "description": "Services additionnels",
+        "unit_price": "155",
+        "quantity": 2,
+        "tax_id": 2,
+        "taxes": [
+            {
+                "name": "Taxes diverses",
+                "is_rate": false,
+                "value": "10.00"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "event_id": 2,
+        "description": "Avoir facture du 17/12/2018",
+        "unit_price": "-3100.00",
+        "quantity": 1,
+        "tax_id": null,
+        "taxes": null
+    }
+]

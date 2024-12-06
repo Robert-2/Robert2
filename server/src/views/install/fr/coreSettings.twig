@@ -1,5 +1,5 @@
 <section class="page__content">
-    <h2>{{stepNumber}} - Paramètres du coeur de Loxya</h2>
+    <h2>{{ stepNumber }} - Paramètres du coeur de Loxya</h2>
     <p>
         Dans cette étape, la configuration qui a été <strong>détectée automatiquement</strong>,
         mais vous avez la possibilité de vérifier et de modifier tous les paramètres, si vous ête sûr(e)
@@ -11,7 +11,7 @@
             <p class="form__field-description">
                 C'est l'adresse de base de l'application, que vous utiliserez tous les jours.
             </p>
-            <input type="text" name="baseUrl" size="10" value="{{config['baseUrl']}}" />
+            <input type="text" name="baseUrl" size="10" value="{{ config['baseUrl'] }}" />
         </section>
         <p>
             <a onclick="showHiddenFieldset()" id="show-fieldset" class="form__fieldset-toggle">
@@ -102,14 +102,14 @@
                 </h3>
                 <p class="form__field-description">
                     Le temps d'expiration d'une session, autrement dit le nombre d'heures que peut durer
-                    une session sur Robert avant que l'utilisateur soit obligé de se re-connecter.
+                    une session sur Loxya avant que l'utilisateur soit obligé de se re-connecter.
                 </p>
                 <div class="form__input">
                     <input
                         type="number"
                         step="1"
                         name="sessionExpireHours"
-                        value="{{config['sessionExpireHours']}}"
+                        value="{{ config['sessionExpireHours'] }}"
                     />
                     <label for="sessionExpireHours">heures</label>
                 </div>
@@ -126,7 +126,7 @@
                 <input
                     type="text"
                     name="JWTSecret"
-                    value="{{stepData['JWTSecret']}}"
+                    value="{{ stepData['JWTSecret'] }}"
                 />
             </section>
             <section class="form__field">
@@ -141,7 +141,7 @@
                 <input
                     type="text"
                     name="httpAuthHeader"
-                    value="{{config['httpAuthHeader']}}"
+                    value="{{ config['httpAuthHeader'] }}"
                 />
             </section>
             <p>

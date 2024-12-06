@@ -5,8 +5,12 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Loxya\Config\Config;
 use Loxya\Contracts\Serializable;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Support\Str;
 use Monolog\Level as LogLevel;
@@ -51,11 +55,7 @@ final class Document extends BaseModel implements Serializable
         parent::__construct($attributes);
 
         $this->validation = [
-            'entity_type' => V::notEmpty()->anyOf(
-                V::equals(Material::TYPE),
-                V::equals(Event::TYPE),
-                V::equals(Technician::TYPE),
-            ),
+            'entity_type' => V::custom([$this, 'checkEntityType']),
             'entity_id' => V::custom([$this, 'checkEntityId']),
             'name' => V::custom([$this, 'checkName']),
             'type' => V::custom([$this, 'checkType']),
@@ -129,21 +129,33 @@ final class Document extends BaseModel implements Serializable
         return true;
     }
 
+    public function checkEntityType($value)
+    {
+        return V::create()
+            ->notEmpty()
+            ->anyOf(
+                V::equals(Material::TYPE),
+                V::equals(Event::TYPE),
+                V::equals(Technician::TYPE),
+            )
+            ->validate($value);
+    }
+
     public function checkEntityId($value)
     {
-        V::notEmpty()->numericVal()->check($value);
+        V::notEmpty()->intVal()->check($value);
 
         return match ($this->entity_type) {
-            Event::TYPE => Event::staticExists($value),
-            Material::TYPE => Material::staticExists($value),
-            Technician::TYPE => Technician::staticExists($value),
+            Event::TYPE => Event::includes($value),
+            Material::TYPE => Material::includes($value),
+            Technician::TYPE => Technician::includes($value),
             default => false, // - Type inconnu.
         };
     }
 
     public function checkAuthorId($value)
     {
-        V::optional(V::numericVal())->check($value);
+        V::nullable(V::intVal())->check($value);
 
         if ($value === null) {
             return true;
@@ -165,12 +177,12 @@ final class Document extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function entity()
+    public function entity(): MorphTo
     {
         return $this->morphTo('entity');
     }
 
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id')
             ->withTrashed();
@@ -200,7 +212,7 @@ final class Document extends BaseModel implements Serializable
         'created_at' => 'immutable_datetime',
     ];
 
-    public function getNameAttribute($value)
+    public function getNameAttribute($value): string
     {
         if ($this->file instanceof UploadedFileInterface) {
             return $this->file->getClientFilename();
@@ -208,7 +220,7 @@ final class Document extends BaseModel implements Serializable
         return $this->castAttribute('name', $value);
     }
 
-    public function getTypeAttribute($value)
+    public function getTypeAttribute($value): string
     {
         if (!$this->isDirty('file')) {
             return $this->castAttribute('type', $value);
@@ -233,7 +245,7 @@ final class Document extends BaseModel implements Serializable
         return $getValue() ?? 'text/plain';
     }
 
-    public function getSizeAttribute($value)
+    public function getSizeAttribute($value): int
     {
         if (!$this->isDirty('file')) {
             return $this->castAttribute('size', $value);
@@ -258,7 +270,7 @@ final class Document extends BaseModel implements Serializable
         return $getValue() ?? 0;
     }
 
-    public function getUrlAttribute(): ?string
+    public function getUrlAttribute(): string|null
     {
         // - L'URL ne sera disponible qu'une fois le matériel sauvegardé.
         if (!$this->exists) {
@@ -319,9 +331,9 @@ final class Document extends BaseModel implements Serializable
         $isFileUpload = $newFile instanceof UploadedFileInterface;
         if (!$isFileUpload) {
             if (!@file_exists($this->path)) {
-                throw new \Exception(
-                    "Une erreur est survenue lors de l'upload du fichier: " .
-                    "La chaîne passée ne correspond pas à un fichier existant dans le dossier de destination.",
+                throw new \RuntimeException(
+                    "An error occurred while uploading the file: " .
+                    "The string passed does not correspond to an existing file in the destination folder.",
                 );
             }
 
@@ -341,8 +353,8 @@ final class Document extends BaseModel implements Serializable
                 $newFile->moveTo($this->base_path . DS . $filename);
             } catch (\Throwable) {
                 throw new \Exception(
-                    "Une erreur est survenue lors de l'upload du fichier: " .
-                    "Le fichier n'a pas pû être déplacé dans le dossier de destination.",
+                    "An error occurred while uploading the file: " .
+                    "File could not be moved to destination folder.",
                 );
             }
 
@@ -415,6 +427,39 @@ final class Document extends BaseModel implements Serializable
         }
 
         return $deleted;
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes de "repository"
+    // -
+    // ------------------------------------------------------
+
+    /**
+     * Retourne un document via son identifiant, uniquement s'il est
+     * accessible par l'utilisateur donné.
+     *
+     * @param int $id L'identifiant du document à récupérer.
+     * @param User $user L'utilisateur pour lequel on effectue la récupération.
+     *
+     * @return static Le document correspondant à l'identifiant.
+     */
+    public static function findOrFailForUser(int $id, User $user): static
+    {
+        return static::query()
+            ->when(
+                $user->group === Group::READONLY_PLANNING_SELF,
+                static fn (Builder $subQuery) => (
+                    $subQuery->whereHasMorph(
+                        'entity',
+                        [Event::TYPE],
+                        static fn (Builder $eventQuery) => (
+                            $eventQuery->withInvolvedUser($user)
+                        )
+                    )
+                )
+            )
+            ->findOrFail($id);
     }
 
     // ------------------------------------------------------

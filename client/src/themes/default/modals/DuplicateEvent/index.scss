@@ -82,17 +82,18 @@
             overflow: hidden;
             max-width: 330px;
             margin: 0;
+            font-size: 1rem;
             text-overflow: ellipsis;
             white-space: nowrap;
-
-            // - Permet de surcharger le style de `EventBeneficiaries` / `EventTechnicians`.
-            // stylelint-disable-next-line declaration-no-important, order/properties-order
-            font-size: 1rem !important;
 
             &__icon {
                 width: 1.5rem;
                 margin-right: globals.$spacing-thin;
                 text-align: center;
+            }
+
+            &__content {
+                margin-left: globals.$spacing-thin;
             }
 
             &--empty {

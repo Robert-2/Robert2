@@ -216,7 +216,8 @@ final class View
 
     private function formatCurrencyFilter(): callable
     {
-        return static function ($amount, string $currency, array $attrs = [], ?string $locale = null): string {
+        return static function ($amount, ?string $currency = null, array $attrs = [], ?string $locale = null): string {
+            $currency ??= Config::get('currency');
             $amount = $amount instanceof Decimal ? $amount->toFloat() : $amount;
             return (new IntlExtension())->formatCurrency($amount, $currency, $attrs, $locale);
         };

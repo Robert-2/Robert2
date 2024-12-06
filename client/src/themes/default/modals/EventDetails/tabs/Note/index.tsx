@@ -10,6 +10,7 @@ import Button from '@/themes/default/components/Button';
 import type { PropType } from '@vue/composition-api';
 import type { EventDetails } from '@/stores/api/events';
 import type { DebouncedMethod } from 'lodash';
+import type { Session } from '@/stores/api/session';
 
 /**
  * Nombre d'essai de sauvegarde au-delà duquel:
@@ -67,8 +68,10 @@ const EventDetailsNote = defineComponent({
         };
     },
     computed: {
-        readOnly() {
-            return this.$store.getters['auth/is'](Group.VISITOR);
+        readOnly(): boolean {
+            const currentUser: Session = this.$store.state.auth.user;
+
+            return currentUser.group === Group.READONLY_PLANNING_GENERAL;
         },
     },
     created() {

@@ -84,9 +84,10 @@ cp -R ./client/dist $distFolder/src/public/webclient
 
 echo -e "\e[1m\e[34m-> Nettoyage du dossier de distribution (suppression des fichiers inutiles / privés)...\e[0m"
 cd $distFolder
+rm -f src/App/Config/install.json
+rm -f src/App/Config/install.json.bckp
 rm -f src/App/Config/settings.json
 rm -f src/App/Config/settings.json.bckp
-rm -f src/install/progress.json
 rm -r src/var/cache && mkdir -m 777 src/var/cache/
 rm -r src/var/logs && mkdir -m 777 src/var/logs/
 rm -r src/var/tmp && mkdir -m 777 src/var/tmp/
@@ -96,7 +97,7 @@ mkdir -m 777 data/
 
 echo -e "\e[1m\e[34m-> Définition des permission des dossiers...\e[0m"
 chmod 777 src/App/Config
-chmod 777 src/install
+find src/views -type f -exec chmod 664 {} \;
 
 echo -e "\e[1m\e[34m-> Installation des dépendances back-end...\e[0m"
 query=(

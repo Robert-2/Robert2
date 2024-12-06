@@ -1,0 +1,22 @@
+@use '~@/themes/default/style/globals';
+
+.TaxesGlobalSettings {
+    height: 100%;
+
+    &__form {
+        width: 800px;
+
+        .FormField {
+            --label-width: 200px;
+        }
+
+        &__actions {
+            margin-top: globals.$spacing-large;
+            text-align: center;
+        }
+    }
+
+    &__taxes {
+        margin-top: globals.$spacing-large;
+    }
+}

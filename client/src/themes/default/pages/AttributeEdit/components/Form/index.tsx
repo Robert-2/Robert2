@@ -1,6 +1,6 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import { AttributeType } from '@/stores/api/attributes';
+import { AttributeType, AttributeEntity } from '@/stores/api/attributes';
 import pick from 'lodash/pick';
 import Fragment from '@/components/Fragment';
 import FormField from '@/themes/default/components/FormField';
@@ -8,6 +8,7 @@ import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
+import type { Option, Options } from '@/utils/formatOptions';
 import type { Category } from '@/stores/api/categories';
 import type { AttributeDetails, AttributeCreate } from '@/stores/api/attributes';
 
@@ -19,26 +20,29 @@ type Props = {
     isSaving?: boolean,
 
     /** Liste des erreurs de validation éventuelles. */
-    errors?: Record<keyof AttributeCreate, string[]>,
-};
-
-type CategoryOption = {
-    label: string,
-    value: Category['id'],
+    errors?: Record<keyof AttributeCreate, string>,
 };
 
 type Data = {
     data: AttributeCreate,
 };
 
-const DEFAULT_VALUES: AttributeCreate = Object.freeze({
-    name: '',
-    type: AttributeType.INTEGER,
-    unit: '',
-    max_length: '',
-    is_totalisable: false,
-    categories: [],
-});
+const getDefaults = (savedData: AttributeDetails | null): AttributeCreate => {
+    const BASE_DEFAULTS = {
+        name: '',
+        type: AttributeType.INTEGER,
+        unit: '',
+        max_length: '',
+        is_totalisable: false,
+    };
+
+    return {
+        ...BASE_DEFAULTS,
+        ...pick(savedData ?? {}, Object.keys(BASE_DEFAULTS)),
+        entities: [...(savedData?.entities ?? [AttributeEntity.MATERIAL])],
+        categories: (savedData?.categories ?? []).map(({ id }: Category) => id),
+    };
+};
 
 /** Formulaire d'édition d'un attribut de matériel. */
 const AttributeEditForm = defineComponent({
@@ -62,21 +66,17 @@ const AttributeEditForm = defineComponent({
     },
     emits: ['submit', 'cancel'],
     data(): Data {
-        const data = {
-            ...DEFAULT_VALUES,
-            ...pick(this.savedData ?? {}, Object.keys(DEFAULT_VALUES)),
-            categories: this.savedData?.categories.map(({ id }: Category) => id) ?? [],
+        return {
+            data: getDefaults(this.savedData),
         };
-
-        return { data };
     },
     computed: {
         isNew(): boolean {
             return this.savedData === null;
         },
 
-        categoriesOptions(): CategoryOption[] {
-            return this.$store.getters['categories/options'] as CategoryOption[];
+        categoriesOptions(): Options<Category> {
+            return this.$store.getters['categories/options'];
         },
 
         typesOptions(): Array<{ value: AttributeType, label: string }> {
@@ -87,6 +87,7 @@ const AttributeEditForm = defineComponent({
                 { value: AttributeType.FLOAT, label: __('page.attribute-edit.type-float') },
                 { value: AttributeType.DATE, label: __('page.attribute-edit.type-date') },
                 { value: AttributeType.STRING, label: __('page.attribute-edit.type-string') },
+                { value: AttributeType.TEXT, label: __('page.attribute-edit.type-text') },
                 { value: AttributeType.BOOLEAN, label: __('page.attribute-edit.type-boolean') },
             ];
         },
@@ -133,9 +134,15 @@ const AttributeEditForm = defineComponent({
                 unit,
                 max_length: maxLength,
                 is_totalisable: isTotalisable,
+                entities,
             } = rawData;
 
-            const data: AttributeCreate = { name, categories };
+            const data: AttributeCreate = {
+                name,
+                entities,
+                categories,
+            };
+
             if (isNew) {
                 // Ici le type est forcément défini (cf. DEFAULT_VALUES)
                 data.type = type!;
@@ -183,7 +190,7 @@ const AttributeEditForm = defineComponent({
                         label={__('page.attribute-edit.name')}
                         class="AttributeEditForm__name"
                         v-model={data.name}
-                        errors={errors?.name}
+                        error={errors?.name}
                         autocomplete="off"
                         required
                     />
@@ -193,7 +200,7 @@ const AttributeEditForm = defineComponent({
                         class="AttributeEditForm__type"
                         options={typesOptions}
                         v-model={data.type}
-                        errors={errors?.type}
+                        error={errors?.type}
                         placeholder={false}
                         disabled={!isNew}
                         help={isNew ? null : __('page.attribute-edit.type-not-modifiable')}
@@ -204,14 +211,14 @@ const AttributeEditForm = defineComponent({
                                 label={__('page.attribute-edit.unit')}
                                 class="AttributeEditForm__unit"
                                 v-model={data.unit}
-                                errors={errors?.unit}
+                                error={errors?.unit}
                             />
                             <FormField
                                 type="switch"
                                 label={__('page.attribute-edit.is-totalisable')}
                                 class="AttributeEditForm__is-totalisable"
                                 v-model={data.is_totalisable}
-                                errors={errors?.is_totalisable}
+                                error={errors?.is_totalisable}
                             />
                             <p class="AttributeEditForm__is-totalisable-help">
                                 {__('page.attribute-edit.totalisable-help')}
@@ -219,44 +226,43 @@ const AttributeEditForm = defineComponent({
                         </Fragment>
                     )}
                     {hasMaxLength && (
-                        <Fragment>
-                            <FormField
-                                type="number"
-                                label={__('page.attribute-edit.max-length')}
-                                class="AttributeEditForm__max-length"
-                                v-model={data.max_length}
-                                errors={errors?.max_length}
-                                step={1}
-                            />
-                        </Fragment>
+                        <FormField
+                            type="number"
+                            label={__('page.attribute-edit.max-length')}
+                            class="AttributeEditForm__max-length"
+                            v-model={data.max_length}
+                            error={errors?.max_length}
+                            step={1}
+                        />
+                    )}
+                    {categoriesOptions.length > 0 && (
+                        <FormField
+                            type="custom"
+                            label={__('page.attribute-edit.limit-to-categories')}
+                            class="AttributeEditForm__categories"
+                            error={errors?.categories}
+                            help={__('page.attribute-edit.limit-to-categories-help')}
+                            required
+                        >
+                            <div class="AttributeEditForm__categories__choices">
+                                {categoriesOptions.map(({ label, value: categoryId }: Option<Category>) => {
+                                    const isSelected = data.categories.includes(categoryId);
+                                    return (
+                                        <span
+                                            key={categoryId}
+                                            onClick={() => { handleToggleCategory(categoryId); }}
+                                            class={['AttributeEditForm__categories__item', {
+                                                'AttributeEditForm__categories__item--selected': isSelected,
+                                            }]}
+                                        >
+                                            {label}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                        </FormField>
                     )}
                 </Fieldset>
-                {categoriesOptions.length > 0 && (
-                    <Fieldset class="AttributeEditForm__categories">
-                        <p class="AttributeEditForm__categories__label">
-                            {__('page.attribute-edit.limit-to-categories')}
-                        </p>
-                        <div class="AttributeEditForm__categories__choices">
-                            {categoriesOptions.map(({ label, value: categoryId }: CategoryOption) => {
-                                const isSelected = data.categories.includes(categoryId);
-                                return (
-                                    <span
-                                        key={categoryId}
-                                        onClick={() => { handleToggleCategory(categoryId); }}
-                                        class={['AttributeEditForm__categories__item', {
-                                            'AttributeEditForm__categories__item--selected': isSelected,
-                                        }]}
-                                    >
-                                        {label}
-                                    </span>
-                                );
-                            })}
-                        </div>
-                        <p class="AttributeEditForm__categories__help">
-                            {__('page.attribute-edit.limit-to-categories-help')}
-                        </p>
-                    </Fieldset>
-                )}
                 <section class="Form__actions">
                     <Button htmlType="submit" type="primary" icon="save" loading={isSaving}>
                         {isSaving ? __('saving') : __('save')}

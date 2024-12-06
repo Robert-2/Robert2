@@ -1,0 +1,13 @@
+@use '~@/themes/default/style/globals';
+
+.SwitchHero {
+    $block: &;
+
+    display: flex;
+    justify-content: center;
+    gap: globals.$spacing-medium;
+
+    &__choice {
+        flex: 1;
+    }
+}

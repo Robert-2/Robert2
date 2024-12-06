@@ -1,7 +1,7 @@
 edit: Modifier l'événement
 archive: Archiver l'événement
 unarchive: Désarchiver l'événement
-release-sheet-by-lists: Fiche de sortie (matériel classé selon paramètres)
+release-sheet-by-lists: Fiche de sortie (matériel classé par listes)
 release-sheet-by-parks: Fiche de sortie (matériel classé par parcs)
 copy-url-release-sheet: Copier le lien permanent de cette fiche de sortie.
 
@@ -63,16 +63,55 @@ materials:
         - "{broken} revenus en panne\_!"
 
 estimates:
-    create-new-help: Vous pouvez créer un autre devis si l'événement a été modifié, ou si vous voulez une remise différente.
+    no-estimate-help: Il n'y a aucun devis pour le moment.
+    no-beneficiary-billable-help: >-
+        Vous ne pouvez pas créer de devis pour un événement qui n'a pas de bénéficiaire.
+    create-estimate-help: >-
+        Vous pouvez créer un devis au nom du premier bénéficiaire de l'événement
+        en cliquant sur le bouton ci-dessous.
+    contact-someone-to-create-estimate: >-
+        Si besoin, contactez un membre de l'équipe pour lui demander d'éditer un devis.
+    create-estimate: Créer un devis...
+    create-new-help: >-
+        Vous pouvez créer un nouveau devis en cliquant sur le bouton ci-dessous.
+    create-new-estimate: Créer un nouveau devis...
+    error-while-generating: Une erreur inattendue s'est produite lors de la génération du devis, veuillez ré-essayer.
+    estimate-created: Le devis a bien été créé.
 
-invoice:
-    regenerate-help: Vous pouvez re-générer la facture pour en changer la remise, ou si l'événement a été modifié.
+    item:
+        title: 'Devis du {date} à {hour}'
+        deleted: Le devis a été supprimé.
+        confirm-delete: "Voulez-vous vraiment supprimer ce devis\_?"
+
+    modals:
+        create:
+            # warning-event-has-invoice: "Attention, cet événement a déjà une facture\_!"
+
+invoices:
+    previous-invoices: Anciennes factures
+    no-invoice-help: Il n'y a aucune facture pour le moment.
+    no-beneficiary-billable-help: >-
+        Vous ne pouvez pas créer de facture pour un événement qui n'a pas de bénéficiaire.
+    create-invoice-help: >-
+        Vous pouvez créer une facture au nom du premier bénéficiaire de l'événement
+        en cliquant sur le bouton ci-dessous.
+    contact-someone-to-create-invoice: >-
+        Si besoin, contactez un membre de l'équipe pour lui demander d'éditer la facture.
+    create-invoice: Créer une facture...
+    regenerate-help: >-
+        Vous pouvez créer une nouvelle facture en cliquant sur le bouton ci-dessous.
+    create-new-invoice: Créer une nouvelle facture...
+    error-while-generating: Une erreur inattendue s'est produite lors de la génération de la facture, veuillez ré-essayer.
+    invoice-created: La facture a bien été créée.
+
+    item:
+        title: 'Facture n° {number}, générée le {date}'
+        download: Télécharger la facture
+
+    modals:
+        create:
+            # warning-no-estimate-before-billing: "Attention, cet événement n'a pas eu de devis\_!"
 
 documents:
     confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce document\_?"
     deleted: Document supprimé.
-
-history:
-    reminders-sent: E-mails de rappel envoyés
-    recipients: Destinataire(s)
-    reminder-title: Rappel du {date}

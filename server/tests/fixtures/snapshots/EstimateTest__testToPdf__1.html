@@ -59,7 +59,7 @@
             vertical-align: top;
         }
         th {
-            text-align: center;
+            text-align: left;
         }
         th:last-child, td:last-child {
             border-right: 1pt solid #888;
@@ -79,6 +79,8 @@
         }
         .listing-table > thead > tr > th {
             font-size: 0.8rem;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
@@ -86,6 +88,8 @@
             padding: 2mm;
             font-size: 0.7rem;
             border: none;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
@@ -94,15 +98,40 @@
             font-size: 0.8rem;
             color: #888;
         }
+        .listing-table > thead > tr > th:first-child,
         .listing-table > tbody > tr > td:first-child {
-            border-left: 1pt solid #888;
+            border-left: 1pt solid #888 !important;
         }
+        .listing-table > thead > tr > th:last-child,
         .listing-table > tbody > tr > td:last-child {
-            border-right: 1pt solid #888;
+            border-right: 1pt solid #888 !important;
+        }
+        .listing-table__item__label {
+            font-weight: 600;
+        }
+        .listing-table__item__sub-name {
+            margin-top: 2px;
+            font-size: 0.6rem;
+        }
+        .listing-table__item__label,
+        .listing-table__item__sub-name {
+            display: block;
+        }
+        .totals-table {
+            width: 50%;
+            margin: 0 0 5mm auto;
+        }
+        .totals-table--legacy {
+            width: 100%;
+            margin: 0;
         }
         .totals-table > tbody > tr > td {
             border-bottom: 1pt solid #888;
+            text-align: right;
             vertical-align: middle;
+        }
+        .totals-table--legacy > tbody > tr > td {
+            text-align: center;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;
@@ -182,37 +211,33 @@
     <table>
         <thead>
             <tr>
-                <th class="left">Cat&eacute;gorie</th>
-                <th>Quantit&eacute;</th>
-                <th>Total H.T.&nbsp;/&nbsp;jour</th>
+                <th>Cat&eacute;gorie</th>
+                <th class="center">Quantit&eacute;</th>
+                <th class="right">Total H.T.&nbsp;/&nbsp;jour</th>
             </tr>
         </thead>
         <tbody>
-                        <tr>
-                <td>
-                                        Son
-                                    </td>
-                <td class="center">2 articles</td>
+            <tr>
+                <td>Son</td>
+                <td class="center">2 &eacute;l&eacute;ments</td>
                 <td class="right">
                     325,50&nbsp;&euro;
                 </td>
             </tr>
-                        <tr>
-                <td>
-                                        Non cat&eacute;goris&eacute;
-                                    </td>
-                <td class="center">2 articles</td>
+            <tr>
+                <td>Non cat&eacute;goris&eacute;</td>
+                <td class="center">2 &eacute;l&eacute;ments</td>
                 <td class="right">
                     5,50&nbsp;&euro;
                 </td>
             </tr>
-                    </tbody>
+        </tbody>
     </table>
-    <p class="size8 lighter">Remarque&nbsp;: vous trouverez le d&eacute;tail du mat&eacute;riel aux pages suivantes.</p>
+    <p class="size8 lighter">Remarque&nbsp;: vous trouverez le d&eacute;tail aux pages suivantes.</p>
 </div>
 
 <div class="vspace5 size8">
-    <table class="totals-table">
+    <table class="totals-table totals-table--legacy">
         <thead>
             <tr>
                 <th>Total&nbsp;/&nbsp;jour</th>
@@ -261,8 +286,7 @@
                 </td>
                 <td>
                     <div class="vspace2 center">
-                        T.V.A.
-                        (20&nbsp;%)
+                        T.V.A. (20&nbsp;%)
                     </div>
                 </td>
                 <td>
@@ -270,7 +294,7 @@
                         110,06&nbsp;&euro;
                     </div>
                 </td>
-                </tr>
+            </tr>
             <tr>
                 <td>
                     <div class="vspace2 strong center">
@@ -321,73 +345,63 @@
 <table class="listing-table">
     <thead>
         <tr>
-            <th>R&eacute;f.</th>
             <th>D&eacute;signation</th>
-            <th>Qt&eacute;</th>
-            <th>P.U. H.T.</th>
-            <th>Val. Remp.</th>
-            <th>Total H.T.</th>
+            <th class="center">Qt&eacute;</th>
+            <th class="center">P.U. H.T.</th>
+            <th class="right">Total H.T.</th>
         </tr>
     </thead>
     <tbody>
-                    <tr>
-                <td class="section-title" colspan="6">
-                                            Non cat&eacute;goris&eacute;
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="4">Non cat&eacute;goris&eacute;</td>
             </tr>
-                        <tr>
-                <td>XX1</td>
-                <td>Cable XX1</td>
-                <td class="center">2</td>
-                <td class="right">
-                    2,75&nbsp;&euro;
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Cable XX1</span>
+                    <span class="listing-table__item__sub-name">R&eacute;f.: XX1 &bull; Val. Remp. unitaire: 10,00&nbsp;&euro;</span>
                 </td>
-                <td class="right">
-                    10,00&nbsp;&euro;
+                <td class="center">2</td>
+                <td class="center">
+                    2,75&nbsp;&euro;
                 </td>
                 <td class="right">
                     5,50&nbsp;&euro;
                 </td>
             </tr>
-                                <tr>
-                <td class="section-title" colspan="6">
-                                            Son - Mixeurs
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="4">Son - Mixeurs</td>
             </tr>
-                        <tr>
-                <td>PM5D</td>
-                <td>Console Yamaha CL3</td>
-                <td class="center">1</td>
-                <td class="right">
-                    300,00&nbsp;&euro;
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Console Yamaha CL3</span>
+                    <span class="listing-table__item__sub-name">R&eacute;f.: PM5D &bull; Val. Remp. unitaire: 19&#8239;400,00&nbsp;&euro;</span>
                 </td>
-                <td class="right">
-                    19&#8239;400,00&nbsp;&euro;
+                <td class="center">1</td>
+                <td class="center">
+                    300,00&nbsp;&euro;
                 </td>
                 <td class="right">
                     300,00&nbsp;&euro;
                 </td>
             </tr>
-                                <tr>
-                <td class="section-title" colspan="6">
-                                            Son - Processeurs
-                                    </td>
+            <tr>
+                <td class="section-title" colspan="4">Son - Processeurs</td>
             </tr>
-                        <tr>
-                <td>DBXPA2</td>
-                <td>Processeur DBX PA2</td>
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">Processeur DBX PA2</span>
+                    <span class="listing-table__item__sub-name">R&eacute;f.: DBXPA2 &bull; Val. Remp. unitaire: 349,90&nbsp;&euro;</span>
+                </td>
                 <td class="center">1</td>
-                <td class="right">
+                <td class="center">
                     25,50&nbsp;&euro;
-                </td>
-                <td class="right">
-                    349,90&nbsp;&euro;
                 </td>
                 <td class="right">
                     25,50&nbsp;&euro;
                 </td>
             </tr>
-                        </tbody>
+
+    </tbody>
 </table>
 </body>
 </html>

@@ -221,6 +221,7 @@ final class BeneficiariesTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             EstimatesTest::data(1),
+            EstimatesTest::data(2),
         ]);
     }
 
@@ -249,14 +250,10 @@ final class BeneficiariesTest extends ApiTestCase
             'reference' => '0001',
         ]);
         $this->assertApiValidationError([
-            'first_name' => ['This field contains some unauthorized characters.'],
-            'last_name' => [
-                "This field is mandatory.",
-                "This field contains some unauthorized characters.",
-                "2 min. characters, 35 max. characters.",
-            ],
-            'reference' => ['This reference is already in use.'],
-            'email' => ["This email address is invalid."],
+            'first_name' => "This field contains some unauthorized characters.",
+            'last_name' => "This field is mandatory.",
+            'reference' => "This reference is already in use.",
+            'email' => "This email address is invalid.",
         ]);
     }
 
@@ -321,8 +318,8 @@ final class BeneficiariesTest extends ApiTestCase
             'phone' => 'notAphoneNumber',
         ]);
         $this->assertApiValidationError([
-            'email' => ['This email address is invalid.'],
-            'phone' => ['This phone number is invalid.'],
+            'email' => "This email address is invalid.",
+            'phone' => "This phone number is invalid.",
         ]);
     }
 

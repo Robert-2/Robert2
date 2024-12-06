@@ -6,6 +6,8 @@ $bg-color-body: #2a282a;
 $bg-color-emphasis: #252325;
 $bg-color-emphasis-light: #2e2d2e;
 $bg-color-emphasis-danger: #552d2e;
+$bg-color-emphasis-warning: #644a2b;
+$bg-color-emphasis-success: #2b2d29;
 
 $bg-color-table-th: #2e2e2e;
 $bg-color-table-td: #363636;
@@ -45,6 +47,9 @@ $color-hover-button: #fff;
 $color-emphasis-danger-base: #f7eded;
 $color-emphasis-danger-soft: #dfb8b8;
 $color-emphasis-danger-emphasis: #ff644d;
+
+// - Couleurs utilisées avec une couleur de fond `$bg-color-emphasis-warning`.
+$color-emphasis-warning-base: #fff;
 
 //
 // - Couleurs des bordures.

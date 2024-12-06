@@ -10,20 +10,28 @@ use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection as CoreCollection;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\BillingMode;
 use Loxya\Contracts\Bookable;
+use Loxya\Contracts\Pdfable;
 use Loxya\Contracts\PeriodInterface;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
+use Loxya\Models\Casts\AsDecimal;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Cache;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Models\Traits\SoftDeletable;
-use Loxya\Models\Traits\TransientAttributes;
+use Loxya\Services\Auth;
 use Loxya\Services\I18n;
 use Loxya\Support\Assert;
 use Loxya\Support\Collections\MaterialsCollection;
-use Loxya\Support\Pdf;
+use Loxya\Support\Pdf\Pdf;
 use Loxya\Support\Period;
 use Loxya\Support\Str;
 use Respect\Validation\Rules as Rule;
@@ -46,21 +54,19 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property string $mobilization_start_date
  * @property string $mobilization_end_date
  * @property Period $mobilization_period
- * @property-read Decimal|null $degressive_rate
- * @property Decimal|null $discount_rate
- * @property-read Decimal|null $vat_rate
- * @property-read Decimal|null $daily_total
- * @property-read Decimal|null $total_discountable
- * @property-read Decimal|null $total_discount
- * @property-read Decimal|null $total_without_discount
+ * @property Decimal|null $global_discount_rate
+ * @property-read Decimal|null $total_without_global_discount
+ * @property-read Decimal|null $total_global_discount
  * @property-read Decimal|null $total_without_taxes
- * @property-read Decimal|null $total_taxes
+ * @property-read array|null $total_taxes
  * @property-read Decimal|null $total_with_taxes
  * @property-read Decimal $total_replacement
- * @property-read string $currency
+ * @property string $currency
+ * @property-read int $materials_count
+ * @property-read bool $is_editable
  * @property bool $is_confirmed
- * @property bool $is_archived
  * @property bool $is_billable
+ * @property bool $is_archived
  * @property-read bool $is_departure_inventory_period_open
  * @property-read bool $is_departure_inventory_period_closed
  * @property-read bool $can_finish_departure_inventory
@@ -76,12 +82,11 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property int|null $return_inventory_author_id
  * @property-read User|null $return_inventory_author
  * @property-read bool|null $has_missing_materials
+ * @property-read bool $has_deleted_materials
  * @property-read bool|null $has_not_returned_materials
  * @property-read bool|null $has_materials_returned_broken
- * @property-read bool $is_editable
  * @property-read int[] $categories
  * @property-read int[] $parks
- * @property-read array $totalisable_attributes
  * @property string|null $note
  * @property int|null $author_id
  * @property-read User|null $author
@@ -91,24 +96,27 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  *
  * @property-read Collection<array-key, EventTechnician> $technicians
  * @property-read Collection<array-key, Beneficiary> $beneficiaries
- * @property-read Collection<array-key, Material> $materials
+ * @property-read Collection<array-key, EventMaterial> $materials
+ * @property-read Collection<array-key, EventExtra> $extras
  * @property-read Collection<array-key, Estimate> $estimates
  * @property-read Collection<array-key, Invoice> $invoices
  * @property-read Collection<array-key, Document> $documents
+ * @property-read Collection<array-key, Attribute> $totalisable_attributes
  *
  * @method static Builder|static search(string $term)
  * @method static Builder|static inProgress()
  * @method static Builder|static inPeriod(PeriodInterface $period)
  * @method static Builder|static inPeriod(string|\DateTimeInterface $start, string|\DateTimeInterface|null $end)
  * @method static Builder|static inPeriod(string|\DateTimeInterface|PeriodInterface $start, string|\DateTimeInterface|null $end = null)
+ * @method static Builder|static havingMaterialInPark(int $parkId)
  * @method static Builder|static notReturned(PeriodInterface $period)
+ * @method static Builder|static withInvolvedUser(User $user)
  */
-final class Event extends BaseModel implements Serializable, PeriodInterface, Bookable
+final class Event extends BaseModel implements Serializable, PeriodInterface, Bookable, Pdfable
 {
     use Serializer;
-    use SoftDeletable;
+    use SoftDeletes;
     use Cache;
-    use TransientAttributes;
 
     /** L'identifiant unique du modèle. */
     public const TYPE = 'event';
@@ -121,15 +129,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     public const SERIALIZE_BOOKING_SUMMARY = 'booking-summary';
     public const SERIALIZE_BOOKING_DEFAULT = 'booking-default';
 
-    /**
-     * Cette variable peut être utilisée pour mettre en cache les bookables
-     * qui se déroulent en même temps que celui de l'instance courante.
-     *
-     * @var Collection|(Event)[]
-     */
-    public ?CoreCollection $__cachedConcurrentBookables = null;
-
-    protected const PDF_TEMPLATE = 'event-summary-default';
+    // - Nombre de jours avant la date de mobilisation prévue
+    //   pour qu'un inventaire de départ puisse être commencé.
+    //   TODO: Permettre de configurer ça à l'avenir ?
+    public const DEPARTURE_INVENTORY_DELAY = 30;
 
     protected $attributes = [
         'color' => null,
@@ -145,20 +148,29 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
     public function __construct(array $attributes = [])
     {
+        $isBillable = Config::get('billingMode') === BillingMode::ALL;
+        $this->attributes = array_replace($this->attributes, [
+            'is_billable' => $isBillable,
+            'global_discount_rate' => $isBillable ? Decimal::zero() : null,
+            'currency' => Config::get('currency'),
+        ]);
+
         parent::__construct($attributes);
 
         $this->validation = [
             'title' => V::notEmpty()->length(2, 191),
             'reference' => V::custom([$this, 'checkReference']),
-            'color' => V::optional(V::custom([$this, 'checkColor'])),
+            'color' => V::nullable(V::custom([$this, 'checkColor'])),
             'operation_start_date' => V::custom([$this, 'checkOperationStartDate']),
             'operation_end_date' => V::custom([$this, 'checkOperationEndDate']),
             'operation_is_full_days' => V::boolType(),
             'mobilization_start_date' => V::custom([$this, 'checkMobilizationStartDate']),
             'mobilization_end_date' => V::custom([$this, 'checkMobilizationEndDate']),
-            'is_confirmed' => V::notOptional()->boolType(),
+            'is_confirmed' => V::boolType(),
             'is_archived' => V::custom([$this, 'checkIsArchived']),
-            'is_billable' => V::optional(V::boolType()),
+            'is_billable' => V::boolType(),
+            'global_discount_rate' => V::custom([$this, 'checkGlobalDiscountRate']),
+            'currency' => V::custom([$this, 'checkCurrency']),
             'is_departure_inventory_done' => V::boolType(),
             'departure_inventory_datetime' => V::custom([$this, 'checkDepartureInventoryDatetime']),
             'departure_inventory_author_id' => V::custom([$this, 'checkDepartureInventoryAuthorId']),
@@ -350,6 +362,30 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         return $colorChecker->validate($value) ?: 'invalid-hexadecimal-color';
     }
 
+    public function checkGlobalDiscountRate($value)
+    {
+        if (!$this->is_billable) {
+            return V::nullType();
+        }
+
+        V::floatVal()->check($value);
+        $value = Decimal::of($value);
+
+        return (
+            $value->isGreaterThanOrEqualTo(0) &&
+            $value->isLessThanOrEqualTo(100) &&
+            $value->getScale() <= 4
+        );
+    }
+
+    public function checkCurrency($value)
+    {
+        return V::create()
+            ->notEmpty()
+            ->allOf(V::uppercase(), V::length(3, 3))
+            ->validate($value);
+    }
+
     public function checkIsArchived($value)
     {
         V::boolType()->check($value);
@@ -379,7 +415,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
     public function checkAuthorId($value)
     {
-        V::optional(V::numericVal())->check($value);
+        V::nullable(V::intVal())->check($value);
 
         // - Si le champ est vide ou qu'on est dans un update et que le
         //   champ n'a pas changé, on laisse passer.
@@ -387,12 +423,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return true;
         }
 
-        return User::staticExists($value);
+        return User::includes($value);
     }
 
     public function checkDepartureInventoryAuthorId($value)
     {
-        V::optional(V::numericVal())->check($value);
+        V::nullable(V::intVal())->check($value);
 
         if (!$this->is_departure_inventory_done) {
             return V::nullType();
@@ -404,12 +440,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return true;
         }
 
-        return User::staticExists($value);
+        return User::includes($value);
     }
 
     public function checkDepartureInventoryDatetime($value)
     {
-        $dateChecker = V::optional(V::dateTime());
+        $dateChecker = V::nullable(V::dateTime());
         if (!$dateChecker->validate($value)) {
             return 'invalid-date';
         }
@@ -421,7 +457,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
     public function checkReturnInventoryAuthorId($value)
     {
-        V::optional(V::numericVal())->check($value);
+        V::nullable(V::intVal())->check($value);
 
         if (!$this->is_return_inventory_done) {
             return V::nullType();
@@ -433,12 +469,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return true;
         }
 
-        return User::staticExists($value);
+        return User::includes($value);
     }
 
     public function checkReturnInventoryDatetime($value)
     {
-        $dateChecker = V::optional(V::dateTime());
+        $dateChecker = V::nullable(V::dateTime());
         if (!$dateChecker->validate($value)) {
             return 'invalid-date';
         }
@@ -454,65 +490,67 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -
     // ------------------------------------------------------
 
-    public function technicians()
+    public function technicians(): HasMany
     {
         return $this->hasMany(EventTechnician::class, 'event_id')
-            ->orderBy('start_date');
+            ->orderBy('start_date')
+            ->orderBy('id');
     }
 
-    public function beneficiaries()
+    public function beneficiaries(): BelongsToMany
     {
         return $this->belongsToMany(Beneficiary::class, 'event_beneficiaries')
+            ->using(EventBeneficiary::class)
             ->orderByPivot('id');
     }
 
-    public function materials()
+    public function materials(): HasMany
     {
-        return $this->belongsToMany(Material::class, 'event_materials')
-            ->using(EventMaterial::class)
-            ->withTrashed()
-            ->withPivot([
-                'id',
-                'quantity',
-                'quantity_departed',
-                'quantity_returned',
-                'quantity_returned_broken',
-                'departure_comment',
-            ])
-            ->orderByPivot('id');
+        return $this->hasMany(EventMaterial::class, 'event_id')
+            ->orderBy('name')
+            ->orderBy('id');
     }
 
-    public function invoices()
+    public function extras(): HasMany
+    {
+        return $this->hasMany(EventExtra::class, 'event_id')
+            ->orderBy('id');
+    }
+
+    public function invoices(): MorphMany
     {
         return $this->morphMany(Invoice::class, 'booking')
-            ->orderBy('date', 'desc');
+            ->orderBy('date', 'desc')
+            ->orderBy('id', 'desc');
     }
 
-    public function estimates()
+    public function estimates(): MorphMany
     {
         return $this->morphMany(Estimate::class, 'booking')
-            ->orderBy('date', 'desc');
+            ->orderBy('date', 'desc')
+            ->orderBy('id', 'desc');
     }
 
-    public function documents()
+    public function documents(): MorphMany
     {
         return $this->morphMany(Document::class, 'entity')
-            ->orderBy('name', 'asc');
+            ->orderBy('name')
+            ->orderBy('id');
     }
 
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class)
             ->withTrashed();
     }
 
-    public function departureInventoryAuthor()
+    public function departureInventoryAuthor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'departure_inventory_author_id')
             ->withTrashed();
     }
 
-    public function returnInventoryAuthor()
+    public function returnInventoryAuthor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'return_inventory_author_id')
             ->withTrashed();
@@ -523,6 +561,15 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -    Mutators
     // -
     // ------------------------------------------------------
+
+    public $appends = [
+        'total_without_global_discount',
+        'total_global_discount',
+        'total_without_taxes',
+        'total_taxes',
+        'total_with_taxes',
+        'materials_count',
+    ];
 
     protected $casts = [
         'reference' => 'string',
@@ -538,6 +585,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         'is_confirmed' => 'boolean',
         'is_archived' => 'boolean',
         'is_billable' => 'boolean',
+        'global_discount_rate' => AsDecimal::class,
+        'currency' => 'string',
         'is_departure_inventory_done' => 'boolean',
         'departure_inventory_datetime' => 'string',
         'departure_inventory_author_id' => 'integer',
@@ -550,33 +599,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         'updated_at' => 'immutable_datetime',
         'deleted_at' => 'immutable_datetime',
     ];
-
-    public function getBeneficiariesAttribute()
-    {
-        return $this->getRelationValue('beneficiaries')
-            ->sortBy('last_name')
-            ->values();
-    }
-
-    public function getTechniciansAttribute()
-    {
-        return $this->getRelationValue('technicians');
-    }
-
-    public function getMaterialsAttribute()
-    {
-        return $this->getRelationValue('materials');
-    }
-
-    public function getEstimatesAttribute()
-    {
-        return $this->getRelationValue('estimates');
-    }
-
-    public function getInvoicesAttribute()
-    {
-        return $this->getRelationValue('invoices');
-    }
 
     public function getMobilizationPeriodAttribute(): Period
     {
@@ -595,61 +617,289 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         );
     }
 
-    public function getDegressiveRateAttribute(): ?Decimal
+    public function getMaterialsCountAttribute(): int
     {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        $durationDays = $this->operation_period->asDays();
-
-        $result = null;
-        $jsFunction = Config::get('degressiveRateFunction');
-        if (!empty($jsFunction) && str_contains($jsFunction, 'daysCount')) {
-            $function = preg_replace('/daysCount/', (string) $durationDays, $jsFunction);
-            eval(sprintf('$result = %s;', $function)); // phpcs:ignore Squiz.PHP.Eval
-        }
-
-        return Decimal::of($result && is_numeric($result) ? $result : $durationDays)
-            ->toScale(2, RoundingMode::UNNECESSARY);
+        return $this->materials->sum(
+            static fn (EventMaterial $material) => $material->quantity,
+        );
     }
 
-    public function getDiscountRateAttribute(): ?Decimal
+    /** @return Collection<array-key, Beneficiary> */
+    public function getBeneficiariesAttribute(): Collection
     {
-        if (!$this->is_billable) {
-            return null;
-        }
-        return $this->getTransientAttribute('discount_rate', Decimal::zero());
+        return $this->getRelationValue('beneficiaries')
+            ->sortBy('last_name')
+            ->values();
     }
 
-    public function getCurrencyAttribute(): string
+    /** @return Collection<array-key, EventTechnician> */
+    public function getTechniciansAttribute(): Collection
     {
-        return Config::get('currency.iso');
+        return $this->getRelationValue('technicians');
     }
 
-    public function getVatRateAttribute(): ?Decimal
+    /** @return Collection<array-key, EventMaterial> */
+    public function getMaterialsAttribute(): Collection
     {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return Decimal::of(Config::get('companyData.vatRate') ?: 0)
-            ->toScale(2, RoundingMode::UNNECESSARY);
+        return $this->getRelationValue('materials');
     }
 
-    public function getAuthorAttribute()
+    /** @return Collection<array-key, EventExtra> */
+    public function getExtrasAttribute(): Collection
+    {
+        return $this->getRelationValue('extras');
+    }
+
+    public function getAuthorAttribute(): User|null
     {
         return $this->getRelationValue('author');
     }
 
-    public function getDepartureInventoryAuthorAttribute()
+    public function getDepartureInventoryAuthorAttribute(): User|null
     {
         return $this->getRelationValue('departureInventoryAuthor');
     }
 
-    public function getReturnInventoryAuthorAttribute()
+    public function getReturnInventoryAuthorAttribute(): User|null
     {
         return $this->getRelationValue('returnInventoryAuthor');
+    }
+
+    /** @return int[] */
+    public function getParksAttribute(): array
+    {
+        return $this->materials
+            ->reduce(
+                static function (CoreCollection $parkIds, EventMaterial $eventMaterial) {
+                    $material = $eventMaterial->material;
+                    $parkIds[] = $material->park_id;
+                    return $parkIds;
+                },
+                new CoreCollection(),
+            )
+            ->unique()
+            ->sort(SORT_NUMERIC)
+            ->values()
+            ->all();
+    }
+
+    /** @return int[] */
+    public function getCategoriesAttribute(): array
+    {
+        return $this->materials
+            ->pluck('category_id')
+            ->filter(static fn ($categoryId) => $categoryId !== null)
+            ->unique()
+            ->sort(SORT_NUMERIC)
+            ->values()
+            ->all();
+    }
+
+    /** @return Collection<array-key, Estimate> */
+    public function getEstimatesAttribute(): Collection
+    {
+        return $this->getRelationValue('estimates');
+    }
+
+    /** @return Collection<array-key, Invoice> */
+    public function getInvoicesAttribute(): Collection
+    {
+        return $this->getRelationValue('invoices');
+    }
+
+    /** @return Collection<array-key, Attribute> */
+    public function getTotalisableAttributesAttribute(): Collection
+    {
+        $totalisableProperties = Attribute::query()
+            ->where('is_totalisable', true)
+            ->get();
+
+        $results = $totalisableProperties->reduce(
+            function (Collection $totals, Attribute $property) {
+                $propertyTotal = 0;
+                foreach ($this->materials as $eventMaterial) {
+                    $quantity = $eventMaterial->quantity;
+
+                    $material = $eventMaterial->material;
+                    $materialProperty = $material->attributes->find($property->id);
+                    if (!$materialProperty || $quantity === 0) {
+                        continue;
+                    }
+
+                    $propertyTotal += $quantity * $materialProperty->value;
+
+                    // - Ajoute ou met à jour la caractéristique dans la liste.
+                    $materialProperty = clone $materialProperty;
+                    $materialProperty->value = $propertyTotal;
+                    $totals->put($property->id, $materialProperty);
+                }
+                return $totals;
+            },
+            new Collection(),
+        );
+
+        return $results->append('value')->sortBy('name');
+    }
+
+    public function getTotalWithoutGlobalDiscountAttribute(): Decimal|null
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        /** @var CoreCollection<array-key, EventMaterial|EventExtra> $lines */
+        $lines = (new CoreCollection())
+            ->concat($this->materials)
+            ->concat($this->extras);
+
+        return $lines
+            ->reduce(
+                static fn (Decimal $currentTotal, EventMaterial|EventExtra $line) => (
+                    // NOTE: On prend bien ici le total AVEC remise de chaque ligne car
+                    //       cet attribut retourne le total sans remise GLOBALE uniquement.
+                    $currentTotal->plus($line->total_without_taxes)
+                ),
+                Decimal::zero(),
+            )
+            ->toScale(2, RoundingMode::UNNECESSARY);
+    }
+
+    public function getTotalGlobalDiscountAttribute(): Decimal|null
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        if ($this->total_without_global_discount->isLessThanOrEqualTo(0)) {
+            return Decimal::zero()->toScale(2);
+        }
+
+        return $this->total_without_global_discount
+            ->multipliedBy($this->global_discount_rate->dividedBy(100, 6))
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getTotalWithoutTaxesAttribute(): Decimal|null
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return $this->total_without_global_discount
+            ->minus($this->total_global_discount)
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getTotalTaxesAttribute(): array|null
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        /** @var CoreCollection<array-key, EventMaterial|EventExtra> $lines */
+        $lines = (new CoreCollection())
+            ->concat($this->materials)
+            ->concat($this->extras);
+
+        $rawTaxes = $lines->reduce(
+            static function (array $currentTaxes, EventMaterial|EventExtra $line) {
+                if ($line->taxes === null) {
+                    return $currentTaxes;
+                }
+
+                foreach ($line->taxes as $tax) {
+                    $identifier = md5(serialize([$tax['name'], $tax['is_rate'], $tax['value']]));
+                    if (!array_key_exists($identifier, $currentTaxes)) {
+                        $currentTaxes[$identifier] = array_merge($tax, [
+                            'total' => Decimal::zero(),
+                        ]);
+                    }
+
+                    /** @var Decimal $currentTaxAmount */
+                    $currentTaxAmount = &$currentTaxes[$identifier]['total'];
+                    $currentTaxAmount = $currentTaxAmount->plus(
+                        !$tax['is_rate']
+                            ? Decimal::of($tax['value'])->multipliedBy($line->quantity)
+                            : $line->total_without_taxes->multipliedBy(
+                                Decimal::of($tax['value'])->dividedBy(100, 5),
+                            ),
+                    );
+                }
+
+                return $currentTaxes;
+            },
+            [],
+        );
+
+        $taxes = [];
+        foreach ($rawTaxes as $rawTax) {
+            /** @var Decimal $total */
+            $total = $rawTax['total']->toScale(2, RoundingMode::HALF_UP);
+
+            if ($rawTax['is_rate']) {
+                /** @var Decimal $totalGlobalDiscount */
+                $totalGlobalDiscount = $total
+                    ->multipliedBy($this->global_discount_rate->dividedBy(100, 6))
+                    ->toScale(2, RoundingMode::HALF_UP);
+
+                $total = $total
+                    ->minus($totalGlobalDiscount)
+                    ->toScale(2, RoundingMode::HALF_UP);
+            }
+
+            if ($total->isZero()) {
+                continue;
+            }
+
+            $taxes[] = array_replace($rawTax, compact('total'));
+        }
+
+        $collator = new \Collator(container('i18n')->getLocale());
+        usort($taxes, static function ($a, $b) use ($collator) {
+            if ($a['is_rate'] xor $b['is_rate']) {
+                return $a['is_rate'] ? -1 : 1;
+            }
+
+            $result = $collator->compare($a['name'], $b['name']);
+            if ($result !== 0 || !$a['is_rate'] || !$b['is_rate']) {
+                return $result;
+            }
+
+            return Decimal::of($a['value'])->compareTo($b['value']);
+        });
+
+        return $taxes;
+    }
+
+    public function getTotalWithTaxesAttribute(): Decimal|null
+    {
+        if (!$this->is_billable) {
+            return null;
+        }
+
+        return (new CoreCollection($this->total_taxes))
+            ->reduce(
+                static fn (Decimal $currentTotal, array $tax) => (
+                    $currentTotal->plus($tax['total'])
+                ),
+                $this->total_without_taxes,
+            )
+            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
+            ->toScale(2, RoundingMode::HALF_UP);
+    }
+
+    public function getTotalReplacementAttribute(): Decimal
+    {
+        return $this->materials
+            ->reduce(
+                static fn (Decimal $currentTotal, EventMaterial $material) => (
+                    $currentTotal->plus($material->total_replacement_price ?? Decimal::zero())
+                ),
+                Decimal::zero(),
+            )
+            ->toScale(2, RoundingMode::UNNECESSARY);
     }
 
     public function getIsEditableAttribute(): bool
@@ -665,187 +915,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         );
     }
 
-    public function getParksAttribute()
-    {
-        return $this->materials
-            ->reduce(
-                static function (CoreCollection $parkIds, Material $material) {
-                    $parkIds[] = $material->park_id;
-                    return $parkIds;
-                },
-                new CoreCollection(),
-            )
-            ->unique()
-            ->sort(SORT_NUMERIC)
-            ->values()
-            ->all();
-    }
-
-    public function getCategoriesAttribute()
-    {
-        return $this->materials
-            ->pluck('category_id')
-            ->filter(static fn ($categoryId) => $categoryId !== null)
-            ->unique()
-            ->sort(SORT_NUMERIC)
-            ->values()
-            ->all();
-    }
-
-    public function getTotalisableAttributesAttribute(): array
-    {
-        return $this->materials->reduce(
-            static function ($totals, $material) {
-                $quantity = $material->pivot->quantity;
-
-                foreach ($material->attributes as $attribute) {
-                    if (!$attribute->is_totalisable) {
-                        continue;
-                    }
-
-                    $currentTotal = $quantity * $attribute->value;
-
-                    if (!array_key_exists($attribute->id, $totals)) {
-                        $totals[$attribute->id] = $attribute->fresh();
-                    }
-
-                    $previousTotal = $totals[$attribute->id]->value ?? 0;
-                    $totals[$attribute->id]->value = $previousTotal + $currentTotal;
-                }
-
-                return $totals;
-            },
-            [],
-        );
-    }
-
-    //
-    // - Daily total.
-    //
-
-    public function getDailyTotalAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->materials->pluck('pivot')
-            ->reduce(
-                static fn (Decimal $currentTotal, EventMaterial $material) => (
-                    $currentTotal->plus($material->total_price)
-                ),
-                Decimal::zero(),
-            )
-            ->toScale(2, RoundingMode::UNNECESSARY);
-    }
-
-    //
-    // - Discount.
-    //
-
-    public function getTotalWithoutDiscountAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->daily_total
-            ->multipliedBy($this->degressive_rate)
-            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
-            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
-            ->toScale(2, RoundingMode::HALF_UP);
-    }
-
-    public function getTotalDiscountableAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->materials->pluck('pivot')
-            ->reduce(
-                static fn (Decimal $currentTotal, EventMaterial $material) => (
-                    $material->is_discountable
-                        ? $currentTotal->plus($material->total_price)
-                        : $currentTotal
-                ),
-                Decimal::zero(),
-            )
-            ->multipliedBy($this->degressive_rate)
-            ->toScale(2, RoundingMode::HALF_UP);
-    }
-
-    public function getTotalDiscountAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->total_without_discount
-            ->multipliedBy($this->discount_rate->dividedBy(100, 6))
-            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
-            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
-            ->toScale(2, RoundingMode::HALF_UP);
-    }
-
-    //
-    // - Totals.
-    //
-
-    public function getTotalWithoutTaxesAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->total_without_discount
-            ->minus($this->total_discount)
-            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
-            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
-            ->toScale(2, RoundingMode::HALF_UP);
-    }
-
-    public function getTotalTaxesAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->total_without_taxes
-            ->multipliedBy($this->vat_rate->dividedBy(100, 4))
-            // @see https://www.ibm.com/docs/en/order-management-sw/9.2.1?topic=rounding-price
-            // @see https://wiki.dolibarr.org/index.php?title=VAT_setup,_calculation_and_rounding_rules
-            ->toScale(2, RoundingMode::HALF_UP);
-    }
-
-    public function getTotalWithTaxesAttribute(): ?Decimal
-    {
-        if (!$this->is_billable) {
-            return null;
-        }
-
-        return $this->total_without_taxes
-            ->plus($this->total_taxes)
-            ->toScale(2, RoundingMode::UNNECESSARY);
-    }
-
-    public function getTotalReplacementAttribute(): Decimal
-    {
-        return $this->materials->pluck('pivot')
-            ->reduce(
-                static fn (Decimal $currentTotal, EventMaterial $material) => (
-                    $currentTotal->plus($material->total_replacement_price)
-                ),
-                Decimal::zero(),
-            )
-            ->toScale(2, RoundingMode::UNNECESSARY);
-    }
-
-    //
-    // - Booleans
-    //
-
-    public function getHasMissingMaterialsAttribute(): ?bool
+    public function getHasMissingMaterialsAttribute(): bool|null
     {
         if (!$this->exists || $this->is_archived) {
             return null;
@@ -868,12 +938,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         );
     }
 
+    public function getHasDeletedMaterialsAttribute(): bool
+    {
+        return $this->materials->some(
+            static fn (EventMaterial $material) => $material->is_deleted,
+        );
+    }
+
     public function getIsDepartureInventoryPeriodOpenAttribute(): bool
     {
-        // - 30 jours avant le début de mobilisation prévu.
-        // TODO: Permettre de configurer ça à l'avenir ?
         return $this->mobilization_period->getStartDate()
-            ->subDays(30)
+            ->subDays(self::DEPARTURE_INVENTORY_DELAY)
             ->isPast();
     }
 
@@ -919,7 +994,9 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
 
         return $this->materials->every(
-            static fn ($material) => $material->pivot->is_departure_inventory_filled,
+            static fn (EventMaterial $material) => (
+                $material->is_departure_inventory_filled
+            )
         );
     }
 
@@ -951,7 +1028,9 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
 
         return $this->materials->every(
-            static fn ($material) => $material->pivot->is_return_inventory_filled,
+            static fn (EventMaterial $material) => (
+                $material->is_return_inventory_filled
+            )
         );
     }
 
@@ -969,10 +1048,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
         // - S'il existe au moins une quantité retournée non nulle,
         //   c'est que l'inventaire de retour a été sauvegardé au moins une fois.
-        return $this->materials->whereNotNull('pivot.quantity_returned')->isNotEmpty();
+        return $this->materials->whereNotNull('quantity_returned')->isNotEmpty();
     }
 
-    public function getHasNotReturnedMaterialsAttribute(): ?bool
+    public function getHasNotReturnedMaterialsAttribute(): bool|null
     {
         // - Pas de calcul pour les événements archivés (ou pas encore persisté).
         if (!$this->exists || $this->is_archived) {
@@ -996,14 +1075,16 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     $cacheItem->expiresAfter(new \DateInterval('P1D'));
                 }
 
-                return $this->materials->some(static fn ($material) => (
-                    ($material->pivot->quantity - ($material->pivot->quantity_returned ?? 0)) > 0
-                ));
+                return $this->materials->some(
+                    static fn (EventMaterial $material) => (
+                        ($material->quantity - ($material->quantity_returned ?? 0)) > 0
+                    )
+                );
             },
         );
     }
 
-    public function getHasMaterialsReturnedBrokenAttribute(): ?bool
+    public function getHasMaterialsReturnedBrokenAttribute(): bool|null
     {
         // - Pas de calcul pour les événements archivés (ou pas encore persisté).
         if (!$this->exists || $this->is_archived) {
@@ -1021,9 +1102,11 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             return false;
         }
 
-        return $this->materials->some(static fn ($material) => (
-            ($material->pivot->quantity_returned_broken ?? 0) > 0
-        ));
+        return $this->materials->some(
+            static fn (EventMaterial $material) => (
+                ($material->quantity_returned_broken ?? 0) > 0
+            )
+        );
     }
 
     // ------------------------------------------------------
@@ -1068,6 +1151,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         'is_confirmed',
         'location',
         'is_billable',
+        'global_discount_rate',
+        'currency',
         'note',
         'author_id',
     ];
@@ -1089,24 +1174,32 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         $this->mobilization_end_date = $period?->getEndDate()->format('Y-m-d H:i:s');
     }
 
-    public function setReferenceAttribute($value): void
+    public function setReferenceAttribute(mixed $value): void
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['reference'] = $value;
     }
 
-    public function setNoteAttribute($value): void
+    public function setIsBillableAttribute(mixed $isBillable): void
+    {
+        $this->attributes['is_billable'] = $isBillable;
+
+        // - Si c'est une valeur invalide, on ne va pas plus loin.
+        if (!is_bool($isBillable)) {
+            return;
+        }
+
+        // - Lorsque l'on change le `is_billable` et que le `global_discount_rate`
+        //   était à une valeur équivalente à `null`, on l'ajuste automatiquement.
+        if ($this->global_discount_rate === null || $this->global_discount_rate->isZero()) {
+            $this->global_discount_rate = $isBillable ? Decimal::zero() : null;
+        }
+    }
+
+    public function setNoteAttribute(mixed $value): void
     {
         $value = is_string($value) ? trim($value) : $value;
         $this->attributes['note'] = $value === '' ? null : $value;
-    }
-
-    public function setDiscountRateAttribute(Decimal $value): void
-    {
-        if (!$this->is_billable) {
-            throw new \LogicException("Unable to set a discount rate on a non-billable event.");
-        }
-        $this->setTransientAttribute('discount_rate', $value);
     }
 
     // ------------------------------------------------------
@@ -1115,20 +1208,102 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -
     // ------------------------------------------------------
 
+    public function edit(array $data): static
+    {
+        $oldOperationPeriod = $this->exists ? $this->operation_period : null;
+        $oldMobilizationPeriod = $this->exists ? $this->mobilization_period : null;
+
+        // - Si la facturabilité est désactivée, on s'assure que la remise globale est annulée.
+        if (array_key_exists('is_billable', $data) && $data['is_billable'] === false) {
+            $data['global_discount_rate'] = null;
+        }
+
+        $this->fill($data)->save();
+
+        // - Bénéficiaires
+        if (isset($data['beneficiaries'])) {
+            Assert::isArray($data['beneficiaries'], "Key `beneficiaries` must be an array.");
+
+            try {
+                $this->syncBeneficiaries($data['beneficiaries']);
+            } catch (ValidationException $e) {
+                throw new ValidationException([
+                    'beneficiaries' => $e->getValidationErrors(),
+                ]);
+            }
+        }
+
+        // - Techniciens
+        $technicians = null;
+        if (isset($data['technicians'])) {
+            Assert::isArray($data['technicians'], "Key `technicians` must be an array.");
+            $technicians = $data['technicians'];
+        } elseif (
+            !($oldOperationPeriod?->isSame($this->operation_period) ?? true) ||
+            !($oldMobilizationPeriod?->isSame($this->mobilization_period) ?? true)
+        ) {
+            $assignationPeriod = $this->mobilization_period->merge($this->operation_period);
+            $technicians = $this->technicians->reduce(
+                static function ($assignments, $oldAssignment) use ($assignationPeriod) {
+                    $newPeriod = $oldAssignment->computeNewPeriod($assignationPeriod);
+                    if ($newPeriod !== null) {
+                        $assignments[] = [
+                            'id' => $oldAssignment->technician_id,
+                            'position' => $oldAssignment->position,
+                            'period' => $newPeriod,
+                        ];
+                    }
+                    return $assignments;
+                },
+                [],
+            );
+        }
+        if ($technicians !== null) {
+            try {
+                $this->syncTechnicians($technicians);
+            } catch (ValidationException $e) {
+                throw new ValidationException([
+                    'technicians' => $e->getValidationErrors(),
+                ]);
+            }
+        }
+
+        // - Matériels
+        if (isset($data['materials'])) {
+            Assert::isArray($data['materials'], "Key `materials` must be an array.");
+
+            try {
+                $this->syncMaterials($data['materials']);
+            } catch (ValidationException $e) {
+                throw new ValidationException([
+                    'materials' => $e->getValidationErrors(),
+                ]);
+            }
+        }
+
+        // - Extras
+        if (isset($data['extras'])) {
+            Assert::isArray($data['extras'], "Key `extras` must be an array.");
+
+            try {
+                $this->syncExtras($data['extras']);
+            } catch (ValidationException $e) {
+                throw new ValidationException([
+                    'extras' => $e->getValidationErrors(),
+                ]);
+            }
+        }
+
+        return $this->refresh();
+    }
+
+    /** @return Collection<array-key, EventMaterial> */
     public function missingMaterials(): Collection
     {
-        $materials = Material::allWithAvailabilities($this->materials, $this, true);
-        return $materials
-            ->map(static function ($material) {
-                $availableQuantity = $material->available_quantity;
-
-                $missingQuantity = $material->pivot->quantity - $availableQuantity;
-                $missingQuantity = min($missingQuantity, $material->pivot->quantity);
-                $material->pivot->quantity_missing = $missingQuantity;
-
-                return $material;
-            })
-            ->filter(static fn ($material) => $material->pivot->quantity_missing > 0)
+        return $this->withAvailabilities()->materials
+            ->filter(static fn (EventMaterial $material) => (
+                $material->quantity_missing > 0
+            ))
             ->sortBy('name')
             ->values();
     }
@@ -1150,20 +1325,26 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \InvalidArgumentException("Invalid data format.");
         }
 
+        /** @var CoreCollection<int, EventTechnician> $savedEventTechnicians */
+        $savedEventTechnicians = $this->technicians()->get()->toBase()
+            ->keyBy('technician_id');
+
         $technicians = new CoreCollection(array_map(
-            fn ($technicianData) => (
-                new EventTechnician([
+            function ($technicianData) use ($savedEventTechnicians) {
+                $savedEventTechnician = $savedEventTechnicians->get($technicianData['id']);
+                return ($savedEventTechnician ?? new EventTechnician())->fill([
                     'event_id' => $this->id,
                     'technician_id' => $technicianData['id'],
                     'position' => $technicianData['position'],
                     'period' => $technicianData['period'],
-                ])
-            ),
+                ]);
+            },
             $techniciansData,
         ));
 
         return dbTransaction(function () use ($technicians) {
-            EventTechnician::flushForEvent($this->id);
+            $outdatedTechnicians = $this->technicians->diff($technicians);
+            EventTechnician::destroy($outdatedTechnicians);
 
             $errors = $technicians
                 ->filter(static fn ($technician) => !$technician->isValid())
@@ -1182,32 +1363,91 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
     public function syncMaterials(array $materialsData): static
     {
+        $schema = V::arrayType()->each(new Rule\KeySetStrict(
+            new Rule\Key('id'),
+            new Rule\Key('quantity', V::intVal()->min(0)),
+            new Rule\Key('unit_price', null, false),
+            new Rule\Key('discount_rate', null, false),
+            new Rule\Key('degressive_rate', null, false),
+            new Rule\Key('taxes', null, false),
+        ));
+        if (!$schema->validate($materialsData)) {
+            throw new \InvalidArgumentException("Invalid data format.");
+        }
+
         /** @var CoreCollection<int, EventMaterial> $savedEventMaterials */
-        $savedEventMaterials = $this->materials()->get()
-            ->toBase()
-            ->map(static fn ($material) => $material->pivot)
+        $savedEventMaterials = $this->materials()->get()->toBase()
             ->keyBy('material_id');
 
         $data = [];
         foreach ($materialsData as $materialData) {
-            if (!array_key_exists('id', $materialData) || !array_key_exists('quantity', $materialData)) {
-                throw new \InvalidArgumentException("One or more materials added to the event are invalid.");
-            }
-
             $quantity = (int) $materialData['quantity'];
             if ($quantity <= 0) {
                 continue;
             }
 
-            $material = Material::find($materialData['id']);
-            if ($material === null) {
-                throw new \InvalidArgumentException(
-                    "One or more materials (or units of them) added to the event does not exist.",
+            $savedEventMaterial = $savedEventMaterials->get($materialData['id']);
+            $eventMaterialHasReturnData = $savedEventMaterial?->quantity_returned !== null;
+
+            // - On ne peut ajouter un matériel à un événement dont la devise est différente de la devise
+            //   globale courante car il va être impossible de récupérer le prix de remplacement du matériel
+            //   dans la devise de l'événement (ainsi que les informations de facturation si non fournies).
+            if ($savedEventMaterial === null && $this->currency !== Config::get('currency')) {
+                throw new \LogicException(
+                    "Unable to add material to an event whose currency is " .
+                    "different from the current global currency.",
                 );
             }
 
-            $savedEventMaterial = $savedEventMaterials->get($materialData['id']);
-            $eventMaterialHasReturnData = $savedEventMaterial?->quantity_returned !== null;
+            /** @var Material $material */
+            $material = Material::withTrashed()->find($materialData['id']);
+            if ($material === null || ($savedEventMaterial === null && $material->is_deleted)) {
+                throw new \InvalidArgumentException(
+                    "One or more materials added to the event does not exist.",
+                );
+            }
+
+            $name = $savedEventMaterial?->name ?? $material->name;
+            $reference = $savedEventMaterial?->reference ?? $material->reference;
+
+            $unitPrice = null;
+            $degressiveRate = null;
+            $discountRate = null;
+            $taxes = null;
+            if ($this->is_billable) {
+                $unitPrice = $materialData['unit_price']
+                    ?? $savedEventMaterial?->unit_price
+                    ?? $material->rental_price
+                    ?? Decimal::zero();
+
+                $discountRate = $materialData['discount_rate']
+                    ?? $savedEventMaterial?->discount_rate
+                    ?? Decimal::zero();
+
+                // - Récupération du tarif dégressif à persister pour le matériel d'événement.
+                $degressiveRate = $materialData['degressive_rate'] ?? $savedEventMaterial?->degressive_rate;
+                if ($degressiveRate === null) {
+                    $durationDays = $this->operation_period->asDays();
+                    $degressiveRate = $material->degressive_rate?->computeForDays($durationDays)
+                        // - Pas de dégressivité.
+                        ?? $durationDays;
+                }
+
+                // - Récupération des taxes à persister pour le matériel d'événement.
+                //   Note: Vu que la valeur enregistrée peut-être `null` pour signifier
+                //   l'absence de taxe, on vérifie l'existence de la données plutôt ue
+                //   la valeur `null`.
+                if (array_key_exists('taxes', $materialData)) {
+                    $taxes = $materialData['taxes'];
+                } elseif ($savedEventMaterial !== null) {
+                    $taxes = $savedEventMaterial?->taxes;
+                } else {
+                    $taxes = $material->tax?->asFlatArray();
+                }
+            }
+
+            $unitReplacementPrice = $savedEventMaterial?->unit_replacement_price
+                ?? $material->replacement_price;
 
             $quantityDeparted = (
                 $savedEventMaterial?->quantity_departed !== null
@@ -1227,23 +1467,208 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     : ($eventMaterialHasReturnData ? 0 : null)
             );
 
-            $data[$materialData['id']] = [
-                'material' => [
-                    'quantity' => $quantity,
-                    'quantity_departed' => $quantityDeparted,
-                    'quantity_returned' => $quantityReturned,
-                    'quantity_returned_broken' => $quantityReturnedBroken,
-                ],
+            $eventMaterial = ($savedEventMaterial ?? new EventMaterial())->fill([
+                'material_id' => $material->id,
+                'name' => $name,
+                'reference' => $reference,
+                'quantity' => $quantity,
+                'unit_price' => $unitPrice,
+                'discount_rate' => $discountRate,
+                'degressive_rate' => $degressiveRate,
+                'taxes' => $taxes,
+                'unit_replacement_price' => $unitReplacementPrice,
+                'quantity_departed' => $quantityDeparted,
+                'quantity_returned' => $quantityReturned,
+                'quantity_returned_broken' => $quantityReturnedBroken,
+            ]);
+
+            // - Quand on ajoute un matériel qui n'existe pas encore dans la liste, il faut définir
+            //   le prix unitaire du matériel (obligatoire quand la réservation est facturable).
+            if ($this->is_billable && $eventMaterial->unit_price === null) {
+                $eventMaterial->unit_price = $material->rental_price;
+            }
+
+            $data[] = [
+                'material' => $eventMaterial,
             ];
         }
 
         dbTransaction(function () use ($data) {
-            $materials = array_combine(array_keys($data), array_column($data, 'material'));
-            $this->materials()->sync($materials);
-            $this->refresh();
+            // - On supprime le matériel obsolète.
+            $outdatedMaterials = $this->materials->diff(array_column($data, 'material'));
+
+            EventMaterial::destroy($outdatedMaterials);
+
+            foreach ($data as $currentData) {
+                /** @var EventMaterial $material */
+                $material = $currentData['material'];
+                $this->materials()->save($material);
+            }
         });
 
         return $this->refresh();
+    }
+
+    public function syncExtras(array $extraLinesData): static
+    {
+        if (!$this->is_billable) {
+            throw new \LogicException("Unable to add extra lines to a non billable event.");
+        }
+
+        $schema = V::arrayType()->each(new Rule\KeySetStrict(
+            new Rule\Key('id', null, false),
+            new Rule\Key('description'),
+            new Rule\Key('quantity', V::intVal()->min(1)),
+            new Rule\Key('unit_price', null, false),
+            new Rule\Key('tax_id', null, false),
+            new Rule\Key('taxes', null, false),
+        ));
+        if (!$schema->validate($extraLinesData)) {
+            throw new \InvalidArgumentException("Invalid data format.");
+        }
+
+        /** @var Collection<int, EventExtra> $savedExtraLines */
+        $savedExtraLines = $this->extras()->get()
+            ->keyBy('id');
+
+        $extraLines = new CoreCollection();
+        foreach ($extraLinesData as $index => $extraLineData) {
+            $savedExtraLine = isset($extraLineData['id'])
+                ? $savedExtraLines->get($extraLineData['id'])
+                : null;
+
+            $unitPrice = null;
+            $liveTax = null;
+            $taxes = null;
+            if ($this->is_billable) {
+                $unitPrice = $extraLineData['unit_price']
+                    ?? $savedExtraLine?->unit_price
+                    ?? Decimal::zero();
+
+                $liveTax = $savedExtraLine?->liveTax;
+                if (array_key_exists('tax_id', $extraLineData)) {
+                    $liveTax = $extraLineData['tax_id'] !== null
+                        ? Tax::find($extraLineData['tax_id'])
+                        : null;
+                }
+
+                if (array_key_exists('taxes', $extraLineData)) {
+                    $taxes = $extraLineData['taxes'];
+                } elseif ($savedExtraLine !== null) {
+                    $taxes = $savedExtraLine?->taxes;
+                } else {
+                    $taxes = $liveTax?->asFlatArray();
+                }
+            }
+
+            $extraLines->put($index, tap(
+                $savedExtraLine ?? new EventExtra(),
+                static function (EventExtra $extraLine) use ($extraLineData, $unitPrice, $liveTax, $taxes) {
+                    $extraLine->fill([
+                        'description' => $extraLineData['description'],
+                        'quantity' => $extraLineData['quantity'],
+                        'unit_price' => $unitPrice,
+                        'taxes' => $taxes,
+                    ]);
+
+                    if ($liveTax !== null) {
+                        $extraLine->liveTax()->associate($liveTax);
+                    } else {
+                        $extraLine->liveTax()->dissociate();
+                    }
+                },
+            ));
+        }
+
+        return dbTransaction(function () use ($extraLines) {
+            // - On supprime les lignes obsolètes.
+            $outdatedLines = $this->extras->diff($extraLines);
+            EventExtra::destroy($outdatedLines);
+
+            $errors = $extraLines
+                ->filter(static fn ($extraLine) => !$extraLine->isValid())
+                ->map(static fn ($extraLine) => $extraLine->validationErrors())
+                ->all();
+
+            if (!empty($errors)) {
+                throw new ValidationException($errors);
+            }
+
+            $this->extras()->saveMany($extraLines);
+            return $this->refresh();
+        });
+    }
+
+    public function syncBilling(array $billingData): static
+    {
+        if (!$this->is_billable) {
+            throw new \LogicException("Unable to update billing data of a non billable event.");
+        }
+
+        $schema = new Rule\KeySetStrict(
+            new Rule\Key(
+                'materials',
+                V::arrayType()->each(new Rule\KeySetStrict(
+                    new Rule\Key('id'),
+                    new Rule\Key('unit_price'),
+                    new Rule\Key('discount_rate'),
+                )),
+            ),
+            new Rule\Key(
+                'extras',
+                V::arrayType()->each(new Rule\KeySetStrict(
+                    new Rule\Key('id', null, false),
+                    new Rule\Key('description'),
+                    new Rule\Key('quantity', V::intVal()->min(1)),
+                    new Rule\Key('unit_price'),
+                    new Rule\Key('tax_id'),
+                    new Rule\Key('taxes', null, false),
+                )),
+            ),
+            new Rule\Key('global_discount_rate'),
+        );
+        if (!$schema->validate($billingData)) {
+            throw new \InvalidArgumentException("Invalid data format.");
+        }
+
+        /** @var CoreCollection<int, EventMaterial> $savedEventMaterials */
+        $savedEventMaterials = $this->materials()->get()->toBase()
+            ->keyBy('material_id');
+
+        $allMaterialsFilled = $savedEventMaterials->pluck('material_id')
+            ->diff(array_column($billingData['materials'], 'id'))
+            ->isEmpty();
+
+        if (!$allMaterialsFilled) {
+            throw new \InvalidArgumentException("The billing data for some materials are missing.");
+        }
+
+        return dbTransaction(function () use ($billingData, $savedEventMaterials) {
+            // - Lignes de matériel.
+            foreach ($billingData['materials'] as $materialData) {
+                $savedEventMaterial = $savedEventMaterials->get($materialData['id']);
+
+                $savedEventMaterial->unit_price = $materialData['unit_price'];
+                $savedEventMaterial->discount_rate = $materialData['discount_rate'];
+
+                $this->materials()->save($savedEventMaterial);
+            }
+
+            // - Lignes extras.
+            try {
+                $this->syncExtras($billingData['extras']);
+            } catch (ValidationException $e) {
+                throw new ValidationException([
+                    'extras' => $e->getValidationErrors(),
+                ]);
+            }
+
+            // - Remise globale.
+            $this->global_discount_rate = $billingData['global_discount_rate'];
+            $this->save();
+
+            return $this->refresh();
+        });
     }
 
     public function updateDepartureInventory(array $inventoryData): static
@@ -1272,7 +1697,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \LogicException("This event contains no material, so there can be no inventory.");
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
         if ($this->has_missing_materials) {
             throw new \LogicException("This event contains shortage that should be fixed.");
         }
@@ -1287,11 +1712,9 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
         $inventoryData = (new CoreCollection($inventoryData))->keyBy('id');
 
-        $data = [];
         $errors = [];
-        foreach ($this->materials as $material) {
-            /** @var EventMaterial $eventMaterial */
-            $eventMaterial = $material->pivot;
+        foreach ($this->materials as $eventMaterial) {
+            $material = $eventMaterial->material;
             $addError = static function ($message) use ($material, &$errors) {
                 $errors[] = ['id' => $material->id, 'message' => __($message)];
             };
@@ -1310,12 +1733,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 continue;
             }
 
-            $data[$material->id] = [
-                'material' => [
-                    'quantity_departed' => $quantityDeparted,
-                    'departure_comment' => $materialInventory['comment'] ?? null,
-                ],
-            ];
+            $eventMaterial->quantity_departed = $quantityDeparted;
+            $eventMaterial->departure_comment = $materialInventory['comment'] ?? null;
         }
 
         if (!empty($errors)) {
@@ -1324,10 +1743,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
 
         try {
-            dbTransaction(function () use ($data) {
-                $materials = array_combine(array_keys($data), array_column($data, 'material'));
-                $this->materials()->sync($materials);
-                $this->refresh();
+            dbTransaction(function () {
+                foreach ($this->materials as $eventMaterial) {
+                    $eventMaterial->save();
+                }
             });
         } catch (ValidationException) {
             // - Les erreurs de validation sont censées être gérées pour chaque matériel dans le code au-dessus.
@@ -1366,7 +1785,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             throw new \LogicException("This event contains no material, so there can be no inventory.");
         }
 
-        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de retour.
+        // - S'il y a du matériel manquant, on ne peut pas faire l'inventaire de départ.
         if ($this->has_missing_materials) {
             throw new \LogicException("This event contains shortage that should be fixed.");
         }
@@ -1491,11 +1910,9 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
         $inventoryData = (new CoreCollection($inventoryData))->keyBy('id');
 
-        $data = [];
         $errors = [];
-        foreach ($this->materials as $material) {
-            /** @var EventMaterial $eventMaterial */
-            $eventMaterial = $material->pivot;
+        foreach ($this->materials as $eventMaterial) {
+            $material = $eventMaterial->material;
             $addError = static function ($message) use ($material, &$errors) {
                 $errors[] = ['id' => $material->id, 'message' => __($message)];
             };
@@ -1522,12 +1939,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 continue;
             }
 
-            $data[$material->id] = [
-                'material' => [
-                    'quantity_returned' => $quantityReturned,
-                    'quantity_returned_broken' => $quantityReturnedBroken,
-                ],
-            ];
+            $eventMaterial->quantity_returned = $quantityReturned;
+            $eventMaterial->quantity_returned_broken = $quantityReturnedBroken;
         }
 
         if (!empty($errors)) {
@@ -1536,10 +1949,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
 
         try {
-            dbTransaction(function () use ($data) {
-                $materials = array_combine(array_keys($data), array_column($data, 'material'));
-                $this->materials()->sync($materials);
-                $this->refresh();
+            dbTransaction(function () {
+                foreach ($this->materials as $eventMaterial) {
+                    $eventMaterial->save();
+                }
             });
         } catch (ValidationException) {
             // - Ls erreurs de validation sont censées être gérées pour chaque matériel dans le code au-dessus.
@@ -1627,14 +2040,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             }
 
             // - Met à jour les quantités cassés dans le stock.
-            foreach ($this->materials as $material) {
-                /** @var EventMaterial $eventMaterial */
-                $eventMaterial = $material->pivot;
-
+            foreach ($this->materials as $eventMaterial) {
                 if ($eventMaterial->quantity_returned_broken === 0) {
                     continue;
                 }
 
+                $material = $eventMaterial->material;
                 $material->out_of_order_quantity += $eventMaterial->quantity_returned_broken;
                 $material->save();
             }
@@ -1679,14 +2090,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             $this->save();
 
             // - Met à jour les quantités cassés dans le stock.
-            foreach ($this->materials as $material) {
-                /** @var EventMaterial $eventMaterial */
-                $eventMaterial = $material->pivot;
-
+            foreach ($this->materials as $eventMaterial) {
                 if ($eventMaterial->quantity_returned_broken === 0) {
                     continue;
                 }
 
+                $material = $eventMaterial->material;
                 $material->out_of_order_quantity = max(0, (
                     $material->out_of_order_quantity - $eventMaterial->quantity_returned_broken
                 ));
@@ -1700,14 +2109,36 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     /**
      * Permet de dupliquer un événement.
      *
-     * @param array $newEventData Données personnalisées pour le nouvel événement.
-     * @param User|null $author L'auteur de la duplication.
+     * @param array     $newEventData    Données personnalisées pour le nouvel événement.
+     * @param bool      $keepBillingData Les données de facturation doivent-elles aussi être copiées depuis l'événement dupliqué ?
+     *                                   Si `false` (défaut), les données live seront utilisées.
+     * @param User|null $author          L'auteur de la duplication.
      *
      * @return static L'instance du nouvel événement.
      */
-    public function duplicate(array $newEventData, ?User $author = null): static
+    public function duplicate(array $newEventData, bool $keepBillingData = false, ?User $author = null): static
     {
-        return dbTransaction(function () use ($newEventData, $author) {
+        if ($this->has_deleted_materials) {
+            throw new \LogicException("Cannot duplicate an event with deleted material.");
+        }
+
+        // - On ne peut pas dupliquer un événement dans une devise différente de la devise globale
+        //   actuelle en conservant les données de facturation de l'ancien événement car il va être
+        //   impossible de récupérer les prix de remplacement dans la devise de l'événement d'origine.
+        //   (et les prix de remplacement ne sont pas conservés d'une duplication à une autre, ces
+        //   données doivent toujours être à jour)
+        if ($this->is_billable && $keepBillingData && $this->currency !== Config::get('currency')) {
+            throw new \LogicException(
+                "Cannot duplicate an event with a currency other than the current global currency, " .
+                "while retaining the billing data of the original event.",
+            );
+        }
+
+        return dbTransaction(function () use ($newEventData, $keepBillingData, $author) {
+            $globalDiscountRate = !$this->is_billable || !$keepBillingData
+                ? ($this->is_billable ? Decimal::zero() : null)
+                : $this->global_discount_rate;
+
             $newEvent = self::create([
                 'title' => $this->title,
                 'description' => $this->description,
@@ -1717,6 +2148,8 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 'is_confirmed' => false,
                 'location' => $this->location,
                 'is_billable' => $this->is_billable,
+                'currency' => Config::get('currency'),
+                'global_discount_rate' => $globalDiscountRate,
                 'note' => $this->note,
                 'author_id' => $author?->id,
             ]);
@@ -1733,15 +2166,70 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             //
 
             $materials = $this->materials
-                ->map(static fn ($material) => [
-                    'id' => $material->id,
-                    'quantity' => $material->pivot->quantity,
-                ])
+                ->map(function (EventMaterial $eventMaterial) use ($keepBillingData) {
+                    $materialData = [
+                        'id' => $eventMaterial->material_id,
+                        'quantity' => $eventMaterial->quantity,
+                    ];
+
+                    if ($this->is_billable && $keepBillingData) {
+                        $materialData = array_merge($materialData, [
+                            'unit_price' => $eventMaterial->unit_price,
+                            'discount_rate' => $eventMaterial->discount_rate,
+                        ]);
+                    }
+
+                    return $materialData;
+                })
                 ->all();
 
             $newEvent->syncMaterials($materials);
 
+            //
+            // - Lignes de facturation.
+            //
+
+            if ($this->is_billable && $keepBillingData) {
+                $extraLines = $this->extras
+                    ->map(static fn (EventExtra $extraLine) => [
+                        'description' => $extraLine->description,
+                        'quantity' => $extraLine->quantity,
+                        'unit_price' => $extraLine->unit_price,
+                        'tax_id' => $extraLine->tax_id,
+                        'taxes' => $extraLine->taxes,
+                    ])
+                    ->all();
+
+                $newEvent->syncExtras($extraLines);
+            }
+
             return $newEvent->refresh();
+        });
+    }
+
+    public function withAvailabilities(): static
+    {
+        $rawMaterials = $this->materials->map(static fn (EventMaterial $material) => $material->material);
+        $rawMaterials = Material::allWithAvailabilities($rawMaterials, $this)->keyBy('id');
+
+        $materialsWithAvailabilities = $this->materials->map(
+            static function (EventMaterial $material) use ($rawMaterials) {
+                /** @var Material $rawMaterial */
+                $rawMaterial = $rawMaterials->get($material->material_id);
+
+                $availableQuantity = $rawMaterial->available_quantity;
+
+                $missingQuantity = $material->quantity - $availableQuantity;
+                $missingQuantity = min($missingQuantity, $material->quantity);
+
+                return tap(clone $material, static function (EventMaterial $material) use ($missingQuantity) {
+                    $material->quantity_missing = $missingQuantity;
+                });
+            },
+        );
+
+        return tap(clone $this, static function (Event $event) use ($materialsWithAvailabilities) {
+            $event->setRelation('materials', $materialsWithAvailabilities);
         });
     }
 
@@ -1750,6 +2238,23 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -    Query Scopes
     // -
     // ------------------------------------------------------
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        Assert::minLength($term, 2, "The term must contain more than two characters.");
+
+        $safeTerm = sprintf('%%%s%%', addcslashes($term, '%_'));
+        return $query->where(static fn (Builder $subQuery) => (
+            $subQuery
+                ->orWhere('title', 'LIKE', $safeTerm)
+                ->orWhere('location', 'LIKE', $safeTerm)
+                ->orWhereHas('beneficiaries', static fn (Builder $beneficiariesQuery) => (
+                    // - Ici on passe `$term` et non `$safeTerm`, car `Beneficiary::search()`
+                    //   se chargera de l'échappement.
+                    $beneficiariesQuery->search($term)
+                ))
+        ));
+    }
 
     public function scopeInProgress(Builder $query): Builder
     {
@@ -1787,20 +2292,16 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ]);
     }
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeHavingMaterialInPark(Builder $query, int $parkId): Builder
     {
-        Assert::minLength($term, 2, "The term must contain more than two characters.");
-
-        $safeTerm = sprintf('%%%s%%', addcslashes($term, '%_'));
-        return $query->where(static fn (Builder $subQuery) => (
-            $subQuery
-                ->orWhere('title', 'LIKE', $safeTerm)
-                ->orWhere('location', 'LIKE', $safeTerm)
-                ->orWhereHas('beneficiaries', static fn (Builder $beneficiariesQuery) => (
-                    // - Ici on passe `$term` et non `$safeTerm`, car `Beneficiary::search()`
-                    //   se chargera de l'échappement.
-                    $beneficiariesQuery->search($term)
-                ))
+        return $query->whereHas('materials', static fn (Builder $eventMaterialQuery) => (
+            $eventMaterialQuery->whereHas('material', static fn (Builder $materialQuery) => (
+                $materialQuery
+                    ->where(static fn (Builder $subQuery) => (
+                        $subQuery
+                            ->where('park_id', $parkId)
+                    ))
+            ))
         ));
     }
 
@@ -1825,11 +2326,45 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ->where('mobilization_end_date', '<=', Carbon::tomorrow()->startOfDay());
     }
 
+    public function scopeDepartureInventoryTodo(Builder $query): Builder
+    {
+        return $query
+            ->where('is_departure_inventory_done', false)
+            ->where('mobilization_start_date', '<=', (Carbon::now()->addDays(self::DEPARTURE_INVENTORY_DELAY)))
+            ->where('mobilization_start_date', '>=', (Carbon::now()->startOfDay()));
+    }
+
     public function scopeReturnInventoryTodo(Builder $query): Builder
     {
         return $query
             ->where('mobilization_end_date', '<=', Carbon::now())
             ->where('is_return_inventory_done', false);
+    }
+
+    /**
+     * Permet de ne récupérer que les événements dans lesquels un utilisateur
+     * donné est impliqué (bénéficiaire, technicien, préparateur de commande).
+     *
+     * @param Builder $query
+     * @param User $user
+     */
+    public function scopeWithInvolvedUser(Builder $query, User $user): Builder
+    {
+        if (!$user->person) {
+            return $query->whereRaw('1 <> 1');
+        }
+
+        return $query
+            ->where(static fn (Builder $query) => (
+                $query->whereHas('beneficiaries', static fn (Builder $beneficiariesQuery) => (
+                    $beneficiariesQuery->whereBelongsTo($user->person)
+                ))
+                ->orWhereHas('technicians', static fn (Builder $eventTechniciansQuery) => (
+                    $eventTechniciansQuery->whereHas('technician', static fn (Builder $technician) => (
+                        $technician->whereBelongsTo($user->person)
+                    ))
+                ))
+            ));
     }
 
     // ------------------------------------------------------
@@ -1848,7 +2383,13 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ));
         }
 
+        // - Société.
         $company = Config::get('companyData');
+        $company = array_replace($company, [
+            'country' => ($company['country'] ?? null) !== null
+                ? Country::where('code', $company['country'])->first()
+                : null,
+        ]);
 
         $pdfName = Str::slugify(implode('-', [
             $i18n->translate('release-sheet'),
@@ -1897,16 +2438,14 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ];
         }
 
-        return Pdf::createFromTemplate(static::PDF_TEMPLATE, $i18n, $pdfName, [
-            'date' => CarbonImmutable::now(),
+        return Pdf::createFromTemplate('event-summary', $i18n, $pdfName, [
+            'now' => CarbonImmutable::now(),
             'event' => $this,
             'beneficiaries' => $this->beneficiaries,
-            'company' => Config::get('companyData'),
-            'currency' => Config::get('currency.iso'),
+            'company' => $company,
             'sortedBy' => $sortedBy,
             'materialsSorted' => $materialsSorted,
             'materialDisplayMode' => $displayMode,
-            'replacementAmount' => $this->total_replacement,
             'technicians' => array_values($technicians),
             'totalisableAttributes' => $this->totalisable_attributes,
             'customText' => Setting::getWithKey('eventSummary.customText'),
@@ -1924,61 +2463,23 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -
     // ------------------------------------------------------
 
-    public static function staticEdit($id = null, array $data = []): static
+    /**
+     * Retourne un événement via son identifiant, uniquement
+     * s'il est accessible par l'utilisateur donné.
+     *
+     * @param int $id L'identifiant de l'événement à récupérer.
+     * @param User $user L'utilisateur pour lequel on effectue la récupération.
+     *
+     * @return static L'événement correspondant à l'identifiant.
+     */
+    public static function findOrFailForUser(int $id, User $user): static
     {
-        $oldOperationPeriod = null;
-        $oldMobilizationPeriod = null;
-        if ($id !== null) {
-            $existingEvent = static::findOrFail($id);
-            $oldOperationPeriod = $existingEvent->operation_period;
-            $oldMobilizationPeriod = $existingEvent->mobilization_period;
-        }
-
-        $event = $existingEvent ?? new static();
-        $event->fill($data)->save();
-
-        // - Bénéficiaires.
-        if (isset($data['beneficiaries'])) {
-            Assert::isArray($data['beneficiaries'], "Key `beneficiaries` must be an array.");
-            $event->syncBeneficiaries($data['beneficiaries']);
-        }
-
-        // - Techniciens.
-        $technicians = null;
-        if (isset($data['technicians'])) {
-            Assert::isArray($data['technicians'], "Key `technicians` must be an array.");
-            $technicians = $data['technicians'];
-        } elseif (
-            !($oldOperationPeriod?->isSame($event->operation_period) ?? true) ||
-            !($oldMobilizationPeriod?->isSame($event->mobilization_period) ?? true)
-        ) {
-            $assignationPeriod = $event->mobilization_period->merge($event->operation_period);
-            $technicians = $event->technicians->reduce(
-                static function ($assignments, $oldAssignment) use ($assignationPeriod) {
-                    $newPeriod = $oldAssignment->computeNewPeriod($assignationPeriod);
-                    if ($newPeriod !== null) {
-                        $assignments[] = [
-                            'id' => $oldAssignment->technician_id,
-                            'position' => $oldAssignment->position,
-                            'period' => $newPeriod,
-                        ];
-                    }
-                    return $assignments;
-                },
-                [],
-            );
-        }
-        if ($technicians !== null) {
-            $event->syncTechnicians($technicians);
-        }
-
-        // - Matériels.
-        if (isset($data['materials'])) {
-            Assert::isArray($data['materials'], "Key `materials` must be an array.");
-            $event->syncMaterials($data['materials']);
-        }
-
-        return $event->refresh();
+        return static::query()
+            ->when(
+                $user->group === Group::READONLY_PLANNING_SELF,
+                static fn (Builder $subQuery) => $subQuery->withInvolvedUser($user),
+            )
+            ->findOrFail($id);
     }
 
     // ------------------------------------------------------
@@ -1998,31 +2499,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     $event->append([
                         'beneficiaries',
                         'technicians',
-                        'has_not_returned_materials',
                         'total_replacement',
-                        'currency',
-                        'has_missing_materials',
                         'departure_inventory_author',
                         'return_inventory_author',
                         'is_return_inventory_started',
+                        'has_not_returned_materials',
+                        'has_missing_materials',
+                        'has_deleted_materials',
                         'author',
                     ]);
-
                     if ($event->is_billable) {
-                        $event->append([
-                            'degressive_rate',
-                            'vat_rate',
-                            'discount_rate',
-                            'daily_total',
-                            'total_without_discount',
-                            'total_discountable',
-                            'total_discount',
-                            'total_without_taxes',
-                            'total_taxes',
-                            'total_with_taxes',
-                            'estimates',
-                            'invoices',
-                        ]);
+                        $event->append(['extras', 'estimates', 'invoices']);
                     }
                     break;
 
@@ -2051,31 +2538,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     $event->append([
                         'beneficiaries',
                         'technicians',
-                        'has_not_returned_materials',
-                        'total_replacement',
-                        'currency',
-                        'has_missing_materials',
                         'departure_inventory_author',
                         'return_inventory_author',
                         'is_return_inventory_started',
+                        'has_not_returned_materials',
+                        'has_missing_materials',
+                        'has_deleted_materials',
+                        'total_replacement',
                         'author',
                     ]);
-
                     if ($event->is_billable) {
-                        $event->append([
-                            'degressive_rate',
-                            'vat_rate',
-                            'discount_rate',
-                            'daily_total',
-                            'total_without_discount',
-                            'total_discountable',
-                            'total_discount',
-                            'total_without_taxes',
-                            'total_taxes',
-                            'total_with_taxes',
-                            'estimates',
-                            'invoices',
-                        ]);
+                        $event->append(['extras', 'estimates', 'invoices']);
                     }
                     break;
             }
@@ -2096,6 +2569,14 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     'departure_inventory_datetime',
                     'is_return_inventory_done',
                     'return_inventory_datetime',
+                    'materials_count',
+                    'currency',
+                    'global_discount_rate',
+                    'total_without_global_discount',
+                    'total_global_discount',
+                    'total_without_taxes',
+                    'total_taxes',
+                    'total_with_taxes',
                     'note',
                     'created_at',
                     'updated_at',
@@ -2104,8 +2585,15 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
             case self::SERIALIZE_DEFAULT:
                 $data->delete([
+                    'currency',
                     'departure_inventory_datetime',
                     'return_inventory_datetime',
+                    'global_discount_rate',
+                    'total_without_global_discount',
+                    'total_global_discount',
+                    'total_without_taxes',
+                    'total_taxes',
+                    'total_with_taxes',
                 ]);
                 break;
 
@@ -2115,9 +2603,17 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     ->delete([
                         'reference',
                         'description',
-                        'is_billable',
                         'departure_inventory_datetime',
                         'return_inventory_datetime',
+                        'materials_count',
+                        'currency',
+                        'is_billable',
+                        'global_discount_rate',
+                        'total_without_global_discount',
+                        'total_global_discount',
+                        'total_without_taxes',
+                        'total_taxes',
+                        'total_with_taxes',
                         'note',
                         'updated_at',
                     ]);
@@ -2129,6 +2625,13 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     ->delete([
                         'departure_inventory_datetime',
                         'return_inventory_datetime',
+                        'currency',
+                        'global_discount_rate',
+                        'total_without_global_discount',
+                        'total_global_discount',
+                        'total_without_taxes',
+                        'total_taxes',
+                        'total_with_taxes',
                         'note',
                         'updated_at',
                     ]);
@@ -2139,24 +2642,72 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 break;
         }
 
+        // - Si l'utilisateur n'est pas un membre de l'équipe, et qu'il
+        //   n'est pas bénéficiaire de l'événement, on enlève les devis
+        //   et les factures du payload.
+        $canSeeBilling = (
+            Auth::is([Group::ADMINISTRATION, Group::MANAGEMENT]) ||
+            (
+                Auth::is(Group::READONLY_PLANNING_SELF) &&
+                Auth::user()?->beneficiary?->isAssignedToEvent($event)
+            )
+        );
+        if (!$canSeeBilling) {
+            $data->delete(['estimates', 'invoices']);
+        }
+
+        // - Si l'utilisateur n'est pas un membre de l'équipe, et qu'il
+        //   n'est pas technicien assigné à l'événement ou préparateur de
+        //   commande, on enlève les notes du payload.
+        $canSeeNotes = (
+            Auth::is([Group::ADMINISTRATION, Group::MANAGEMENT]) ||
+            (
+                Auth::is(Group::READONLY_PLANNING_SELF) &&
+                (
+                    Auth::user()?->technician?->isAssignedToEvent($event)
+                )
+            )
+        );
+        if (!$canSeeNotes) {
+            $data->delete('note');
+        }
+
+        if (!$event->is_billable) {
+            $data->delete([
+                'global_discount_rate',
+                'total_without_global_discount',
+                'total_global_discount',
+                'total_without_taxes',
+                'total_taxes',
+                'total_with_taxes',
+            ]);
+        }
+
         $formatsWithMaterials = [
             self::SERIALIZE_DETAILS,
             self::SERIALIZE_BOOKING_DEFAULT,
         ];
         if (in_array($format, $formatsWithMaterials, true)) {
+            $materialFormat = match ($format) {
+                self::SERIALIZE_BOOKING_SUMMARY => (
+                    EventMaterial::SERIALIZE_SUMMARY
+                ),
+                default => (
+                    EventMaterial::SERIALIZE_DEFAULT
+                ),
+            };
+
             $data['materials'] = $event->materials
                 ->map(static fn ($material) => (
-                    array_merge($material->serialize(), [
-                        'pivot' => $material->pivot->serialize(),
-                    ])
+                    $material->serialize($materialFormat)
                 ))
                 ->all();
         }
 
         return $data
             ->delete([
-                'preparer_id',
                 'author_id',
+                'preparer_id',
                 'operation_start_date',
                 'operation_end_date',
                 'operation_is_full_days',
@@ -2174,23 +2725,37 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         $data = new DotArray($data);
 
         // - Période de mobilization.
-        $mobilizationPeriodErrors = array_unique(array_merge(
-            $data->get('mobilization_start_date', []),
-            $data->get('mobilization_end_date', []),
-        ));
+        $mobilizationPeriodErrors = array_unique(array_filter([
+            $data->get('mobilization_start_date'),
+            $data->get('mobilization_end_date'),
+        ]));
         if (!empty($mobilizationPeriodErrors)) {
-            $data->set('mobilization_period', $mobilizationPeriodErrors);
+            $data->set('mobilization_period', (
+                count($mobilizationPeriodErrors) === 1
+                    ? current($mobilizationPeriodErrors)
+                    : implode("\n", array_map(
+                        static fn ($message) => sprintf('- %s', $message),
+                        $mobilizationPeriodErrors,
+                    ))
+            ));
         }
         $data->delete('mobilization_start_date');
         $data->delete('mobilization_end_date');
 
         // - Période d'opération.
-        $operationPeriodErrors = array_unique(array_merge(
-            $data->get('operation_start_date', []),
-            $data->get('operation_end_date', []),
-        ));
+        $operationPeriodErrors = array_unique(array_filter([
+            $data->get('operation_start_date'),
+            $data->get('operation_end_date'),
+        ]));
         if (!empty($operationPeriodErrors)) {
-            $data->set('operation_period', $operationPeriodErrors);
+            $data->set('operation_period', (
+                count($operationPeriodErrors) === 1
+                    ? current($operationPeriodErrors)
+                    : implode("\n", array_map(
+                        static fn ($message) => sprintf('- %s', $message),
+                        $operationPeriodErrors,
+                    ))
+            ));
         }
         $data->delete('operation_start_date');
         $data->delete('operation_end_date');

@@ -1,0 +1,372 @@
+{% extends 'pdf/base.twig' %}
+
+{% block title %}{{ __('invoice-number', number) }}{% endblock %}
+
+{% block content %}
+<table class="layout-table">
+    <tr>
+        <td class="half">
+            {{-
+                include('blocks/company-address.twig', {
+                    company: seller,
+                    showLegalNumbers: true,
+                    showLogo: true,
+                })
+            -}}
+        </td>
+        <td class="half">
+            {% set currencyName = currency|currency_name(locale)|ucfirst -%}
+            <h2 class="box center">{{ __('invoice-title', currencyName, number) }}</h2>
+            <table class="layout-table">
+                <tr>
+                    <td class="size12">{{ __('on-date', date|format_date('short', locale=locale))|ucfirst }}</td>
+                    <td class="size12 right">{{ __('page', 1) }}</td>
+                </tr>
+            </table>
+            <p>{{ __('beneficiary') }}</p>
+            <h2 class="vspace10 indent5">
+                {{ include('blocks/beneficiary.twig', { beneficiary }) }}
+            </h2>
+        </td>
+    </tr>
+</table>
+
+<div class="vspace5">
+    {% if booking.title is not empty -%}
+    <p>{{ __('event', booking.title) }}</p>
+    {% endif -%}
+    <p class="strong">
+        {{ booking.period|format_period('full', locale=locale)|ucfirst -}}
+        {% if booking.location %}, {{ __('in-location', booking.location) }}{% endif ~%}
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>{{ __('category') }}</th>
+                <th class="center">{{ __('quantity') }}</th>
+                {%- if isLegacy ~%}
+                <th class="right">{{ __(hasTaxes ? 'daily-total-excl-tax' : 'daily-total') }}</th>
+                {%- else ~%}
+                <th class="right">{{ __(hasTaxes ? 'total-excl-tax' : 'total') }}</th>
+                {%- endif ~%}
+            </tr>
+        </thead>
+        <tbody>
+            {%- for category in categoriesSubTotals ~%}
+            <tr>
+                <td>
+                    {%- if category.id == '__UNCATEGORIZED__' -%}
+                        {{ __('not-categorized') }}
+                    {%- elseif category.id == '__OTHER__' -%}
+                        {{ __('category-other') }}
+                    {%- else -%}
+                        {{ category.name }}
+                    {%- endif -%}
+                </td>
+                <td class="center">{{ __n('items-count', category.quantity) }}</td>
+                <td class="right">
+                    {{ category.subTotal|format_currency(currency, locale=locale) }}
+                </td>
+            </tr>
+            {%- endfor ~%}
+        </tbody>
+    </table>
+    <p class="size8 lighter">{{ __('invoice-note-detail-next-page') }}</p>
+</div>
+
+{% if isLegacy %}
+<div class="vspace5 size8">
+    <table class="totals-table totals-table--legacy">
+        <thead>
+            <tr>
+                <th>{{ __('daily-total') }}</th>
+                <th>{{ __('degressive-rate') }}</th>
+                {%- if hasGlobalDiscount ~%}
+                <th>{{ __('discount') }}</th>
+                {%- endif ~%}
+                <th colspan="2">{{ __('totals') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="center">
+                <td>
+                    <div class="vspace2">
+                        {{ dailyTotal|format_currency(currency, locale=locale) }}
+                    </div>
+                </td>
+                <td>
+                    <div class="vspace2">
+                        ×&nbsp;<strong>{{ degressiveRate|format_number(locale=locale) }}</strong>
+                        <span class="lighter">({{ __n('number-of-days', booking.period.asDays) }})</span>
+                    </div>
+                </td>
+                {% if hasGlobalDiscount -%}
+                <td rowspan="{{ hasTaxes ? (totalTaxes|length + 2) : 2 }}">
+                    <div class="vspace2">
+                        {{
+                            __('discount-of-amount', [
+                                globalDiscountRate|format_percent_number({max_fraction_digit: 4}, locale=locale),
+                                totalWithoutGlobalDiscount|format_currency(currency, locale=locale),
+                            ])
+                        }}
+                    </div>
+                    <div class="vspace5 strong">
+                        - {{ totalGlobalDiscount|format_currency(currency, locale=locale) }}
+                    </div>
+                </td>
+                {% endif -%}
+                <td rowspan="{{ hasTaxes ? 1 : 2 }}">
+                    <div class="vspace2 center">
+                        {% if hasTaxes -%}
+                            {{ __('total-excl-tax') }}
+                        {% else -%}
+                            <strong class="size10">{{ __('total-due') }}</strong><br />
+                            <span class="size9">{{ __('tax-not-applicable') }}</span>
+                        {% endif -%}
+                    </div>
+                </td>
+                <td rowspan="{{ hasTaxes ? 1 : 2 }}">
+                    <div class="vspace2 right">
+                        {{ totalWithoutTaxes|format_currency(currency, locale=locale) }}
+                    </div>
+                </td>
+            </tr>
+            {%- set firstTax = hasTaxes ? totalTaxes|first : null -%}
+            {%- set otherTaxes = hasTaxes ? totalTaxes|slice(1) : null ~%}
+            <tr class="center">
+                <td rowspan="{{ hasTaxes ? (totalTaxes|length + 1) : 1 }}" colspan="2">
+                    <div class="vspace5 strong">
+                        = {{ totalWithoutGlobalDiscount|format_currency(currency, locale=locale) }}
+                    </div>
+                </td>
+                {% if hasTaxes -%}
+                <td>
+                    <div class="vspace2 center">
+                        {%-
+                            set firstTaxValue = firstTax.is_rate
+                                ? firstTax.value|format_percent_number({max_fraction_digit: 3}, locale=locale)
+                                : firstTax.value|format_currency(currency, locale=locale)
+                        ~%}
+                        {{ firstTax.name }} ({{ firstTaxValue }})
+                    </div>
+                </td>
+                <td>
+                    <div class="vspace2 right">
+                        {{ firstTax.total|format_currency(currency, locale=locale) }}
+                    </div>
+                </td>
+                {%- endif ~%}
+            </tr>
+            {%- for tax in otherTaxes ~%}
+            <tr class="center">
+                <td>
+                    <div class="vspace2 center">
+                        {%-
+                            set taxValue = tax.is_rate
+                                ? tax.value|format_percent_number({max_fraction_digit: 3}, locale=locale)
+                                : null
+                        ~%}
+                        {{ tax.name }}{{ taxValue is not null ? ' (' ~ taxValue ~ ')' : '' }}
+                    </div>
+                </td>
+                <td>
+                    <div class="vspace2 right">
+                        {{ tax.total|format_currency(currency, locale=locale) }}
+                    </div>
+                </td>
+            </tr>
+            {%- endfor -%}
+            {%- if hasTaxes ~%}
+            <tr>
+                <td>
+                    <div class="vspace2 strong center">
+                        {{ __('total-incl-taxes') }}<br>
+                        {{ __('total-due') }}
+                    </div>
+                </td>
+                <td>
+                    <div class="vspace2 right strong">
+                        {{ totalWithTaxes|format_currency(currency, locale=locale) }}
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<table class="totals-table">
+    <tbody>
+        <tr>
+            <td>{{ __('duration') }}</td>
+            <td>{{ __n('number-of-days', booking.period.asDays) }}</td>
+        </tr>
+        {% if hasGlobalDiscount or hasTaxes -%}
+        <tr>
+            <td>{{ __(hasGlobalDiscount ? 'subtotal' : 'total-excl-tax') }}</td>
+            <td>
+                {{-
+                    hasGlobalDiscount
+                        ? totalWithoutGlobalDiscount|format_currency(currency, locale=locale)
+                        : totalWithoutTaxes|format_currency(currency, locale=locale)
+                -}}
+            </td>
+        </tr>
+        {% endif -%}
+        {% if hasGlobalDiscount -%}
+        <tr>
+            <td>{{ __('discount-rate', globalDiscountRate|format_percent_number({max_fraction_digit: 4}, locale=locale)) }}</td>
+            <td>- {{ totalGlobalDiscount|format_currency(currency, locale=locale) }}</td>
+        </tr>
+        {% if hasTaxes -%}
+        <tr class="strong">
+            <td>{{ __('total-excl-tax') }}</td>
+            <td>{{ totalWithoutTaxes|format_currency(currency, locale=locale) }}</td>
+        </tr>
+        {% endif -%}
+        {% endif -%}
+        {% if hasTaxes -%}
+        {% for tax in totalTaxes %}
+        <tr>
+            <td>
+                {%-
+                    set taxValue = tax.is_rate
+                        ? tax.value|format_percent_number({max_fraction_digit: 3}, locale=locale)
+                        : null
+                ~%}
+                {{ tax.name }}{{ taxValue is not null ? ' (' ~ taxValue ~ ')' : '' }}
+            </td>
+            <td>{{ tax.total|format_currency(currency, locale=locale) }}</td>
+        </tr>
+        {% endfor -%}
+        {% endif -%}
+        <tr>
+            <td>
+                {% if hasTaxes -%}{{ __('total-incl-taxes') }}{% endif -%}
+                <div class="strong size12">{{ __('total-due') }}</div>
+                {% if not hasTaxes -%}{{ __('tax-not-applicable') }}{% endif -%}
+            </td>
+            <td class="size12 strong">
+                {{ totalWithTaxes|format_currency(currency, locale=locale) }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endif %}
+<div class="changePage vspace5">
+    <table class="layout-table">
+        <tr>
+            <td class="half">
+                {{-
+                    include('blocks/company-address.twig', {
+                        company: seller,
+                        showLegalNumbers: false,
+                        showLogo: true,
+                    })
+                -}}
+            </td>
+            <td class="half">
+                <h2 class="box center">{{ __('invoice-details-title', number) }}</h2>
+                <table class="layout-table">
+                    <tr>
+                        <td class="size12">{{ __('on-date', date|format_date('short', locale=locale))|ucfirst }}</td>
+                        <td class="size12 right">{{ __('page', 2) }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+{% if extras|length > 0 %}
+<h2>{{ __('materials') }}</h2>
+{% endif %}
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th>{{ __('designation') }}</th>
+            <th class="center">{{ __('qty') }}</th>
+            <th class="center">{{ __(hasTaxes ? 'unit-price-excl-tax' : 'unit-price') }}</th>
+            {%- if not isLegacy ~%}
+            <th class="center">{{ __('discount') }}</th>
+            {%- endif ~%}
+            <th class="right">{{ __(hasTaxes ? 'total-excl-tax' : 'total') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%~ for subCategory, materialsList in materials %}
+            <tr>
+                <td class="section-title" colspan="{{ isLegacy ? 4 : 5 }}">
+                    {%- if subCategory == '--' -%}                        {{ __('not-categorized') }}
+                    {%- else -%}
+                        {{ subCategory|replace({ '__other': __('other-materials') }) }}
+                    {%- endif -%}
+                </td>
+            </tr>
+            {%~ for material in materialsList %}
+            <tr>
+                <td>
+                    <span class="listing-table__item__name">{{ material.name }}</span>
+                    <span class="listing-table__item__sub-name">
+                        {%- apply spaceless -%}
+                        {{ __('reference-value', material.reference ) }}
+                        {%- if material.unit_replacement_price is not null -%}
+                        {{- ' ' }}&bull;{{ ' ' -}}
+                        {{
+                            __('unit-replacement-value', (
+                                (material.unit_replacement_price ?? 0)|format_currency(currency, locale=locale))
+                            )
+                        }}
+                        {%- endif -%}
+                        {%- endapply -%}
+                    </span>
+                </td>
+                <td class="center">{{ material.quantity }}</td>
+                <td class="center">
+                    {% if isLegacy -%}
+                    {{ material.unit_price|format_currency(currency, locale=locale) }}
+                    {%- else -%}
+                    {{ material.unit_price_period|format_currency(currency, locale=locale) }}
+                    {%- endif ~%}
+                </td>
+                {%- if not isLegacy ~%}
+                <td class="center">
+                    {{ material.discount_rate|format_percent_number({max_fraction_digit: 4}, locale=locale) }}
+                </td>
+                {%- endif ~%}
+                <td class="right">
+                    {{ material.total_without_taxes|format_currency(currency, locale=locale) }}
+                </td>
+            </tr>
+            {%~ endfor -%}
+        {%- endfor ~%}
+    </tbody>
+</table>
+{%- if extras|length > 0 ~%}
+<h2>{{ __('category-other') }}</h2>
+<table class="listing-table">
+    <thead>
+        <tr>
+            <th>{{ __('designation') }}</th>
+            <th class="center">{{ __('qty') }}</th>
+            <th class="center">{{ __(hasTaxes ? 'unit-price-excl-tax' : 'unit-price') }}</th>
+            <th class="right">{{ __(hasTaxes ? 'total-excl-tax' : 'total') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%~ for extra in extras %}
+            <tr>
+                <td>{{ extra.description }}</td>
+                <td class="center">{{ extra.quantity }}</td>
+                <td class="center">
+                    {{ extra.unit_price|format_currency(currency, locale=locale) }}
+                </td>
+                <td class="right">
+                    {{ extra.total_without_taxes|format_currency(currency, locale=locale) }}
+                </td>
+            </tr>
+        {%- endfor ~%}
+    </tbody>
+</table>
+{%- endif ~%}
+{% endblock %}

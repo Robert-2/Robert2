@@ -1,5 +1,5 @@
 <div class="page__content">
-    <h2>{{stepNumber}} - Database structure</h2>
+    <h2>{{ stepNumber }} - Database structure</h2>
     <p>
         Congratulations! Robert is now able to access its database. Plus, the base
         settings file has been saved on the server, into file
@@ -20,7 +20,7 @@
         <ul>
             {% for line in stepData['migrationStatus'] %}
             <li>
-                <strong>{{line['table']}}</strong> :
+                <strong>{{ line['table'] }}</strong> :
                 <span
                     {% if line['state'] == 'up' %}
                         class="install__check-success"
@@ -28,7 +28,7 @@
                         class="install__check-info"
                     {% endif %}
                 >
-                    {{line['state']|capitalize}}
+                    {{ line['state']|capitalize }}
                 </span>
             </li>
             {% endfor %}
@@ -49,10 +49,10 @@
     {% else %}
     <p class="install__check-error">
         An error occurred while getting status of your database migrations.
-        Detailed error (exit code {{stepData['code']}}):
+        Detailed error (exit code {{ stepData['code'] }}):
     </p>
     <pre class="install__check-error">
-        {{stepData['error']}}
+        {{ stepData['error'] }}
     </pre>
     {% endif %}
 </div>

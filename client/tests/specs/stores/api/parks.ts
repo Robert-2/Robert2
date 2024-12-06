@@ -3,6 +3,7 @@ import apiParks from '@/stores/api/parks';
 import materials from '@fixtures/materials';
 import { withPaginationEnvelope } from '@fixtures/@utils';
 import data from '@fixtures/parks';
+import Decimal from 'decimal.js';
 
 describe('Parks Api', () => {
     describe('all()', () => {
@@ -29,8 +30,11 @@ describe('Parks Api', () => {
 
     describe('oneTotalAmount()', () => {
         it('parse the returned data correctly', async () => {
-            jest.spyOn(requester, 'get').mockResolvedValue({ data: 119_061.80 });
-            expect(await apiParks.oneTotalAmount(1)).toEqual(119_061.80);
+            jest.spyOn(requester, 'get').mockResolvedValue({ data: '119_061.80' });
+
+            const result = await apiParks.oneTotalAmount(1);
+            expect(result).toBeInstanceOf(Decimal);
+            expect(result.toString()).toBe('119061.8');
         });
     });
 

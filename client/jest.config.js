@@ -29,6 +29,7 @@ module.exports = {
         '<rootDir>/tests/serializers/datetime.ts',
         '<rootDir>/tests/serializers/decimal.ts',
         '<rootDir>/tests/serializers/period.ts',
+        '<rootDir>/tests/serializers/currency.ts',
     ],
     transform: {
         '^.+\\.(js|mjs|cjs|jsx|ts|mts|cts|tsx)$': 'babel-jest',

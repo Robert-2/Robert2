@@ -85,6 +85,7 @@ final class EntryController extends BaseController
 
         return [
             'baseUrl' => (string) $baseUri,
+            'isSslEnabled' => Config::isSslEnabled(),
             'version' => Config::getVersion(),
             'api' => [
                 'url' => (string) $apiUri,
@@ -99,7 +100,7 @@ final class EntryController extends BaseController
             'maxConcurrentFetches' => $rawConfig['maxConcurrentFetches'],
             'defaultLang' => $rawConfig['defaultLang'],
             'currency' => $rawConfig['currency'],
-            'billingMode' => $rawConfig['billingMode'],
+            'billingMode' => $rawConfig['billingMode']->value,
             'maxFileUploadSize' => $rawConfig['maxFileUploadSize'],
             'authorizedFileTypes' => $rawConfig['authorizedFileTypes'],
             'authorizedImageTypes' => $rawConfig['authorizedImageTypes'],

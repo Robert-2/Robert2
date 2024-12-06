@@ -17,6 +17,11 @@ trait Update
 
     public function update(Request $request, Response $response): ResponseInterface
     {
+        $id = $request->getIntegerAttribute('id');
+
+        // @phpstan-ignore-next-line
+        $entity = $this->getModelClass()::findOrFail($id);
+
         $postData = (array) $request->getParsedBody();
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
@@ -28,8 +33,7 @@ trait Update
         }
 
         try {
-            $id = $request->getIntegerAttribute('id');
-            $model = $this->getModelClass()::staticEdit($id, $postData);
+            $entity->edit($postData);
         } catch (ValidationException $e) {
             $errors = $e->getValidationErrors();
             if (empty($errors) || !method_exists($this->getModelClass(), 'serializeValidation')) {
@@ -41,10 +45,10 @@ trait Update
             throw new ValidationException($errors);
         }
 
-        if (method_exists(static::class, '_formatOne')) {
-            $model = static::_formatOne($model);
-        }
+        $data = method_exists(static::class, '_formatOne')
+            ? static::_formatOne($entity)
+            : $entity;
 
-        return $response->withJson($model, StatusCode::STATUS_OK);
+        return $response->withJson($data, StatusCode::STATUS_OK);
     }
 }

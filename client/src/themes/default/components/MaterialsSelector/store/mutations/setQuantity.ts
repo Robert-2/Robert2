@@ -40,7 +40,7 @@ const setQuantity = (state: State, payload: Payload): void => {
     }
     const materialState = state.materials[material.id];
 
-    // - Récupère la quantité exacte de la liste globale (sans compter les listes donc).
+    // - Récupère la quantité exacte.
     const listsQuantity = 0;
     const prevGlobalListQuantity = Math.max(materialState.quantity - listsQuantity, 0);
     const diffGlobalListQuantity = quantity - prevGlobalListQuantity;
@@ -48,14 +48,14 @@ const setQuantity = (state: State, payload: Payload): void => {
         return;
     }
 
-    // - Si c'est un ajout de quantité dans la liste globale ...
+    // - Si c'est un ajout de quantité ...
     if (diffGlobalListQuantity > 0) {
         materialState.quantity = listsQuantity + quantity;
         return;
     }
 
-    // - Si c'est une suppression de quantité dans la liste globale, on ne peut pas
-    //   diminuer la quantité sous le total des quantités dans les listes.
+    // - Si c'est une suppression de quantité, on ne peut pas
+    //   diminuer la quantité sous le minimum.
     const quantityToRemove = Math.min(Math.abs(diffGlobalListQuantity), prevGlobalListQuantity);
     materialState.quantity = listsQuantity + Math.max(0, prevGlobalListQuantity - quantityToRemove);
 };

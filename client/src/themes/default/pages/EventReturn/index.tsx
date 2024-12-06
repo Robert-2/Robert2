@@ -1,6 +1,7 @@
 import './index.scss';
 import axios from 'axios';
 import DateTime from '@/utils/datetime';
+import parseInteger from '@/utils/parseInteger';
 import { defineComponent } from '@vue/composition-api';
 import HttpCode from 'status-code-enum';
 import { ApiErrorCode } from '@/stores/api/@codes';
@@ -9,7 +10,7 @@ import apiEvents from '@/stores/api/events';
 import { confirm } from '@/utils/alert';
 import Page from '@/themes/default/components/Page';
 import Loading from '@/themes/default/components/Loading';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Unavailable, { UnavailabilityReason } from './components/Unavailable';
 import Inventory, { InventoryErrorsSchema, DisplayGroup } from './components/Inventory';
 import Header from './components/Header';
@@ -58,7 +59,7 @@ const EventReturn = defineComponent({
     }),
     data(): Data {
         return {
-            id: parseInt(this.$route.params.id, 10),
+            id: parseInteger(this.$route.params.id)!,
             event: null,
             inventory: [],
             displayGroup: DisplayGroup.CATEGORIES,
@@ -158,9 +159,9 @@ const EventReturn = defineComponent({
             }
 
             const { event, inventory } = this;
-            return event.materials.every(({ id: materialId, pivot }: EventMaterial) => {
+            return event.materials.every(({ id: materialId, quantity }: EventMaterial) => {
                 const quantities = inventory.find(({ id }: InventoryMaterial) => id === materialId);
-                return quantities ? quantities.actual === pivot.quantity : false;
+                return quantities ? quantities.actual === quantity : false;
             });
         },
 
@@ -304,12 +305,12 @@ const EventReturn = defineComponent({
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
                     console.error(`Error occurred while retrieving event #${this.id} data`, error);
-                    this.criticalError = ERROR.UNKNOWN;
+                    this.criticalError = ErrorType.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
                     this.criticalError = status === HttpCode.ClientErrorNotFound
-                        ? ERROR.NOT_FOUND
-                        : ERROR.UNKNOWN;
+                        ? ErrorType.NOT_FOUND
+                        : ErrorType.UNKNOWN;
                 }
             }
         },
@@ -362,15 +363,15 @@ const EventReturn = defineComponent({
 
             const getActualQuantity = (eventMaterial: EventMaterial): number => (
                 (!isReturnInventoryStarted && this.mode === ReturnInventoryMode.START_FULL)
-                    ? eventMaterial.pivot.quantity
-                    : eventMaterial.pivot.quantity_returned ?? 0
+                    ? eventMaterial.quantity
+                    : eventMaterial.quantity_returned ?? 0
             );
 
             this.inventory = event.materials.map(
                 (eventMaterial: EventMaterial): InventoryMaterial => ({
                     id: eventMaterial.id,
                     actual: getActualQuantity(eventMaterial),
-                    broken: eventMaterial.pivot.quantity_returned_broken ?? 0,
+                    broken: eventMaterial.quantity_returned_broken ?? 0,
                 }),
             );
         },

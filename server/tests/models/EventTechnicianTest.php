@@ -19,9 +19,9 @@ final class EventTechnicianTest extends TestCase
             'position' => 'a',
         ]);
         $expectedErrors1 = [
-            'start_date' => ["Ce champ est invalide."],
-            'end_date' => ["Ce champ est invalide."],
-            'position' => ['2 caractères min., 191 caractères max.'],
+            'start_date' => "Ce champ est invalide.",
+            'end_date' => "Ce champ est invalide.",
+            'position' => "2 caractères min., 191 caractères max.",
         ];
         $this->assertSameCanonicalize($expectedErrors1, $eventTechnician1->validationErrors());
 
@@ -33,8 +33,8 @@ final class EventTechnicianTest extends TestCase
             'end_date' => '2019-03-01 20:00:00',
         ]);
         $expectedErrors2 = [
-            'start_date' => ['La date de fin doit être postérieure à la date de début.'],
-            'end_date' => ['La date de fin doit être postérieure à la date de début.'],
+            'start_date' => "La date de fin doit être postérieure à la date de début.",
+            'end_date' => "La date de fin doit être postérieure à la date de début.",
         ];
         $this->assertSameCanonicalize($expectedErrors2, $eventTechnician2->validationErrors());
 
@@ -46,16 +46,16 @@ final class EventTechnicianTest extends TestCase
             'end_date' => '2021-05-01 20:00:00',
         ]);
         $expectedErrors3 = [
-            'start_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
-            'end_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+            'start_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",
+            'end_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",
         ];
         $this->assertSameCanonicalize($expectedErrors3, $eventTechnician3->validationErrors());
 
         // - Test avec des dates en dehors de l'événement (2).
         $eventTechnician3->start_date = '2019-05-01 10:00:00';
         $expectedErrors4 = [
-            'start_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
-            'end_date' => ["La période d'assignation du technicien est en dehors de la période de l'événement."],
+            'start_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",
+            'end_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",
         ];
         $this->assertSameCanonicalize($expectedErrors4, $eventTechnician3->validationErrors());
 
@@ -67,8 +67,8 @@ final class EventTechnicianTest extends TestCase
             'end_date' => '2018-12-18 23:35:00',
         ]);
         $expectedErrors5 = [
-            'start_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
-            'end_date' => ["La date doit être arrondie au quart d'heure le plus proche."],
+            'start_date' => "La date doit être arrondie au quart d'heure le plus proche.",
+            'end_date' => "La date doit être arrondie au quart d'heure le plus proche.",
         ];
         $this->assertSameCanonicalize($expectedErrors5, $eventTechnician5->validationErrors());
 
@@ -80,8 +80,8 @@ final class EventTechnicianTest extends TestCase
             'end_date' => '2018-12-18 22:00:00',
         ]);
         $expectedErrors6 = [
-            'start_date' => ['Ce technicien est déjà occupé pour cette période.'],
-            'end_date' => ['Ce technicien est déjà occupé pour cette période.'],
+            'start_date' => "Ce technicien est déjà occupé pour cette période.",
+            'end_date' => "Ce technicien est déjà occupé pour cette période.",
         ];
         $this->assertSameCanonicalize($expectedErrors6, $eventTechnician6->validationErrors());
 
@@ -93,8 +93,8 @@ final class EventTechnicianTest extends TestCase
             'end_date' => '2018-12-17 09:30:00',
         ]);
         $expectedErrors7 = [
-            'start_date' => ['Ce technicien est déjà occupé pour cette période.'],
-            'end_date' => ['Ce technicien est déjà occupé pour cette période.'],
+            'start_date' => "Ce technicien est déjà occupé pour cette période.",
+            'end_date' => "Ce technicien est déjà occupé pour cette période.",
         ];
         $this->assertSameCanonicalize($expectedErrors7, $eventTechnician7->validationErrors());
 
@@ -106,8 +106,8 @@ final class EventTechnicianTest extends TestCase
             'end_date' => '2018-12-18 20:00:00',
         ]);
         $expectedErrors8 = [
-            'start_date' => ['Ce technicien est déjà occupé pour cette période.'],
-            'end_date' => ['Ce technicien est déjà occupé pour cette période.'],
+            'start_date' => "Ce technicien est déjà occupé pour cette période.",
+            'end_date' => "Ce technicien est déjà occupé pour cette période.",
         ];
         $this->assertSameCanonicalize($expectedErrors8, $eventTechnician8->validationErrors());
 

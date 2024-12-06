@@ -1,5 +1,5 @@
 <div class="page__content">
-    <h2>{{stepNumber}} - Admin user</h2>
+    <h2>{{ stepNumber }} - Admin user</h2>
     <p>
         That's great, the structure of Robert's database is now complete.
     </p>
@@ -43,11 +43,11 @@
                         type="text"
                         name="user[person][first_name]"
                         id="userFirstName"
-                        value="{{stepData['user']['person']['first_name']}}"
+                        value="{{ stepData['user']['person']['first_name'] }}"
                     />
                     {% if validationErrors['person']['first_name'] %}
                     <div class="form__field-error">
-                        {{validationErrors['person']['first_name'][0]}}
+                        {{ validationErrors['person']['first_name'][0] }}
                     </div>
                     {% endif %}
                 </div>
@@ -57,11 +57,11 @@
                         type="text"
                         name="user[person][last_name]"
                         id="userLastName"
-                        value="{{stepData['user']['person']['last_name']}}"
+                        value="{{ stepData['user']['person']['last_name'] }}"
                     />
                     {% if validationErrors['person']['last_name'] %}
                     <div class="form__field-error">
-                        {{validationErrors['person']['last_name'][0]}}
+                        {{ validationErrors['person']['last_name'][0] }}
                     </div>
                     {% endif %}
                 </div>
@@ -75,10 +75,10 @@
                     type="text"
                     name="user[pseudo]"
                     style="width: 300px;"
-                    value="{{stepData['user']['pseudo']}}"
+                    value="{{ stepData['user']['pseudo'] }}"
                 />
                 {% if validationErrors['pseudo'] %}
-                <div class="form__field-error">{{validationErrors['pseudo'][0]}}</div>
+                <div class="form__field-error">{{ validationErrors['pseudo'][0] }}</div>
                 {% endif %}
             </div>
             <div class="form__field">
@@ -90,10 +90,10 @@
                     type="password"
                     name="user[password]"
                     style="width: 300px;"
-                    value="{{stepData['user']['password']}}"
+                    value="{{ stepData['user']['password'] }}"
                 />
                 {% if validationErrors['password'] %}
-                <div class="form__field-error">{{validationErrors['password'][0]}}</div>
+                <div class="form__field-error">{{ validationErrors['password'][0] }}</div>
                 {% endif %}
             </div>
             <div class="form__field">
@@ -107,10 +107,10 @@
                     name="user[email]"
                     style="width: 300px;"
                     placeholder="your-address@your-company.com"
-                    value="{{stepData['user']['email']}}"
+                    value="{{ stepData['user']['email'] }}"
                 />
                 {% if validationErrors['email'] %}
-                <div class="form__field-error">{{validationErrors['email'][0]}}</div>
+                <div class="form__field-error">{{ validationErrors['email'][0] }}</div>
                 {% endif %}
             </div>
             <div class="form__submit form__submit--horizontal">

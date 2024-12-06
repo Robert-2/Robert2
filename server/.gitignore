@@ -2,12 +2,10 @@
 .env.*
 !.env.example
 
-src/App/Config/*.json
 src/App/Config/certs
+src/App/Config/*.json
 src/App/Config/*.json.bckp
 !src/App/Config/CRON.json
-
-src/install/*.json
 
 /vendors/
 

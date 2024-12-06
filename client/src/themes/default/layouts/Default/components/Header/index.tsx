@@ -1,8 +1,6 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import Logo from '@/themes/default/components/Logo';
 import Icon from '@/themes/default/components/Icon';
-import Menu from './Menu';
 
 /** Header du layout par défaut de l'application. */
 const DefaultLayoutHeader = defineComponent({
@@ -28,14 +26,10 @@ const DefaultLayoutHeader = defineComponent({
 
         return (
             <div class="DefaultLayoutHeader">
-                <div class="DefaultLayoutHeader__logo">
-                    <Logo minimalist />
-                </div>
                 <div class="DefaultLayoutHeader__menu-toggle" onClick={toggleMenu}>
                     <Icon name="bars" />
                 </div>
                 <div class="DefaultLayoutHeader__title">{pageTitle}</div>
-                <Menu class="DefaultLayoutHeader__menu" />
             </div>
         );
     },

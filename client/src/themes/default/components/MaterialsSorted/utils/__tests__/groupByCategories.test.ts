@@ -9,44 +9,44 @@ describe('groupByCategories', () => {
     });
 
     it('returns event materials grouped by categories', () => {
-        const eventMaterials = events.details(3).materials;
-
         // - Triés par nom (défaut).
-        const result1 = groupByCategories(eventMaterials, categories.default());
+        const event3Materials = events.details(3).materials;
+        const result1 = groupByCategories(event3Materials, categories.default());
         expect(result1).toEqual([
             {
                 id: 2,
                 name: 'Lumière',
                 materials: [
-                    { ...eventMaterials[0] },
+                    { ...event3Materials[0] },
+                    { ...event3Materials[1] },
                 ],
             },
             {
                 id: 1,
                 name: 'Son',
                 materials: [
-                    { ...eventMaterials[2] },
-                    { ...eventMaterials[1] },
+                    { ...event3Materials[2] },
                 ],
             },
         ]);
 
         // - Triés par prix.
-        const result2 = groupByCategories(eventMaterials, categories.default(), SortBy.PRICE);
+        const event1Materials = events.details(1).materials;
+        const result2 = groupByCategories(event1Materials, categories.default(), SortBy.PRICE);
         expect(result2).toEqual([
             {
                 id: 2,
                 name: 'Lumière',
                 materials: [
-                    { ...eventMaterials[0] },
+                    { ...event1Materials[2] },
                 ],
             },
             {
                 id: 1,
                 name: 'Son',
                 materials: [
-                    { ...eventMaterials[1] },
-                    { ...eventMaterials[2] },
+                    { ...event1Materials[0] },
+                    { ...event1Materials[1] },
                 ],
             },
         ]);

@@ -1,7 +1,7 @@
 <div class="page__content">
     <h2>Welcome !</h2>
     <p>
-        This is the Loxya installation wizard, version <strong>{{version()}}</strong>.<br />
+        This is the Loxya installation wizard, version <strong>{{ version() }}</strong>.<br />
         It will guide you, in 5 short steps, to set the configuration of your application.
     </p>
     <p>
@@ -11,26 +11,26 @@
     </p>
     <div class="install__check">
         Loxya is compatible with PHP version
-        <strong>{{phpVersionMin}}</strong> to <strong>{{phpVersionMax}}</strong>.
+        <strong>{{ phpVersionMin }}</strong> to <strong>{{ phpVersionMax }}</strong>.
         <div class="install__check-result">
             {% if phpversionIsAboveMax %}
             <div class="install__check-warning">
-                Your PHP version (<strong>{{phpVersion}}</strong>) is higher than the PHP version
-                officially supported by Loxya (<strong>{{phpVersionMax}}</strong>).
+                Your PHP version (<strong>{{ phpVersion }}</strong>) is higher than the PHP version
+                officially supported by Loxya (<strong>{{ phpVersionMax }}</strong>).
                 <br /><br />
                 It may work flawlessly, but if it doesn't, you'll have to wait for an official release.
             </div>
             {% elseif phpversionIsAboveMin %}
             <div class="install__check-success">
-                OK, PHP version: <strong>{{phpVersion}}</strong>
+                OK, PHP version: <strong>{{ phpVersion }}</strong>
             </div>
             {% else %}
             <div class="install__check-error">
-                Your PHP version (<strong>{{phpVersion}}</strong>) is lower than the
-                minimal version required to run Loxya (<strong>{{phpVersionMin}}</strong>).
+                Your PHP version (<strong>{{ phpVersion }}</strong>) is lower than the
+                minimal version required to run Loxya (<strong>{{ phpVersionMin }}</strong>).
                 <br /><br />
-                Please install at least PHP <strong>{{phpVersionMin}}</strong> and at most
-                PHP <strong>{{phpVersionMax}}</strong>, then try again.
+                Please install at least PHP <strong>{{ phpVersionMin }}</strong> and at most
+                PHP <strong>{{ phpVersionMax }}</strong>, then try again.
             </div>
             {% endif %}
         </div>
@@ -39,7 +39,7 @@
         There are some PHP extensions that must be installed.
         <div class="install__check-result">
             {% for extension in missingExtensions %}
-            <li class="install__check-error">Extension "{{extension}}" is missing.</li>
+            <li class="install__check-error">Extension "{{ extension }}" is missing.</li>
             {% else %}
             <span class="install__check-success">All needed extensions installed!</span>
             {% endfor %}

@@ -20,10 +20,10 @@ final class MaterialsCollectionTest extends TestCase
             'Son' => [
                 'Console Yamaha CL3',
                 'Processeur DBX PA2',
-                'Câble XLR 10m',
                 'Behringer X Air XR18',
             ],
             'Transport' => ['Volkswagen Transporter'],
+            '__other' => ['Câble XLR 10m'],
         ];
         $this->assertSame(array_keys($expected), $result->keys()->all());
 
@@ -42,7 +42,7 @@ final class MaterialsCollectionTest extends TestCase
 
         $expected = [
             'Lumière' => ['Showtec SDS-6'],
-            'Son' => ['Console Yamaha CL3', 'Processeur DBX PA2'],
+            'Son' => ['Console Yamaha CL3', 'DBX PA2'],
         ];
         $this->assertSame(array_keys($expected), $result->keys()->all());
 
@@ -58,12 +58,12 @@ final class MaterialsCollectionTest extends TestCase
         $result = $collection->bySubCategories();
 
         $expected = [
+            '--' => ['Câble XLR 10m'],
             'Décors - __other' => ['Décor Thème Forêt'],
             'Lumière - Gradateurs' => ['Showtec SDS-6'],
             'Lumière - Projecteurs' => ['PAR64 LED'],
             'Son - Mixeurs' => ['Console Yamaha CL3', 'Behringer X Air XR18'],
             'Son - Processeurs' => ['Processeur DBX PA2'],
-            'Son - __other' => ['Câble XLR 10m'],
             'Transport - __other' => ['Volkswagen Transporter'],
         ];
         $this->assertSame(array_keys($expected), $result->keys()->all());
@@ -84,7 +84,7 @@ final class MaterialsCollectionTest extends TestCase
         $expected = [
             'Lumière - Gradateurs' => ['Showtec SDS-6'],
             'Son - Mixeurs' => ['Console Yamaha CL3'],
-            'Son - Processeurs' => ['Processeur DBX PA2'],
+            'Son - Processeurs' => ['DBX PA2'],
         ];
         $this->assertSame(array_keys($expected), $result->keys()->all());
 
@@ -131,7 +131,7 @@ final class MaterialsCollectionTest extends TestCase
         $expected = [
             'default' => [
                 'Console Yamaha CL3',
-                'Processeur DBX PA2',
+                'DBX PA2',
                 'Showtec SDS-6',
             ],
         ];

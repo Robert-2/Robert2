@@ -3,13 +3,17 @@ declare(strict_types=1);
 
 namespace Loxya\Models;
 
+use Brick\Math\BigDecimal as Decimal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\MissingAttributeException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Support\Arr;
+use Respect\Validation\Exceptions\AllOfException;
+use Respect\Validation\Exceptions\AnyOfException;
 use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Exceptions\NotEmptyException;
+use Respect\Validation\Exceptions\OneOfException;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -28,6 +32,8 @@ use Respect\Validation\Exceptions\NestedValidationException;
  * @method static Builder|static orderBy($column, string $direction = 'asc')
  * @method static Builder|static where($column, $operator = null, $value = null, string $boolean = 'and')
  * @method static Builder|static whereNotIn(string $column, $values, string $boolean = 'and')
+ * @method static Builder|static whereBelongsTo(\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model> $related, string|null $relationshipName = null, string $boolean = 'and')
+ * @method static Builder|static orWhereBelongsTo(\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model> $related, string|null $relationshipName = null)
  * @method static Builder|static whereIn(string $column, $values, string $boolean = 'and', bool $not = false)
  *
  * @method static static make(array $attributes = [])
@@ -42,6 +48,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
  * @method static static firstWhere($column, $operator = null, $value = null, $boolean = 'and')
  * @method static static updateOrCreate(array $attributes, array $values = [])
  * @method static \Illuminate\Database\Eloquent\Collection|static[] get($columns = ['*'])
+ * @method static \Illuminate\Support\Collection|static[] pluck(string|\Illuminate\Contracts\Database\Query\Expression $column, string|null $key = null)
  * @method static static|null find($id, $columns = ['*'])
  * @method static static|null first($columns = ['*'])
  * @method static int count(string $columns = '*')
@@ -58,34 +65,32 @@ abstract class BaseModel extends Model
 
     // ------------------------------------------------------
     // -
+    // -    Méthodes liées à une "entity"
+    // -
+    // ------------------------------------------------------
+
+    public function edit(array $data): static
+    {
+        $this->fill($data)->save();
+
+        return $this->refresh();
+    }
+
+    // ------------------------------------------------------
+    // -
     // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
 
-    public static function new(array $data = []): static
+    public static function new(array $data): static
     {
-        return static::staticEdit(null, $data);
+        // @phpstan-ignore-next-line
+        return (new static())->edit($data);
     }
 
-    public static function staticExists($id): bool
+    public static function includes($id): bool
     {
         return static::where('id', $id)->exists();
-    }
-
-    public static function staticEdit($id = null, array $data = []): static
-    {
-        if ($id && !static::staticExists($id)) {
-            throw (new ModelNotFoundException())
-                ->setModel(self::class, $id);
-        }
-
-        $model = static::updateOrCreate(compact('id'), $data);
-        return $model->refresh();
-    }
-
-    public static function staticDelete($id): bool|null
-    {
-        return static::find($id)?->delete();
     }
 
     // ------------------------------------------------------
@@ -117,6 +122,28 @@ abstract class BaseModel extends Model
         return parent::save($options);
     }
 
+    public function syncChanges()
+    {
+        $this->changes = [];
+        foreach (array_keys($this->getAttributes()) as $key) {
+            if (!$this->originalIsEquivalent($key)) {
+                $this->changes[$key] = $this->getRawOriginal($key);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPrevious($key = null, $default = null)
+    {
+        $previousAttributes = array_replace($this->original, $this->changes);
+
+        // @phpstan-ignore new.static (même implémentation que `static::getOriginal()`)
+        return (new static())
+            ->setRawAttributes($previousAttributes, true)
+            ->getOriginalWithoutRewindingModel($key, $default);
+    }
+
     public function __isset($key)
     {
         // NOTE: En temps normal, `isset($model)` retourne `true` uniquement si
@@ -131,6 +158,33 @@ abstract class BaseModel extends Model
         } catch (MissingAttributeException) {
             return false;
         }
+    }
+
+    public function toArray()
+    {
+        return $this->attributesToArray();
+    }
+
+    protected function mutateAttributeForArray($key, $value)
+    {
+        $value = parent::mutateAttributeForArray($key, $value);
+
+        $serialize = static function ($value) use (&$serialize) {
+            if ($value instanceof Decimal) {
+                return (string) $value;
+            }
+
+            if (is_array($value)) {
+                return array_map(
+                    static fn ($subValue) => $serialize($subValue),
+                    $value,
+                );
+            }
+
+            return $value;
+        };
+
+        return $serialize($value);
     }
 
     // ------------------------------------------------------
@@ -196,10 +250,44 @@ abstract class BaseModel extends Model
         );
 
         foreach ($data as $field => $value) {
-            if (is_array($value)) {
+            if (is_array($value) && Arr::isAssoc($value)) {
                 unset($data[$field]);
             }
         }
+
+        $getFormattedErrorMessage = static function (NestedValidationException $exception) {
+            $messages = $exception->getMessages();
+            if (count($messages) === 1) {
+                return current($messages);
+            }
+
+            $rootException = iterator_to_array($exception)[0] ?? null;
+            if ($rootException !== null) {
+                switch (get_class($rootException)) {
+                    case NotEmptyException::class:
+                        return current($messages);
+
+                    case OneOfException::class:
+                    case AnyOfException::class:
+                        return implode("\n", [
+                            array_shift($messages),
+                            ...array_map(
+                                static fn ($message) => sprintf('- %s', $message),
+                                $messages,
+                            ),
+                        ]);
+
+                    case AllOfException::class:
+                        $messages = array_slice($messages, 1);
+                        break;
+                }
+            }
+
+            return implode("\n", array_map(
+                static fn ($message) => sprintf('- %s', $message),
+                $messages,
+            ));
+        };
 
         // - Validation
         $errors = [];
@@ -207,7 +295,7 @@ abstract class BaseModel extends Model
             try {
                 $rule->setName($field)->assert($data[$field] ?? null);
             } catch (NestedValidationException $e) {
-                $errors[$field] = array_values($e->getMessages());
+                $errors[$field] = $getFormattedErrorMessage($e);
             }
         }
 

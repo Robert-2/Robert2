@@ -36,6 +36,7 @@
             // stylelint-disable-next-line declaration-no-important
             color: globals.$text-light-color !important;
             font-weight: 600;
+            text-align: right;
         }
 
         &--availability {
@@ -56,10 +57,11 @@
 
         &--quantity-input {
             width: 9rem;
+            text-align: center;
         }
 
         &--amount {
-            width: 5rem;
+            width: 7rem;
             min-width: 5rem;
             text-align: right;
         }
@@ -76,14 +78,36 @@
         }
     }
 
-    &__material-name {
-        display: block;
-        font-weight: 600;
-
-        &__reference {
+    &__item {
+        &__name {
             display: block;
-            color: globals.$text-light-color;
-            font-weight: 400;
+            font-weight: 600;
+
+            &__name {
+                display: block;
+
+                &--unsynced {
+                    margin-bottom: 4px;
+                }
+            }
+
+            &__reference {
+                display: block;
+                color: globals.$text-light-color;
+                font-weight: 400;
+            }
+        }
+
+        &__name__name,
+        &__name__reference,
+        &__price,
+        &__total-price {
+            &--unsynced {
+                text-decoration: underline;
+                text-underline-offset: 3px;
+                text-decoration-style: wavy;
+                text-decoration-color: globals.$primary-color;
+            }
         }
     }
 

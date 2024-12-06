@@ -2,10 +2,11 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
 import HttpCode from 'status-code-enum';
-import config from '@/globals/config';
+import config, { BillingMode } from '@/globals/config';
+import parseInteger from '@/utils/parseInteger';
 import apiBeneficiaries from '@/stores/api/beneficiaries';
 import Page from '@/themes/default/components/Page';
-import CriticalError, { ERROR } from '@/themes/default/components/CriticalError';
+import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
 import Button from '@/themes/default/components/Button';
@@ -35,7 +36,7 @@ const BeneficiaryView = defineComponent({
     name: 'BeneficiaryView',
     data(): Data {
         return {
-            id: parseInt(this.$route.params.id, 10),
+            id: parseInteger(this.$route.params.id)!,
             beneficiary: null,
             isLoading: false,
             isFetched: false,
@@ -53,15 +54,14 @@ const BeneficiaryView = defineComponent({
         },
 
         withBilling(): boolean {
-            return config.billingMode !== 'none';
+            return config.billingMode !== BillingMode.NONE;
         },
 
         tabsIndexes(): string[] {
-            const allTabs = [TabName.INFO, TabName.BILLING, TabName.BORROWINGS];
-            if (!this.withBilling) {
-                return allTabs.filter((tab: string) => tab !== TabName.BILLING);
-            }
-            return allTabs;
+            const tabs = Object.values(TabName);
+            return !this.withBilling
+                ? tabs.filter((tab: string) => tab !== TabName.BILLING)
+                : tabs;
         },
 
         tabsActions(): JSX.Element[] {
@@ -120,12 +120,12 @@ const BeneficiaryView = defineComponent({
                 if (!axios.isAxiosError(error)) {
                     // eslint-disable-next-line no-console
                     console.error(`Error occurred while retrieving beneficiary #${this.id} data`, error);
-                    this.criticalError = ERROR.UNKNOWN;
+                    this.criticalError = ErrorType.UNKNOWN;
                 } else {
                     const { status = HttpCode.ServerErrorInternal } = error.response ?? {};
                     this.criticalError = status === HttpCode.ClientErrorNotFound
-                        ? ERROR.NOT_FOUND
-                        : ERROR.UNKNOWN;
+                        ? ErrorType.NOT_FOUND
+                        : ErrorType.UNKNOWN;
                 }
             } finally {
                 this.isLoading = false;

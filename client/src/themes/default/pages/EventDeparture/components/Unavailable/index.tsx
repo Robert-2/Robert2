@@ -57,6 +57,7 @@ const EventDepartureUnavailable = defineComponent({
             default: () => ({}),
         },
     },
+    emits: ['updateMaterialClick'],
     computed: {
         isMaterialEditable(): boolean {
             const { event } = this;
@@ -75,6 +76,16 @@ const EventDepartureUnavailable = defineComponent({
     methods: {
         // ------------------------------------------------------
         // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        handleUpdateMaterialClick() {
+            this.$emit('updateMaterialClick');
+        },
+
+        // ------------------------------------------------------
+        // -
         // -    Méthodes internes
         // -
         // ------------------------------------------------------
@@ -88,7 +99,7 @@ const EventDepartureUnavailable = defineComponent({
         },
     },
     render() {
-        const { __, event: { id }, isMaterialEditable, reason, variables } = this;
+        const { __, isMaterialEditable, reason, variables, handleUpdateMaterialClick } = this;
         const state = REASONS_STATE[reason];
 
         const renderMessage = (): string => {
@@ -117,11 +128,15 @@ const EventDepartureUnavailable = defineComponent({
         };
 
         const renderAction = (): Action => {
-            if (reason === UnavailabilityReason.MATERIAL_SHORTAGE && isMaterialEditable) {
+            const materialShortageStatuses = [
+                UnavailabilityReason.NO_MATERIALS,
+                UnavailabilityReason.MATERIAL_SHORTAGE,
+            ];
+            if (materialShortageStatuses.includes(reason) && isMaterialEditable) {
                 return {
                     type: 'edit',
-                    target: { name: 'edit-event', params: { id: id.toString() } },
                     label: __('actions.update-materials'),
+                    onClick: handleUpdateMaterialClick,
                 };
             }
 

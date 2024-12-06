@@ -2,11 +2,11 @@ import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import MaterialsSorted from '@/themes/default/components/MaterialsSorted';
 import EventMissingMaterials from '@/themes/default/components/EventMissingMaterials';
-import EventTotals from '@/themes/default/components/EventTotals';
+import Totals from '@/themes/default/components/Totals';
 import ReturnSummary from './ReturnSummary';
 
 import type { PropType } from '@vue/composition-api';
-import type { EventDetails } from '@/stores/api/events';
+import type { EventDetails, EventExtra } from '@/stores/api/events';
 
 type Props = {
     /** L'événement dont on souhaite afficher l'onglet des techniciens. */
@@ -23,16 +23,19 @@ const EventDetailsMaterials = defineComponent({
         },
     },
     computed: {
-        showBilling(): boolean {
-            const { is_billable: isBillable, materials } = this.event;
-            return isBillable && materials.length > 0;
+        extras(): EventExtra[] {
+            return this.event.is_billable
+                ? this.event.extras
+                : [];
         },
     },
     render() {
-        const { event, showBilling } = this;
+        const { event, extras } = this;
         const {
             id,
             materials,
+            currency,
+            is_billable: isBillable,
             has_missing_materials: hasMissingMaterials,
             is_return_inventory_done: isReturnInventoryDone,
         } = event;
@@ -40,7 +43,7 @@ const EventDetailsMaterials = defineComponent({
         return (
             <div class="EventDetailsMaterials">
                 {isReturnInventoryDone && (
-                    <ReturnSummary eventId={id} materials={materials} />
+                    <ReturnSummary event={event} />
                 )}
                 {(!isReturnInventoryDone && hasMissingMaterials) && (
                     <EventMissingMaterials
@@ -50,12 +53,14 @@ const EventDetailsMaterials = defineComponent({
                 )}
                 <div class="EventDetailsMaterials__list">
                     <MaterialsSorted
-                        data={materials}
-                        withRentalPrices={showBilling}
+                        materials={materials}
+                        extras={extras}
+                        withBilling={isBillable}
+                        currency={currency}
                     />
                 </div>
                 <div class="EventDetailsMaterials__totals">
-                    <EventTotals event={event} />
+                    <Totals booking={event} />
                 </div>
             </div>
         );

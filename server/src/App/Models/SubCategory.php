@@ -7,6 +7,8 @@ use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Support\Assert;
@@ -69,8 +71,8 @@ final class SubCategory extends BaseModel implements Serializable
 
     public function checkCategoryId($value)
     {
-        V::notEmpty()->numericVal()->check($value);
-        return Category::staticExists($value);
+        V::notEmpty()->intVal()->check($value);
+        return Category::includes($value);
     }
 
     // ------------------------------------------------------
@@ -79,12 +81,12 @@ final class SubCategory extends BaseModel implements Serializable
     // -
     // ------------------------------------------------------
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function materials()
+    public function materials(): HasMany
     {
         $fields = [
             'id',

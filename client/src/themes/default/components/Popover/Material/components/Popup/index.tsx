@@ -28,7 +28,7 @@ const MaterialPopoverPopup = defineComponent({
     computed: {
         parkName(): string | null {
             const { material } = this;
-            return this.$store.getters['parks/parkName'](material.park_id);
+            return this.$store.getters['parks/getName'](material.park_id);
         },
 
         hasInfos(): boolean {

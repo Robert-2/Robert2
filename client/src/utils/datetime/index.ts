@@ -1,6 +1,5 @@
 import invariant from 'invariant';
-import RawDateTime from '@/globals/rawDatetime';
-import { isRawDateTime } from '@/utils/rawDatetime';
+import RawDateTime, { isRawDateTime } from '@/utils/rawDatetime';
 import {
     ReadableFormat,
     RoundingMethod,

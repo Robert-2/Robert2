@@ -4,6 +4,7 @@ import { defineComponent } from '@vue/composition-api';
 import { confirm } from '@/utils/alert';
 import { Tabs, Tab } from '@/themes/default/components/Tabs';
 import apiEvents from '@/stores/api/events';
+import { Group } from '@/stores/api/groups';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Button from '@/themes/default/components/Button';
@@ -18,10 +19,12 @@ import Note from './tabs/Note';
 
 import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
-import type { EventDetails as Event } from '@/stores/api/events';
+import type { EventDetails as Event, EventTechnician } from '@/stores/api/events';
+import type { Session } from '@/stores/api/session';
 import type { Estimate } from '@/stores/api/estimates';
 import type { Invoice } from '@/stores/api/invoices';
 import type { TabChangeEvent } from '@/themes/default/components/Tabs';
+import type { Beneficiary } from '@/stores/api/beneficiaries';
 
 /* eslint-disable @typescript-eslint/prefer-enum-initializers */
 enum TabIndex {
@@ -120,6 +123,17 @@ const EventDetails = defineComponent({
         now: DateTime.now(),
     }),
     computed: {
+        isAdmin(): boolean {
+            return this.$store.getters['auth/is']([Group.ADMINISTRATION]);
+        },
+
+        isTeamMember(): boolean {
+            return this.$store.getters['auth/is']([
+                Group.ADMINISTRATION,
+                Group.MANAGEMENT,
+            ]);
+        },
+
         isEventPast(): boolean {
             if (!this.event) {
                 return false;
@@ -128,10 +142,46 @@ const EventDetails = defineComponent({
         },
 
         showBilling(): boolean {
+            if (!this.event || !this.event.is_billable || !this.hasMaterials) {
+                return false;
+            }
+
+            if (this.isTeamMember) {
+                return true;
+            }
+
+            // - Si ce n'est pas un membre de l'équipe, on vérifie qu'il fait partie des
+            //   bénéficiaires de l'événement pour lui donner accès aux devis et factures.
+            const currentUser: Session = this.$store.state.auth.user;
+            return (this.event.beneficiaries ?? []).some(
+                (beneficiary: Beneficiary) => (
+                    currentUser.id === beneficiary.user_id
+                ),
+            );
+        },
+
+        showDocumentsAndNotes(): boolean {
             if (!this.event) {
                 return false;
             }
-            return this.event.is_billable && this.hasMaterials;
+
+            if (this.isTeamMember) {
+                return true;
+            }
+
+            // - Pour donner accès aux documents et aux notes à un utilisateur
+            //   non-membre de l'équipe, on vérifie qu'il fait partie des
+            //   techniciens assignés à l'événement.
+            const currentUser: Session = this.$store.state.auth.user;
+            return (this.event.technicians ?? []).some(
+                (eventTechnician: EventTechnician) => (
+                    currentUser.id === eventTechnician.technician.user_id
+                ),
+            );
+        },
+
+        showHistory(): boolean {
+            return this.isAdmin;
         },
 
         hasEventTechnicians(): boolean {
@@ -245,14 +295,14 @@ const EventDetails = defineComponent({
             if (!this.event || !this.event.is_billable) {
                 return;
             }
-            this.event.invoices.unshift(newInvoice);
+            this.event.invoices?.unshift(newInvoice);
         },
 
         handleEstimateCreated(newEstimate: Estimate) {
             if (!this.event || !this.event.is_billable) {
                 return;
             }
-            this.event.estimates.unshift(newEstimate);
+            this.event.estimates?.unshift(newEstimate);
         },
 
         handleEstimateDeleted(estimateId: Estimate['id']) {
@@ -260,7 +310,7 @@ const EventDetails = defineComponent({
                 return;
             }
 
-            this.event.estimates = this.event.estimates.filter(
+            this.event.estimates = this.event.estimates?.filter(
                 (estimate: Estimate) => estimate.id !== estimateId,
             );
         },
@@ -278,12 +328,11 @@ const EventDetails = defineComponent({
         async fetchData() {
             try {
                 this.event = await apiEvents.one(this.id);
+                this.isFetched = true;
             } catch (error) {
                 // eslint-disable-next-line no-console
                 console.error(`Error occurred while retrieving event details:`, error);
                 this.hasCriticalError = true;
-            } finally {
-                this.isFetched = true;
             }
         },
     },
@@ -294,6 +343,7 @@ const EventDetails = defineComponent({
             defaultTabIndex,
             isFetched,
             showBilling,
+            showDocumentsAndNotes,
             hasEventTechnicians,
             hasMaterials,
             hasMaterialsProblems,
@@ -371,12 +421,16 @@ const EventDetails = defineComponent({
                                 />
                             </Tab>
                         )}
-                        <Tab title={__('documents')} icon="file-pdf">
-                            <Documents ref="documents" event={event} />
-                        </Tab>
-                        <Tab title={__('notes')} icon="clipboard:regular">
-                            <Note event={event} onUpdated={handleUpdated} />
-                        </Tab>
+                        {showDocumentsAndNotes && (
+                            <Tab title={__('documents')} icon="file-pdf">
+                                <Documents ref="documents" event={event} />
+                            </Tab>
+                        )}
+                        {showDocumentsAndNotes && (
+                            <Tab title={__('notes')} icon="clipboard:regular">
+                                <Note event={event} onUpdated={handleUpdated} />
+                            </Tab>
+                        )}
                     </Tabs>
                 </div>
             </div>

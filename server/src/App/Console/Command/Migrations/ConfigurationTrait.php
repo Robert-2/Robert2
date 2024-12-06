@@ -21,8 +21,8 @@ trait ConfigurationTrait
 
             $this->config = new PhinxConfig([
                 'paths' => [
-                    'migrations' => SRC_FOLDER . DS . 'migrations',
-                    'seeds' => SRC_FOLDER . DS . 'migrations' . DS . 'seeds',
+                    'migrations' => MIGRATIONS_FOLDER,
+                    'seeds' => MIGRATIONS_FOLDER . DS . 'seeds',
                 ],
                 'environments' => [
                     'default_environment' => $env,

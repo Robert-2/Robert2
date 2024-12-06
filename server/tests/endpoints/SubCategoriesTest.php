@@ -37,7 +37,7 @@ final class SubCategoriesTest extends ApiTestCase
     {
         $this->client->post('/api/subcategories', ['name' => 'Fail SubCategory']);
         $this->assertApiValidationError([
-            'category_id' => ["This field is mandatory."],
+            'category_id' => "This field is mandatory.",
         ]);
     }
 

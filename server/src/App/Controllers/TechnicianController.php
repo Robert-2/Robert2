@@ -6,14 +6,17 @@ namespace Loxya\Controllers;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\Builder;
-use Loxya\Controllers\Traits\WithCrud;
+use Loxya\Controllers\Traits\Crud;
+use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
 use Loxya\Models\Document;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
 use Loxya\Models\EventTechnician;
 use Loxya\Models\Technician;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
+use Loxya\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpBadRequestException;
@@ -21,7 +24,8 @@ use Slim\Http\Response;
 
 final class TechnicianController extends BaseController
 {
-    use WithCrud;
+    use Crud\GetOne;
+    use Crud\SoftDelete;
 
     private I18n $i18n;
 
@@ -147,5 +151,73 @@ final class TechnicianController extends BaseController
         $technician->documents()->save($document);
 
         return $response->withJson($document, StatusCode::STATUS_CREATED);
+    }
+
+    public function create(Request $request, Response $response): ResponseInterface
+    {
+        $withUser = Auth::is(Group::ADMINISTRATION)
+            ? $request->getBooleanQueryParam('withUser', false)
+            : false;
+
+        $postData = (array) $request->getParsedBody();
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        $postData = Technician::unserialize($postData);
+        if (!$withUser) {
+            $postData = Arr::except($postData, ['user', 'user_id']);
+        }
+
+        try {
+            $technician = Technician::new($postData, $withUser);
+        } catch (ValidationException $e) {
+            $errors = Technician::serializeValidation($e->getValidationErrors());
+            throw new ValidationException($errors);
+        }
+
+        $technician = static::_formatOne($technician);
+        return $response->withJson($technician, StatusCode::STATUS_CREATED);
+    }
+
+    public function update(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        $withUser = Auth::is(Group::ADMINISTRATION)
+            ? $request->getBooleanQueryParam('withUser', false)
+            : false;
+
+        $technician = Technician::findOrFail($id);
+
+        $postData = (array) $request->getParsedBody();
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        $postData = Technician::unserialize($postData);
+        if (!$withUser) {
+            $postData = Arr::except($postData, ['user', 'user_id']);
+        }
+
+        try {
+            $technician->edit($postData, $withUser);
+        } catch (ValidationException $e) {
+            $errors = Technician::serializeValidation($e->getValidationErrors());
+            throw new ValidationException($errors);
+        }
+
+        $technician = static::_formatOne($technician);
+        return $response->withJson($technician, StatusCode::STATUS_OK);
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes internes
+    // -
+    // ------------------------------------------------------
+
+    protected static function _formatOne(Technician $technician): array
+    {
+        return $technician->serialize(Technician::SERIALIZE_DETAILS);
     }
 }

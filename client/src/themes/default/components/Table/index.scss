@@ -1,3 +1,5 @@
+/* stylelint-disable selector-max-type */
+
 @use '~@/themes/default/style/globals';
 
 .Table {
@@ -13,6 +15,69 @@
                 display: flex;
                 gap: globals.$spacing-thin;
             }
+        }
+    }
+
+    //
+    // - Modifiers
+    //
+
+    &--static {
+        > .row:first-child {
+            display: none;
+        }
+
+        .table-responsive {
+            margin-top: 0;
+        }
+    }
+
+    //
+    // - Variantes
+    //
+
+    &--minimalist {
+        border-radius: 0;
+
+        th,
+        td {
+            &:first-child {
+                padding-left: 8px;
+            }
+
+            &:last-child {
+                padding-right: 8px;
+            }
+        }
+
+        td {
+            border-bottom-color: transparent;
+            background: none;
+        }
+    }
+
+    &--light {
+        border-radius: 0;
+
+        th,
+        td {
+            &:first-child {
+                padding-left: 8px;
+            }
+
+            &:last-child {
+                padding-right: 8px;
+            }
+        }
+
+        th {
+            border-bottom: 2px solid #383838;
+            color: globals.$text-soft-color;
+        }
+
+        td {
+            border-bottom-color: #383838;
+            background: none;
         }
     }
 }

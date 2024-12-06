@@ -53,14 +53,21 @@
         }
     }
 
-    &__user-pseudo-at {
-        color: globals.$text-soft-color;
+    &__pseudo {
+        &__at {
+            color: globals.$text-soft-color;
+        }
     }
 
     &__user-group {
         margin-left: globals.$spacing-thin;
         color: globals.$text-soft-color;
+        vertical-align: middle;
         text-transform: lowercase;
+    }
+
+    &__user-edit-button {
+        margin-left: globals.$spacing-small;
     }
 
     &__company {

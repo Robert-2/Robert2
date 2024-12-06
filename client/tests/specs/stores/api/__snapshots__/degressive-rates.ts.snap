@@ -1,0 +1,264 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Degressive Rates Api all() parse the returned data correctly 1`] = `
+[
+  {
+    "id": 1,
+    "is_used": true,
+    "name": "Base",
+    "tiers": [
+      {
+        "from_day": 1,
+        "is_rate": false,
+        "value": /* Decimal Instance => */ "1",
+      },
+      {
+        "from_day": 2,
+        "is_rate": false,
+        "value": /* Decimal Instance => */ "1.75",
+      },
+      {
+        "from_day": 3,
+        "is_rate": false,
+        "value": /* Decimal Instance => */ "2.5",
+      },
+      {
+        "from_day": 4,
+        "is_rate": false,
+        "value": /* Decimal Instance => */ "3.25",
+      },
+      {
+        "from_day": 5,
+        "is_rate": false,
+        "value": /* Decimal Instance => */ "4",
+      },
+      {
+        "from_day": 6,
+        "is_rate": true,
+        "value": /* Decimal Instance => */ "75.42",
+      },
+    ],
+  },
+  {
+    "id": 2,
+    "is_used": true,
+    "name": "Transport",
+    "tiers": [
+      {
+        "from_day": 1,
+        "is_rate": true,
+        "value": /* Decimal Instance => */ "100",
+      },
+      {
+        "from_day": 2,
+        "is_rate": true,
+        "value": /* Decimal Instance => */ "75",
+      },
+    ],
+  },
+  {
+    "id": 3,
+    "is_used": true,
+    "name": "Fixe",
+    "tiers": [
+      {
+        "from_day": 1,
+        "is_rate": false,
+        "value": /* Decimal Instance => */ "1",
+      },
+    ],
+  },
+  {
+    "id": 4,
+    "is_used": false,
+    "name": "100%",
+    "tiers": [
+      {
+        "from_day": 1,
+        "is_rate": true,
+        "value": /* Decimal Instance => */ "100",
+      },
+    ],
+  },
+]
+`;
+
+exports[`Degressive Rates Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "is_used": true,
+  "name": "Base",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "1",
+    },
+    {
+      "from_day": 2,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "1.75",
+    },
+    {
+      "from_day": 3,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "2.5",
+    },
+    {
+      "from_day": 4,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "3.25",
+    },
+    {
+      "from_day": 5,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "4",
+    },
+    {
+      "from_day": 6,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "75.42",
+    },
+  ],
+}
+`;
+
+exports[`Degressive Rates Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "is_used": true,
+  "name": "Transport",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "100",
+    },
+    {
+      "from_day": 2,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "75",
+    },
+  ],
+}
+`;
+
+exports[`Degressive Rates Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "id": 3,
+  "is_used": true,
+  "name": "Fixe",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "1",
+    },
+  ],
+}
+`;
+
+exports[`Degressive Rates Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "id": 4,
+  "is_used": false,
+  "name": "100%",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "100",
+    },
+  ],
+}
+`;
+
+exports[`Degressive Rates Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "is_used": true,
+  "name": "Base",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "1",
+    },
+    {
+      "from_day": 2,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "1.75",
+    },
+    {
+      "from_day": 3,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "2.5",
+    },
+    {
+      "from_day": 4,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "3.25",
+    },
+    {
+      "from_day": 5,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "4",
+    },
+    {
+      "from_day": 6,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "75.42",
+    },
+  ],
+}
+`;
+
+exports[`Degressive Rates Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "is_used": true,
+  "name": "Transport",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "100",
+    },
+    {
+      "from_day": 2,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "75",
+    },
+  ],
+}
+`;
+
+exports[`Degressive Rates Api update() parse the returned data correctly (with #3) 1`] = `
+{
+  "id": 3,
+  "is_used": true,
+  "name": "Fixe",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": false,
+      "value": /* Decimal Instance => */ "1",
+    },
+  ],
+}
+`;
+
+exports[`Degressive Rates Api update() parse the returned data correctly (with #4) 1`] = `
+{
+  "id": 4,
+  "is_used": false,
+  "name": "100%",
+  "tiers": [
+    {
+      "from_day": 1,
+      "is_rate": true,
+      "value": /* Decimal Instance => */ "100",
+    },
+  ],
+}
+`;

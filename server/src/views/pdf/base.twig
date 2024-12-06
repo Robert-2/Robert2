@@ -59,7 +59,7 @@
             vertical-align: top;
         }
         th {
-            text-align: center;
+            text-align: left;
         }
         th:last-child, td:last-child {
             border-right: 1pt solid #888;
@@ -79,6 +79,8 @@
         }
         .listing-table > thead > tr > th {
             font-size: 0.8rem;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #888;
             vertical-align: middle;
         }
@@ -86,6 +88,8 @@
             padding: 2mm;
             font-size: 0.7rem;
             border: none;
+            border-left: 1pt solid #ccc;
+            border-right: 1pt solid #ccc;
             border-bottom: 1pt solid #ccc;
             vertical-align: middle;
         }
@@ -94,15 +98,40 @@
             font-size: 0.8rem;
             color: #888;
         }
+        .listing-table > thead > tr > th:first-child,
         .listing-table > tbody > tr > td:first-child {
-            border-left: 1pt solid #888;
+            border-left: 1pt solid #888 !important;
         }
+        .listing-table > thead > tr > th:last-child,
         .listing-table > tbody > tr > td:last-child {
-            border-right: 1pt solid #888;
+            border-right: 1pt solid #888 !important;
+        }
+        .listing-table__item__label {
+            font-weight: 600;
+        }
+        .listing-table__item__sub-name {
+            margin-top: 2px;
+            font-size: 0.6rem;
+        }
+        .listing-table__item__label,
+        .listing-table__item__sub-name {
+            display: block;
+        }
+        .totals-table {
+            width: 50%;
+            margin: 0 0 5mm auto;
+        }
+        .totals-table--legacy {
+            width: 100%;
+            margin: 0;
         }
         .totals-table > tbody > tr > td {
             border-bottom: 1pt solid #888;
+            text-align: right;
             vertical-align: middle;
+        }
+        .totals-table--legacy > tbody > tr > td {
+            text-align: center;
         }
         .inset {
             padding: 5mm 3mm 8mm !important;

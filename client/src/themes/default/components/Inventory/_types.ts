@@ -16,7 +16,7 @@ export enum InventoryLock {
 /**
  * Un des matériels attendus dans l'inventaire.
  *
- * Ceci doit être un objet `Material` avec en plus les clés suivantes:
+ * Ceci doit être un objet avec les informations de base du matériel et les clés suivantes:
  * - `awaitedQuantity`: La quantité attendu pour ce matériel (et non la quantité en stock).
  * - `awaitedUnits`: Doit contenir les unités attendues (et uniquement celles-ci) sous
  *                   la forme d'un tableau d'unités {@link AwaitedMaterialUnit}.
@@ -27,9 +27,15 @@ export enum InventoryLock {
 export type AwaitedMaterial<
     WithComments extends boolean = boolean,
 > = (
-    & Material
     & {
+        /* eslint-disable @typescript-eslint/naming-convention */
+        id: Material['id'],
+        name: string,
+        reference: string,
+        category_id: Category['id'] | null,
+        park_id: Park['id'] | null,
         awaitedQuantity: number,
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
     & (
         // eslint-disable-next-line @typescript-eslint/ban-types

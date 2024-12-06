@@ -11,9 +11,12 @@ import type { Document } from '@/stores/api/documents';
 type Props = {
     /** Le document à afficher. */
     file: Document,
+
+    /** Est-ce que la suppression du fichier doit être désactivée ? */
+    readonly?: boolean,
 };
 
-// @vue/component
+/** Document du gestionnaire de fichiers. */
 const FileManagerDocument = defineComponent({
     name: 'FileManagerDocument',
     props: {
@@ -21,10 +24,14 @@ const FileManagerDocument = defineComponent({
             type: Object as PropType<Required<Props>['file']>,
             required: true,
         },
+        readonly: {
+            type: Boolean as PropType<Required<Props>['readonly']>,
+            default: false,
+        },
     },
     emits: ['delete'],
     computed: {
-        icon() {
+        icon(): string {
             return getIconFromFile(this.file);
         },
 
@@ -38,7 +45,7 @@ const FileManagerDocument = defineComponent({
                 : undefined;
         },
 
-        size() {
+        size(): string {
             return formatBytes(this.file.size);
         },
     },
@@ -50,6 +57,9 @@ const FileManagerDocument = defineComponent({
         // ------------------------------------------------------
 
         handleClickDelete() {
+            if (this.readonly) {
+                return;
+            }
             this.$emit('delete', this.file.id);
         },
     },
@@ -59,6 +69,7 @@ const FileManagerDocument = defineComponent({
             size,
             basename,
             extension,
+            readonly,
             file: { name, url },
             handleClickDelete,
         } = this;
@@ -85,7 +96,9 @@ const FileManagerDocument = defineComponent({
                         download={name}
                         external
                     />
-                    <Button type="trash" onClick={handleClickDelete} />
+                    {!readonly && (
+                        <Button type="trash" onClick={handleClickDelete} />
+                    )}
                 </div>
             </li>
         );

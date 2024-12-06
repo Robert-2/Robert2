@@ -1,10 +1,14 @@
 import Day from '@/utils/day';
 import Period from '@/utils/period';
 import DateTime from '@/utils/datetime';
-import apiSettings, { MaterialDisplayMode, ReturnInventoryMode } from '@/stores/api/settings';
+import apiSettings, {
+    MaterialDisplayMode,
+    ReturnInventoryMode,
+} from '@/stores/api/settings';
 
 import type { Module, ActionContext } from 'vuex';
 import type { OpeningDay, Settings } from '@/stores/api/settings';
+import type { RootState } from '.';
 
 export type State = Settings;
 
@@ -36,9 +40,13 @@ const getDefaults = (): Settings => ({
     returnInventory: {
         mode: ReturnInventoryMode.START_EMPTY,
     },
+    billing: {
+        defaultDegressiveRate: null,
+        defaultTax: null,
+    },
 });
 
-const store: Module<State, any> = {
+const store: Module<State, RootState> = {
     namespaced: true,
     state: getDefaults(),
     getters: {
@@ -77,7 +85,7 @@ const store: Module<State, any> = {
         },
     },
     actions: {
-        async boot({ dispatch }: ActionContext<State, any>) {
+        async boot({ dispatch }: ActionContext<State, RootState>) {
             await dispatch('fetch');
 
             const refresh = async (): Promise<void> => {
@@ -86,11 +94,11 @@ const store: Module<State, any> = {
             setInterval(refresh, 30_000); // - 30 secondes.
         },
 
-        async fetch({ commit }: ActionContext<State, any>) {
+        async fetch({ commit }: ActionContext<State, RootState>) {
             commit('set', await apiSettings.all());
         },
 
-        reset({ commit }: ActionContext<State, any>) {
+        reset({ commit }: ActionContext<State, RootState>) {
             commit('reset');
         },
     },

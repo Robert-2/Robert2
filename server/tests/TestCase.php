@@ -4,8 +4,11 @@ declare(strict_types=1);
 namespace Loxya\Tests;
 
 use Adbar\Dot as DotArray;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\BillingMode;
+use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Tests\Fixtures\Fixtures;
 use PHPUnit\Framework\TestCase as CoreTestCase;
@@ -62,13 +65,8 @@ abstract class TestCase extends CoreTestCase
             'JWTSecret' => 'jwt_secret_for_tests',
             'httpAuthHeader' => 'Authorization',
             'defaultLang' => 'fr',
-            'currency' => [
-                'symbol' => '€',
-                'name' => 'Euro',
-                'iso' => 'EUR',
-            ],
-            'billingMode' => 'partial',
-            'degressiveRateFunction' => '((daysCount - 1) * 0.75) + 1',
+            'currency' => 'EUR',
+            'billingMode' => BillingMode::PARTIAL,
             'maxItemsPerPage' => 100,
             'maxConcurrentFetches' => 2,
             'companyData' => [
@@ -76,11 +74,10 @@ abstract class TestCase extends CoreTestCase
                 'street' => '5 rue des tests',
                 'zipCode' => '05555',
                 'locality' => 'Testville',
-                'country' => 'France',
+                'country' => 'FR',
                 'phone' => '+33123456789',
                 'email' => 'jean@testing-corp.dev',
                 'vatNumber' => 'FR11223344556600',
-                'vatRate' => 20.0,
                 'legalNumbers' => [
                     ['name' => 'SIRET', 'value' => '543 210 080 20145'],
                     ['name' => 'APE', 'value' => '947A'],
@@ -102,7 +99,7 @@ abstract class TestCase extends CoreTestCase
     // -
     // ------------------------------------------------------
 
-    public function assertException($expectedException, callable $executor): void
+    public function assertThrow($expectedException, callable $executor): void
     {
         $actualException = null;
         try {
@@ -123,6 +120,7 @@ abstract class TestCase extends CoreTestCase
                     $actualException->getValidationErrors(),
                 );
             }
+            return;
         }
 
         if (is_string($expectedException)) {
@@ -131,16 +129,78 @@ abstract class TestCase extends CoreTestCase
             } else {
                 $this->assertStringContainsString($expectedException, $actualException->getMessage());
             }
+            return;
         }
 
         if (is_int($expectedException)) {
             $this->assertSame($expectedException, $actualException->getCode());
+            return;
         }
+
+        throw new \InvalidArgumentException('Unsupported excepted exception type.');
+    }
+
+    public function assertNotThrow($expectedException, callable $executor): void
+    {
+        $actualException = null;
+        try {
+            $executor();
+        } catch (\Throwable $e) {
+            $actualException = $e;
+        }
+
+        if ($actualException === null) {
+            $this->assertTrue(true);
+            return;
+        }
+
+        if ($expectedException instanceof \Throwable) {
+            $expectedExceptionClass = get_class($expectedException);
+            if (!($actualException instanceof $expectedExceptionClass)) {
+                $this->assertTrue(true);
+                return;
+            }
+
+            $this->assertNotSame($expectedException->getMessage(), $actualException->getMessage());
+            $this->assertNotSame($expectedException->getCode(), $actualException->getCode());
+
+            if ($expectedException instanceof ValidationException) {
+                /** @var ValidationException $actualException */
+                $this->assertNotSameCanonicalize(
+                    $expectedException->getValidationErrors(),
+                    $actualException->getValidationErrors(),
+                );
+            }
+        }
+
+        if (is_string($expectedException)) {
+            if (class_exists($expectedException)) {
+                $this->assertNotInstanceOf($expectedException, $actualException);
+            } else {
+                $this->assertStringNotContainsString($expectedException, $actualException->getMessage());
+            }
+            return;
+        }
+
+        if (is_int($expectedException)) {
+            $this->assertNotSame($expectedException, $actualException->getCode());
+            return;
+        }
+
+        throw new \InvalidArgumentException('Unsupported excepted exception type.');
     }
 
     public function assertSameCanonicalize($expected, $actual, string $message = ''): void
     {
         $canonicalize = static function (&$value) use (&$canonicalize): void {
+            if (is_object($value)) {
+                if ($value instanceof Serializable) {
+                    $value = $value->serialize();
+                }
+                if ($value instanceof Arrayable) {
+                    $value = $value->toArray();
+                }
+            }
             if (is_array($value)) {
                 ksort($value);
                 foreach ($value as &$subValue) {
@@ -157,6 +217,14 @@ abstract class TestCase extends CoreTestCase
     public function assertNotSameCanonicalize($expected, $actual, string $message = ''): void
     {
         $canonicalize = static function (&$value) use (&$canonicalize): void {
+            if (is_object($value)) {
+                if ($value instanceof Serializable) {
+                    $value = $value->serialize();
+                }
+                if ($value instanceof Arrayable) {
+                    $value = $value->toArray();
+                }
+            }
             if (is_array($value)) {
                 ksort($value);
                 foreach ($value as &$subValue) {

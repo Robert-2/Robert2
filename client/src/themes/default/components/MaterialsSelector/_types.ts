@@ -1,8 +1,17 @@
+import type Decimal from 'decimal.js';
+import type Currency from '@/utils/currency';
 import type { Tag } from '@/stores/api/tags';
 import type { Park } from '@/stores/api/parks';
 import type { Category } from '@/stores/api/categories';
 import type { SubCategory } from '@/stores/api/subcategories';
-import type { Material } from '@/stores/api/materials';
+import type {
+    EventMaterial,
+} from '@/stores/api/events';
+import type {
+    Material,
+    MaterialWithContext,
+    MaterialWithAvailability,
+} from '@/stores/api/materials';
 
 export type Filters = {
     /** Recherche sur un nom de matériel ou une référence. */
@@ -29,6 +38,38 @@ export type Filters = {
     /** Filtre sur les tags des matériels (recherche de type `OR`). */
     tags: Array<Tag['id']>,
 };
+
+//
+// - Embedded materiel
+//
+
+export type EmbeddedMaterial =
+    | EventMaterial;
+
+//
+// - Source material
+//
+
+/* eslint-disable @typescript-eslint/naming-convention */
+export type SourceMaterialOverrides = {
+    name: string,
+    reference: string,
+    rental_price?: Decimal,
+    degressive_rate?: Decimal,
+    rental_price_period?: Decimal,
+    replacement_price: Decimal | null,
+    currency: Currency,
+};
+/* eslint-enable @typescript-eslint/naming-convention */
+
+export type SourceMaterial = (
+    & (MaterialWithAvailability | MaterialWithContext)
+    & { overrides: SourceMaterialOverrides | null }
+);
+
+//
+// - Selected material
+//
 
 export type SelectedMaterial = {
     id: Material['id'],
