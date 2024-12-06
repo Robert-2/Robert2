@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.0.0 (UNRELEASED)
+## 1.0.0 (2024-12-06)
 
 - Ajoute une popup avec plus d'informations sur le matériel au survol de la référence et du nom du matériel sur le listing du matériel.
 - Améliore la prise en charge des fichiers CSV dans l'import des bénéficiaires (notamment ceux générés via Windows ou Microsoft 365) (Premium).
