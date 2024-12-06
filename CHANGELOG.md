@@ -37,11 +37,11 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
 - Le nombre d'heures d'exploitation de chaque unité de matériel (Premium) est affiché dans la liste des unités (onglet "unités" de la fiche matériel), ainsi que dans la nouvelle fenêtre "détails de l'unité".
 - Les groupes d'accès des utilisateurs ont été remaniés ainsi : le groupe "admin" est maintenant l'accès _"Administration"_, le groupe "membre" est maintenant l'accès _"Gestion"_, et le groupe "visiteur" devient l'accès _"Consultation du planning général"_.
   Un nouveau type d'accès nommé _"Consultation de son planning"_ a été ajouté, permettant de n'afficher que les données de planning qui concernent uniquement l'utilisateur lui-même.
-- Les techniciens peuvent être liés à un compte utilisateur, qui leur permet de se connecter au logiciel. Par défaut, le groupe _"Consultation de son planning"_ est utilisé : il peuvent ainsi consulter leur propre planning, rédiger des notes sur les événements dans lesquels ils sont assignés, mais ne peuvent pas modifier les autres informations de l'événement et n'ont pas accès à l'onglet "Historique" (Premium).
+- Les techniciens peuvent être liés à un compte utilisateur, qui leur permet de se connecter au logiciel. Par défaut, le groupe _"Consultation de son planning"_ est utilisé : ils peuvent ainsi consulter leur propre planning, rédiger des notes sur les événements dans lesquels ils sont assignés, mais ne peuvent pas modifier les autres informations de l'événement et n'ont pas accès à l'onglet "Historique" (Premium).
 - Il est possible de lier un compte utilisateur existant à une fiche technicien ou bénéficiaire. Il n'est donc plus nécessaire de créer un nouveau compte pour cela. (Premium)
 - Améliore les messages d'erreurs dans les formulaires.
 - Affiche les numéros de page dans le pied-de-page des documents PDF.
-- Améliore la configuration des cookies pour permettre l'intégration (par exemple dans Notion). NOTE : Uniquement possible dans les contexte sécurisés ou l'application est installée derrière un certificat TLS/CSS et donc accessible via une URL du type `https://...`.
+- Améliore la configuration des cookies pour permettre l'intégration (par exemple dans Notion). NOTE : Uniquement possible dans les contexte sécurisés ou l'application est installée derrière un certificat TLS/SSL et donc accessible via une URL du type `https://...`.
 - La facturation a été revue et améliorée :
   - La configuration du logiciel permet désormais de définir plusieurs tarifs dégressifs, les taxes et groupes de taxes.
     (Un groupe de taxes étant la réunion de plusieurs taxes, appliquées en même temps, par exemple une T.V.A à 20% + Une participation écologique à prix fixe)
@@ -74,7 +74,7 @@ Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v
     - 3. Facturation (pour gérer les tarifs du matériel et les lignes additionnelles)
     - 4. Récapitulatif (pour consulter l'ensemble des informations de la réservation)
 - Des codes-barres peuvent être générés pour le matériel identifié de manière groupée (donc non-unitaire) (Premium).
-  Scanner un code-barres de ce type de matériel a pour effet d'ajouter 1 dans les listes de matériel d'événements et réservations, ainsi que les inventaires de départ et retour.
+  Scanner un code-barres de ce type a pour effet d'ajouter +1 quantité dans l'édition de la liste de matériel d'un événement, d'une réservation ou d'un modèle de liste. Dans les inventaires de départ et retour, cela ajoute +1 quantité pour le matériel groupé uniquement (car pour le matériel unitaire, il faut toujours scanner explicitement l'unité qui sort / revient).
 - Un bouton "Rechercher" en haut du menu principal permet de rechercher un nom ou une référence de matériel ou d'une unité de matériel, ainsi que d'utiliser le scanner de code-barres depuis n'importe quelle page du logiciel, pour obtenir toutes les informations du matériel scanné ou recherché (photo, description, quantités, caractéristiques, tags...), la liste de ses unités, les événements ou réservations dans lesquels il est utilisé actuellement, et l'éventuel inventaire de départ ou de retour qui doit être effectué avec ce matériel (Premium).
 - La recherche de matériel retourne maintenant le matériel dont la référence des unités contient le terme recherché, ou dont le numéro de série est exactement le terme recherché (Premium).
 - Correction d'un bug dans la fonctionnalité de recherche des tableaux lorsque ceux-ci contiennent des dates.
