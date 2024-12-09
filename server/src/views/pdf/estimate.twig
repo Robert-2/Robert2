@@ -344,7 +344,7 @@
                 </td>
                 {%- if not isLegacy ~%}
                 <td class="center">
-                    {{ material.discount_rate|format_percent_number({max_fraction_digit: 4}, locale=locale) }}
+                    {{ material.discount_rate.dividedBy(100, 6)|format_percent_number({max_fraction_digit: 4}, locale=locale) }}
                 </td>
                 {%- endif ~%}
                 <td class="right">
