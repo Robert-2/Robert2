@@ -119,7 +119,7 @@ final class JWT implements AuthenticatorInterface
         $cookieName = Config::get('auth.cookie');
         $shouldSecureCookie = Config::isSslEnabled();
 
-        setcookie($cookieName, '', [
+        setcookie($cookieName, $token, [
             'expires' => 0,
             'path' => '/',
             'secure' => $shouldSecureCookie,

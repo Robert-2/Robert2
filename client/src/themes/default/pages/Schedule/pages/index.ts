@@ -9,7 +9,9 @@ const pages: RouteConfig[] = [
         name: 'schedule',
         path: '',
         redirect: () => {
-            const { default_bookings_view: defaultBookingsView } = store.getters['auth/user'];
+            const defaultBookingsView = store.getters['auth/isLogged']
+                ? store.getters['auth/user'].default_bookings_view
+                : 'calendar';
             return { name: `schedule:${defaultBookingsView}` };
         },
     },

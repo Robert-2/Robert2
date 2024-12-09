@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.1 (UNRELEASED)
+
+- Corrige un problème avec l'affichage des remises de matériel dans les devis et factures.
+
 ## 1.0.0 (2024-12-06)
 
 - Ajoute une popup avec plus d'informations sur le matériel au survol de la référence et du nom du matériel sur le listing du matériel.
