@@ -8,7 +8,6 @@ use Loxya\Config\Config;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Http\Request;
 use Loxya\Models\Category;
-use Loxya\Models\Country;
 use Loxya\Models\Enums\Group;
 use Loxya\Models\User;
 use Loxya\Services\I18n;
@@ -293,7 +292,8 @@ final class SetupController extends BaseController
             new Rule\Key('country', V::custom(
                 static function ($value) {
                     V::notEmpty()->stringType()->check($value);
-                    return Country::where('code', $value)->exists();
+                    $allCountries = array_column(Install::getAllCountries(), 'code');
+                    return in_array($value, $allCountries, true);
                 },
             )),
         );
