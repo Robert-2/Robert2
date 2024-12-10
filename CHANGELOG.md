@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.2 (2024-12-10)
+
+- Corrige l'étape 3 de l'assistant d'installation.
+
 ## 1.0.1 (2024-12-09)
 
 - Corrige un problème avec l'affichage des remises de matériel dans les devis et factures.
