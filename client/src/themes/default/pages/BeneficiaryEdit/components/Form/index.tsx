@@ -205,6 +205,13 @@ const BeneficiaryEditForm = defineComponent({
                         error={errors?.phone}
                     />
                     <FormField
+                        label="email"
+                        type="email"
+                        autocomplete="off"
+                        v-model={data.email}
+                        error={errors?.email}
+                    />
+                    <FormField
                         label="street"
                         autocomplete="off"
                         v-model={data.street}
