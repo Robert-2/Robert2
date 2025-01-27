@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.4 (2025-01-27)
+
+- Corrige l'ordre des bénéficiaires associés à un événement, pour que le bénéficiaire principal reste
+  en première position si plusieurs bénéficiaires sont présents.
+
 ## 1.0.3 (2024-12-18)
 
 - Rétablit le champ `e-mail` dans le formulaire de création / modification de bénéficiaire.

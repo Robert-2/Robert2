@@ -627,9 +627,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     /** @return Collection<array-key, Beneficiary> */
     public function getBeneficiariesAttribute(): Collection
     {
-        return $this->getRelationValue('beneficiaries')
-            ->sortBy('last_name')
-            ->values();
+        return $this->getRelationValue('beneficiaries');
     }
 
     /** @return Collection<array-key, EventTechnician> */

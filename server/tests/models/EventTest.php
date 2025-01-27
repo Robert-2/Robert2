@@ -743,8 +743,8 @@ final class EventTest extends TestCase
         $event = Event::findOrFail(4);
         $event->syncBeneficiaries($beneficiaries);
         $this->assertEquals(2, count($event->beneficiaries));
-        $this->assertEquals('Client Benef', $event->beneficiaries[0]['full_name']);
-        $this->assertEquals('Roger Rabbit', $event->beneficiaries[1]['full_name']);
+        $this->assertEquals('Roger Rabbit', $event->beneficiaries[0]['full_name']);
+        $this->assertEquals('Client Benef', $event->beneficiaries[1]['full_name']);
     }
 
     public function testSyncTechnicians(): void
