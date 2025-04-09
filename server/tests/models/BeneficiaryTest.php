@@ -162,6 +162,7 @@ final class BeneficiaryTest extends TestCase
             'reference' => null,
             'person_id' => 9,
             'company_id' => null,
+            'color' => null,
             'can_make_reservation' => 0,
             'note' => null,
             'created_at' => '2023-02-10 15:00:00',
@@ -180,7 +181,7 @@ final class BeneficiaryTest extends TestCase
             'user_id' => null,
             'user' => null,
         ];
-        $this->assertSame($expected, $result);
+        $this->assertSameCanonicalize($expected, $result);
     }
 
     public function testEdit(): void

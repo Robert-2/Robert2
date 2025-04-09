@@ -1,4 +1,5 @@
 import './index.scss';
+import config from '@/globals/config';
 import DateTime from '@/utils/datetime';
 import { defineComponent } from '@vue/composition-api';
 import { confirm } from '@/utils/alert';
@@ -141,6 +142,10 @@ const EventDetails = defineComponent({
             return this.event.mobilization_period.isBefore(this.now);
         },
 
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         showBilling(): boolean {
             if (!this.event || !this.event.is_billable || !this.hasMaterials) {
                 return false;
@@ -161,23 +166,31 @@ const EventDetails = defineComponent({
         },
 
         showDocumentsAndNotes(): boolean {
-            if (!this.event) {
-                return false;
-            }
-
             if (this.isTeamMember) {
                 return true;
             }
 
+            if (!this.event) {
+                return false;
+            }
+
             // - Pour donner accès aux documents et aux notes à un utilisateur
-            //   non-membre de l'équipe, on vérifie qu'il fait partie des
-            //   techniciens assignés à l'événement.
+            //   non-membre de l'équipe, on vérifie qu'il est chef de projet...
             const currentUser: Session = this.$store.state.auth.user;
-            return (this.event.technicians ?? []).some(
-                (eventTechnician: EventTechnician) => (
-                    currentUser.id === eventTechnician.technician.user_id
-                ),
-            );
+            if (this.event.manager?.id === currentUser.id) {
+                return true;
+            }
+
+            if (this.isTechniciansEnabled) {
+                // - ... ou qu'il fait partie des techniciens assignés à l'événement.
+                return (this.event.technicians ?? []).some(
+                    (eventTechnician: EventTechnician) => (
+                        currentUser.id === eventTechnician.technician.user_id
+                    ),
+                );
+            }
+
+            return false;
         },
 
         showHistory(): boolean {
@@ -185,7 +198,7 @@ const EventDetails = defineComponent({
         },
 
         hasEventTechnicians(): boolean {
-            if (!this.event) {
+            if (!this.isTechniciansEnabled || !this.event) {
                 return false;
             }
             return this.event.technicians.length > 0;
@@ -345,6 +358,7 @@ const EventDetails = defineComponent({
             showBilling,
             showDocumentsAndNotes,
             hasEventTechnicians,
+            isTechniciansEnabled,
             hasMaterials,
             hasMaterialsProblems,
             hasCriticalError,
@@ -389,13 +403,15 @@ const EventDetails = defineComponent({
                         <Tab title={__('informations')} icon="info-circle">
                             <Infos event={event} />
                         </Tab>
-                        <Tab
-                            title={__('technicians')}
-                            icon="people-carry"
-                            disabled={!hasEventTechnicians}
-                        >
-                            <Technicians event={event} />
-                        </Tab>
+                        {isTechniciansEnabled && (
+                            <Tab
+                                title={__('technicians')}
+                                icon="people-carry"
+                                disabled={!hasEventTechnicians}
+                            >
+                                <Technicians event={event} />
+                            </Tab>
+                        )}
                         <Tab
                             title={__('material')}
                             icon="box"

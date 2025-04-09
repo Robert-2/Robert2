@@ -9,14 +9,14 @@
     margin-bottom: globals.$spacing-small;
     padding: globals.$spacing-small 0;
     border-radius: globals.$input-border-radius;
-    background-color: globals.$bg-color-table-th;
+    background-color: globals.$bg-color-list-item;
     color: globals.$text-soft-color;
     list-style: square;
     opacity: 0.6;
     cursor: pointer;
 
     &:hover {
-        background-color: globals.$bg-color-table-td;
+        background-color: globals.$bg-color-list-item-emphasis;
     }
 
     &__booking {
@@ -117,7 +117,7 @@
     }
 
     &--current {
-        background-color: #7a2b0d;
+        background-color: globals.$bg-color-highlighted-item;
 
         #{$block}__readable-state {
             @include globals.icon('sign-out-alt') {
@@ -126,7 +126,7 @@
         }
 
         &:hover {
-            background-color: #913410;
+            background-color: color.adjust(globals.$bg-color-highlighted-item, $lightness: 3%);
         }
     }
 

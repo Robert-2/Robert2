@@ -1,6 +1,7 @@
 import DateTime from '@/utils/datetime';
 import Day from '@/utils/day';
 import Period, { PeriodPartReadableFormat, PeriodReadableFormat } from '@/utils/period';
+import Decimal from 'decimal.js';
 import type { I18nTranslate } from 'vuex-i18n';
 
 describe('Utils / Period', () => {
@@ -183,6 +184,18 @@ describe('Utils / Period', () => {
             // - Avec une période à l'heure près (1).
             const period2 = new Period('2024-01-01 14:30:00', '2024-01-01 15:30:00');
             expect(period2.asHours()).toBe(2);
+        });
+
+        it('should return decimal hourly periods correctly', () => {
+            const period1 = new Period('2024-01-01 14:30:00', '2024-01-02 10:00:00');
+            const result1 = period1.asHours(true);
+            expect(result1).toBeInstanceOf(Decimal);
+            expect(result1.toString()).toBe('19.5');
+
+            const period2 = new Period('2024-01-01 13:30:00', '2024-01-01 15:30:00');
+            const result2 = period2.asHours(true);
+            expect(result2).toBeInstanceOf(Decimal);
+            expect(result2.toString()).toBe('2');
         });
     });
 

@@ -6,7 +6,6 @@ namespace Loxya\Tests;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Loxya\Models\EventTechnician;
 use Loxya\Models\Technician;
 use Loxya\Support\Arr;
 use Loxya\Support\Filesystem\UploadedFile;
@@ -32,6 +31,10 @@ final class TechniciansTest extends ApiTestCase
                 'full_address' => null,
                 'country' => null,
                 'user' => UsersTest::data(2),
+                'roles' => [
+                    RolesTest::data(3),
+                    RolesTest::data(1),
+                ],
                 'note' => null,
             ],
             [
@@ -50,6 +53,9 @@ final class TechniciansTest extends ApiTestCase
                 'full_address' => null,
                 'country' => CountriesTest::data(2),
                 'user' => null,
+                'roles' => [
+                    RolesTest::data(2),
+                ],
                 'note' => null,
             ],
         ]);
@@ -111,6 +117,13 @@ final class TechniciansTest extends ApiTestCase
         $this->assertResponsePaginatedData(1, [
             self::data(1), // - Roger Rabbit (Riri)
         ]);
+
+        // - Rôle
+        $this->client->get('/api/technicians?role=1');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(1, [
+            self::data(1), // - Roger Rabbit (Riri)
+        ]);
     }
 
     public function testGetAllWithAvailabilityPeriod(): void
@@ -135,12 +148,34 @@ final class TechniciansTest extends ApiTestCase
         $this->assertResponseData([
             array_merge(self::data(1), [
                 'events' => [
-                    EventTechniciansTest::data(1, EventTechnician::SERIALIZE_FOR_TECHNICIAN),
+                    [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'event' => EventsTest::data(1),
+                        'technician_id' => 1,
+                        'period' => [
+                            'start' => '2018-12-17 09:00:00',
+                            'end' => '2018-12-18 22:00:00',
+                            'isFullDays' => false,
+                        ],
+                        'role' => RolesTest::data(1),
+                    ],
                 ],
             ]),
             array_merge(self::data(2), [
                 'events' => [
-                    EventTechniciansTest::data(2, EventTechnician::SERIALIZE_FOR_TECHNICIAN),
+                    [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'event' => EventsTest::data(1),
+                        'technician_id' => 2,
+                        'period' => [
+                            'start' => '2018-12-18 14:00:00',
+                            'end' => '2018-12-18 18:00:00',
+                            'isFullDays' => false,
+                        ],
+                        'role' => RolesTest::data(2),
+                    ],
                 ],
             ]),
         ]);
@@ -150,6 +185,84 @@ final class TechniciansTest extends ApiTestCase
         $this->assertResponseData([
             array_merge(self::data(1), ['events' => []]),
             array_merge(self::data(2), ['events' => []]),
+        ]);
+
+        // - En spécifiant un rôle
+        $this->client->get('/api/technicians/while-event/1?role=3');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData([
+            array_merge(self::data(1), ['events' => []]),
+        ]);
+    }
+
+    public function testGetAllWithAssignments(): void
+    {
+        static::setCustomConfig(['maxItemsPerPage' => 1]);
+
+        // - Sans période spécifiée => Erreur.
+        $this->client->get('/api/technicians/with-assignments');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_ACCEPTABLE);
+
+        // - Test sans pagination, avec un trop grand intervalle.
+        $this->client->get('/api/technicians/with-assignments?period[start]=2018-01-01&period[end]=2018-12-31');
+        $this->assertStatusCode(StatusCode::STATUS_RANGE_NOT_SATISFIABLE);
+
+        // - Test simple avec pagination (page 1).
+        $this->client->get('/api/technicians/with-assignments?period[start]=2018-12-01&period[end]=2018-12-31');
+        $this->assertResponsePaginatedData(2, [
+            array_merge(self::data(1), [
+                'events' => [
+                    [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'event' => EventsTest::data(1),
+                        'technician_id' => 1,
+                        'period' => [
+                            'start' => '2018-12-17 09:00:00',
+                            'end' => '2018-12-18 22:00:00',
+                            'isFullDays' => false,
+                        ],
+                        'role' => RolesTest::data(1),
+                    ],
+                ],
+            ]),
+        ]);
+
+        // - Test simple sans pagination.
+        $this->client->get('/api/technicians/with-assignments?paginated=0&period[start]=2018-12-01&period[end]=2018-12-31');
+        $this->assertResponseData([
+            array_merge(self::data(1), [
+                'events' => [
+                    [
+                        'id' => 1,
+                        'event_id' => 1,
+                        'event' => EventsTest::data(1),
+                        'technician_id' => 1,
+                        'period' => [
+                            'start' => '2018-12-17 09:00:00',
+                            'end' => '2018-12-18 22:00:00',
+                            'isFullDays' => false,
+                        ],
+                        'role' => RolesTest::data(1),
+                    ],
+                ],
+            ]),
+            array_merge(self::data(2), [
+                'events' => [
+                    [
+                        'id' => 2,
+                        'event_id' => 1,
+                        'event' => EventsTest::data(1),
+                        'technician_id' => 2,
+                        'period' => [
+                            'start' => '2018-12-18 14:00:00',
+                            'end' => '2018-12-18 18:00:00',
+                            'isFullDays' => false,
+                        ],
+                        'role' => RolesTest::data(2),
+                    ],
+                ],
+            ]),
         ]);
     }
 
@@ -173,7 +286,7 @@ final class TechniciansTest extends ApiTestCase
                     'end' => '2018-12-18 22:00:00',
                     'isFullDays' => false,
                 ],
-                'position' => 'Régisseur',
+                'role' => RolesTest::data(1),
                 'event' => EventsTest::data(1),
             ],
         ]);
@@ -190,7 +303,7 @@ final class TechniciansTest extends ApiTestCase
                     'end' => '2018-12-18 18:00:00',
                     'isFullDays' => false,
                 ],
-                'position' => 'Technicien plateau',
+                'role' => RolesTest::data(2),
                 'event' => EventsTest::data(1),
             ],
             [
@@ -202,7 +315,7 @@ final class TechniciansTest extends ApiTestCase
                     'end' => '2023-05-29 00:00:00',
                     'isFullDays' => false,
                 ],
-                'position' => 'Ingénieur du son',
+                'role' => RolesTest::data(3),
                 'event' => EventsTest::data(7),
             ],
         ]);
@@ -269,6 +382,7 @@ final class TechniciansTest extends ApiTestCase
             'postal_code' => '74000',
             'locality' => 'Annecy',
             'country_id' => 2,
+            'roles' => [1],
             'note' => null,
         ]);
 
@@ -289,6 +403,9 @@ final class TechniciansTest extends ApiTestCase
             'country' => CountriesTest::data(2),
             'full_address' => '74000 Annecy',
             'user' => null,
+            'roles' => [
+                RolesTest::data(1),
+            ],
             'note' => null,
         ]);
     }
@@ -302,6 +419,7 @@ final class TechniciansTest extends ApiTestCase
             'postal_code' => '74000',
             'locality' => 'Annecy',
             'country_id' => 2,
+            'roles' => [1, 2],
         ]);
 
         $this->assertStatusCode(StatusCode::STATUS_OK);
@@ -321,6 +439,10 @@ final class TechniciansTest extends ApiTestCase
                     'first_name' => 'José',
                     'last_name' => 'Gatillon',
                     'full_name' => 'José Gatillon',
+                ],
+                'roles' => [
+                    RolesTest::data(1),
+                    RolesTest::data(2),
                 ],
             ],
         ));

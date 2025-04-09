@@ -1,9 +1,7 @@
 import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
-import type { TemplateRenderFunction } from 'vue-tables-2-premium';
 
-export type RenderedColumn = ReturnType<TemplateRenderFunction>;
-export type RenderFunction<T = any> = (h: CreateElement, row: T, index: number) => RenderedColumn;
+export type RenderFunction<T = any> = (h: CreateElement, row: T, index: number) => JSX.Node;
 
 export type Column<Data = any> = {
     /**
@@ -18,7 +16,13 @@ export type Column<Data = any> = {
      * Le titre de la colonne tel qu'affiché dans
      * le header du tableau.
      */
-    title: string,
+    title?: string,
+
+    /**
+     * Permet de customiser le nom utilisé pour la colonne,
+     * notamment dans le sélecteur des colonnes.
+     */
+    label?: string,
 
     /**
      * Une fonction permettant de customiser le rendu de la colonne.
@@ -33,12 +37,27 @@ export type Column<Data = any> = {
     class?: ClassValue,
 
     /**
+     * La colonne peut-elle être cachée par l'utilisateur ?
+     *
+     * Si non spécifié, la valeur par défaut est généralement `true`.
+     * Sauf pour les colonnes avec les clés `name` et `actions`, ou c'est `false` par défaut.
+     */
+    hideable?: boolean,
+
+    /**
      * La colonne doit-elle être cachée par défaut ?
      *
-     * NOTE: Si l'utilisateur décide de forcer l'affichage de
-     * cette colonne, cette option ne sera pas prise en compte.
+     * Attention, une colonne marquée comme `hideable` à `false` (explicitement ou en
+     * fonction de sa valeur par défaut) ne respectera pas la valeur de cette clé.
+     *
+     * À noter que cette valeur ne sera prise en compte que si l'utilisateur n'a pas
+     * manifesté un choix explicite relatif à cette colonne, sans quoi c'est son avis
+     * qui sera pris en compte (avis qui pourra être persisté si le tableau à un nom
+     * (prop. `name`)).
+     *
+     * @default false
      */
-    hidden?: boolean,
+    defaultHidden?: boolean,
 };
 
 export type Columns<Data = any> = Array<Column<Data>>;

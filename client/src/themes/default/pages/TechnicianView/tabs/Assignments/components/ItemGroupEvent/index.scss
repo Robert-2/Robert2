@@ -1,0 +1,174 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.TechnicianViewAssignmentItemGroupEvent {
+    $block: &;
+
+    margin-bottom: globals.$spacing-small;
+    padding: globals.$spacing-small 0 0;
+    border-radius: globals.$input-border-radius;
+    background-color: globals.$bg-color-list-item;
+    color: globals.$text-base-color;
+    opacity: 0.6;
+    gap: globals.$spacing-medium;
+
+    &__event {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        min-width: 0;
+        padding: 0 0 globals.$spacing-small;
+
+        &__toggle {
+            width: 50px;
+            margin: 0 globals.$spacing-small;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        &__infos {
+            flex: 1;
+            min-width: 0;
+        }
+
+        &__title {
+            @include globals.line-clamp(2);
+
+            margin: 0;
+            color: globals.$text-base-color;
+        }
+
+        &__periods {
+            display: inline-flex;
+            flex-wrap: wrap;
+            width: 100%;
+            color: color.adjust(globals.$text-base-color, $lightness: -5%);
+            gap: 0 globals.$spacing-small;
+
+            &__item {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+
+                &::before {
+                    margin-right: globals.$spacing-thin;
+                }
+
+                &__duration {
+                    margin-left: 5px;
+                }
+
+                //
+                // - Variantes.
+                //
+
+                &--operation {
+                    @include globals.icon('calendar-alt');
+                }
+
+                &--mobilization {
+                    @include globals.icon('clock');
+                }
+            }
+        }
+
+        &__assignments-count {
+            flex: 1;
+        }
+
+        &__actions {
+            padding: 0 globals.$spacing-small;
+        }
+    }
+
+    &__assignments {
+        display: flex;
+        flex-direction: column;
+        background-color: globals.$bg-color-list-item-emphasis;
+    }
+
+    &__heading {
+        display: flex;
+        align-items: baseline;
+        padding: globals.$spacing-small calc(50px + (2 * globals.$spacing-small));
+        font-size: 0.9rem;
+        font-weight: 600;
+        gap: globals.$spacing-small;
+
+        &__position,
+        &__period {
+            flex: 1;
+        }
+    }
+
+    &__list {
+        @extend %reset-list;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__assignment {
+        display: flex;
+        align-items: baseline;
+        padding: 12px calc(50px + (2 * globals.$spacing-small));
+        gap: globals.$spacing-small;
+        cursor: pointer;
+
+        &__position,
+        &__period {
+            flex: 1;
+        }
+
+        &__ongoing {
+            margin-left: globals.$spacing-small;
+
+            @include globals.icon('sign-out-alt') {
+                margin-right: globals.$spacing-thin;
+            }
+        }
+
+        &:hover {
+            background-color: color.adjust(globals.$bg-color-list-item-emphasis, $lightness: 5%);
+            color: color.adjust(globals.$text-base-color, $lightness: 15%);
+        }
+
+        &--ongoing {
+            background-color: color.adjust(globals.$bg-color-highlighted-item, $lightness: 5%);
+
+            &:hover {
+                background-color: color.adjust(globals.$bg-color-highlighted-item, $lightness: 8%);
+                color: color.adjust(globals.$text-base-color, $lightness: 15%);
+            }
+        }
+    }
+
+    //
+    // - États.
+    //
+
+    &--current,
+    &--future {
+        color: globals.$text-base-color;
+        opacity: 1;
+    }
+
+    &--future {
+        #{$block}__event {
+            &__title {
+                color: globals.$link-base-color;
+            }
+        }
+    }
+
+    &--future + &:not(#{$block}--future) {
+        margin-top: globals.$spacing-large;
+    }
+
+    &--current {
+        &:not(#{$block}--opened) {
+            background-color: globals.$bg-color-highlighted-item;
+        }
+    }
+}

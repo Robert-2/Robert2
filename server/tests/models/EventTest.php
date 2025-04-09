@@ -51,6 +51,7 @@ final class EventTest extends TestCase
                 'return_inventory_author_id' => 1,
                 'note' => null,
                 'author_id' => 1,
+                'manager_id' => null,
                 'preparer_id' => null,
                 'created_at' => '2018-12-14 12:20:00',
                 'updated_at' => '2018-12-14 12:30:00',
@@ -94,6 +95,7 @@ final class EventTest extends TestCase
                 'return_inventory_author_id' => null,
                 'note' => null,
                 'author_id' => 1,
+                'manager_id' => 2,
                 'preparer_id' => null,
                 'created_at' => '2018-12-01 12:50:45',
                 'updated_at' => '2018-12-05 08:31:21',
@@ -143,6 +145,7 @@ final class EventTest extends TestCase
                 'return_inventory_author_id' => 2,
                 'note' => "Il faudra envoyer le matériel sur Lyon avant l'avant-veille.",
                 'author_id' => 1,
+                'manager_id' => 1,
                 'preparer_id' => null,
                 'created_at' => '2018-12-16 12:50:45',
                 'updated_at' => null,
@@ -185,11 +188,18 @@ final class EventTest extends TestCase
                 ->get()->pluck('title', 'id')->all(),
         );
 
-        // - Retourne les événements qui ont un bénéficiaire dont le nom contient "tain".
+        // - Retourne les événements qui ont un bénéficiaire, un auteur,
+        //   ou un chef de projet dont le nom contient "tain".
         $this->assertSame(
             [
                 1 => 'Premier événement',
+                2 => 'Second événement',
+                3 => 'Avant-premier événement',
+                4 => 'Concert X',
                 5 => "Kermesse de l'école des trois cailloux",
+                6 => 'Un événement sans inspiration',
+                7 => 'Médiévales de Machin-le-chateau 2023',
+                8 => 'Japan Festival 2024',
             ],
             Event::search('tain')
                 ->get()->pluck('title', 'id')->all(),
@@ -471,7 +481,7 @@ final class EventTest extends TestCase
         $this->assertMatchesHtmlSnapshot($result->getHtml());
     }
 
-    public function testStaticEdit(): void
+    public function testEdit(): void
     {
         Carbon::setTestNow(Carbon::create(2019, 2, 20, 13, 30, 0));
 
@@ -482,12 +492,12 @@ final class EventTest extends TestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'position' => ' Testeur ',
+                    'role_id' => 1,
                     'period' => new Period('2019-03-01 10:00:00', '2019-03-02 19:00:00'),
                 ],
                 [
                     'id' => 2,
-                    'position' => 'Stagiaire observateur',
+                    'role_id' => 2,
                     'period' => new Period('2019-03-02 09:00:00', '2019-03-02 16:00:00'),
                 ],
             ],
@@ -512,7 +522,7 @@ final class EventTest extends TestCase
                 'location' => 'Moon',
                 'reference' => null,
                 'description' => null,
-                'preparer_id' => null,
+                'manager_id' => null,
                 'materials_count' => 46,
                 'is_return_inventory_started' => false,
                 'has_missing_materials' => true,
@@ -533,12 +543,30 @@ final class EventTest extends TestCase
                 'is_return_inventory_done' => false,
                 'return_inventory_author_id' => null,
                 'return_inventory_datetime' => null,
+                'preparer_id' => null,
+                'positions' => [
+                    [
+                        'id' => 5,
+                        'event_id' => 4,
+                        'role_id' => 1,
+                        'name' => "Régisseur",
+                        'is_mandatory' => false,
+                        'is_assigned' => true,
+                    ],
+                    [
+                        'id' => 6,
+                        'event_id' => 4,
+                        'role_id' => 2,
+                        'name' => "Technicien plateau",
+                        'is_mandatory' => false,
+                        'is_assigned' => true,
+                    ],
+                ],
                 'beneficiaries' => [
                     [
                         'id' => 3,
                         'person_id' => 3,
                         'user_id' => null,
-                        'company_id' => null,
                         'reference' => '0003',
                         'last_name' => 'Benef',
                         'first_name' => 'Client',
@@ -547,11 +575,13 @@ final class EventTest extends TestCase
                         'street' => '156 bis, avenue des tests poussés',
                         'postal_code' => '88080',
                         'locality' => 'Wazzaville',
-                        'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
                         'phone' => '+33123456789',
                         'country_id' => null,
-                        'note' => null,
+                        'full_address' => "156 bis, avenue des tests poussés\n88080 Wazzaville",
+                        'company_id' => null,
+                        'color' => null,
                         'can_make_reservation' => 0,
+                        'note' => null,
                         'created_at' => '2018-01-01 00:02:00',
                         'updated_at' => '2022-01-01 00:02:00',
                         'deleted_at' => null,
@@ -564,7 +594,7 @@ final class EventTest extends TestCase
                         'technician_id' => 1,
                         'start_date' => '2019-03-01 10:00:00',
                         'end_date' => '2019-03-02 19:00:00',
-                        'position' => 'Testeur',
+                        'role_id' => 1,
                     ],
                     [
                         'id' => 5,
@@ -572,7 +602,7 @@ final class EventTest extends TestCase
                         'technician_id' => 2,
                         'start_date' => '2019-03-02 09:00:00',
                         'end_date' => '2019-03-02 16:00:00',
-                        'position' => 'Stagiaire observateur',
+                        'role_id' => 2,
                     ],
                 ],
                 'materials' => [
@@ -706,6 +736,7 @@ final class EventTest extends TestCase
                     'beneficiaries',
                     'technicians',
                     'materials',
+                    'positions',
                 ])
                 ->toArray(),
         );
@@ -754,35 +785,57 @@ final class EventTest extends TestCase
         $technicians = [
             [
                 'id' => 1,
-                'position' => 'Roadie déballage',
+                'role_id' => 1,
                 'period' => new Period('2019-03-01 08:00:00', '2019-03-01 20:00:00'),
             ],
             [
                 'id' => 1,
-                'position' => 'Roadie remballage',
+                'role_id' => 2,
                 'period' => new Period('2019-04-10 08:00:00', '2019-04-10 20:00:00'),
             ],
             [
                 'id' => 2,
-                'position' => 'Régisseur',
+                'role_id' => 1,
                 'period' => new Period('2019-03-02 10:00:00', '2019-04-09 17:00:00'),
             ],
         ];
         $event = Event::findOrFail(4);
         $event->syncTechnicians($technicians);
+
         $this->assertCount(3, $event->technicians);
         $this->assertEquals('Roger Rabbit', $event->technicians[0]['technician']['full_name']);
         $this->assertEquals('2019-03-01 08:00:00', $event->technicians[0]['start_date']);
         $this->assertEquals('2019-03-01 20:00:00', $event->technicians[0]['end_date']);
-        $this->assertEquals('Roadie déballage', $event->technicians[0]['position']);
+        $this->assertEquals(1, $event->technicians[0]['role_id']);
         $this->assertEquals('Jean Technicien', $event->technicians[1]['technician']['full_name']);
         $this->assertEquals('2019-03-02 10:00:00', $event->technicians[1]['start_date']);
         $this->assertEquals('2019-04-09 17:00:00', $event->technicians[1]['end_date']);
-        $this->assertEquals('Régisseur', $event->technicians[1]['position']);
+        $this->assertEquals(1, $event->technicians[1]['role_id']);
         $this->assertEquals('Roger Rabbit', $event->technicians[2]['technician']['full_name']);
         $this->assertEquals('2019-04-10 08:00:00', $event->technicians[2]['start_date']);
         $this->assertEquals('2019-04-10 20:00:00', $event->technicians[2]['end_date']);
-        $this->assertEquals('Roadie remballage', $event->technicians[2]['position']);
+        $this->assertEquals(2, $event->technicians[2]['role_id']);
+
+        $expectedEventPositions = [
+            [
+                'id' => 5,
+                'event_id' => 4,
+                'role_id' => 1,
+                'name' => "Régisseur",
+                'is_mandatory' => false,
+                'is_assigned' => true,
+            ],
+            [
+                'id' => 6,
+                'event_id' => 4,
+                'role_id' => 2,
+                'name' => "Technicien plateau",
+                'is_mandatory' => false,
+                'is_assigned' => true,
+            ],
+        ];
+        $this->assertCount(2, $event->positions);
+        $this->assertSameCanonicalize($expectedEventPositions, $event->positions);
     }
 
     public function testSyncTechniciansValidationErrors(): void
@@ -794,12 +847,12 @@ final class EventTest extends TestCase
             Event::findOrFail(4)->syncTechnicians([
                 [
                     'id' => 1,
-                    'position' => 'Roadie déballage',
+                    'role_id' => 999,
                     'period' => new Period('2019-03-01 20:00:00', '2019-03-02 08:00:00'),
                 ],
                 [
                     'id' => 2,
-                    'position' => 'Régisseur',
+                    'role_id' => 2,
                     'period' => new Period('2019-04-10 10:00:00', '2019-04-11 17:00:00'),
                 ],
             ]);
@@ -808,6 +861,9 @@ final class EventTest extends TestCase
         }
 
         $expectedErrors = [
+            1 => [
+                'role_id' => "Ce champ est invalide.",
+            ],
             2 => [
                 'start_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",
                 'end_date' => "La période d'assignation du technicien est en dehors de la période de l'événement.",

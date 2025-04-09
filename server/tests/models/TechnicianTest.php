@@ -146,6 +146,7 @@ final class TechnicianTest extends TestCase
                 'locality' => 'Annecy',
                 'country_id' => 2,
             ],
+            'roles' => [1],
         ];
 
         $result = Technician::new($data);
@@ -156,28 +157,23 @@ final class TechnicianTest extends TestCase
         $this->assertEquals('Gatillon', $result->person->last_name);
         $this->assertEquals('Annecy', $result->person->locality);
         $this->assertEquals('Suisse', $result->person->country->name);
+        $this->assertEquals('Régisseur', $result->roles[0]->name);
     }
 
     public function testEdit(): void
     {
-        $result = Technician::findOrFail(2)->edit(['note' => "Ne pas déranger le week-end."]);
+        $result = Technician::findOrFail(2)->edit([
+            'roles' => [2, 3],
+            'note' => "Ne pas déranger le week-end.",
+        ]);
         $this->assertEquals("Ne pas déranger le week-end.", $result->note);
+        $this->assertEquals("Ingénieur du son", $result->roles[0]->name);
+        $this->assertEquals("Technicien plateau", $result->roles[1]->name);
 
         // - Test update avec des données de "Person"
         $data = ['person' => ['first_name' => 'Jessica']];
         $result = Technician::findOrFail(1)->edit($data);
         $this->assertEquals('Jessica Rabbit', $result->person->full_name);
-
-        // - Test de liaison avec un utilisateur existant (user #4, person #6).
-        $result = Technician::findOrFail(2)->edit(['user_id' => 4], true);
-        $this->assertEquals(4, $result->person->user_id);
-        $this->assertEquals('Henry Berluc', $result->person->full_name);
-
-        // - Test de liaison avec un utilisateur existant, mais
-        //   qui est déjà un technicien (user #2, person #2, technician #1).
-        $this->assertThrow(ValidationException::class, static function () {
-            Technician::findOrFail(2)->edit(['user_id' => 2], true);
-        });
     }
 
     public function testIsAssignedToEvent(): void

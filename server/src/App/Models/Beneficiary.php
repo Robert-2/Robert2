@@ -50,7 +50,7 @@ use Respect\Validation\Validator as V;
  * @property-read Collection<array-key, Estimate> $estimates
  * @property-read Collection<array-key, Invoice> $invoices
  *
- * @method static Builder|static search(string $term)
+ * @method static Builder|static search(string|string[] $term)
  */
 final class Beneficiary extends BaseModel implements Serializable
 {
@@ -161,6 +161,7 @@ final class Beneficiary extends BaseModel implements Serializable
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'event_beneficiaries')
+            ->using(EventBeneficiary::class)
             ->orderBy('mobilization_start_date', 'desc');
     }
 
@@ -401,8 +402,18 @@ final class Beneficiary extends BaseModel implements Serializable
         'email',
     ];
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeSearch(Builder $query, string|array $term): Builder
     {
+        if (is_array($term)) {
+            $query->where(static function (Builder $subQuery) use ($term) {
+                foreach ($term as $singleTerm) {
+                    $subQuery->orWhere(static fn (Builder $subSubQuery) => (
+                        $subSubQuery->search($singleTerm)
+                    ));
+                }
+            });
+            return $query;
+        }
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));
@@ -467,6 +478,12 @@ final class Beneficiary extends BaseModel implements Serializable
     {
         return $this->events->contains($event->id);
     }
+
+    // ------------------------------------------------------
+    // -
+    // -    Méthodes liées à une "entity"
+    // -
+    // ------------------------------------------------------
 
     public function edit(array $data): static
     {
@@ -536,6 +553,7 @@ final class Beneficiary extends BaseModel implements Serializable
         return $data
             ->delete([
                 'person_id',
+                'color',
                 'can_make_reservation',
                 'created_at',
                 'updated_at',

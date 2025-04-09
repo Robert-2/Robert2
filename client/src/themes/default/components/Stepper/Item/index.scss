@@ -17,7 +17,7 @@
         min-width: 15px;
     }
 
-    &__index {
+    &__number {
         &::after {
             content: '-';
             margin-left: globals.$spacing-small;

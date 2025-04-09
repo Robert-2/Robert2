@@ -68,6 +68,9 @@ const store: Module<State, RootState> = {
 
         setInterfaceSettings(state: State, settings: UserSettings) {
             state.user!.default_bookings_view = settings.default_bookings_view;
+            state.user!.default_technicians_view = settings.default_technicians_view;
+            state.user!.disable_contextual_popovers = settings.disable_contextual_popovers;
+            state.user!.disable_search_persistence = settings.disable_search_persistence;
         },
     },
     actions: {

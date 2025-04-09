@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "name": "Régisseur"
+    },
+    {
+        "id": 2,
+        "name": "Technicien plateau"
+    },
+    {
+        "id": 3,
+        "name": "Ingénieur du son"
+    },
+    {
+        "id": 4,
+        "name": "Installateur"
+    },
+    {
+        "id": 5,
+        "name": "Intervenant extérieur"
+    }
+]

@@ -88,6 +88,17 @@
     }
 
     //
+    // - Statut: Highlight
+    //
+
+    &--highlight {
+        .mx-input:not(:focus) {
+            border-color: color.adjust(globals.$primary-color, $lightness: -7%);
+            box-shadow: 0 0 6px color.adjust(globals.$primary-color, $alpha: -0.5);
+        }
+    }
+
+    //
     // - Statut: Invalide
     //
 

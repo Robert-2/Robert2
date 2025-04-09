@@ -1,10 +1,11 @@
 import './index.scss';
+import omit from 'lodash/omit';
+import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 import { defineComponent } from '@vue/composition-api';
 import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
-import MaterialsFilters from '@/themes/default/components/MaterialsFilters';
+import SearchPanel from '@/themes/default/components/MaterialsFilters';
 import SwitchToggle from '@/themes/default/components/SwitchToggle';
-import Input from '@/themes/default/components/Input';
 
 import type { DebouncedMethod } from 'lodash';
 import type { PropType } from '@vue/composition-api';
@@ -29,7 +30,7 @@ type InstanceProperties = {
     ),
 };
 
-// @vue/component
+/** Les filtres du sélecteur de matériel. */
 const MaterialsSelectorFilters = defineComponent({
     name: 'MaterialsSelectorFilters',
     props: {
@@ -48,15 +49,7 @@ const MaterialsSelectorFilters = defineComponent({
     }),
     computed: {
         coreValues(): CoreFilters {
-            return (['park', 'category', 'subCategory', 'tags'] as Array<keyof CoreFilters>).reduce(
-                (coreFilters: CoreFilters, key: keyof CoreFilters): CoreFilters => {
-                    const value = this.values[key];
-                    return value !== null && (!Array.isArray(value) || value.length > 0)
-                        ? { ...coreFilters, [key]: value }
-                        : coreFilters;
-                },
-                {},
-            );
+            return omit(this.values, ['onlySelected']);
         },
     },
     created() {
@@ -75,19 +68,21 @@ const MaterialsSelectorFilters = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleSearchChange(rawSearch: string) {
-            const search = rawSearch.length > 0 ? rawSearch : null;
-            this.$emit('change', { ...this.values, search });
+        handleSearchChange(search: string[]) {
+            if (!isEqual(this.values.search, search)) {
+                this.$emit('change', { ...this.values, search });
+            }
         },
 
-        handleFiltersChanges(coreFilters: CoreFilters) {
-            this.$emit('change', {
-                ...this.values,
-                park: coreFilters.park ?? null,
-                category: coreFilters.category ?? null,
-                subCategory: coreFilters.subCategory ?? null,
-                tags: coreFilters.tags ?? [],
-            });
+        handleFiltersChange(newFiltersRaw: CoreFilters) {
+            // - On debounce le changement dans la recherche textuelle.
+            this.handleSearchChangeDebounced!(newFiltersRaw.search);
+
+            // - On trigger le changement directement pour les autres filtres.
+            const newFilters = { ...this.values, ...omit(newFiltersRaw, ['search']) };
+            if (!isEqual(newFilters, this.values)) {
+                this.$emit('change', newFilters);
+            }
         },
 
         handleSelectOnlyFilterChange(onlySelected: boolean) {
@@ -116,40 +111,30 @@ const MaterialsSelectorFilters = defineComponent({
             __,
             values,
             coreValues,
+            handleFiltersChange,
             withSelectedOnlyFilter,
-            handleFiltersChanges,
-            handleSearchChangeDebounced,
             handleSelectOnlyFilterChange,
         } = this;
 
         return (
             <div class="MaterialsSelectorFilters">
-                <Input
+                <SearchPanel
                     class="MaterialsSelectorFilters__search"
-                    placeholder={__('search-placeholder')}
-                    autocomplete="off"
-                    onInput={handleSearchChangeDebounced}
-                    value={values.search}
+                    values={coreValues}
+                    onChange={handleFiltersChange}
                 />
-                <div class="MaterialsSelectorFilters__filters">
-                    <MaterialsFilters
-                        ref="coreFilters"
-                        values={coreValues}
-                        onChange={handleFiltersChanges}
-                    />
-                    {withSelectedOnlyFilter && (
-                        <div class="MaterialsSelectorFilters__selected-only">
-                            <span class="MaterialsSelectorFilters__selected-only__label">
-                                {__('selected-materials-only')}
-                            </span>
-                            <SwitchToggle
-                                value={values.onlySelected}
-                                onInput={handleSelectOnlyFilterChange}
-                                class="MaterialsSelectorFilters__selected-only__input"
-                            />
-                        </div>
-                    )}
-                </div>
+                {withSelectedOnlyFilter && (
+                    <div class="MaterialsSelectorFilters__selected-only">
+                        <span class="MaterialsSelectorFilters__selected-only__label">
+                            {__('selected-materials-only')}
+                        </span>
+                        <SwitchToggle
+                            value={values.onlySelected}
+                            onInput={handleSelectOnlyFilterChange}
+                            class="MaterialsSelectorFilters__selected-only__input"
+                        />
+                    </div>
+                )}
             </div>
         );
     },

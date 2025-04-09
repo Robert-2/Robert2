@@ -1,6 +1,8 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
+import stringIncludes from '@/utils/stringIncludes';
 import VueSelect from 'vue-select';
+import Button from '@/themes/default/components/Button';
 import Fragment from '@/components/Fragment';
 import icons from './icons';
 
@@ -53,6 +55,37 @@ type Props = {
     multiple?: boolean,
 
     /**
+     * Permet de déléguer la recherche à une fonction externe.
+     *
+     * Lorsque cette option est utilisée, le filtrage interne du champ est désactivé.
+     */
+    searcher?(search: string): Promise<void>,
+
+    /**
+     * Peut-on ajouter une option en écrivant sa valeur dans le champ ?
+     * À utiliser avec l'event `onCreate` pour récupérer la nouvelle valeur.
+     *
+     * Si une fonction externe est utilisée pour la recherche, un bouton d'ajout
+     * sera proposé à l'utilisateur si aucun résultat ne correspond à sa recherche.
+     */
+    canCreate?: boolean,
+
+    /**
+     * Permet de customiser le texte utilisé pour proposer la
+     * création d'une entrée quand `canCreate` est à `true`.
+     *
+     * Peut contenir:
+     * - Une chaîne de caractères qui sera utilisée telle quelle.
+     * - Une fonction à laquelle sera passée la valeur que
+     *   l'utilisateur a demandé à créer.
+     *
+     * @example
+     * createLabel="Ajouter la société"
+     * createLabel={(name: string) => __('create-label', { name })}
+     */
+    createLabel?: string | ((newValue: string) => string),
+
+    /**
      * Valeur actuellement sélectionnée.
      *
      * Dans le cas d'un choix multiple, un tableau peut être passé.
@@ -68,6 +101,16 @@ type Props = {
      * Peut également être fourni sous la forme d'un tableau de simples chaînes de caractères.
      */
     options: string[] | Option[],
+};
+
+/**
+ * Longueur minimale du texte lors d'une
+ * recherche avec fonction de recherche personnalisée.
+ */
+const MIN_CUSTOM_SEARCHER_CHARS = 2;
+
+type Data = {
+    pendingCreation: string | null,
 };
 
 type SelectedValue = string | Option | Array<string | Option> | null;
@@ -107,6 +150,18 @@ const Select = defineComponent({
         multiple: {
             type: Boolean as PropType<Props['multiple']>,
             default: false,
+        },
+        searcher: {
+            type: Function as PropType<Props['searcher']>,
+            default: undefined,
+        },
+        canCreate: {
+            type: Boolean as PropType<Props['canCreate']>,
+            default: false,
+        },
+        createLabel: {
+            type: [Function, String] as PropType<Props['createLabel']>,
+            default: undefined,
         },
         value: {
             // TODO [vue@>2.7]: Mettre `[Array, String, Number, null] as PropType<Props['value']>,` en Vue 2.7.
@@ -149,7 +204,10 @@ const Select = defineComponent({
             },
         },
     },
-    emits: ['input', 'change'],
+    emits: ['input', 'change', 'create'],
+    data: (): Data => ({
+        pendingCreation: null,
+    }),
     computed: {
         formattedPlaceholder(): string | undefined {
             const { $t: __, placeholder } = this;
@@ -161,6 +219,25 @@ const Select = defineComponent({
             return placeholder === true
                 ? __('please-choose')
                 : placeholder;
+        },
+
+        filteredOptions(): string[] | Option[] {
+            const { options, value } = this;
+
+            if (value === null || !this.multiple) {
+                return options;
+            }
+
+            // Note: Si c'est une sélection multiple, on ne repropose
+            //       pas les options déjà sélectionnées.
+            return options.filter((option: string | number | Option) => {
+                const stringifiedOption = (typeof option === 'object' ? option.value : option).toString();
+                return (!Array.isArray(value) ? [value] : value).every(
+                    (_value: string | number): boolean => (
+                        stringifiedOption !== _value.toString()
+                    ),
+                );
+            }) as string[] | Option[];
         },
 
         inheritedInvalid(): boolean {
@@ -191,19 +268,17 @@ const Select = defineComponent({
             }
 
             if (this.multiple) {
-                return options.filter((option: string | number | Option) => {
-                    option = typeof option === 'object' && option !== null
-                        ? option.value
-                        : option;
-
-                    const isMatching = (_value: string | number): boolean => (
-                        option.toString() === _value.toString()
-                    );
-
-                    return Array.isArray(value)
-                        ? value.some(isMatching)
-                        : isMatching(value);
-                });
+                return (!Array.isArray(value) ? [value] : value).reduce(
+                    (selection: Array<string | Option>, _value: string | number) => {
+                        const stringifiedValue = _value.toString();
+                        const option = options.find((_option: string | Option) => {
+                            const rawOption = typeof _option === 'object' ? _option.value : _option;
+                            return rawOption.toString() === stringifiedValue;
+                        });
+                        return option !== undefined ? selection.concat(option) : selection;
+                    },
+                    [],
+                );
             }
 
             return options.find((option: string | number | Option) => {
@@ -220,12 +295,55 @@ const Select = defineComponent({
         },
     },
     methods: {
+        // ------------------------------------------------------
+        // -
+        // -    Handlers
+        // -
+        // ------------------------------------------------------
+
+        async handleSearch(search: string, setLoading: (isLoading: boolean) => void) {
+            if (this.searcher === undefined || search.length < MIN_CUSTOM_SEARCHER_CHARS) {
+                return;
+            }
+
+            setLoading(true);
+            try {
+                await this.searcher(search);
+            } finally {
+                setLoading(false);
+            }
+        },
+
         handleInput(selected: SelectedValue) {
             if (this.inheritedDisabled) {
                 return;
             }
-            let selection: string | number | Array<string | number> = '';
 
+            if (this.pendingCreation !== null) {
+                const { pendingCreation, handleOptionCreate } = this;
+                this.pendingCreation = null;
+
+                const isPendingSelected: boolean = (() => {
+                    if (selected === null) {
+                        return false;
+                    }
+
+                    const _selected = this.multiple
+                        ? (Array.isArray(selected) ? [...selected].pop() : selected)
+                        : selected as Option | string;
+
+                    return (
+                        typeof _selected === 'string' &&
+                        _selected === pendingCreation
+                    );
+                })();
+                if (isPendingSelected) {
+                    handleOptionCreate(pendingCreation);
+                    return;
+                }
+            }
+
+            let selection: string | number | Array<string | number> | null = null;
             if (this.multiple) {
                 if (selected === null) {
                     selected = [];
@@ -239,7 +357,9 @@ const Select = defineComponent({
                     typeof item === 'object' ? item.value : item
                 ));
             } else if (selected === null) {
-                selection = '';
+                selection = null;
+            } else if (typeof selected === 'string') {
+                selection = selected;
             } else if (typeof selected === 'object') {
                 selection = (selected as Option).value;
             }
@@ -247,13 +367,76 @@ const Select = defineComponent({
             this.$emit('input', selection);
             this.$emit('change', selection);
         },
+
+        handleOptionCreating(input: any): string | number | Option | undefined {
+            if (!this.canCreate || typeof input !== 'string') {
+                this.pendingCreation = null;
+                return undefined;
+            }
+
+            // - Si la valeur recherchée correspond parfaitement à un autre
+            //   option, on ne propose pas de création mais l'option existante.
+            const existingOption = this.options.find((option: string | number | Option) => {
+                option = typeof option === 'object' ? option.label : option;
+                return input.toLocaleLowerCase() === option.toString().toLocaleLowerCase();
+            });
+            if (existingOption !== undefined) {
+                this.pendingCreation = null;
+                return existingOption;
+            }
+
+            this.pendingCreation = input;
+            return input;
+        },
+
+        handleOptionCreate(input: string) {
+            this.$emit('create', input);
+        },
+
+        // ------------------------------------------------------
+        // -
+        // -    Méthodes internes
+        // -
+        // ------------------------------------------------------
+
+        dropdownShouldOpen({ open: defaultBehavior }: any): boolean {
+            const hasPendingCreation = this.canCreate && this.pendingCreation !== null;
+
+            // - Si on est sur un select multiple, qu'il n'y a PLUS d'options sélectionnable
+            //   et que l'on ne peut pas en créer ou qu'on est pas en train de le faire, on
+            //   n'affiche pas le dropdown.
+            if (
+                this.multiple &&
+                this.options.length > 0 &&
+                this.filteredOptions.length === 0 &&
+                (!this.canCreate || !hasPendingCreation)
+            ) {
+                return false;
+            }
+
+            return defaultBehavior;
+        },
+
+        isOptionMatchingSearch(option: string | Option, label: string, search: string): boolean {
+            return stringIncludes(label, search);
+        },
+
+        __(key: string, params?: Record<string, number | string>, count?: number): string {
+            key = !key.startsWith('global.')
+                ? `components.Select.${key}`
+                : key.replace(/^global\./, '');
+
+            return this.$t(key, params, count);
+        },
     },
     render() {
+        const hasCustomSearcher = this.searcher !== undefined;
         const {
-            $t: __,
+            __,
             name,
             value,
-            options,
+            createLabel,
+            filteredOptions: options,
             selected,
             multiple,
             inheritedInvalid: invalid,
@@ -261,8 +444,14 @@ const Select = defineComponent({
             highlight,
             clearable,
             autocomplete,
+            isOptionMatchingSearch,
+            dropdownShouldOpen,
             formattedPlaceholder,
+            canCreate,
             handleInput,
+            handleSearch,
+            handleOptionCreating,
+            handleOptionCreate,
         } = this;
 
         const renderHiddenInput = (): JSX.Element | null => {
@@ -302,19 +491,89 @@ const Select = defineComponent({
                     clearable={clearable}
                     placeholder={formattedPlaceholder}
                     autocomplete={autocomplete}
+                    multiple={multiple}
                     options={options}
                     value={selected}
-                    onInput={handleInput}
+                    taggable={!hasCustomSearcher && canCreate}
+                    filterable={!hasCustomSearcher}
                     components={icons}
-                    multiple={multiple}
+                    clearSearchOnBlur={() => true}
+                    closeOnSelect={!multiple}
+                    createOption={handleOptionCreating}
+                    dropdownShouldOpen={dropdownShouldOpen}
+                    filterBy={isOptionMatchingSearch}
+                    onSearch={handleSearch}
+                    onInput={handleInput}
                     scopedSlots={{
-                        'no-options': ({ searching }: { searching: boolean }) => {
-                            if (!searching || options.length === 0) {
-                                return __('select-no-options');
+                        'no-options': ({ searching, search }: { search: string, searching: boolean }) => {
+                            if (hasCustomSearcher) {
+                                if (search.length === 0) {
+                                    return __('global.start-typing-to-search');
+                                }
+
+                                if (search.length > 0 && search.length < MIN_CUSTOM_SEARCHER_CHARS) {
+                                    return __(
+                                        'global.type-at-least-count-chars-to-search',
+                                        { count: MIN_CUSTOM_SEARCHER_CHARS - search.length },
+                                        MIN_CUSTOM_SEARCHER_CHARS - search.length,
+                                    );
+                                }
+
+                                if (!canCreate) {
+                                    return __('global.no-result-found-try-another-search');
+                                }
+
+                                return (
+                                    <div class="Select__no-results">
+                                        <p class="Select__no-results__message">
+                                            {__('global.no-result-found-try-another-search')}
+                                        </p>
+                                        <Button
+                                            type="add"
+                                            size="small"
+                                            class="Select__no-results__create-action"
+                                            onClick={() => { handleOptionCreate(search); }}
+                                        >
+                                            {(
+                                                createLabel !== undefined
+                                                    ? (typeof createLabel === 'function' ? createLabel(search) : createLabel)
+                                                    : __('create-label', { label: search })
+                                            )}
+                                        </Button>
+                                    </div>
+                                );
                             }
-                            return __('select-no-matching-result');
+
+                            if (!searching || options.length === 0) {
+                                return __('no-options');
+                            }
+                            return __('no-matching-result');
+                        },
+                        'option': ({ label }: Option) => {
+                            if (
+                                this.pendingCreation !== null &&
+                                this.pendingCreation === label
+                            ) {
+                                return (
+                                    <span class="Select__option Select__option--new">
+                                        {(
+                                            createLabel !== undefined
+                                                ? (typeof createLabel === 'function' ? createLabel(label) : createLabel)
+                                                : __('create-label', { label })
+                                        )}
+                                    </span>
+                                );
+                            }
+
+                            return (
+                                <span class="Select__option">
+                                    {label}
+                                </span>
+                            );
                         },
                     }}
+                    clearSearchOnSelect
+                    appendToBody
                 />
                 {renderHiddenInput()}
             </div>

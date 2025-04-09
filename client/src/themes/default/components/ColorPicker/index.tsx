@@ -74,7 +74,7 @@ const ColorPicker = defineComponent({
     props: {
         value: {
             type: [String, Object] as PropType<Required<Props>['value']>,
-            required: true,
+            default: null,
             validator: (value: unknown | null) => (
                 value === null || Color.isValid(value)
             ),

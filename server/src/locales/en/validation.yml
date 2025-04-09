@@ -1156,6 +1156,18 @@ period-conflict-with-existing-one:
 material-already-in-cart:
     "This material is already in cart."
 
+material-already-in-event:
+    "This material is already in this event."
+
+material-already-in-list:
+    "This material is already in this list."
+
+material-already-in-inventory:
+    "This material is already in this inventory."
+
+position-already-in-event:
+    "This position is already specified in this event."
+
 unavailable-quantity:
     "This quantity is unavailable."
 
@@ -1303,6 +1315,9 @@ user-pseudo-already-in-use:
 
 user-email-already-in-use:
     "This email is already in use."
+
+role-name-already-in-use:
+    "This role already exists."
 
 tax-name-already-in-use:
     "A tax name with this name already exists."

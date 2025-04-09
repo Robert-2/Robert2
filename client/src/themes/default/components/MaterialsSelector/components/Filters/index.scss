@@ -1,35 +1,42 @@
 @use '~@/themes/default/style/globals';
-@use 'sass:math';
 
 .MaterialsSelectorFilters {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    min-height: 43px;
+    flex-direction: column;
     gap: globals.$spacing-small;
 
     &__search {
         flex: 1;
         width: auto;
-        max-width: 650px;
-        min-width: 230px;
-    }
-
-    &__filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: globals.$spacing-small;
+        min-width: 400px;
     }
 
     &__selected-only {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        padding: 0 5px;
-        gap: 3px;
+        justify-content: center;
+        width: 100%;
+        gap: globals.$spacing-medium;
 
         &__label {
             white-space: nowrap;
+        }
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        flex-direction: row;
+
+        &__selected-only {
+            flex-direction: column;
+            justify-content: unset;
+            width: auto;
+            padding: 0 5px;
+            gap: globals.$spacing-thin;
         }
     }
 }

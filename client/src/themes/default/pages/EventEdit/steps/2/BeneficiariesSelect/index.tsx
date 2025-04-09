@@ -10,6 +10,7 @@ import Fragment from '@/components/Fragment';
 import IconMessage from '@/themes/default/components/IconMessage';
 import FormField from '@/themes/default/components/FormField';
 
+import type { ComponentRef } from 'vue';
 import type { DebouncedMethod } from 'lodash';
 import type { PropType } from '@vue/composition-api';
 import type { Option, Options } from '@/utils/formatOptions';
@@ -72,7 +73,7 @@ const EventEditStepBeneficiariesSelect = defineComponent({
         return {
             values: [...this.defaultValues],
             beneficiaries: [],
-            showNewItemForm: false,
+            showNewItemForm: this.defaultValues.length === 0,
         };
     },
     computed: {
@@ -87,6 +88,23 @@ const EventEditStepBeneficiariesSelect = defineComponent({
                 )),
                 (beneficiary: Beneficiary) => getItemLabel(beneficiary),
             );
+        },
+    },
+    watch: {
+        showNewItemForm: {
+            handler(shouldShow: boolean) {
+                if (!shouldShow) {
+                    return;
+                }
+
+                // @ts-expect-error -- `this` fait bien référence au component.
+                this.$nextTick(() => {
+                    // @ts-expect-error -- `this` fait bien référence au component.
+                    const $input = this.$refs.input as ComponentRef<typeof VueSelect>;
+                    $input?.searchEl?.focus();
+                });
+            },
+            immediate: true,
         },
     },
     created() {
@@ -189,39 +207,56 @@ const EventEditStepBeneficiariesSelect = defineComponent({
 
         return (
             <div class={classNames}>
-                {values.map((value: Beneficiary, index: number) => (
+                {values.map((beneficiary: Beneficiary, index: number) => (
                     <FormField
-                        key={value.id || `unknown-${index}`}
-                        label={__('numbered-label', { number: index + 1 })}
+                        key={beneficiary.id || `unknown-${index}`}
+                        class="EventEditStepBeneficiariesSelect__field"
                         type="custom"
+                        label={(
+                            index > 0
+                                ? __('numbered-label', { number: index + 1 })
+                                : __('main-beneficiary')
+                        )}
                     >
                         <div class="EventEditStepBeneficiariesSelect__item">
                             <div class="EventEditStepBeneficiariesSelect__item__value">
-                                {!value && (
+                                {!beneficiary && (
                                     <IconMessage
                                         name="exclamation-triangle"
                                         class="EventEditStepBeneficiariesSelect__item__value__error"
                                         message={__('beneficiary-not-found')}
                                     />
                                 )}
-                                {value && <span>{getItemLabel(value)}</span>}
+                                {beneficiary && (
+                                    <Fragment>
+                                        <span class="EventEditStepBeneficiariesSelect__item__value__name">
+                                            {getItemLabel(beneficiary)}
+                                        </span>
+                                    </Fragment>
+                                )}
                             </div>
                             <Button
                                 type="trash"
                                 class="EventEditStepBeneficiariesSelect__item__action"
                                 aria-label={__('remove-beneficiary')}
-                                onClick={(e: MouseEvent) => { handleRemoveItem(e, value.id); }}
+                                onClick={(e: MouseEvent) => { handleRemoveItem(e, beneficiary.id); }}
                             />
                         </div>
                     </FormField>
                 ))}
                 {showNewItemForm && (
                     <FormField
-                        label={__('numbered-label', { number: values.length + 1 })}
+                        class="EventEditStepBeneficiariesSelect__field"
                         type="custom"
+                        label={(
+                            values.length > 0
+                                ? __('numbered-label', { number: values.length + 1 })
+                                : __('main-beneficiary')
+                        )}
                     >
                         <div class="EventEditStepBeneficiariesSelect__item">
                             <VueSelect
+                                ref="input"
                                 value={null}
                                 filterable={false}
                                 options={options}
@@ -252,6 +287,13 @@ const EventEditStepBeneficiariesSelect = defineComponent({
                                             </Fragment>
                                         );
                                     },
+                                    'option': ({ label }: Option<Beneficiary>) => (
+                                        <span class="EventEditStepBeneficiariesSelect__option">
+                                            <span class="EventEditStepBeneficiariesSelect__option__name">
+                                                {label}
+                                            </span>
+                                        </span>
+                                    ),
                                 }}
                             />
                             <Button

@@ -4,6 +4,76 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.1.0 (UNRELEASED)
+
+- La gestion des techniciens est maintenant désactivable globalement depuis la configuration 
+  statique de l'application. Si vous disposez d'une instance hébergée par nos soins, n'hésitez pas
+  à prendre contact avec nos services si vous souhaitez désactiver ceci.
+- [Premium] Il est dorénavant possible d'assigner un préparateur aux réservations, comme pour les événements.
+  Celui-ci sera notifié avant la date de début de mobilisation prévue en fonction de la configuration.
+- [Premium] Les notifications aux préparateurs ne seront plus envoyées pour les événements et réservations 
+  dont l'inventaire de départ a déjà été effectué.
+- Il est maintenant possible d'assigner un chef de projet aux événements. Celui-ci apparaîtra dans 
+  les fiches de sortie et sera notifié en cas de non retour du matériel (si les notifications sont activées).
+- La page de listing des techniciens propose maintenant aussi un mode d'affichage sous forme de "planning",
+  avec une ligne par technicien et les assignations de celui-ci.
+- De nouvelles options de personnalisation sont disponibles dans votre profil utilisateur, onglet "interface":
+  - Mode d'affichage par défaut pour la page des techniciens: Listing (par défaut) / Planning (voir plus haut 
+    pour ce nouveau mode d'affichage, ajouté dans cette version)
+  - Activation (par défaut) / Désactivation des infobulles contextuelles, notamment celle visible 
+    lorsque l'on survole un matériel.
+  - Activation (par défaut) / Désactivation de la persistance des recherches lorsque l'on change de 
+    page sur les listings.
+- [Premium] Ajout de la possibilité d'assigner une couleur aux réservations, comme cela était déjà possible pour les événements.
+- [Premium] Une couleur peut maintenant être assignée aux bénéficiaires.  
+  Cette couleur, en plus d'apparaître à côté du nom du bénéficiaire partout dans l'application, sera aussi utilisée pour les 
+  événements et réservations où le bénéficiaire est affecté en tant que bénéficiaire principal, sauf si une couleur spécifique 
+  leur a déjà été attribuée (#487).
+- Ajoute la notion de "rôles des techniciens" : une page de gestion des rôles est accessible depuis le
+  menu "trois points" de la liste des techniciens. Dans la page d'édition d'un technicien, un nouveau
+  champ "rôles du technicien" permet d'assigner un ou plusieurs rôles au technicien. Les rôles de chaque
+  technicien sont affichés dans sa fiche (onglet "informations"), ainsi que dans une nouvelle colonne "rôles"
+  de la liste des techniciens. Cette liste peut être filtrée par rôle.
+- [Premium] À l'étape 3 (techniciens) de l'édition d'un événement, un bouton permet de choisir d'afficher la liste des
+  techniciens assignés à l'événement, ou d'afficher la liste des "postes" associés à l'événement.
+  En bas de la liste des postes, un bouton "Ajouter un poste sur cet événement" permet de choisir un rôle de
+  technicien pour le poste, et de définir s'il doit être obligatoirement assigné ou non.
+  Dans l'affichage par "postes", il suffit de cliquer sur la ligne d'un poste pour pouvoir y assigner un
+  technicien, en choisissant parmi les techniciens ayant le rôle du poste. Dans l'affichage par "techniciens",
+  le fonctionnement est inchangé si ce n'est que le champ "poste occupé" est un sélecteur qui permet de choisir
+  le poste parmi les rôles du technicien.
+  Lors de la mise à jour depuis une version précédente de Loxya, les postes entrés manuellement jusque là seront
+  dédoublonnés et ajoutés en tant que "Rôle de technicien" avant de remplacer l'ancien poste entré manuellement.
+- [Premium] Lorsqu'un poste d'un événement a été défini comme étant obligatoire, et qu'aucun technicien n'est assigné à
+  ce poste (et tant que l'événement n'a pas commencé), une alerte est affichée sur l'événement dans le
+  planning principal, pour rappeler que le poste doit être assigné avant le début de l'événement.
+- [Premium] Dans la fiche d'un technicien, un nouvel onglet "Assignations" permet de consulter toutes les assignations
+  du technicien (passées, en cours et futures), sous forme de liste ainsi que sur une frise temporelle. La
+  liste des assignations peut également être groupée par événement, et par poste occupé. Le nombre d'assignations
+  total est affiché en haut de liste.
+- Dès l'ouverture d'une page de création (matériel, événement ou autre), le champ principal est automatiquement 
+  sélectionné, évitant ainsi d'avoir à cliquer dessus pour commencer la saisie.
+- Amélioration de la navigation au clavier dans les formulaires.
+- Il est maintenant possible de naviguer au clavier entres les étapes accessibles dans l'édition des événements
+  et réservations via les combinaisons de touche:
+  - `CTRL + ALT + FLÈCHE HAUT (ou GAUCHE)`: Pour aller à l'étape précédente. 
+  - `CTRL + ALT + FLÈCHE BAS (ou DROITE)`: Pour aller à l'étape suivante.
+- Amélioration globale des recherches.
+  - [Premium] L'expérience de recherche a été améliorée via un nouveau champ permettant de tout faire au même endroit.
+    (Un bouton "Filtres" a toutefois été ajouté pour pouvoir sélectionner les filtres un par un comme avant si nécessaire)
+  - [Premium] Il est maintenant possible d'effectuer plusieurs recherches de texte indépendante.
+    (Par exemple pour obtenir tous les résultats qui correspondent aux textes "Mon événement spécial" OU "Autre événement")
+  - Il est maintenant possible d'effectuer des recherches sur le planning principal. La recherche des événements et
+    réservations peut se faire sur le titre, le lieu, le nom ou adresse e-mail des bénéficiaires, des chefs de projets
+    ou des utilisateurs ayant créé l'événement (ou approuvé la réservation).
+  - Il est maintenant possible d'effectuer des recherches sur le planning des techniciens.
+  - Il est maintenant possible d'effectuer des recherches sur le matériel dans les inventaires.
+- Le sélecteur des colonnes affichées dans les tableaux a été déplacé dans le menu "trois-points" (en haut à droite) de chaque page.
+- [Premium] Dans la liste du matériel (et dans la liste des parcs), un bouton "Exporter le matériel en CSV"
+  permet de télécharger un fichier contenant la liste de tout le matériel, au format CSV.
+  Un paramètre `advanced` dans une nouvelle section `exports.materials` du fichier `settings.json` permet de choisir
+  d'inclure ou non les codes-barres du matériel et des unités de matériel dans le fichier CSV.
+
 ## 1.0.4 (2025-01-27)
 
 - Corrige l'ordre des bénéficiaires associés à un événement, pour que le bénéficiaire principal reste

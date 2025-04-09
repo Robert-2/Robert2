@@ -16,40 +16,45 @@
     &__header {
         flex: 0 0 auto;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: wrap-reverse;
         align-items: center;
         justify-content: flex-start;
-        gap: globals.$spacing-small globals.$spacing-medium;
+        gap: globals.$spacing-small globals.$spacing-large;
+
+        &__content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 100%;
+            gap: globals.$spacing-small;
+        }
 
         &__help {
-            flex: 1;
+            @extend %reset-p;
+
+            @include globals.line-clamp(3);
+
+            display: inline-flex;
+            align-items: center;
             min-width: 250px;
+            color: globals.$help-text-color;
+            white-space: pre-line;
 
-            &__message {
-                @extend %reset-p;
+            @include globals.icon('info-circle') {
+                margin-right: globals.$spacing-small;
+                font-size: 1.2rem;
+            }
 
-                @include globals.line-clamp(3);
+            //
+            // - Variantes
+            //
 
-                display: inline-flex;
-                align-items: center;
-                color: globals.$help-text-color;
-                white-space: pre-line;
+            &--error {
+                @include globals.icon('exclamation-triangle');
 
-                @include globals.icon('info-circle') {
-                    margin-right: globals.$spacing-small;
-                    font-size: 1.2rem;
-                }
-
-                //
-                // - Variantes
-                //
-
-                &--error {
-                    @include globals.icon('exclamation-triangle');
-
-                    color: globals.$text-danger-color;
-                    font-weight: 600;
-                }
+                color: globals.$text-danger-color;
+                font-weight: 600;
             }
         }
 
@@ -85,9 +90,5 @@
     @media (min-width: globals.$screen-tablet) {
         padding: globals.$spacing-medium;
         gap: globals.$spacing-medium;
-
-        &__header {
-            flex-direction: row;
-        }
     }
 }

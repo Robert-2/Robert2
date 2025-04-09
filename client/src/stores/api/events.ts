@@ -4,6 +4,7 @@ import { UserSchema } from './users';
 import { MaterialWithContextExcerptSchema } from './materials';
 import { DocumentSchema } from './documents';
 import { TechnicianSchema } from './technicians';
+import { RoleSchema } from './roles';
 import { withCountedEnvelope } from './@schema';
 import { EstimateSchema } from './estimates';
 import { InvoiceSchema } from './invoices';
@@ -11,15 +12,18 @@ import {
     BeneficiarySchema,
 } from './beneficiaries';
 
+import type Color from '@/utils/color';
 import type Period from '@/utils/period';
 import type { ZodRawShape } from 'zod';
 import type { CountedData } from './@types';
 import type { SchemaInfer } from '@/utils/validation';
+import type { User } from './users';
 import type { Document } from './documents';
 import type { Estimate } from './estimates';
 import type { Invoice } from './invoices';
 import type { Material } from './materials';
 import type { Technician } from './technicians';
+import type { Role } from './roles';
 import type { Beneficiary } from './beneficiaries';
 import type { AxiosRequestConfig as RequestConfig } from 'axios';
 
@@ -33,12 +37,19 @@ import type { AxiosRequestConfig as RequestConfig } from 'axios';
 // - Schemas secondaires
 //
 
+export const EventPositionSchema = z.strictObject({
+    id: z.number(), // - Id du rôle.
+    name: z.string(),
+    is_mandatory: z.boolean(),
+    is_assigned: z.boolean().nullable(),
+});
+
 export const EventTechnicianSchema = z.strictObject({
     id: z.number(),
     event_id: z.number(),
     technician_id: z.number(),
     period: z.period(),
-    position: z.string().nullable(),
+    role: z.lazy(() => RoleSchema).nullable(),
     technician: z.lazy(() => TechnicianSchema),
 });
 
@@ -139,7 +150,8 @@ export const EventSummarySchema = z.strictObject({
 export const EventSchema = EventSummarySchema.extend({
     reference: z.string().nullable(),
     description: z.string().nullable(),
-    color: z.string().nullable(),
+    color: z.color().nullable(),
+    beneficiaries: z.lazy(() => BeneficiarySchema.array()),
     is_confirmed: z.boolean(),
     is_billable: z.boolean(),
     is_archived: z.boolean(),
@@ -164,10 +176,11 @@ export const createEventDetailsSchema = <T extends ZodRawShape>(augmentation: T)
             total_replacement: z.decimal(),
             currency: z.currency(),
             has_deleted_materials: z.boolean(),
-            beneficiaries: z.lazy(() => BeneficiarySchema.array()),
             technicians: z.lazy(() => EventTechnicianSchema.array()),
-            note: z.string().nullable().optional(),
+            positions: z.lazy(() => EventPositionSchema.array()),
+            manager: z.lazy(() => UserSchema).nullable(),
             author: z.lazy(() => UserSchema).nullable(),
+            note: z.string().nullable().optional(),
         })
         .extend<T>(augmentation)
         .strip() // TODO: À enlever lorsqu'on pourra garder les objets stricts avec les intersections.
@@ -202,11 +215,13 @@ export const createEventDetailsSchema = <T extends ZodRawShape>(augmentation: T)
                 is_archived: z.literal(true),
                 has_missing_materials: z.null(),
                 has_not_returned_materials: z.null(),
+                has_unassigned_mandatory_positions: z.null(),
             }),
             z.object({ // TODO: `strictObject` lorsque ce sera possible.
                 is_archived: z.literal(false),
                 has_missing_materials: z.boolean().nullable(),
                 has_not_returned_materials: z.boolean().nullable(),
+                has_unassigned_mandatory_positions: z.boolean().nullable(),
             }),
         ]))
         .and(z.discriminatedUnion('is_billable', [
@@ -269,6 +284,8 @@ export type EventExtra = SchemaInfer<typeof EventExtraSchema>;
 
 export type EventTechnician = SchemaInfer<typeof EventTechnicianSchema>;
 
+export type EventPosition = SchemaInfer<typeof EventPositionSchema>;
+
 export type EventTax = SchemaInfer<typeof EventTaxSchema>;
 export type EventTaxTotal = SchemaInfer<typeof EventTaxTotalSchema>;
 
@@ -276,17 +293,17 @@ export type EventTaxTotal = SchemaInfer<typeof EventTaxTotalSchema>;
 // - Edition
 //
 
-// FIXME: À compléter.
 export type EventEdit = {
     title: string,
     operation_period: Period | null,
     mobilization_period: Period | null,
     location: string | null,
     description: string | null,
-    color: string | null,
+    color: Color | null,
     is_billable: boolean,
     is_confirmed: boolean,
     beneficiaries?: Array<Beneficiary['id']>,
+    manager_id?: User['id'] | null,
     note?: string | null,
 };
 
@@ -310,17 +327,23 @@ type EventDepartureInventoryMaterial = {
 };
 type EventDepartureInventory = EventDepartureInventoryMaterial[];
 
-export type EventTechnicianEdit = {
-    period: Period | null,
-    position: string | null,
-};
+export type EventAssignmentEdit = Nullable<{
+    period: Period,
+    role_id: Role['id'] | null,
+    technician_id: Technician['id'],
+}>;
+
+export type EventPositionEdit = Nullable<{
+    id: Role['id'],
+    is_mandatory: boolean,
+}>;
 
 //
 // - Récupération
 //
 
 type GetAllParams = {
-    search?: string,
+    search?: string | string[],
     exclude?: number | undefined,
     onlySelectable?: boolean,
 };
@@ -411,31 +434,32 @@ const update = async (id: Event['id'], data: Partial<EventEdit>): Promise<EventD
     return EventDetailsSchema.parse(response.data);
 };
 
-const getTechnicianAssignment = async (eventTechnicianId: EventTechnician['id']): Promise<EventTechnician> => {
-    const response = await requester.get(`/event-technicians/${eventTechnicianId}`);
+const updateNote = async (id: Event['id'], note: Event['note']): Promise<EventDetails> => {
+    const response = await requester.put(`/events/${id}/note`, { note });
+    return EventDetailsSchema.parse(response.data);
+};
+
+const createAssignment = async (id: Event['id'], data: EventAssignmentEdit): Promise<EventTechnician> => {
+    const response = await requester.post(`/events/${id}/assignments`, data);
     return EventTechnicianSchema.parse(response.data);
 };
 
-const addTechnicianAssignment = async (
-    id: Event['id'],
-    technicianId: Technician['id'],
-    data: EventTechnicianEdit,
-): Promise<EventTechnician> => {
-    const payload = { ...data, event_id: id, technician_id: technicianId };
-    const response = await requester.post(`/event-technicians`, payload);
+const updateAssignment = async (id: Event['id'], assignmentId: EventTechnician['id'], data: EventAssignmentEdit): Promise<EventTechnician> => {
+    const response = await requester.put(`/events/${id}/assignments/${assignmentId}`, data);
     return EventTechnicianSchema.parse(response.data);
 };
 
-const updateTechnicianAssignment = async (
-    eventTechnicianId: EventTechnician['id'],
-    data: Partial<EventTechnicianEdit>,
-): Promise<EventTechnician> => {
-    const response = await requester.put(`/event-technicians/${eventTechnicianId}`, data);
-    return EventTechnicianSchema.parse(response.data);
+const deleteAssignment = async (id: Event['id'], assignmentId: EventTechnician['id']): Promise<void> => {
+    await requester.delete(`/events/${id}/assignments/${assignmentId}`);
 };
 
-const deleteTechnicianAssignment = async (eventTechnicianId: EventTechnician['id']): Promise<void> => {
-    await requester.delete(`/event-technicians/${eventTechnicianId}`);
+const createPosition = async (id: Event['id'], data: EventPositionEdit): Promise<EventPosition> => {
+    const response = await requester.post(`/events/${id}/positions`, data);
+    return EventPositionSchema.parse(response.data);
+};
+
+const deletePosition = async (id: Event['id'], positionId: EventPosition['id']): Promise<void> => {
+    await requester.delete(`/events/${id}/positions/${positionId}`);
 };
 
 const duplicate = async (id: Event['id'], data: EventDuplicatePayload): Promise<EventDetails> => {
@@ -476,10 +500,12 @@ export default {
     duplicate,
     create,
     update,
-    getTechnicianAssignment,
-    addTechnicianAssignment,
-    updateTechnicianAssignment,
-    deleteTechnicianAssignment,
+    updateNote,
+    createAssignment,
+    updateAssignment,
+    deleteAssignment,
+    createPosition,
+    deletePosition,
     remove,
     documents,
     attachDocument,

@@ -104,13 +104,12 @@ const BeneficiaryViewBillingInvoices = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: [
                         'BeneficiaryViewBillingInvoices__col',
                         'BeneficiaryViewBillingInvoices__col--actions',
                     ],
                     render: (h: CreateElement, { url }: Invoice) => (
-                        <Button icon="download" to={url} external download />
+                        <Button icon="download" to={url} download />
                     ),
                 },
             ];

@@ -1,0 +1,57 @@
+@use '~@/themes/default/style/globals';
+
+.ColumnsSelector {
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 1rem;
+        background-color: globals.$bg-color-emphasis;
+        gap: globals.$spacing-medium;
+
+        &__title {
+            flex: 1;
+            overflow: hidden;
+            margin: 0;
+            font-size: 1.3rem;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            @include globals.icon('table') {
+                margin-right: 0.6rem;
+            }
+        }
+
+        &__close-button {
+            flex: 0 0 auto;
+        }
+    }
+
+    &__body {
+        overflow-y: auto;
+        max-height: min(500px, 80vh);
+    }
+
+    //
+    // - Contenu
+    //
+
+    &__list {
+        @extend %reset-list;
+
+        &__item {
+            display: flex;
+            align-items: center;
+            padding: globals.$spacing-small globals.$spacing-medium;
+            gap: globals.$spacing-medium;
+            transition: color linear 300ms;
+
+            &--not-selected {
+                color: globals.$text-soft-color;
+            }
+
+            & + & {
+                border-top: 1px solid globals.$divider-emphasis;
+            }
+        }
+    }
+}

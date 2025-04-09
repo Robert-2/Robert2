@@ -21,7 +21,20 @@ interface:
     title: Interface
 
     language: Langue
-    default-bookings-view: Vue par défaut des événements
-    booking-view-mode:
-        calendar: Frise temporelle
-        listing: Liste
+    default-views: Affichages par défaut
+    interactions: Interactions
+
+    disable-contextual-popover: "Désactiver les infobulles contextuelles\_?"
+    disable-search-persistence: "Désactiver la persistance des recherches et filtres\_?"
+
+    bookings-view-mode:
+        label: Affichage par défaut du planning global
+        options:
+            calendar: Frise temporelle
+            listing: Liste
+
+    technicians-view-mode:
+        label: Affichage par défaut du listing des techniciens
+        options:
+            listing: Liste
+            timeline: Planning

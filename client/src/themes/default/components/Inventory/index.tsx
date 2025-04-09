@@ -1,11 +1,17 @@
 import './index.scss';
 import invariant from 'invariant';
+import stringIncludes from '@/utils/stringIncludes';
 import { defineComponent } from '@vue/composition-api';
+import { UNCATEGORIZED } from '@/stores/api/materials';
 import { groupByCategories /* groupByParks */ } from './_utils';
 import { InventoryLock, InventoryErrorsSchema } from './_types';
+import StateMessage, { State } from '@/themes/default/components/StateMessage';
+import SearchPanel from '@/themes/default/components/MaterialsFilters';
 import Item from './components/Item';
 
+import type { Tag } from '@/stores/api/tags';
 import type { PropType } from '@vue/composition-api';
+import type { Filters } from '@/themes/default/components/MaterialsFilters';
 import type {
     AwaitedMaterial,
     AwaitedMaterialGroup,
@@ -25,6 +31,10 @@ export enum DisplayGroup {
     /** Pas de tri. */
     NONE = 'none',
 }
+
+type FilterResolver<T extends keyof Filters> = (
+    (material: AwaitedMaterial, filter: NonNullable<Filters[T]>) => boolean
+);
 
 type Props = {
     /**
@@ -96,9 +106,16 @@ type Props = {
     errors?: InventoryMaterialError[],
 };
 
+type Data = {
+    filters: Filters,
+};
+
 /** Inventaire de matériel. */
 const Inventory = defineComponent({
     name: 'Inventory',
+    inject: {
+        globalScanObservationOngoing: { default: { value: false } },
+    },
     props: {
         materials: {
             type: Array as PropType<Props['materials']>,
@@ -138,6 +155,15 @@ const Inventory = defineComponent({
         },
     },
     emits: ['change'],
+    data: (): Data => ({
+        filters: {
+            search: [],
+            park: null,
+            category: null,
+            subCategory: null,
+            tags: [],
+        },
+    }),
     computed: {
         isStateLocked(): boolean {
             if (Array.isArray(this.locked)) {
@@ -152,19 +178,68 @@ const Inventory = defineComponent({
                 : false;
         },
 
+        filteredMaterials(): AwaitedMaterial[] {
+            const { materials, filters } = this;
+
+            const filterResolvers: { [T in keyof Filters]: FilterResolver<T> } = {
+                search: ({ name, reference }: AwaitedMaterial, rawTerms: Filters['search']) => {
+                    const terms = rawTerms.filter(
+                        (term: string) => term.trim().length > 1,
+                    );
+                    if (terms.length === 0) {
+                        return true;
+                    }
+
+                    return terms.some((term: string) => (
+                        stringIncludes(name, term) ||
+                        stringIncludes(reference, term)
+                    ));
+                },
+                park: (material: AwaitedMaterial, parkId: NonNullable<Filters['park']>) => (
+                    material.park_id === parkId
+                ),
+                category: (material: AwaitedMaterial, categoryId: NonNullable<Filters['category']>) => (
+                    (material.category_id === null && categoryId === UNCATEGORIZED) ||
+                    material.category_id === categoryId
+                ),
+                subCategory: (material: AwaitedMaterial, subCategoryId: NonNullable<Filters['subCategory']>) => (
+                    material.sub_category_id === subCategoryId
+                ),
+                tags: (material: AwaitedMaterial, tags: Filters['tags']) => (
+                    tags.length === 0 || material.tags.some((tag: Tag) => tags.includes(tag.id))
+                ),
+            };
+
+            return materials.filter((material: AwaitedMaterial): boolean => (
+                !(Object.entries(filterResolvers) as Array<[keyof Filters, FilterResolver<keyof Filters>]>).some(
+                    <T extends keyof Filters>([field, filterResolver]: [T, FilterResolver<T>]) => (
+                        filters[field] ? !filterResolver(material, filters[field]!) : false
+                    ),
+                )
+            ));
+        },
+
+        isMaterialsEmpty(): boolean {
+            return this.materials.length === 0;
+        },
+
+        isFilteredEmpty(): boolean {
+            return this.filteredMaterials.length === 0;
+        },
+
         list(): AwaitedMaterialGroup[] {
             switch (this.displayGroup) {
                 case DisplayGroup.CATEGORIES: {
                     const categories = this.$store.state.categories.list;
-                    return groupByCategories(this.materials, categories);
+                    return groupByCategories(this.filteredMaterials, categories);
                 }
                 // case DisplayGroup.PARKS: {
                 //     const parks = this.$store.state.parks.list;
-                //     // return dispatchMaterialInSections(this.materials, 'park_id', parks);
-                //     return groupByParks(this.materials, parks);
+                //     // return dispatchMaterialInSections(this.filteredMaterials, 'park_id', parks);
+                //     return groupByParks(this.filteredMaterials, parks);
                 // }
                 default: {
-                    return [{ id: null, name: null, materials: this.materials }];
+                    return [{ id: null, name: null, materials: this.filteredMaterials }];
                 }
             }
         },
@@ -185,6 +260,10 @@ const Inventory = defineComponent({
                 return;
             }
             this.$emit('change', materialId, materialInventory);
+        },
+
+        handleFiltersChange(filters: Filters) {
+            this.filters = filters;
         },
 
         // ------------------------------------------------------
@@ -222,67 +301,118 @@ const Inventory = defineComponent({
             const error = this.errors?.find(({ id }: InventoryMaterialError) => id === materialId);
             return error?.message?.trim() || undefined;
         },
+
+        __(key: string, params?: Record<string, number | string>, count?: number): string {
+            key = !key.startsWith('global.')
+                ? `components.Inventory.${key}`
+                : key.replace(/^global\./, '');
+
+            return this.$t(key, params, count);
+        },
     },
     render() {
         const {
-            $t: __,
+            __,
             list,
+            filters,
             strict,
             locked,
+            isMaterialsEmpty,
+            isFilteredEmpty,
             withComments,
             withBrokenCount,
             displayGroup,
             getMaterialInventory,
             getMaterialError,
+            handleFiltersChange,
             handleChange,
         } = this;
 
+        const isEmpty = (
+            // - S'il n'y a pas de matériel à afficher.
+            isMaterialsEmpty ||
+
+            // - Ou, s'il n'y a pas de résultats selon les critères de recherche courants.
+            isFilteredEmpty
+        );
+        const renderState = (): JSX.Element | null => {
+            if (!isEmpty) {
+                return null;
+            }
+
+            if (isMaterialsEmpty) {
+                return (
+                    <StateMessage
+                        type={State.EMPTY}
+                        size="small"
+                        message={__('empty-state.no-materials')}
+                    />
+                );
+            }
+
+            return (
+                <StateMessage
+                    type={State.NO_RESULT}
+                    size="small"
+                    message={__('empty-state.no-filters-results')}
+                />
+            );
+        };
+
         const classNames = ['Inventory', {
             'Inventory--editable': locked !== true,
+            'Inventory--empty': isEmpty,
         }];
 
         return (
             <div class={classNames}>
-                {list.map(({ id: sectionId, name: sectionName, materials }: AwaitedMaterialGroup) => {
-                    const key = sectionId ?? (displayGroup !== DisplayGroup.NONE ? null : 'flat');
-                    return (
-                        <div key={key} class="Inventory__section">
-                            <div class="Inventory__section__header">
-                                {displayGroup !== DisplayGroup.NONE && (
-                                    <h3 class="Inventory__section__title">
-                                        {sectionName ?? __('not-categorized')}
-                                    </h3>
-                                )}
-                                <div class="Inventory__section__columns">
-                                    <span class="Inventory__section__columns__item">
-                                        {__('actual-qty')}
-                                    </span>
-                                    {withBrokenCount && (
-                                        <span class="Inventory__section__columns__item">
-                                            {__('out-of-order-qty')}
-                                        </span>
+                <SearchPanel
+                    values={filters}
+                    onChange={handleFiltersChange}
+                />
+                <div class="Inventory__content">
+                    {renderState()}
+                    {list.map(({ id: sectionId, name: sectionName, materials }: AwaitedMaterialGroup) => {
+                        const key = sectionId ?? (displayGroup !== DisplayGroup.NONE ? null : 'flat');
+                        return (
+                            <div key={key} class="Inventory__section">
+                                <div class="Inventory__section__header">
+                                    {displayGroup !== DisplayGroup.NONE && (
+                                        <h3 class="Inventory__section__title">
+                                            {sectionName ?? __('global.not-categorized')}
+                                        </h3>
                                     )}
+                                    <div class="Inventory__section__columns">
+                                        <span class="Inventory__section__columns__item">
+                                            {__('global.actual-qty')}
+                                        </span>
+                                        {withBrokenCount && (
+                                            <span class="Inventory__section__columns__item">
+                                                {__('global.out-of-order-qty')}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div class="Inventory__section__items">
+                                    {materials.map((material: AwaitedMaterial) => (
+                                        <Item
+                                            ref={`items[${material.id}]`}
+                                            key={material.id}
+                                            material={material}
+                                            inventory={getMaterialInventory(material.id)}
+                                            error={getMaterialError(material.id)}
+                                            withBrokenCount={withBrokenCount}
+                                            withComments={withComments}
+                                            locked={locked}
+                                            strict={strict}
+                                            onChange={handleChange}
+                                        />
+                                    ))}
                                 </div>
                             </div>
-                            <div class="Inventory__section__items">
-                                {materials.map((material: AwaitedMaterial) => (
-                                    <Item
-                                        ref={`items[${material.id}]`}
-                                        key={material.id}
-                                        material={material}
-                                        inventory={getMaterialInventory(material.id)}
-                                        error={getMaterialError(material.id)}
-                                        withBrokenCount={withBrokenCount}
-                                        withComments={withComments}
-                                        locked={locked}
-                                        strict={strict}
-                                        onChange={handleChange}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
         );
     },

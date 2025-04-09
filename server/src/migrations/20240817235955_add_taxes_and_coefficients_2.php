@@ -924,11 +924,13 @@ final class AddTaxesAndCoefficients2 extends AbstractMigration
         }
 
         // - Factures.
-        $countNonLegacyInvoices = (int) $this->fetchRow(vsprintf(
-            'SELECT COUNT(*) AS `count` FROM `%1$sinvoices` WHERE `is_legacy` <> 1',
-            [$prefix],
-        ))['count'];
-        if ($countNonLegacyInvoices !== 0) {
+        $hasNonLegacyInvoices = (
+            (int) $this->fetchRow(vsprintf(
+                'SELECT COUNT(*) AS `count` FROM `%1$sinvoices` WHERE `is_legacy` <> 1',
+                [$prefix],
+            ))['count']
+        ) !== 0;
+        if ($hasNonLegacyInvoices) {
             throw new \RuntimeException(
                 "Unable to rollback the migration, this would cause the " .
                 "loss of newly generated estimates and/or invoices.",
@@ -976,11 +978,13 @@ final class AddTaxesAndCoefficients2 extends AbstractMigration
         }
 
         // - Devis.
-        $countNonLegacyEstimates = (int) $this->fetchRow(vsprintf(
-            'SELECT COUNT(*) AS `count` FROM `%1$sestimates` WHERE `is_legacy` <> 1',
-            [$prefix],
-        ))['count'];
-        if ($countNonLegacyInvoices !== 0 || $countNonLegacyEstimates !== 0) {
+        $hasNonLegacyEstimates = (
+            (int) $this->fetchRow(vsprintf(
+                'SELECT COUNT(*) AS `count` FROM `%1$sestimates` WHERE `is_legacy` <> 1',
+                [$prefix],
+            ))['count']
+        ) !== 0;
+        if ($hasNonLegacyInvoices || $hasNonLegacyEstimates) {
             throw new \RuntimeException(
                 "Unable to rollback the migration, this would cause the " .
                 "loss of newly generated estimates and/or invoices.",

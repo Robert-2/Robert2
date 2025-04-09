@@ -1,4 +1,5 @@
 import './index.scss';
+import config from '@/globals/config';
 import debounce from 'lodash/debounce';
 import { defineComponent } from '@vue/composition-api';
 import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
@@ -57,6 +58,10 @@ const EventEditStepMaterials = defineComponent({
         };
     },
     computed: {
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         booking(): Booking {
             return {
                 entity: BookingEntity.EVENT,
@@ -106,7 +111,7 @@ const EventEditStepMaterials = defineComponent({
             if (this.isSaving) {
                 return;
             }
-            this.saveAndGoToStep(3);
+            this.saveAndGoToStep(this.isTechniciansEnabled ? 3 : 2);
         },
 
         handleNextClick() {
@@ -190,6 +195,7 @@ const EventEditStepMaterials = defineComponent({
                     class="EventEditStepMaterials__selector"
                     booking={booking}
                     defaultValues={materials}
+                    onSubListChange={handleGlobalChange}
                     onMaterialResynced={handleGlobalChange}
                     onChange={handleChange}
                     withTemplates

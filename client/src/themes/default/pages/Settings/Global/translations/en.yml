@@ -67,9 +67,6 @@ tags:
     action-add: New tag
     create: Create tag
 
-    prompt-add: New tag
-    prompt-modify: Modify tag
-
     tag-name: Tag name
 
     confirm-delete: Move this tag in trash bin?

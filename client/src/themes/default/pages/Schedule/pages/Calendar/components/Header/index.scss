@@ -3,76 +3,33 @@
 .ScheduleCalendarHeader {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: globals.$spacing-medium;
+    gap: globals.$spacing-small;
 
-    &__filters {
-        order: 1;
-        flex: 1;
+    &__main {
         display: flex;
-        flex-direction: column;
         align-items: flex-start;
-        gap: globals.$spacing-small globals.$spacing-large;
+        justify-content: space-between;
+        gap: globals.$spacing-medium;
 
-        &__timeline {
+        &__filters {
             display: flex;
             align-items: stretch;
             gap: globals.$spacing-small;
 
             &__center-date {
-                width: 180px;
-            }
+                // stylelint-disable-next-line declaration-no-important
+                display: none !important;
 
-            &__button {
-                .Button__content {
-                    display: none;
-                }
-            }
-
-            &__loading {
-                display: flex;
-                justify-content: center;
-                width: 40px;
+                // stylelint-disable-next-line declaration-no-important
+                width: 180px !important;
             }
         }
 
-        &__general {
-            flex: 1;
+        &__actions {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
+            margin-left: auto;
             gap: globals.$spacing-small;
-        }
-    }
-
-    &__actions {
-        display: flex;
-        align-items: center;
-        margin-left: auto;
-        gap: globals.$spacing-small;
-    }
-
-    &__filter {
-        $sub-block: &;
-
-        display: flex;
-        align-items: center;
-
-        &__label {
-            width: 150px;
-            margin-right: globals.$spacing-small;
-        }
-
-        &--parks,
-        &--categories {
-            #{$sub-block}__select {
-                min-width: 165px;
-            }
-        }
-
-        &--active {
-            color: globals.$text-base-color;
         }
     }
 
@@ -80,41 +37,32 @@
     // - Responsive
     //
 
-    @media (min-width: globals.$screen-tablet) {
-        &__filters {
-            &__timeline__button {
-                .Button__content {
-                    display: inline;
+    @media (min-width: globals.$screen-mobile) {
+        &__main {
+            &__filters {
+                &__center-date {
+                    // stylelint-disable-next-line declaration-no-important
+                    display: block !important;
                 }
             }
+        }
+    }
 
-            &__general {
-                flex-wrap: nowrap;
+    @media (min-width: globals.$screen-tablet) {
+        &__main {
+            flex-direction: column-reverse;
+
+            &__filters {
+                &__loading {
+                    display: flex;
+                }
             }
         }
     }
 
-    @media (min-width: globals.$screen-desktop) {
-        flex-flow: row nowrap;
-
-        &__filters {
-            order: 0;
-
-            &__general {
-                flex-wrap: nowrap;
-            }
-        }
-    }
-
-    @media (min-width: globals.$screen-big-desktop) {
-        &__filters {
-            flex-flow: row wrap;
-        }
-    }
-
-    @media (min-width: 1800px) {
-        &__filters__general {
-            justify-content: center;
+    @media (min-width: 1200px) {
+        &__main {
+            flex-direction: row;
         }
     }
 }

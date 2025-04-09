@@ -8,7 +8,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        margin-bottom: 10px;
+        margin-bottom: globals.$spacing-large;
         font-size: 1.1rem;
         gap: globals.$spacing-small;
 
@@ -16,38 +16,46 @@
         &__location,
         &__people {
             flex: 0 0 auto;
-            max-width: 100%;
-            margin-bottom: 10px;
+            max-width: 33%;
         }
 
         &__beneficiaries {
-            &__list {
-                margin-bottom: 10px;
-                font-size: 1.2rem;
-
-                &__icon {
-                    width: 1.5rem;
-                    margin-right: globals.$spacing-thin;
-                    text-align: center;
-                }
-
-                &__content {
-                    margin-left: globals.$spacing-thin;
-                }
-            }
-        }
-
-        &__people {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+            align-items: baseline;
+            gap: globals.$spacing-small;
 
-        &__author {
-            margin: 0;
+            &__icon {
+                width: 1.5rem;
+                text-align: center;
+            }
 
-            @include globals.icon('user') {
-                width: 20px;
+            &__names {
+                margin-bottom: globals.$spacing-small;
+                font-size: 1.2rem;
+            }
+
+            &__list {
+                @extend %reset-list;
+
+                display: inline;
+
+                &__item {
+                    display: inline;
+
+                    &__color {
+                        display: inline-block;
+                        width: 0.8em;
+                        height: 0.8em;
+                        margin-right: globals.$spacing-thin;
+                        border-radius: globals.$border-radius-normal;
+                        background-color: var(--color);
+                        vertical-align: -1px;
+                    }
+
+                    & + &::before {
+                        content: ', ';
+                    }
+                }
             }
         }
 
@@ -59,15 +67,39 @@
             }
 
             &__link {
-                margin-left: 5px;
+                margin-left: globals.$spacing-small;
             }
         }
 
-        &__preparer {
-            margin: 0;
+        &__people {
+            display: flex;
+            flex-direction: column;
+            gap: globals.$spacing-small;
 
-            @include globals.icon('dolly') {
-                width: 25px;
+            &__item {
+                margin: 0;
+
+                &::before {
+                    width: 30px;
+                    margin-right: globals.$spacing-thin;
+                    text-align: center;
+                }
+
+                &__value {
+                    color: #fff;
+                }
+
+                //
+                // - Variantes
+                //
+
+                &--author {
+                    @include globals.icon('user');
+                }
+
+                &--manager {
+                    @include globals.icon('user-tie');
+                }
             }
         }
     }

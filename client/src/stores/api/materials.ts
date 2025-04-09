@@ -202,7 +202,7 @@ export type MaterialEdit = {
 //
 
 export type BaseFilters = Nullable<{
-    search?: string,
+    search?: string | string[],
     category?: Category['id'],
     subCategory?: SubCategory['id'],
 }>;

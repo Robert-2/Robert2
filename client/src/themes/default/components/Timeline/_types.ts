@@ -5,6 +5,7 @@ import type { Merge } from 'type-fest';
 import type { ClassValue } from 'clsx';
 import type { RawColor } from '@/utils/color';
 import type { TimeUnit } from '@/utils/datetime';
+import type { Props as IconProps } from '@/themes/default/components/Icon';
 import type {
     TimelineGroup as TimelineGroupCore,
     TimelineItem as TimelineItemCore,
@@ -45,12 +46,35 @@ export type TimelineItem = (
     }
 );
 
+export type TimelineGroupAction = {
+    /**
+     * L'icône à utiliser pour le bouton d'action.
+     *
+     * Doit contenir une chaîne de caractère avec les composantes suivantes séparées par `:` :
+     * - Le nom de l'icône sous forme de chaîne (e.g. `plus`, `wrench`)
+     *   Pour une liste exhaustive des codes, voir: https://fontawesome.com/v5.15/icons?m=free
+     * - La variante à utiliser de l'icône à utiliser (`solid`, `regular`, ...).
+     *
+     * @example
+     * - `wrench`
+     * - `wrench:solid`
+     */
+    icon: string | `${string}:${Required<IconProps>['variant']}`,
+
+    /** Libellé accessible pour le bouton d'action. */
+    ariaLabel?: string,
+
+    /** Fonction à utiliser lors d'un clic sur le bouton d'action. */
+    onClick(e: MouseEvent): void,
+};
+
 export type TimelineGroup = (
     & Omit<TimelineGroupCore, 'content' | 'title' | 'className' | 'style'>
     & {
         name: string,
         className?: ClassValue,
         style?: AnyLiteralObject,
+        actions?: TimelineGroupAction[],
     }
 );
 

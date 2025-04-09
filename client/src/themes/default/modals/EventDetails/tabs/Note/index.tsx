@@ -1,4 +1,5 @@
 import './index.scss';
+import config from '@/globals/config';
 import throttle from 'lodash/throttle';
 import { defineComponent } from '@vue/composition-api';
 import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
@@ -8,7 +9,7 @@ import Notepad from '@/themes/default/components/Notepad';
 import Button from '@/themes/default/components/Button';
 
 import type { PropType } from '@vue/composition-api';
-import type { EventDetails } from '@/stores/api/events';
+import type { EventDetails, EventTechnician } from '@/stores/api/events';
 import type { DebouncedMethod } from 'lodash';
 import type { Session } from '@/stores/api/session';
 
@@ -68,10 +69,39 @@ const EventDetailsNote = defineComponent({
         };
     },
     computed: {
-        readOnly(): boolean {
-            const currentUser: Session = this.$store.state.auth.user;
+        isTeamMember(): boolean {
+            return this.$store.getters['auth/is']([
+                Group.ADMINISTRATION,
+                Group.MANAGEMENT,
+            ]);
+        },
 
-            return currentUser.group === Group.READONLY_PLANNING_GENERAL;
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
+        readOnly(): boolean {
+            if (this.isTeamMember) {
+                return false;
+            }
+
+            // - Pour donner accès à la modification des notes à un utilisateur
+            //   non-membre de l'équipe, on vérifie qu'il est chef de projet...
+            const currentUser: Session = this.$store.state.auth.user;
+            if (this.event.manager?.id === currentUser.id) {
+                return false;
+            }
+
+            if (this.isTechniciansEnabled) {
+                // - ... ou qu'il fait partie des techniciens assignés à l'événement.
+                return !(this.event.technicians ?? []).some(
+                    (eventTechnician: EventTechnician) => (
+                        currentUser.id === eventTechnician.technician.user_id
+                    ),
+                );
+            }
+
+            return true;
         },
     },
     created() {
@@ -135,7 +165,7 @@ const EventDetailsNote = defineComponent({
             this.isSaving = true;
 
             try {
-                const updatedEvent = await apiEvents.update(event.id, { note });
+                const updatedEvent = await apiEvents.updateNote(event.id, note);
 
                 this.saveRetryAttempts = 0;
                 this.$emit('updated', updatedEvent);

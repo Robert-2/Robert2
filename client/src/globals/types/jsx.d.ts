@@ -12,6 +12,8 @@ declare global {
             $route: any;
         }
 
+        type Node = Element | Element[] | string | number | null;
+
         // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
         interface IntrinsicElements {
             [elem: string]: any;

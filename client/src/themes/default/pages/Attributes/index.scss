@@ -7,6 +7,14 @@
         height: 100%;
 
         &__cell {
+            &--type,
+            &--unit,
+            &--max-length,
+            &--categories,
+            &--is-totalisable {
+                display: none;
+            }
+
             &--name {
                 width: 300px;
             }
@@ -29,6 +37,30 @@
                 display: none;
 
                 @media (min-width: globals.$screen-big-desktop) {
+                    display: table-cell;
+                }
+            }
+
+            //
+            // - Responsive
+            //
+
+            @media (min-width: globals.$screen-tablet) {
+                &--type {
+                    display: table-cell;
+                }
+            }
+
+            @media (min-width: globals.$screen-desktop) {
+                &--unit,
+                &--max-length,
+                &--is-totalisable {
+                    display: table-cell;
+                }
+            }
+
+            @media (min-width: globals.$screen-big-desktop) {
+                &--categories {
                     display: table-cell;
                 }
             }

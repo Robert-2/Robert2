@@ -1,24 +1,24 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import axios from 'axios';
-import HttpCode from 'status-code-enum';
-import { isRequestErrorStatusCode } from '@/utils/errors';
+import apiTags from '@/stores/api/tags';
+import { confirm } from '@/utils/alert';
+import showModal from '@/utils/showModal';
+import stringCompare from '@/utils/stringCompare';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import Dropdown from '@/themes/default/components/Dropdown';
 import Button from '@/themes/default/components/Button';
 import Icon from '@/themes/default/components/Icon';
-import { confirm, prompt } from '@/utils/alert';
-import stringCompare from '@/utils/stringCompare';
-import apiTags from '@/stores/api/tags';
-import { ApiErrorCode } from '@/stores/api/@codes';
 import SubPage from '../../components/SubPage';
 
-import type { Tag, TagEdit } from '@/stores/api/tags';
+// - Modales
+import EditTag from '@/themes/default/modals/EditTag';
+
+import type { Tag } from '@/stores/api/tags';
 
 type Data = {
-    tags: Tag[] | null,
+    tags: Tag[],
     isFetched: boolean,
     processing: Array<Tag['id']>,
     hasCriticalError: boolean,
@@ -30,7 +30,7 @@ type Data = {
 const TagsGlobalSettings = defineComponent({
     name: 'TagsGlobalSettings',
     data: (): Data => ({
-        tags: null,
+        tags: [],
         isFetched: false,
         processing: [],
         hasCriticalError: false,
@@ -40,12 +40,8 @@ const TagsGlobalSettings = defineComponent({
     computed: {
         sortedTags(): Tag[] {
             const { tags } = this;
-            if (!tags) {
-                return [];
-            }
-
-            return [...tags].sort(({ name: name1 }: Tag, { name: name2 }: Tag) => (
-                stringCompare(name1, name2)
+            return [...tags].sort((a: Tag, b: Tag) => (
+                stringCompare(a.name, b.name)
             ));
         },
     },
@@ -60,54 +56,54 @@ const TagsGlobalSettings = defineComponent({
         // ------------------------------------------------------
 
         async handleCreate() {
-            const { __ } = this;
-
-            // TODO: À migrer vers une vraie modale.
-            //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
-            const { value: name } = await prompt(
-                __('prompt-add'),
-                {
-                    placeholder: __('tag-name'),
-                    confirmButtonText: __('create'),
-                },
+            const newTag: Tag | undefined = (
+                await showModal(this.$modal, EditTag)
             );
-            if (!name) {
+
+            // - Si l'ajout a été annulé, on retourne sans autre.
+            if (newTag === undefined) {
                 return;
             }
 
-            this.save(null, { name });
+            const { __ } = this;
+            this.$toasted.success(__('saved'));
+
+            this.tags.push(newTag);
+            this.fetchData();
         },
 
         async handleEdit(id: Tag['id']) {
-            if (!this.tags || this.processing.includes(id)) {
+            const tag = this.tags.find((_tag: Tag) => _tag.id === id);
+            if (this.processing.includes(id) || tag === undefined) {
+                return;
+            }
+            this.processing.push(id);
+
+            const updatedTag: Tag | undefined = (
+                await showModal(this.$modal, EditTag, { tag })
+            );
+
+            this.$delete(this.processing, this.processing.indexOf(id));
+
+            // - Si l'édition a été annulée, on retourne sans autre.
+            if (updatedTag === undefined) {
                 return;
             }
 
             const { __ } = this;
-            const tag = this.tags.find((_tag: Tag) => _tag.id === id);
-            if (tag === undefined) {
-                return;
-            }
+            this.$toasted.success(__('saved'));
 
-            const { name } = tag;
-
-            // TODO: À migrer vers une vraie modale.
-            //       (qui ne se ferme pas quand on a des erreurs de formulaire notamment)
-            const { value: newName } = await prompt(
-                __('prompt-modify'),
-                { placeholder: name, inputValue: name },
-            );
-            if (!newName) {
-                return;
-            }
-
-            this.save(id, { name: newName });
+            const toUpdateIndex = this.tags.findIndex((_tag: Tag) => _tag.id === id);
+            this.$set(this.tags, toUpdateIndex, updatedTag);
+            this.fetchData();
         },
 
         async handleRemove(id: Tag['id']) {
-            if (this.processing.includes(id)) {
+            const tag = this.tags.find((_tag: Tag) => _tag.id === id);
+            if (this.processing.includes(id) || tag === undefined) {
                 return;
             }
+            this.processing.push(id);
 
             const { __, isTrashDisplayed } = this;
             const isSoft = !isTrashDisplayed;
@@ -122,11 +118,16 @@ const TagsGlobalSettings = defineComponent({
                     : __('global.yes-permanently-delete'),
             });
             if (!isConfirmed) {
+                this.$delete(this.processing, this.processing.indexOf(id));
                 return;
             }
 
-            this.processing.push(id);
-            this.removeTagFromList(id);
+            // Note: On utilise pas `this.tags.indexOf(tag)` car la liste a
+            //       pu changer depuis (vu le await plus haut).
+            const index = this.tags.findIndex((_tag: Tag) => _tag.id === id);
+            if (index !== -1) {
+                this.$delete(this.tags, index);
+            }
 
             try {
                 await apiTags.remove(id);
@@ -136,16 +137,16 @@ const TagsGlobalSettings = defineComponent({
                 this.$toasted.error(__('global.errors.unexpected-while-deleting'));
                 this.fetchData();
             } finally {
-                const processingSet = new Set(this.processing);
-                processingSet.delete(id);
-                this.processing = Array.from(processingSet);
+                this.$delete(this.processing, this.processing.indexOf(id));
             }
         },
 
         async handleRestore(id: Tag['id']) {
-            if (this.processing.includes(id)) {
+            const tag = this.tags.find((_tag: Tag) => _tag.id === id);
+            if (this.processing.includes(id) || tag === undefined) {
                 return;
             }
+            this.processing.push(id);
 
             const { __ } = this;
             const isConfirmed = await confirm({
@@ -153,11 +154,16 @@ const TagsGlobalSettings = defineComponent({
                 confirmButtonText: __('global.yes-restore'),
             });
             if (!isConfirmed) {
+                this.$delete(this.processing, this.processing.indexOf(id));
                 return;
             }
 
-            this.processing.push(id);
-            this.removeTagFromList(id);
+            // Note: On utilise pas `this.tags.indexOf(tag)` car la liste a
+            //       pu changer depuis (vu le await plus haut).
+            const index = this.tags.findIndex((_tag: Tag) => _tag.id === id);
+            if (index !== -1) {
+                this.$delete(this.tags, index);
+            }
 
             try {
                 await apiTags.restore(id);
@@ -167,9 +173,7 @@ const TagsGlobalSettings = defineComponent({
                 this.$toasted.error(__('global.errors.unexpected-while-restoring'));
                 this.fetchData();
             } finally {
-                const processingSet = new Set(this.processing);
-                processingSet.delete(id);
-                this.processing = Array.from(processingSet);
+                this.$delete(this.processing, this.processing.indexOf(id));
             }
         },
 
@@ -194,64 +198,6 @@ const TagsGlobalSettings = defineComponent({
             } catch {
                 this.hasCriticalError = true;
             }
-        },
-
-        async save(id: Tag['id'] | null, data: TagEdit) {
-            const isNew = id === null;
-            if (!this.tags || (!isNew && this.processing.includes(id))) {
-                return;
-            }
-
-            const { __ } = this;
-            if (!isNew) {
-                this.processing.push(id);
-            }
-
-            try {
-                const newTagData = isNew
-                    ? await apiTags.create(data)
-                    : await apiTags.update(id, data);
-
-                if (isNew) {
-                    this.tags.push(newTagData);
-                } else {
-                    const toUpdateIndex = this.tags.findIndex((_tag: Tag) => _tag.id === id);
-                    this.$set(this.tags, toUpdateIndex, newTagData);
-                }
-                this.$toasted.success(__('saved'));
-                this.$store.dispatch('tags/refresh');
-            } catch (error) {
-                let errorMessage = __('global.errors.unexpected-while-saving');
-                if (axios.isAxiosError(error) && isRequestErrorStatusCode(error, HttpCode.ClientErrorBadRequest)) {
-                    const defaultError = { code: ApiErrorCode.UNKNOWN, details: {} };
-                    const { code, details } = error.response?.data?.error ?? defaultError;
-                    if (code === ApiErrorCode.VALIDATION_FAILED) {
-                        errorMessage = __('global.errors.validation');
-                        if (details.name) {
-                            [errorMessage] = details.name;
-                        }
-                    }
-                }
-                this.$toasted.error(errorMessage);
-            } finally {
-                if (!isNew) {
-                    const processingSet = new Set(this.processing);
-                    processingSet.delete(id);
-                    this.processing = Array.from(processingSet);
-                }
-            }
-        },
-
-        removeTagFromList(id: Tag['id']) {
-            if (!this.tags) {
-                return;
-            }
-
-            const index = this.tags.findIndex((_tag: Tag) => _tag.id === id);
-            if (index === -1) {
-                return;
-            }
-            this.$delete(this.tags, index);
         },
 
         __(key: string, params?: Record<string, number | string>, count?: number): string {

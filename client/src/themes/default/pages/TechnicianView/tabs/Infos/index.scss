@@ -64,6 +64,28 @@
         margin-left: globals.$spacing-small;
     }
 
+    &__roles {
+        @extend %reset-list;
+
+        display: flex;
+        flex-wrap: wrap;
+        gap: globals.$spacing-thin;
+
+        &__item {
+            overflow: hidden;
+            max-width: 200px;
+            padding: 0.3rem 1rem;
+            border-radius: globals.$border-radius-large;
+            background: globals.$bg-color-emphasis;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            @include globals.icon('tools') {
+                margin-right: 0.3rem;
+            }
+        }
+    }
+
     //
     // - Responsive
     //

@@ -5,7 +5,16 @@
 
     display: flex;
     flex-direction: column;
+    height: 100%;
+    min-height: 300px;
     gap: globals.$spacing-large;
+
+    &__content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-large;
+    }
 
     &__section {
         &__header {
@@ -55,6 +64,14 @@
         #{$block}__section__columns {
             // - Colonne d'action + Gap.
             margin-right: calc(36px + #{globals.$spacing-medium});
+        }
+    }
+
+    &--empty {
+        #{$block}__content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
 }

@@ -142,7 +142,6 @@ const EventDetailsEstimate = defineComponent({
                         class="EventDetailsEstimate__download"
                         disabled={isDeleting}
                         to={url}
-                        external
                         download
                     >
                         {__('global.download')}

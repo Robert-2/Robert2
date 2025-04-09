@@ -1,22 +1,48 @@
-import './index.scss';
+import { z } from '@/utils/validation';
+import Period from '@/utils/period';
+import isTruthy from '@/utils/isTruthy';
+import isEqualWith from 'lodash/isEqualWith';
 import { defineComponent } from '@vue/composition-api';
-import omit from 'lodash/omit';
-import pick from 'lodash/pick';
 import { UNCATEGORIZED } from '@/stores/api/materials';
-import Select from '@/themes/default/components/Select';
-import DatePicker from '@/themes/default/components/DatePicker';
-import Button from '@/themes/default/components/Button';
+import SearchPanel, { FilterKind } from '@/themes/default/components/SearchPanel';
 
 import type { PropType } from '@vue/composition-api';
-import type { BookingListFilters } from '@/stores/api/bookings';
-import type { Options } from '@/utils/formatOptions';
-import type { Park, ParkSummary } from '@/stores/api/parks';
+import type { SchemaInfer } from '@/utils/validation';
+import type { Options as DataOptions } from '@/utils/formatOptions';
 import type { Category } from '@/stores/api/categories';
-import type Period from '@/utils/period';
+import type { ParkSummary } from '@/stores/api/parks';
+import type { FilterDefinition, TokenOptions } from '@/themes/default/components/SearchPanel';
 
-export type Filters = Omit<BookingListFilters, 'search'>;
-type StateFilterName = 'endingToday' | 'returnInventoryTodo' | 'archived' | 'notConfirmed';
-export type StateFilters = Pick<BookingListFilters, StateFilterName>;
+enum TokenType {
+    PARK = 'park',
+    PERIOD = 'period',
+    CATEGORY = 'category',
+    STATES = 'states',
+}
+
+export enum StateFilter {
+    /** Les bookings se terminant aujourd'hui. */
+    ENDING_TODAY = 'endingToday',
+
+    /** Les bookings avec un inventaire à faire. */
+    RETURN_INVENTORY_TODO = 'returnInventoryTodo',
+
+    /** Les bookings archivés. */
+    ARCHIVED = 'archived',
+
+    /** Les bookings non confirmés. */
+    NOT_CONFIRMED = 'notConfirmed',
+}
+
+export const FiltersSchema = z.strictObject({
+    search: z.string().array(),
+    [TokenType.PERIOD]: z.period().nullable(),
+    [TokenType.PARK]: z.number().nullable(),
+    [TokenType.CATEGORY]: z.union([z.number(), z.literal(UNCATEGORIZED)]).nullable(),
+    [TokenType.STATES]: z.nativeEnum(StateFilter).array(),
+});
+
+export type Filters = SchemaInfer<typeof FiltersSchema>;
 
 type Props = {
     /** Les valeurs actuelles des filtres. */
@@ -28,25 +54,28 @@ const ScheduleListingFilters = defineComponent({
     name: 'ScheduleListingFilters',
     props: {
         values: {
-            type: Object as PropType<Props['values']>,
+            type: Object as PropType<Required<Props>['values']>,
             required: true,
+            validator: (value: unknown) => (
+                FiltersSchema.safeParse(value).success
+            ),
         },
     },
-    emits: ['change'],
+    emits: ['change', 'submit'],
     computed: {
-        parksOptions(): Options<ParkSummary> {
+        parksOptions(): DataOptions<ParkSummary> {
             return this.$store.getters['parks/options'];
         },
 
-        withParkFilter(): boolean {
-            return (
-                this.values.park !== null ||
-                this.parksOptions.length > 1
-            );
-        },
-
-        categoriesOptions(): Options<Category> {
+        categoriesOptions(): DataOptions<Category> {
             const { $t: __ } = this;
+
+            // - On garde le tableau à vide le temps d'avoir récupéré les options pour
+            //   éviter que le component `<Search />` pense qu'on a toutes les valeurs
+            //   possibles et supprime les valeurs absentes.
+            if (!this.$store.state.categories.isFetched) {
+                return [];
+            }
 
             return [
                 { value: UNCATEGORIZED, label: __('not-categorized') },
@@ -54,33 +83,76 @@ const ScheduleListingFilters = defineComponent({
             ];
         },
 
-        statesOptions(): Options<{ id: StateFilterName }> {
+        statesOptions(): TokenOptions<StateFilter> {
             const { $t: __ } = this;
 
             return [
-                { value: 'endingToday', label: __('page.schedule.listing.states.ending-today') },
-                { value: 'returnInventoryTodo', label: __('page.schedule.listing.states.return-inventory-todo') },
-                { value: 'notConfirmed', label: __('page.schedule.listing.states.not-confirmed') },
-                { value: 'archived', label: __('page.schedule.listing.states.archived') },
+                {
+                    value: StateFilter.ENDING_TODAY,
+                    label: __('page.schedule.listing.states.ending-today'),
+                },
+                {
+                    value: StateFilter.RETURN_INVENTORY_TODO,
+                    label: __('page.schedule.listing.states.return-inventory-todo'),
+                },
+                {
+                    value: StateFilter.NOT_CONFIRMED,
+                    label: __('page.schedule.listing.states.not-confirmed'),
+                },
+                {
+                    value: StateFilter.ARCHIVED,
+                    label: __('page.schedule.listing.states.archived'),
+                },
             ];
         },
 
-        statesValues(): Array<keyof StateFilters> {
-            const { values } = this;
-
-            return (['endingToday', 'returnInventoryTodo', 'archived', 'notConfirmed'] as Array<keyof StateFilters>)
-                .filter((key: keyof StateFilters) => (key in values && values[key] === true));
+        withParkFilter(): boolean {
+            return (
+                this.values[TokenType.PARK] !== null ||
+                this.parksOptions.length > 1
+            );
         },
 
-        isFilterEmpty(): boolean {
-            return (
-                this.values.park === undefined &&
-                this.values.category === undefined &&
-                this.values.endingToday === undefined &&
-                this.values.returnInventoryTodo === undefined &&
-                this.values.archived === undefined &&
-                this.values.notConfirmed === undefined
-            );
+        definitions(): FilterDefinition[] {
+            const {
+                $t: __,
+                withParkFilter,
+                parksOptions,
+                statesOptions,
+                categoriesOptions,
+            } = this;
+
+            return [
+                withParkFilter && {
+                    type: TokenType.PARK,
+                    icon: 'industry',
+                    title: __('park'),
+                    placeholder: __('all-parks'),
+                    options: parksOptions,
+                },
+                {
+                    type: TokenType.CATEGORY,
+                    icon: 'sitemap',
+                    title: __('category'),
+                    placeholder: __('all-categories'),
+                    options: categoriesOptions,
+                },
+                {
+                    type: TokenType.PERIOD,
+                    icon: 'calendar-alt',
+                    title: __('period'),
+                    placeholder: __('all-periods'),
+                    kind: FilterKind.PERIOD,
+                },
+                {
+                    type: TokenType.STATES,
+                    icon: 'toggle-on',
+                    title: __('state'),
+                    placeholder: __('all-states'),
+                    options: statesOptions,
+                    multiSelect: true,
+                },
+            ].filter(isTruthy) as FilterDefinition[];
         },
     },
     mounted() {
@@ -94,127 +166,42 @@ const ScheduleListingFilters = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleParkChange(rawPark: Park['id'] | '') {
-            const park = rawPark !== '' ? rawPark : null;
-            if (park === (this.values.park ?? null)) {
-                return;
+        handleChange(newFilters: Filters) {
+            const normalizedNewFilters: Filters = { ...newFilters };
+            if (!(TokenType.PARK in normalizedNewFilters) || !this.withParkFilter) {
+                normalizedNewFilters[TokenType.PARK] = null;
             }
 
-            const newFilters = park === null
-                ? omit(this.values, 'park')
-                : { ...this.values, park };
-
-            this.$emit('change', newFilters);
-        },
-
-        handleCategoryChange(rawCategory: Category['id'] | '') {
-            const category = rawCategory !== '' ? rawCategory : null;
-            if (category === (this.values.category ?? null)) {
-                return;
+            const comparator = (a: unknown, b: unknown): boolean | undefined => {
+                if (a instanceof Period && b instanceof Period) {
+                    return a.isSame(b);
+                }
+                return undefined;
+            };
+            if (!isEqualWith(this.values, normalizedNewFilters, comparator)) {
+                this.$emit('change', normalizedNewFilters);
             }
-
-            const newFilters = category === null
-                ? omit(this.values, 'category')
-                : { ...this.values, category };
-
-            this.$emit('change', newFilters);
         },
 
-        handlePeriodChange(period: Period | null) {
-            const newFilters = period === null
-                ? omit(this.values, 'period')
-                : { ...this.values, period };
-
-            this.$emit('change', newFilters);
-        },
-
-        handleChangeStates(states: Array<keyof StateFilters>) {
-            const newFilters: BookingListFilters = pick(this.values, ['park', 'category', 'period']);
-
-            if (states.length === 0) {
-                this.$emit('change', newFilters);
-                return;
-            }
-
-            states.forEach((state: keyof StateFilters) => {
-                newFilters[state] = true;
-            });
-            this.$emit('change', newFilters);
-        },
-
-        handleClear() {
-            this.$emit('change', {});
+        handleSubmit() {
+            this.$emit('submit');
         },
     },
     render() {
         const {
-            $t: __,
-            withParkFilter,
-            parksOptions,
-            categoriesOptions,
-            statesOptions,
             values,
-            statesValues,
-            handleParkChange,
-            handleCategoryChange,
-            handlePeriodChange,
-            handleChangeStates,
-            isFilterEmpty,
-            handleClear,
+            definitions,
+            handleChange,
+            handleSubmit,
         } = this;
 
         return (
-            <div class="ScheduleListingFilters">
-                {withParkFilter && (
-                    <Select
-                        key="park-filter"
-                        class="ScheduleListingFilters__item ScheduleListingFilters__item--park"
-                        placeholder={__('all-parks')}
-                        options={parksOptions}
-                        value={values.park ?? null}
-                        highlight={values.park !== undefined}
-                        onChange={handleParkChange}
-                    />
-                )}
-                <Select
-                    key="categories-filter"
-                    class="ScheduleListingFilters__item ScheduleListingFilters__item--category"
-                    placeholder={__('all-categories')}
-                    options={categoriesOptions}
-                    value={values.category ?? null}
-                    highlight={values.category !== undefined}
-                    onChange={handleCategoryChange}
-                />
-                <DatePicker
-                    type="date"
-                    placeholder={__('page.schedule.listing.all-periods')}
-                    value={values.period}
-                    onChange={handlePeriodChange}
-                    class="ScheduleListingFilters__item ScheduleListingFilters__item--period"
-                    withSnippets
-                    range
-                    clearable
-                />
-                <Select
-                    key="state-filter"
-                    class="ScheduleListingFilters__item ScheduleListingFilters__item--state"
-                    placeholder={__('page.schedule.listing.all-states')}
-                    options={statesOptions}
-                    value={statesValues}
-                    highlight={statesValues.length > 0}
-                    onChange={handleChangeStates}
-                    multiple
-                />
-                {!isFilterEmpty && (
-                    <Button
-                        type="danger"
-                        icon="backspace"
-                        class="ScheduleListingFilters__reset"
-                        tooltip={__('clear-filters')}
-                        onClick={handleClear}
-                    />
-                )}
-            </div>
+            <SearchPanel
+                values={values}
+                definitions={definitions}
+                onChange={handleChange}
+                onSubmit={handleSubmit}
+            />
         );
     },
 });

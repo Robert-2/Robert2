@@ -152,6 +152,50 @@ const SwitchToggle = defineComponent({
             this.$emit('input', newValue);
             this.$emit('change', newValue);
         },
+
+        handleKeydown(e: KeyboardEvent) {
+            const { key } = e;
+
+            if (this.inheritedDisabled) {
+                return;
+            }
+
+            const handlers: Record<string, () => void> = {
+                ' ': () => {
+                    e.preventDefault();
+
+                    this.handleSwitch();
+                },
+                'ArrowLeft': () => {
+                    e.preventDefault();
+
+                    const { value: prevValue, options } = this;
+                    const targetValue = options?.[0].value ?? false;
+
+                    if (prevValue !== targetValue) {
+                        this.$emit('input', targetValue);
+                        this.$emit('change', targetValue);
+                    }
+                },
+                'ArrowRight': () => {
+                    e.preventDefault();
+
+                    const { value: prevValue, options } = this;
+                    const targetValue = options?.[1].value ?? true;
+
+                    if (prevValue !== targetValue) {
+                        this.$emit('input', targetValue);
+                        this.$emit('change', targetValue);
+                    }
+                },
+            };
+
+            if (!Object.keys(handlers).includes(key)) {
+                return;
+            }
+
+            handlers[key]();
+        },
     },
     render() {
         const {
@@ -162,6 +206,7 @@ const SwitchToggle = defineComponent({
             isToggled,
             inheritedDisabled: disabled,
             disabledReason,
+            handleKeydown,
             handleSwitch,
             hideLabels,
         } = this;
@@ -217,7 +262,14 @@ const SwitchToggle = defineComponent({
         };
 
         return (
-            <div class={classNames} onClick={handleSwitch}>
+            <div
+                role="switch"
+                class={classNames}
+                onClick={handleSwitch}
+                onKeydown={handleKeydown}
+                tabIndex={!disabled ? 0 : -1}
+                aria-checked={isToggled}
+            >
                 <div class="SwitchToggle__field">
                     {renderLeftLabel()}
                     <div class="SwitchToggle__slide">

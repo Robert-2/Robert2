@@ -12,12 +12,36 @@
         --input-width: 180px;
     }
 
-    &__default-bookings-view {
-        --input-width: 280px;
+    &__default-views {
+        display: flex;
+        flex-direction: column;
+        gap: globals.$spacing-medium;
+
+        &__item {
+            flex: 1;
+
+            // stylelint-disable-next-line declaration-no-important -- Surcharge du `.FormField + .FormField`.
+            margin-top: 0 !important;
+        }
     }
 
     &__actions {
         margin-top: globals.$spacing-large;
         text-align: center;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-tablet) {
+        &__default-views {
+            flex-direction: row;
+            gap: globals.$spacing-medium;
+
+            &__item {
+                max-width: 50%;
+            }
+        }
     }
 }

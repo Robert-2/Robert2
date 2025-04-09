@@ -67,9 +67,6 @@ tags:
     action-add: Nouveau tag
     create: Créer le tag
 
-    prompt-add: Nouveau tag
-    prompt-modify: Modifier le tag
-
     tag-name: Nom du tag
 
     confirm-delete: "Mettre ce tag à la corbeille\_?"

@@ -7,6 +7,7 @@ use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Loxya\Config\Enums\Feature;
 use Loxya\Contracts\PeriodInterface;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
@@ -24,7 +25,8 @@ use Respect\Validation\Validator as V;
  * @property string $start_date
  * @property string $end_date
  * @property Period $period
- * @property string|null $position
+ * @property int|null $role_id
+ * @property-read Role|null $role
  *
  * @method static Builder|static inPeriod(PeriodInterface $period)
  * @method static Builder|static inPeriod(string|\DateTimeInterface $start, string|\DateTimeInterface|null $end)
@@ -49,7 +51,7 @@ final class EventTechnician extends BaseModel implements Serializable
             'technician_id' => V::custom([$this, 'checkTechnicianId']),
             'start_date' => V::custom([$this, 'checkDates']),
             'end_date' => V::custom([$this, 'checkDates']),
-            'position' => V::nullable(V::length(2, 191)),
+            'role_id' => V::custom([$this, 'checkRoleId']),
         ];
     }
 
@@ -90,6 +92,12 @@ final class EventTechnician extends BaseModel implements Serializable
         return !$this->exists || $this->isDirty('technician_id')
             ? !$technician->trashed()
             : true;
+    }
+
+    public function checkRoleId($value)
+    {
+        V::nullable(V::intVal())->check($value);
+        return $value === null || Role::includes($value);
     }
 
     public function checkDates()
@@ -159,6 +167,25 @@ final class EventTechnician extends BaseModel implements Serializable
             ->withTrashed();
     }
 
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Overwritten methods
+    // -
+    // ------------------------------------------------------
+
+    public function save(array $options = [])
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new \LogicException("Disabled feature, can't save.");
+        }
+        return parent::save($options);
+    }
+
     // ------------------------------------------------------
     // -
     // -    Mutators
@@ -170,7 +197,7 @@ final class EventTechnician extends BaseModel implements Serializable
         'technician_id' => 'integer',
         'start_date' => 'string',
         'end_date' => 'string',
-        'position' => 'string',
+        'role_id' => 'integer',
     ];
 
     public function getPeriodAttribute(): Period
@@ -188,6 +215,11 @@ final class EventTechnician extends BaseModel implements Serializable
         return $this->getRelationValue('event');
     }
 
+    public function getRoleAttribute(): Role|null
+    {
+        return $this->getRelationValue('role');
+    }
+
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -200,7 +232,7 @@ final class EventTechnician extends BaseModel implements Serializable
         'start_date',
         'end_date',
         'period',
-        'position',
+        'role_id',
     ];
 
     public function setPeriodAttribute(mixed $rawPeriod): void
@@ -209,12 +241,6 @@ final class EventTechnician extends BaseModel implements Serializable
 
         $this->start_date = $period?->getStartDate()->format('Y-m-d H:i:s');
         $this->end_date = $period?->getEndDate()->format('Y-m-d H:i:s');
-    }
-
-    public function setPositionAttribute(mixed $value): void
-    {
-        $value = is_string($value) ? trim($value) : $value;
-        $this->attributes['position'] = $value;
     }
 
     // ------------------------------------------------------
@@ -306,7 +332,7 @@ final class EventTechnician extends BaseModel implements Serializable
     {
         /** @var EventTechnician $eventTechnician */
         $eventTechnician = tap(clone $this, static function (EventTechnician $eventTechnician) use ($format) {
-            $eventTechnician->append(['period']);
+            $eventTechnician->append(['period', 'role']);
 
             if ($format === self::SERIALIZE_FOR_EVENT) {
                 $eventTechnician->append('technician');
@@ -317,7 +343,7 @@ final class EventTechnician extends BaseModel implements Serializable
         });
 
         return (new DotArray($eventTechnician->attributesForSerialization()))
-            ->delete(['start_date', 'end_date'])
+            ->delete(['role_id', 'start_date', 'end_date'])
             ->all();
     }
 

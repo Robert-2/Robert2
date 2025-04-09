@@ -23,7 +23,7 @@ describe('formatEventTechniciansList', () => {
 
         // - First period of technician 1
         expect(result[0].periods[0].id).toStrictEqual(1);
-        expect(result[0].periods[0].position).toEqual('Régisseur');
+        expect(result[0].periods[0].role?.name).toEqual('Régisseur');
         expect(result[0].periods[0].period).toBeInstanceOf(Period);
 
         // - Second technician with 1 assigned period
@@ -34,7 +34,7 @@ describe('formatEventTechniciansList', () => {
 
         // - First period of technician 2
         expect(result[1].periods[0].id).toStrictEqual(2);
-        expect(result[1].periods[0].position).toEqual('Technicien plateau');
+        expect(result[1].periods[0].role?.name).toEqual('Technicien plateau');
         expect(result[1].periods[0].period).toBeInstanceOf(Period);
     });
 });

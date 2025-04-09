@@ -7,68 +7,70 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-
-    &__filters {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: globals.$spacing-small;
-        gap: globals.$spacing-small;
-
-        .ScheduleListingFilters {
-            flex: 0 1 auto;
-        }
-    }
-
-    &__row {
-        cursor: pointer;
-
-        &:hover > #{$block}__cell {
-            background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
-        }
-
-        &--with-warning {
-            > #{$block}__cell {
-                background-color: color.adjust(globals.$text-danger-color, $alpha: -0.7);
-            }
-
-            &:hover > #{$block}__cell {
-                background-color: color.adjust(globals.$text-danger-color, $alpha: -0.6);
-            }
-
-            #{$block}__cell--icon {
-                color: globals.$text-danger-color;
-            }
-        }
-    }
-
-    &__cell {
-        &__empty {
-            color: globals.$text-light-color;
-            font-style: italic;
-        }
-
-        &--icon {
-            width: 35px;
-            text-align: center;
-        }
-
-        &--mobilization-period {
-            min-width: 280px;
-
-            // - Important, pour surcharger le style du header
-            /* stylelint-disable-next-line declaration-no-important */
-            text-align: center !important;
-        }
-
-        &--beneficiaries,
-        &--categories,
-        &--parks {
-            display: none;
-        }
-    }
+    gap: globals.$spacing-medium;
 
     &__title {
         margin: 0;
+    }
+
+    &__table {
+        &__row {
+            cursor: pointer;
+
+            &:hover > #{$block}__cell {
+                background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
+            }
+
+            &--with-warning {
+                > #{$block}__cell {
+                    background-color: color.adjust(globals.$text-danger-color, $alpha: -0.7);
+                }
+
+                &:hover > #{$block}__cell {
+                    background-color: color.adjust(globals.$text-danger-color, $alpha: -0.6);
+                }
+
+                #{$block}__cell--icon {
+                    color: globals.$text-danger-color;
+                }
+            }
+        }
+
+        &__cell {
+            &__empty {
+                color: globals.$text-light-color;
+                font-style: italic;
+            }
+
+            &--icon {
+                width: 35px;
+                text-align: center;
+            }
+
+            &--mobilization-period {
+                min-width: 300px;
+
+                // - Important, pour surcharger le style du header
+                /* stylelint-disable-next-line declaration-no-important */
+                text-align: center !important;
+            }
+
+            &--beneficiaries,
+            &--categories,
+            &--parks {
+                display: none;
+            }
+        }
+    }
+
+    &:not(&--trashed) {
+        #{$block}__table__row {
+            cursor: pointer;
+
+            &:hover > #{$block}__table__cell {
+                background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
+            }
+        }
     }
 
     &__operation-period {
@@ -99,7 +101,7 @@
     //
 
     @media (min-width: globals.$screen-tablet) {
-        &__cell {
+        &__table__cell {
             &--beneficiaries {
                 display: table-cell;
             }
@@ -107,7 +109,7 @@
     }
 
     @media (min-width: globals.$screen-desktop) {
-        &__cell {
+        &__table__cell {
             &--parks {
                 display: table-cell;
             }
@@ -115,24 +117,9 @@
     }
 
     @media (min-width: globals.$screen-big-desktop) {
-        &__cell {
+        &__table__cell {
             &--categories {
                 display: table-cell;
-            }
-        }
-
-        &__filters {
-            position: absolute;
-            z-index: 1;
-            left: globals.$table-search-input;
-            right: calc(#{globals.$spacing-large} + 45px + #{globals.$spacing-medium});
-            flex-wrap: nowrap;
-            align-items: center;
-            margin-bottom: 0;
-            margin-left: globals.$spacing-small;
-
-            .ScheduleListingFilters {
-                flex-wrap: nowrap;
             }
         }
     }

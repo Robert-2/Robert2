@@ -38,6 +38,12 @@ module.exports = {
             },
         },
         {
+            files: ['**/*.d.ts'],
+            rules: {
+                '@typescript-eslint/no-unused-vars': ['off'],
+            },
+        },
+        {
             files: [
                 '**/tests/**/*',
                 '**/__tests__/*',

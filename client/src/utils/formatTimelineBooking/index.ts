@@ -1,3 +1,4 @@
+import config from '@/globals/config';
 import DateTime from '@/utils/datetime';
 import { BookingEntity } from '@/stores/api/bookings';
 import getBookingIcon from '@/utils/getBookingIcon';
@@ -9,7 +10,6 @@ import type { TimelineItem } from '@/themes/default/components/Timeline';
 import type { BookingTimelineStatus } from './_utils/getStatuses';
 import type { BookingContext } from './_types';
 import type { I18nTranslate } from 'vuex-i18n';
-import type { RawColor } from '../color';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
 import type { EventTechnician } from '@/stores/api/events';
 
@@ -56,8 +56,12 @@ const formatTimelineBookingEvent = (
     options: FormatOptions = {},
 ): TimelineItem => {
     const { isExcerpt, booking, quantity } = context;
-    const { title, color, location, beneficiaries, technicians } = booking;
+    const { title, color, location, beneficiaries, technicians, manager } = booking;
     const { showEventLocation = true, showEventBorrower = false } = options;
+    const hasBorrower = beneficiaries.length > 0;
+    const mainBeneficiary = hasBorrower
+        ? ([...beneficiaries].shift() ?? null)
+        : null;
 
     // - Lieu
     const hasLocation = (location ?? '').length > 0;
@@ -68,21 +72,16 @@ const formatTimelineBookingEvent = (
         ? __('used-count', { count: quantity }, quantity)
         : null;
 
-    // - Bénéficiaire
-    const hasBorrower = beneficiaries.length > 0;
-
     // - Summary
     const summaryParts = [title + (quantityText ? ` (${quantityText})` : '')];
     if (showEventLocation && hasLocation) {
         summaryParts.push(locationText);
     }
     if (showEventBorrower && hasBorrower) {
-        const firstBeneficiary = [...beneficiaries].shift()!;
-
-        const firstBeneficiaryIsCompany = !!firstBeneficiary.company;
-        let beneficiaryExcerpt = firstBeneficiaryIsCompany
-            ? firstBeneficiary.company!.legal_name
-            : firstBeneficiary.full_name;
+        const mainBeneficiaryIsCompany = !!mainBeneficiary!.company;
+        let beneficiaryExcerpt = mainBeneficiaryIsCompany
+            ? mainBeneficiary!.company!.legal_name
+            : mainBeneficiary!.full_name;
 
         if (beneficiaries.length > 1) {
             const countSecondaryBeneficiaries = beneficiaries.length - 1;
@@ -96,7 +95,7 @@ const formatTimelineBookingEvent = (
             ));
         } else {
             beneficiaryExcerpt = withIcon(
-                firstBeneficiaryIsCompany ? 'industry' : 'user',
+                mainBeneficiaryIsCompany ? 'industry' : 'user',
                 beneficiaryExcerpt,
             );
         }
@@ -135,9 +134,14 @@ const formatTimelineBookingEvent = (
             borrowerText = withIcon('address-book', __('for', { beneficiary: beneficiariesNames.join(', ') }));
         }
 
+        // - Chef de projet.
+        const managerText = manager !== null
+            ? withIcon('user-tie', __('event-managed-by', { name: manager.full_name }))
+            : null;
+
         // - Techniciens
-        let techniciansText = '';
-        if (technicians.length > 0) {
+        let techniciansText = null;
+        if (config.features.technicians && technicians.length > 0) {
             const techniciansNames = technicians
                 .filter((eventTechnician: EventTechnician, index: number, self: EventTechnician[]) => (
                     eventTechnician.technician && index === self.findIndex(
@@ -151,10 +155,23 @@ const formatTimelineBookingEvent = (
             techniciansText = withIcon('people-carry', `${__('with')} ${techniciansNames.join(', ')}`);
         }
 
+        let positionsText = null;
+        if (config.features.technicians && booking.has_unassigned_mandatory_positions) {
+            positionsText = withIcon('exclamation-triangle', `<em>(${__('@event.has-unassigned-position')})</em>`);
+        }
+
         return [
             // eslint-disable-next-line prefer-template
             `<strong>${title}</strong>` + (quantityText ? `, ${quantityText}` : ''),
-            [locationText, operationPeriodText, mobilizationPeriodText, borrowerText, techniciansText]
+            [
+                locationText,
+                operationPeriodText,
+                mobilizationPeriodText,
+                borrowerText,
+                managerText,
+                techniciansText,
+                positionsText,
+            ]
                 .filter(Boolean)
                 .join('\n'),
             statusesText,
@@ -169,7 +186,7 @@ const formatTimelineBookingEvent = (
         },
         summary,
         tooltip,
-        color: color as RawColor | null,
+        color: color?.toHexString() ?? null,
         className: getTimelineBookingClassNames(context, now),
     };
 };
@@ -196,7 +213,7 @@ const factory = (__: I18nTranslate, now: DateTime = DateTime.now(), options: For
      * @returns Le booking dans un format accepté par une timeline.
      *          (= `<Timeline items={[>> ICI <<]} />`)
      */
-    (booking: BookingExcerpt | BookingExcerpt, excerpt: boolean = false, quantity?: number): TimelineItem => {
+    (booking: BookingSummary | BookingExcerpt, excerpt: boolean = false, quantity?: number): TimelineItem => {
         const context = { isExcerpt: excerpt, booking, quantity } as BookingContext;
 
         switch (booking.entity) {

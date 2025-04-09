@@ -5,7 +5,7 @@ import Item from './Item';
 import type { PropType } from '@vue/composition-api';
 
 export type Step = {
-    id: number,
+    id: number | string,
     name: string,
     filled: boolean,
     reachable?: boolean,
@@ -21,7 +21,7 @@ type Props = {
     steps: Step[],
 
     /** Le numéro de l'étape actuelle. */
-    currentStep: Step['id'],
+    currentStepId: Step['id'],
 };
 
 /** Une navigation multi-étapes. */
@@ -32,8 +32,8 @@ const Stepper = defineComponent({
             type: Array as PropType<Props['steps']>,
             required: true,
         },
-        currentStep: {
-            type: Number as PropType<Props['currentStep']>,
+        currentStepId: {
+            type: Number as PropType<Props['currentStepId']>,
             required: true,
         },
     },
@@ -52,11 +52,12 @@ const Stepper = defineComponent({
 
         return (
             <div class="Stepper">
-                {steps.map((step: Step) => (
+                {steps.map((step: Step, index: number) => (
                     <Item
                         key={step.id}
                         step={step}
-                        active={step.id === this.currentStep}
+                        number={index + 1}
+                        active={step.id === this.currentStepId}
                         onClick={() => { openStep(step.id); }}
                     />
                 ))}

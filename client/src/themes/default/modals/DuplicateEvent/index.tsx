@@ -72,6 +72,10 @@ const DuplicateEvent = defineComponent({
             );
         },
 
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         hasBeneficiaries(): boolean {
             return this.event.beneficiaries.length > 0;
         },
@@ -87,14 +91,6 @@ const DuplicateEvent = defineComponent({
             //   (et les prix de remplacement ne sont pas conservés d'une duplication à une autre, ces
             //   données doivent toujours être à jour)
             return this.event.currency.isSame(config.currency);
-        },
-
-        beneficiariesNames(): string[] {
-            const { beneficiaries } = this.event;
-
-            return beneficiaries.map(({ company, full_name: fullName }: Beneficiary) => (
-                `${fullName}${company ? ` (${company.legal_name})` : ''}`
-            ));
         },
     },
     methods: {
@@ -202,14 +198,14 @@ const DuplicateEvent = defineComponent({
         },
     },
     render() {
-        const { title, location, technicians } = this.event;
+        const { title, location, technicians, beneficiaries } = this.event;
         const {
             __,
             duration,
             itemsCount,
             hasBeneficiaries,
-            beneficiariesNames,
             canKeepBillingData,
+            isTechniciansEnabled,
             validationErrors,
             isSaving,
             shouldSyncPeriods,
@@ -280,7 +276,7 @@ const DuplicateEvent = defineComponent({
                         )}
                     </form>
                     <div class="DuplicateEvent__data">
-                        {(technicians.length > 0) && (
+                        {(isTechniciansEnabled && technicians.length > 0) && (
                             <Alert
                                 type="warning"
                                 class={[
@@ -322,7 +318,20 @@ const DuplicateEvent = defineComponent({
                                 <div class="DuplicateEvent__infos__item">
                                     <Icon name="address-book" class="DuplicateEvent__infos__item__icon" />
                                     <span class="DuplicateEvent__infos__item__content">
-                                        {__('global.for', { beneficiary: beneficiariesNames.join(', ') })}
+                                        {__('global.for-dots')}{' '}
+                                        <ul class="DuplicateEvent__infos__beneficiaries">
+                                            {beneficiaries.map((beneficiary: Beneficiary) => {
+                                                const { company, full_name: fullName } = beneficiary;
+
+                                                return (
+                                                    <li class="DuplicateEvent__infos__beneficiaries__item">
+                                                        <span class="DuplicateEvent__infos__beneficiaries__item__name">
+                                                            {`${fullName}${company ? ` (${company.legal_name})` : ''}`}
+                                                        </span>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
                                     </span>
                                 </div>
                             )}

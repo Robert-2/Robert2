@@ -14,6 +14,9 @@ action-disable: Disable
 action-refresh: Refresh data
 'yes': 'Yes'
 'no': 'No'
+color: Color
+center-on-today: Center on today
+configure-columns: Configure Columns
 warning: Warning!
 loading: Loading...
 please-confirm: Please confirm...
@@ -49,6 +52,7 @@ empty-state: There are no records to display at this time.
 search-term: Search
 no-result-found-try-another-search: No results. Try another search term.
 locked-reason: 'Locked: {reason}'
+filters: Filters
 clear-filters: Clear filters
 optional: Optional
 n-persons:
@@ -67,7 +71,6 @@ saving: Saving...
 saved: '{entity} saved.'
 deleting: Deleting...
 reset-date: Reset date
-reset-period: Reset period
 actions: Actions
 informations: Information
 connexion-infos: Credentials
@@ -103,11 +106,12 @@ city: City
 locality: City
 country: Pays
 access: Access
+group: Group
 groups:
     administration: Administration
     management: Management
-    readonly-planning-general: Schedule consultation
-    external: External
+    readonly-planning-general: General schedule consultation
+    readonly-planning-self: Own schedule consultation
 owner: Owner
 opening-hours: Opening hours
 hours: hours
@@ -121,8 +125,6 @@ reference: Reference
 number: Number
 park: Park
 park-name: 'Park "{name}"'
-park-and-location: Park and location
-park-location: Location in park
 prices: Prices
 identification-type: Identification type
 rental-price: Rental price
@@ -159,6 +161,10 @@ price-must-be-zero: the rental price must be 0
 all-parks: All parks combined
 all-categories: All categories
 all-sub-categories: All sub-categories
+all-tags: All tags combined
+all-periods: All periods
+all-states: All states
+all-roles: All roles
 not-categorized: Not categorized
 not-limited: not limited
 open-trash-bin: Display trash bin
@@ -198,11 +204,13 @@ print-summary: Print this summary
 open: Open
 in: 'In {location}'
 for: 'For {beneficiary}'
+for-dots: 'For:'
 mobilization-period: 'Mobilization {period}'
 open-in-google-maps: Open in Google Maps
 or: or
 with: With
 into: into
+event-managed-by: Managed by {name}
 in-progress: in progress
 invoice: Invoice
 estimate: Estimate
@@ -246,8 +254,8 @@ total-value: Total value
 total-quantity: 'Total quantity: {total}'
 daily-amount: 'Daily amount: {amount}'
 replacement-value-amount: "Remplacement value\_: {amount}"
+display-customization: Display customization
 calculate: Calculate
-customization: Customization
 day: day
 days-count:
     - '{duration} day'
@@ -308,6 +316,7 @@ created-by: Created by
 event: Event
 events: Events
 user: User
+role: Role
 beneficiary: Beneficiary
 main-beneficiary: Main Beneficiary
 borrower: Borrower
@@ -325,9 +334,6 @@ this-feature-is-coming-soon: This feature implementation is in progress.
 external-links:
     official-website: Official website
     support-platform: Support platform
-select-no-options: No options available.
-select-no-matching-result: No matching options.
-remove-park-context: Remove global park context
 confirm-cancel-upload-change-tab: >-
     Please note that a file is currently being uploaded. If you leave this tab,
     it will be cancelled. Are you sure you want to continue?
@@ -335,18 +341,18 @@ confirm-cancel-upload-close-modal: >-
     Please note that a file is currently being uploaded. if you close this
     window, it will be cancelled. Are you sure you want to continue?
 
+quick-creation:
+    role:
+        success: "Role \"{name}\" has been created."
+        failure: Role creation failed. Please try again.
+
 '@event':
     confirm-delete: Move this event in trash bin?
-    event-missing-materials: Missing materials
-    event-missing-materials-help: >-
-        These are the missing materials for the period of the event, because it
-        is used in another event, the number needed is
-        too high, or there are some out of order.
-    missing-material-count: "Need {quantity}, missing\_{missing}"
     warning-no-beneficiary: 'Warning: this event has no beneficiaries!'
     warning-no-material: 'Warning: this event is empty; it contains no materials.'
     event-not-confirmed-help: The event is not confirmed yet. It is subject to change at any time.
     event-confirmed-help: 'The event is confirmed: its information should no longer change.'
+    has-unassigned-position: Some positions are mandatory but no technician is assigned to them.
     statuses:
         is-past: This event is past.
         is-currently-running: This event is currently running.

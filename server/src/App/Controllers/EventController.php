@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use DI\Container;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Database\Eloquent\Builder;
+use Loxya\Config\Enums\Feature;
 use Loxya\Controllers\Traits\Crud;
 use Loxya\Errors\Exception\HttpConflictException;
 use Loxya\Errors\Exception\HttpUnprocessableEntityException;
@@ -18,6 +19,8 @@ use Loxya\Models\Enums\Group;
 use Loxya\Models\Estimate;
 use Loxya\Models\Event;
 use Loxya\Models\EventMaterial;
+use Loxya\Models\EventPosition;
+use Loxya\Models\EventTechnician;
 use Loxya\Models\Invoice;
 use Loxya\Services\Auth;
 use Loxya\Services\I18n;
@@ -28,6 +31,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 
 final class EventController extends BaseController
@@ -55,23 +59,17 @@ final class EventController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $search = $request->getStringQueryParam('search');
+        $search = $request->getSearchArrayQueryParam('search');
         $exclude = $request->getIntegerQueryParam('exclude');
 
         $query = Event::query()
             ->when(
-                $search !== null && mb_strlen($search) >= 2,
+                !empty($search),
                 static fn ($builder) => $builder->search($search),
             )
             ->when($exclude !== null, static fn (Builder $subQuery) => (
                 $subQuery->where('id', '<>', $exclude)
             ))
-            ->when(
-                Auth::is([Group::READONLY_PLANNING_SELF]),
-                static fn (Builder $subQuery) => (
-                    $subQuery->withInvolvedUser(Auth::user())
-                ),
-            )
             ->orderBy('mobilization_start_date', 'desc')
             ->whereHas('materials', static fn (Builder $eventMaterialQuery) => (
                 $eventMaterialQuery->whereHas('material', static fn (Builder $materialQuery) => (
@@ -92,7 +90,7 @@ final class EventController extends BaseController
     public function getOne(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFailForUser($id, Auth::user());
+        $event = Event::findOrFail($id);
 
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }
@@ -101,7 +99,7 @@ final class EventController extends BaseController
     {
         $id = $request->getIntegerAttribute('id');
 
-        $missingMaterials = Event::findOrFailForUser($id, Auth::user())
+        $missingMaterials = Event::findOrFail($id)
             ->missingMaterials()
             ->map(static fn (EventMaterial $material) => (
                 $material->serialize(EventMaterial::SERIALIZE_WITH_QUANTITY_MISSING)
@@ -113,7 +111,7 @@ final class EventController extends BaseController
     public function getDocuments(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFailForUser($id, Auth::user());
+        $event = Event::findOrFail($id);
 
         return $response->withJson($event->documents, StatusCode::STATUS_OK);
     }
@@ -121,7 +119,7 @@ final class EventController extends BaseController
     public function getOnePdf(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFailForUser($id, Auth::user());
+        $event = Event::findOrFail($id);
 
         $sortedBy = $request->getRawEnumQueryParam('sortedBy', ['lists', 'parks'], 'lists');
         $pdf = $event->toPdf($this->i18n, $sortedBy);
@@ -146,25 +144,164 @@ final class EventController extends BaseController
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_CREATED);
     }
 
-    public function update(Request $request, Response $response): ResponseInterface
+    public function createAssignment(Request $request, Response $response): ResponseInterface
     {
-        $postData = Event::unserialize((array) $request->getParsedBody());
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new HttpNotFoundException($request, "Technician feature is disabled.");
+        }
+
+        $id = $request->getIntegerAttribute('id');
+        $event = Event::findOrFail($id);
+
+        if (!$event->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This event is no longer editable.");
+        }
+
+        $postData = EventTechnician::unserialize((array) $request->getParsedBody());
         if (empty($postData)) {
             throw new HttpBadRequestException($request, "No data was provided.");
         }
 
+        try {
+            $newAssignment = EventTechnician::new(array_replace($postData, ['event_id' => $id]));
+        } catch (ValidationException $e) {
+            $errors = EventTechnician::serializeValidation($e->getValidationErrors());
+            throw new ValidationException($errors);
+        }
+
+        return $response->withJson($newAssignment, StatusCode::STATUS_CREATED);
+    }
+
+    public function updateAssignment(Request $request, Response $response): ResponseInterface
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new HttpNotFoundException($request, "Technician feature is disabled.");
+        }
+
         $id = $request->getIntegerAttribute('id');
-        $event = Event::findOrFailForUser($id, Auth::user());
+        $assignmentId = $request->getIntegerAttribute('assignmentId');
+        $event = Event::findOrFail($id);
 
-        if (Auth::is(Group::READONLY_PLANNING_SELF)) {
-            // - Si l'utilisateur n'est pas un technicien assigné à l'événement ⇒ requête non autorisée.
-            $technician = Auth::user()->technician;
-            if (!$technician?->isAssignedToEvent($event)) {
-                throw new HttpForbiddenException($request);
-            }
+        if (!$event->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This event is no longer editable.");
+        }
 
-            // - Sinon, on autorise uniquement la modification du champ "note".
-            $postData = Arr::only($postData, ['note']);
+        /** @var EventTechnician $assignment */
+        $assignment = $event->technicians()
+            ->findOrFail($assignmentId);
+
+        $postData = EventTechnician::unserialize((array) $request->getParsedBody());
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        try {
+            $assignment->edit(Arr::except($postData, ['event_id']));
+        } catch (ValidationException $e) {
+            $errors = EventTechnician::serializeValidation($e->getValidationErrors());
+            throw new ValidationException($errors);
+        }
+
+        return $response->withJson($assignment, StatusCode::STATUS_OK);
+    }
+
+    public function deleteAssignment(Request $request, Response $response): ResponseInterface
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new HttpNotFoundException($request, "Technician feature is disabled.");
+        }
+
+        $id = $request->getIntegerAttribute('id');
+        $assignmentId = $request->getIntegerAttribute('assignmentId');
+        $event = Event::findOrFail($id);
+
+        if (!$event->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This event is no longer editable.");
+        }
+
+        /** @var EventTechnician $eventTechnician */
+        $eventTechnician = $event->technicians()
+            ->findOrFail($assignmentId);
+
+        if (!$eventTechnician->delete()) {
+            throw new \RuntimeException(sprintf(
+                'An unknown error occurred while deleting the event technician #%d.',
+                $eventTechnician->id,
+            ));
+        }
+
+        return $response->withStatus(StatusCode::STATUS_NO_CONTENT);
+    }
+
+    public function createPosition(Request $request, Response $response): ResponseInterface
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new HttpNotFoundException($request, "Technician feature is disabled.");
+        }
+
+        $id = $request->getIntegerAttribute('id');
+        $event = Event::findOrFail($id);
+
+        if (!$event->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This event is no longer editable.");
+        }
+
+        $postData = EventPosition::unserialize((array) $request->getParsedBody());
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
+        }
+
+        try {
+            $newPosition = EventPosition::new(array_replace($postData, ['event_id' => $id]));
+        } catch (ValidationException $e) {
+            $errors = EventPosition::serializeValidation($e->getValidationErrors());
+            throw new ValidationException($errors);
+        }
+
+        return $response->withJson($newPosition, StatusCode::STATUS_CREATED);
+    }
+
+    public function deletePosition(Request $request, Response $response): ResponseInterface
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new HttpNotFoundException($request, "Technician feature is disabled.");
+        }
+
+        $id = $request->getIntegerAttribute('id');
+        $positionId = $request->getIntegerAttribute('positionId');
+        $event = Event::findOrFail($id);
+
+        if (!$event->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This event is no longer editable.");
+        }
+
+        /** @var EventPosition $eventPosition */
+        $eventPosition = $event->positions()
+            ->where(['role_id' => $positionId])
+            ->firstOrFail();
+
+        if (!$eventPosition->delete()) {
+            throw new \RuntimeException(sprintf(
+                'An unknown error occurred while deleting the event position #%d.',
+                $eventPosition->id,
+            ));
+        }
+
+        return $response->withStatus(StatusCode::STATUS_NO_CONTENT);
+    }
+
+    public function update(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        $event = Event::findOrFail($id);
+
+        if (!$event->is_editable) {
+            throw new HttpUnprocessableEntityException($request, "This event is no longer editable.");
+        }
+
+        $postData = Event::unserialize((array) $request->getParsedBody());
+        if (empty($postData)) {
+            throw new HttpBadRequestException($request, "No data was provided.");
         }
 
         try {
@@ -173,6 +310,21 @@ final class EventController extends BaseController
             $errors = Event::serializeValidation($e->getValidationErrors());
             throw new ValidationException($errors);
         }
+
+        return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
+    }
+
+    public function updateNote(Request $request, Response $response): ResponseInterface
+    {
+        $id = $request->getIntegerAttribute('id');
+        $event = Event::findOrFail($id);
+
+        if (!Auth::is([Group::ADMINISTRATION, Group::MANAGEMENT])) {
+            throw new HttpForbiddenException($request);
+        }
+
+        $event->note = $request->getParsedBodyParam('note');
+        $event->save();
 
         return $response->withJson(static::_formatOne($event), StatusCode::STATUS_OK);
     }

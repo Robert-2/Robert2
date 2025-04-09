@@ -1,0 +1,44 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+
+.TechnicianViewAssignments {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+
+    &__empty {
+        flex: 1 1 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: globals.$text-light-color;
+        font-size: 1.2rem;
+        font-style: italic;
+    }
+
+    &__stat {
+        display: flex;
+        justify-content: center;
+        margin: 0 0 globals.$spacing-large;
+        gap: globals.$spacing-small;
+    }
+
+    &__listing {
+        @extend %reset-list;
+
+        flex: 3 1 0;
+        overflow: auto;
+        margin: globals.$spacing-medium 0;
+    }
+
+    &__timeline {
+        flex: 1 1 0;
+
+        &__element {
+            height: 100%;
+        }
+    }
+}

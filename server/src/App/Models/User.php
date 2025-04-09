@@ -12,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\Feature;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
 use Loxya\Models\Enums\BookingViewMode;
 use Loxya\Models\Enums\Group;
+use Loxya\Models\Enums\TechniciansViewMode;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Support\Arr;
 use Loxya\Support\Assert;
@@ -41,6 +43,9 @@ use Respect\Validation\Validator as V;
  * @property string $password
  * @property string $language
  * @property string $default_bookings_view
+ * @property string $default_technicians_view
+ * @property bool $disable_contextual_popovers
+ * @property bool $disable_search_persistence
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
@@ -51,7 +56,7 @@ use Respect\Validation\Validator as V;
  * @property-read Collection<array-key, Event> $events
  * @property-read array<string, mixed> $settings
  *
- * @method static Builder|static search(string $term)
+ * @method static Builder|static search(string|string[] $term)
  */
 final class User extends BaseModel implements Serializable
 {
@@ -69,6 +74,9 @@ final class User extends BaseModel implements Serializable
     public const SETTINGS_ATTRIBUTES = [
         'language',
         'default_bookings_view',
+        'default_technicians_view',
+        'disable_contextual_popovers',
+        'disable_search_persistence',
     ];
 
     public function __construct(array $attributes = [])
@@ -88,6 +96,12 @@ final class User extends BaseModel implements Serializable
                 V::equals(BookingViewMode::CALENDAR->value),
                 V::equals(BookingViewMode::LISTING->value),
             )),
+            'default_technicians_view' => V::nullable(V::anyOf(
+                V::equals(TechniciansViewMode::LISTING->value),
+                V::equals(TechniciansViewMode::TIMELINE->value),
+            )),
+            'disable_contextual_popovers' => V::nullable(V::boolType()),
+            'disable_search_persistence' => V::nullable(V::boolType()),
         ];
     }
 
@@ -123,7 +137,6 @@ final class User extends BaseModel implements Serializable
                 V::equals(Group::ADMINISTRATION),
                 V::equals(Group::MANAGEMENT),
                 V::equals(Group::READONLY_PLANNING_GENERAL),
-                V::equals(Group::READONLY_PLANNING_SELF),
             )
             ->validate($value);
     }
@@ -187,6 +200,9 @@ final class User extends BaseModel implements Serializable
         'password' => 'string',
         'language' => 'string',
         'default_bookings_view' => 'string',
+        'default_technicians_view' => 'string',
+        'disable_contextual_popovers' => 'boolean',
+        'disable_search_persistence' => 'boolean',
         'created_at' => 'immutable_datetime',
         'updated_at' => 'immutable_datetime',
         'deleted_at' => 'immutable_datetime',
@@ -315,6 +331,10 @@ final class User extends BaseModel implements Serializable
 
     public function getTechnicianAttribute(): Technician|null
     {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            return null;
+        }
+
         if (!$this->person) {
             throw new \LogicException(
                 'The user\'s related person is missing, ' .
@@ -337,6 +357,9 @@ final class User extends BaseModel implements Serializable
         'password',
         'language',
         'default_bookings_view',
+        'default_technicians_view',
+        'disable_contextual_popovers',
+        'disable_search_persistence',
     ];
 
     // ------------------------------------------------------
@@ -351,8 +374,18 @@ final class User extends BaseModel implements Serializable
         'group',
     ];
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeSearch(Builder $query, string|array $term): Builder
     {
+        if (is_array($term)) {
+            $query->where(static function (Builder $subQuery) use ($term) {
+                foreach ($term as $singleTerm) {
+                    $subQuery->orWhere(static fn (Builder $subSubQuery) => (
+                        $subSubQuery->search($singleTerm)
+                    ));
+                }
+            });
+            return $query;
+        }
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));

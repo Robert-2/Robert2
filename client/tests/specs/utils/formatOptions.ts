@@ -14,8 +14,8 @@ describe('formatOptions', () => {
         ];
         const options = formatOptions(entities);
         expect(options).toEqual([
-            { value: 1, label: 'test1' },
-            { value: 2, label: 'test2' },
+            { value: 1, label: 'test1', data: entities[0] },
+            { value: 2, label: 'test2', data: entities[1] },
         ]);
     });
 
@@ -37,8 +37,8 @@ describe('formatOptions', () => {
 
         const options = formatOptions(entities, getLabel);
         expect(options).toEqual([
-            { value: 1, label: 'test1 0123456789 − ' },
-            { value: 2, label: 'test2 0987654321 − Testing' },
+            { value: 1, label: 'test1 0123456789 − ', data: entities[0] },
+            { value: 2, label: 'test2 0987654321 − Testing', data: entities[1] },
         ]);
     });
 });

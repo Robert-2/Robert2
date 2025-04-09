@@ -15,7 +15,7 @@ import type {
 
 export type Filters = {
     /** Recherche sur un nom de matériel ou une référence. */
-    search: string | null,
+    search: string[],
 
     /**
      * Filtre sur le parc dans lequel sont situés les matériels.

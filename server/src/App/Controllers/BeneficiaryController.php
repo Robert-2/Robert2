@@ -23,7 +23,7 @@ final class BeneficiaryController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $search = $request->getStringQueryParam('search');
+        $search = $request->getSearchArrayQueryParam('search');
         $limit = $request->getIntegerQueryParam('limit');
         $ascending = $request->getBooleanQueryParam('ascending', true);
         $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
@@ -31,7 +31,7 @@ final class BeneficiaryController extends BaseController
 
         $query = Beneficiary::query()
             ->when(
-                $search !== null && mb_strlen($search) >= 2,
+                !empty($search),
                 static fn (Builder $query) => $query->search($search),
             )
             ->when($onlyDeleted, static fn (Builder $builder) => (

@@ -7,6 +7,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Collection;
 use Loxya\Models\Enums\BookingViewMode;
 use Loxya\Models\Enums\Group;
+use Loxya\Models\Enums\TechniciansViewMode;
 use Loxya\Models\User;
 use Loxya\Support\Arr;
 
@@ -32,6 +33,9 @@ final class UsersTest extends ApiTestCase
                 'group' => Group::ADMINISTRATION,
                 'language' => 'en',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
+                'default_technicians_view' => TechniciansViewMode::LISTING->value,
+                'disable_contextual_popovers' => true,
+                'disable_search_persistence' => false,
             ],
             [
                 'id' => 2,
@@ -50,6 +54,9 @@ final class UsersTest extends ApiTestCase
                 'group' => Group::MANAGEMENT,
                 'language' => 'fr',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
+                'default_technicians_view' => TechniciansViewMode::LISTING->value,
+                'disable_contextual_popovers' => true,
+                'disable_search_persistence' => true,
             ],
             [
                 'id' => 3,
@@ -68,6 +75,9 @@ final class UsersTest extends ApiTestCase
                 'group' => Group::MANAGEMENT,
                 'language' => 'fr',
                 'default_bookings_view' => BookingViewMode::LISTING->value,
+                'default_technicians_view' => TechniciansViewMode::LISTING->value,
+                'disable_contextual_popovers' => false,
+                'disable_search_persistence' => false,
             ],
             [
                 'id' => 4,
@@ -86,6 +96,9 @@ final class UsersTest extends ApiTestCase
                 'group' => Group::READONLY_PLANNING_GENERAL,
                 'language' => 'fr',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
+                'default_technicians_view' => TechniciansViewMode::LISTING->value,
+                'disable_contextual_popovers' => false,
+                'disable_search_persistence' => false,
             ],
             [
                 'id' => 5,
@@ -104,6 +117,9 @@ final class UsersTest extends ApiTestCase
                 'group' => Group::READONLY_PLANNING_GENERAL,
                 'language' => 'en',
                 'default_bookings_view' => BookingViewMode::CALENDAR->value,
+                'default_technicians_view' => TechniciansViewMode::TIMELINE->value,
+                'disable_contextual_popovers' => false,
+                'disable_search_persistence' => false,
             ],
         ]))->keyBy('id');
 
@@ -154,6 +170,21 @@ final class UsersTest extends ApiTestCase
         $this->client->get('/api/users?deleted=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(0);
+
+        // - Test de récupération avec recherche simple.
+        $this->client->get('/api/users?search=rol');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(1, [
+            self::data(5), // - Caroline Farol
+        ]);
+
+        // - Test de récupération avec recherche multiple.
+        $this->client->get('/api/users?search[]=rol&search[]=alex');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(2, [
+            self::data(3), // - Alexandre Dupont
+            self::data(5), // - Caroline Farol
+        ]);
 
         // - Test de récupération des membres d'un groupe en particulier.
         $this->client->get(sprintf('/api/users?group=%s', Group::MANAGEMENT));
@@ -220,22 +251,34 @@ final class UsersTest extends ApiTestCase
         $this->client->put('/api/users/2/settings', [
             'language' => 'fr',
             'default_bookings_view' => BookingViewMode::CALENDAR->value,
+            'default_technicians_view' => TechniciansViewMode::LISTING->value,
+            'disable_contextual_popovers' => false,
+            'disable_search_persistence' => false,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'language' => 'fr',
             'default_bookings_view' => BookingViewMode::CALENDAR->value,
+            'default_technicians_view' => TechniciansViewMode::LISTING->value,
+            'disable_contextual_popovers' => false,
+            'disable_search_persistence' => false,
         ]);
 
         // - Avec le mot clé spécial `self` pour soi-même.
         $this->client->put('/api/users/self/settings', [
             'language' => 'en',
             'default_bookings_view' => BookingViewMode::LISTING->value,
+            'default_technicians_view' => TechniciansViewMode::TIMELINE->value,
+            'disable_contextual_popovers' => true,
+            'disable_search_persistence' => true,
         ]);
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'language' => 'en',
             'default_bookings_view' => BookingViewMode::LISTING->value,
+            'default_technicians_view' => TechniciansViewMode::TIMELINE->value,
+            'disable_contextual_popovers' => true,
+            'disable_search_persistence' => true,
         ]);
     }
 

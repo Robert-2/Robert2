@@ -3,6 +3,10 @@ import pick from 'lodash/pick';
 import { Group } from '@/stores/api/groups';
 import { dataFactory } from './@utils';
 import countries from './countries';
+import {
+    BookingsViewMode,
+    TechniciansViewMode,
+} from '@/stores/api/users';
 
 const data = [
     {
@@ -21,7 +25,10 @@ const data = [
         email: 'tester@robertmanager.net',
         group: Group.ADMINISTRATION,
         language: 'en',
-        default_bookings_view: 'calendar',
+        default_bookings_view: BookingsViewMode.CALENDAR,
+        default_technicians_view: TechniciansViewMode.LISTING,
+        disable_contextual_popovers: true,
+        disable_search_persistence: false,
     },
     {
         id: 2,
@@ -39,7 +46,10 @@ const data = [
         email: 'tester2@robertmanager.net',
         group: Group.MANAGEMENT,
         language: 'fr',
-        default_bookings_view: 'calendar',
+        default_bookings_view: BookingsViewMode.CALENDAR,
+        default_technicians_view: TechniciansViewMode.LISTING,
+        disable_contextual_popovers: true,
+        disable_search_persistence: true,
     },
     {
         id: 3,
@@ -57,7 +67,10 @@ const data = [
         email: 'nobody@robertmanager.net',
         group: Group.MANAGEMENT,
         language: 'fr',
-        default_bookings_view: 'listing',
+        default_bookings_view: BookingsViewMode.LISTING,
+        default_technicians_view: TechniciansViewMode.LISTING,
+        disable_contextual_popovers: false,
+        disable_search_persistence: false,
     },
     {
         id: 4,
@@ -75,7 +88,10 @@ const data = [
         email: 'visitor@robertmanager.net',
         group: Group.READONLY_PLANNING_GENERAL,
         language: 'fr',
-        default_bookings_view: 'calendar',
+        default_bookings_view: BookingsViewMode.CALENDAR,
+        default_technicians_view: TechniciansViewMode.LISTING,
+        disable_contextual_popovers: false,
+        disable_search_persistence: false,
     },
     {
         id: 5,
@@ -93,7 +109,10 @@ const data = [
         email: 'external@robertmanager.net',
         group: Group.READONLY_PLANNING_GENERAL,
         language: 'en',
-        default_bookings_view: 'calendar',
+        default_bookings_view: BookingsViewMode.CALENDAR,
+        default_technicians_view: TechniciansViewMode.TIMELINE,
+        disable_contextual_popovers: false,
+        disable_search_persistence: false,
     },
 ];
 
@@ -106,6 +125,9 @@ const asDefault = dataFactory(data, (user) => (
     omit(user, [
         'language',
         'default_bookings_view',
+        'default_technicians_view',
+        'disable_contextual_popovers',
+        'disable_search_persistence',
         'street',
         'postal_code',
         'locality',
@@ -125,6 +147,9 @@ const asDetails = dataFactory(data, (user) => (
     omit(user, [
         'language',
         'default_bookings_view',
+        'default_technicians_view',
+        'disable_contextual_popovers',
+        'disable_search_persistence',
     ])
 ));
 
@@ -133,7 +158,13 @@ const asSession = dataFactory(data);
 
 /** @type {import('./@utils').FactoryReturnType} */
 const settings = dataFactory(data, (user) => (
-    pick(user, ['language', 'default_bookings_view'])
+    pick(user, [
+        'language',
+        'default_bookings_view',
+        'default_technicians_view',
+        'disable_contextual_popovers',
+        'disable_search_persistence',
+    ])
 ));
 
 export default {

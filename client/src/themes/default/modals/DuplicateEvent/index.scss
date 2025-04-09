@@ -100,5 +100,33 @@
                 color: globals.$text-danger-color;
             }
         }
+
+        //
+        // - Spécifique.
+        //
+
+        &__beneficiaries {
+            @extend %reset-list;
+
+            display: inline;
+
+            &__item {
+                display: inline;
+
+                &__color {
+                    display: inline-block;
+                    width: 0.8em;
+                    height: 0.8em;
+                    margin-right: globals.$spacing-thin;
+                    border-radius: globals.$border-radius-normal;
+                    background-color: var(--color);
+                    vertical-align: -1px;
+                }
+
+                & + &::before {
+                    content: ', ';
+                }
+            }
+        }
     }
 }

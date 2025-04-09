@@ -1,50 +1,58 @@
-import './index.scss';
-import omit from 'lodash/omit';
+import isEqual from 'lodash/isEqual';
+import { z } from '@/utils/validation';
+import isTruthy from '@/utils/isTruthy';
 import { defineComponent } from '@vue/composition-api';
 import { UNCATEGORIZED } from '@/stores/api/materials';
 import formatOptions from '@/utils/formatOptions';
-import Select from '@/themes/default/components/Select';
-import Button from '@/themes/default/components/Button';
+import SearchPanel from '@/themes/default/components/SearchPanel';
 
 import type { PropType } from '@vue/composition-api';
+import type { SchemaInfer } from '@/utils/validation';
 import type { Tag } from '@/stores/api/tags';
-import type { Park, ParkSummary } from '@/stores/api/parks';
+import type { ParkSummary } from '@/stores/api/parks';
 import type { Options } from '@/utils/formatOptions';
 import type { SubCategory } from '@/stores/api/subcategories';
-import type { Filters as AllFilters } from '@/stores/api/materials';
 import type { Category, CategoryDetails } from '@/stores/api/categories';
+import type { FilterDefinition } from '@/themes/default/components/SearchPanel';
 
-export type Filters = Pick<AllFilters, (
-    | 'park'
-    | 'category'
-    | 'subCategory'
-    | 'tags'
-)>;
+export enum TokenType {
+    PARK = 'park',
+    CATEGORY = 'category',
+    SUB_CATEGORY = 'subCategory',
+    TAGS = 'tags',
+}
+
+export const FiltersSchema = z.strictObject({
+    search: z.string().array(),
+    [TokenType.PARK]: z.number().nullable(),
+    [TokenType.CATEGORY]: z.union([z.number(), z.literal(UNCATEGORIZED)]).nullable(),
+    [TokenType.SUB_CATEGORY]: z.number().nullable(),
+    [TokenType.TAGS]: z.number().array(),
+});
+
+export type Filters = SchemaInfer<typeof FiltersSchema>;
 
 type Props = {
     /** Les valeurs actuelles des filtres. */
     values: Filters,
 };
 
-/** Filtres de la liste de matériel. */
+/** Filtres d'une liste de matériel. */
 const MaterialsFilters = defineComponent({
     name: 'MaterialsFilters',
     props: {
         values: {
             type: Object as PropType<Required<Props>['values']>,
             required: true,
+            validator: (value: unknown) => (
+                FiltersSchema.safeParse(value).success
+            ),
         },
     },
-    emits: ['change'],
+    emits: ['change', 'submit'],
     computed: {
         parksOptions(): Options<ParkSummary> {
             return this.$store.getters['parks/options'];
-        },
-
-        parksDisabled(): boolean {
-            return (
-                this.parksOptions.length <= 1
-            );
         },
 
         tagsOptions(): Options<Tag> {
@@ -54,6 +62,13 @@ const MaterialsFilters = defineComponent({
         categoriesOptions(): Options<Category> {
             const { $t: __ } = this;
 
+            // - On garde le tableau à vide le temps d'avoir récupéré les options pour
+            //   éviter que le component `<Search />` pense qu'on a toutes les valeurs
+            //   possibles et supprime les valeurs absentes.
+            if (!this.$store.state.categories.isFetched) {
+                return [];
+            }
+
             return [
                 { value: UNCATEGORIZED, label: __('not-categorized') },
                 ...this.$store.getters['categories/options'],
@@ -61,7 +76,7 @@ const MaterialsFilters = defineComponent({
         },
 
         subCategoriesOptions(): Options<SubCategory> {
-            const { category: categoryId } = this.values;
+            const { [TokenType.CATEGORY]: categoryId } = this.values;
             if (categoryId === undefined || categoryId === UNCATEGORIZED) {
                 return [];
             }
@@ -76,26 +91,69 @@ const MaterialsFilters = defineComponent({
             return formatOptions(category.sub_categories);
         },
 
-        subCategoriesDisabled(): boolean {
-            if (this.values.category === undefined) {
-                return true;
-            }
-            return this.subCategoriesOptions.length <= 0;
-        },
-
-        isFilterEmpty(): boolean {
+        withParkFilter(): boolean {
             return (
-                (this.values.park === undefined) &&
-                this.values.category === undefined &&
-                this.values.subCategory === undefined &&
-                (this.values.tags ?? []).length === 0
+                this.values[TokenType.PARK] !== null ||
+                this.parksOptions.length > 1
             );
         },
+
+        isSubCategoriesDisabled(): boolean {
+            return (
+                this.values[TokenType.CATEGORY] === null ||
+                this.values[TokenType.CATEGORY] === UNCATEGORIZED
+            );
+        },
+
+        definitions(): FilterDefinition[] {
+            const {
+                $t: __,
+                withParkFilter,
+                isSubCategoriesDisabled,
+                parksOptions,
+                tagsOptions,
+                categoriesOptions,
+                subCategoriesOptions,
+            } = this;
+
+            return [
+                withParkFilter && {
+                    type: TokenType.PARK,
+                    icon: 'industry',
+                    title: __('park'),
+                    placeholder: __('all-parks'),
+                    options: parksOptions,
+                },
+                {
+                    type: TokenType.CATEGORY,
+                    icon: 'sitemap',
+                    title: __('category'),
+                    placeholder: __('all-categories'),
+                    options: categoriesOptions,
+                },
+                {
+                    type: TokenType.SUB_CATEGORY,
+                    icon: 'sitemap',
+                    title: __('sub-category'),
+                    disabled: isSubCategoriesDisabled,
+                    placeholder: __('all-sub-categories'),
+                    options: subCategoriesOptions,
+                },
+                {
+                    type: TokenType.TAGS,
+                    icon: 'tags',
+                    title: __('tags'),
+                    options: tagsOptions,
+                    placeholder: __('all-tags'),
+                    multiSelect: true,
+                },
+            ].filter(isTruthy);
+        },
     },
-    mounted() {
+    created() {
+        this.$store.dispatch('tags/fetch');
         this.$store.dispatch('parks/fetch');
         this.$store.dispatch('categories/fetch');
-        this.$store.dispatch('tags/fetch');
     },
     methods: {
         // ------------------------------------------------------
@@ -104,128 +162,42 @@ const MaterialsFilters = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleParkChange(rawPark: Park['id'] | '') {
-            const park = rawPark !== '' ? rawPark : null;
-            if (park === (this.values.park ?? null)) {
-                return;
+        handleChange(newFilters: Filters) {
+            const normalizedNewFilters: Filters = { ...newFilters };
+            if (!(TokenType.PARK in normalizedNewFilters) || !this.withParkFilter) {
+                normalizedNewFilters[TokenType.PARK] = null;
+            }
+            if (
+                newFilters[TokenType.CATEGORY] === null &&
+                newFilters[TokenType.SUB_CATEGORY] !== null
+            ) {
+                normalizedNewFilters[TokenType.SUB_CATEGORY] = null;
             }
 
-            const newFilters = park === null
-                ? omit(this.values, 'park')
-                : { ...this.values, park };
-
-            this.$emit('change', newFilters);
-        },
-
-        handleCategoryChange(rawCategory: Category['id'] | '') {
-            const category = rawCategory !== '' ? rawCategory : null;
-            if (category === (this.values.category ?? null)) {
-                return;
+            if (!isEqual(this.values, normalizedNewFilters)) {
+                this.$emit('change', normalizedNewFilters);
             }
-
-            const newFilters = category === null
-                ? omit(this.values, ['category', 'subCategory'])
-                : { ...omit(this.values, ['subCategory']), category };
-
-            this.$emit('change', newFilters);
         },
 
-        handleSubCategoryChange(rawSubCategory: SubCategory['id'] | '') {
-            const subCategory = rawSubCategory !== '' ? rawSubCategory : null;
-            if (subCategory === (this.values.subCategory ?? null)) {
-                return;
-            }
-
-            const newFilters = subCategory === null
-                ? omit(this.values, 'subCategory')
-                : { ...this.values, subCategory };
-
-            this.$emit('change', newFilters);
-        },
-
-        handleTagsChange(tags: Array<Tag['id']>) {
-            const hasChanged = (this.values.tags ?? []).join(',') !== tags.join(',');
-            if (!hasChanged) {
-                return;
-            }
-
-            const newFilters = tags.length === 0
-                ? omit(this.values, 'tags')
-                : { ...this.values, tags };
-
-            this.$emit('change', newFilters);
-        },
-
-        handleClear() {
-            this.$emit('change', {});
+        handleSubmit() {
+            this.$emit('submit');
         },
     },
     render() {
         const {
-            $t: __,
             values,
-            parksDisabled,
-            parksOptions,
-            tagsOptions,
-            categoriesOptions,
-            subCategoriesOptions,
-            subCategoriesDisabled,
-            isFilterEmpty,
-            handleClear,
-            handleParkChange,
-            handleTagsChange,
-            handleCategoryChange,
-            handleSubCategoryChange,
+            definitions,
+            handleChange,
+            handleSubmit,
         } = this;
 
         return (
-            <div class="MaterialsFilters">
-                {!parksDisabled && (
-                    <Select
-                        class="MaterialsFilters__item MaterialsFilters__item--park"
-                        placeholder={__('all-parks')}
-                        options={parksOptions}
-                        value={values.park ?? null}
-                        highlight={!!values.park}
-                        onChange={handleParkChange}
-                    />
-                )}
-                <Select
-                    class="MaterialsFilters__item MaterialsFilters__item--category"
-                    placeholder={__('all-categories')}
-                    options={categoriesOptions}
-                    value={values.category ?? null}
-                    highlight={values.category !== undefined}
-                    onChange={handleCategoryChange}
-                />
-                <Select
-                    class="MaterialsFilters__item MaterialsFilters__item--sub-category"
-                    placeholder={__('all-sub-categories')}
-                    disabled={subCategoriesDisabled}
-                    options={subCategoriesOptions}
-                    value={values.subCategory ?? null}
-                    highlight={!subCategoriesDisabled && values.subCategory !== undefined}
-                    onChange={handleSubCategoryChange}
-                />
-                <Select
-                    class="MaterialsFilters__item MaterialsFilters__item--tags"
-                    placeholder={__('tags')}
-                    options={tagsOptions}
-                    value={values.tags ?? []}
-                    highlight={(values.tags ?? []).length > 0}
-                    onChange={handleTagsChange}
-                    multiple
-                />
-                {!isFilterEmpty && (
-                    <Button
-                        type="danger"
-                        icon="backspace"
-                        class="MaterialsFilters__reset"
-                        tooltip={__('clear-filters')}
-                        onClick={handleClear}
-                    />
-                )}
-            </div>
+            <SearchPanel
+                values={values}
+                definitions={definitions}
+                onChange={handleChange}
+                onSubmit={handleSubmit}
+            />
         );
     },
 });

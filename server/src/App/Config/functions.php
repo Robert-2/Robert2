@@ -4,6 +4,7 @@ declare(strict_types=1);
 use DI\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\Feature;
 use Loxya\Kernel;
 use Monolog\Level as LogLevel;
 use Slim\Interfaces\RouteParserInterface;
@@ -175,4 +176,34 @@ function increaseMemory(string $limit, callable $callback): mixed
 function isCli(): bool
 {
     return strtolower(php_sapi_name()) === 'cli';
+}
+
+/**
+ * Permet de savoir si une fonctionnalité est activée.
+ *
+ * @param Feature $feature La fonctionnalité à vérifier.
+ *
+ * @return bool `true` si la fonctionnalité est activée, `false` sinon.
+ */
+function isFeatureEnabled(Feature $feature): bool
+{
+    return Config::get(sprintf('features.%s', $feature->value), true);
+}
+
+/**
+ * Capture et retourne la sortie générée par une fonction de rappel.
+ *
+ * Cette fonction exécute le callback donné et capture tout ce qui est envoyé
+ * dans le tampon de sortie (par exemple via `echo` ou `print`). Une fois le
+ * callback exécuté, elle retourne la sortie sous forme de chaîne de caractères.
+ *
+ * @param callable $callback La fonction à exécuter dont la sortie sera capturée.
+ *
+ * @return string La sortie capturée du callback.
+ */
+function captureOutput(callable $callback): string
+{
+    ob_start();
+    $callback();
+    return ob_get_clean();
 }

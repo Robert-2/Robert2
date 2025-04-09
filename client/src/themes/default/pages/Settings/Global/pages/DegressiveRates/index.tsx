@@ -77,7 +77,6 @@ const DegressiveRatesGlobalSettings = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     render: (h: CreateElement, degressiveRate: DegressiveRate) => {
                         const isDefault = (
                             defaultDegressiveRateIdSync === degressiveRate.id ||

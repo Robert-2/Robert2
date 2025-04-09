@@ -112,15 +112,6 @@ final class SetupController extends BaseController
                 $installData['skipped'] = true;
             }
 
-            if ($currentStep === 'settings') {
-                // - Pré-remplissage des données spécifiques à la Premium qui ne sont pas demandées
-                //   dans le wizard d'installation avec les valeurs par défaut, afin de les avoir
-                //   sous la main dans le fichier settings.json, le jour où on veut les renseigner.
-                foreach (['handScanner', 'email', 'notifications'] as $premiumSetting) {
-                    $installData[$premiumSetting] = Config::DEFAULT_SETTINGS[$premiumSetting];
-                }
-            }
-
             if ($currentStep === 'company') {
                 $installData['logo'] = null;
                 ksort($installData);

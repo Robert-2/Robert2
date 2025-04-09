@@ -1,9 +1,11 @@
 import './index.scss';
 import Color from '@/utils/color';
 import ClickOutside from 'vue-click-outside';
+import generateUniqueId from 'lodash/uniqueId';
 import { computePosition, autoUpdate, flip, shift, offset } from '@floating-ui/dom';
 import { MountingPortal as Portal } from 'portal-vue';
 import { defineComponent } from '@vue/composition-api';
+import Icon from '@/themes/default/components/Icon';
 import ColorPicker from '@/themes/default/components/ColorPicker';
 
 import type { PropType } from '@vue/composition-api';
@@ -50,9 +52,13 @@ type Props = {
 
     /** Le champ doit-il être marqué comme invalide ? */
     invalid?: boolean,
+
+    /** Le champ peut-il être vidé ? */
+    clearable?: boolean,
 };
 
 type InstanceProperties = {
+    uniqueId: string | undefined,
     cancelPickerPositionUpdater: (() => void) | undefined,
 };
 
@@ -97,9 +103,14 @@ const InputColor = defineComponent({
             type: Boolean as PropType<Props['invalid']>,
             default: undefined,
         },
+        clearable: {
+            type: Boolean as PropType<Props['clearable']>,
+            default: true,
+        },
     },
     emits: ['input', 'change'],
     setup: (): InstanceProperties => ({
+        uniqueId: undefined,
         cancelPickerPositionUpdater: undefined,
     }),
     data: (): Data => ({
@@ -172,6 +183,11 @@ const InputColor = defineComponent({
             }
         },
     },
+    created() {
+        const { $options } = this;
+
+        this.uniqueId = generateUniqueId(`${$options.name!}-`);
+    },
     mounted() {
         this.registerPickerPositionUpdater();
     },
@@ -195,11 +211,55 @@ const InputColor = defineComponent({
             this.showPicker = true;
         },
 
+        handleFieldFocus() {
+            if (this.inheritedDisabled) {
+                return;
+            }
+            this.showPicker = true;
+        },
+
+        handleKeydown(e: KeyboardEvent) {
+            const { key } = e;
+
+            if (key === 'Escape') {
+                if (this.inheritedDisabled || !this.showPicker) {
+                    return;
+                }
+
+                this.showPicker = false;
+
+                if (this.currentColor !== null) {
+                    this.$emit('input', this.currentColor);
+                    this.$emit('change', this.currentColor);
+                    this.currentColor = null;
+                }
+            }
+        },
+
+        handleClearClick(e: Event) {
+            e.stopPropagation();
+
+            if (!this.clearable || this.inheritedDisabled || this.color === null) {
+                return;
+            }
+
+            this.showPicker = false;
+            this.currentColor = null;
+
+            this.$emit('input', null);
+            this.$emit('change', null);
+        },
+
         handleChange(color: Color) {
             if (this.inheritedDisabled) {
                 return;
             }
+
             this.currentColor = color;
+
+            if (this.currentColor !== null) {
+                this.$emit('input', this.currentColor);
+            }
         },
 
         handlePickerClose(e: Event) {
@@ -216,8 +276,9 @@ const InputColor = defineComponent({
             this.showPicker = false;
 
             if (this.currentColor !== null) {
-                this.$emit('input', this.currentColor.toString());
-                this.$emit('change', this.currentColor.toString());
+                this.$emit('input', this.currentColor);
+                this.$emit('change', this.currentColor);
+                this.currentColor = null;
             }
         },
 
@@ -271,8 +332,10 @@ const InputColor = defineComponent({
     },
     render() {
         const {
+            uniqueId,
             name,
             color,
+            clearable,
             showPicker,
             pickerPosition,
             placeholderColor,
@@ -281,7 +344,10 @@ const InputColor = defineComponent({
             inheritedInvalid: invalid,
             inheritedDisabled: disabled,
             handleChange,
+            handleKeydown,
+            handleFieldFocus,
             handleFieldClick,
+            handleClearClick,
             handlePickerClose,
         } = this;
         const hasColor = color !== null || placeholderColor !== null;
@@ -300,8 +366,31 @@ const InputColor = defineComponent({
                     '--InputColor--placeholder': formattedPlaceholder,
                 }}
             >
-                <div ref="field" class="InputColor__field" onClick={handleFieldClick}>
+                <div
+                    ref="field"
+                    role="combobox"
+                    aria-haspopup="listbox"
+                    aria-expanded={showPicker}
+                    aria-controls={`${uniqueId!}--picker`}
+                    class="InputColor__field"
+                    onClick={handleFieldClick}
+                    onFocus={handleFieldFocus}
+                    onKeydown={handleKeydown}
+                    tabIndex={!disabled ? 0 : -1}
+                >
                     <div class="InputColor__field__preview" />
+                    {(clearable && !disabled && color !== null) && (
+                        <button
+                            type="button"
+                            onClick={handleClearClick}
+                            class={[
+                                'InputColor__field__clear-button',
+                                { 'InputColor__field__clear-button--light': color.isDark() },
+                            ]}
+                        >
+                            <Icon name="times" />
+                        </button>
+                    )}
                     {(!!name && !disabled) && (
                         <input type="hidden" name={name} value={formattedValue ?? ''} />
                     )}
@@ -310,7 +399,10 @@ const InputColor = defineComponent({
                     <Portal mountTo="#app" append>
                         <div
                             ref="picker"
+                            role="listbox"
+                            id={`${uniqueId!}--picker`}
                             class="InputColor__picker"
+                            onKeydown={handleKeydown}
                             v-clickOutside={handlePickerClose}
                             style={{
                                 left: `${pickerPosition.x}px`,

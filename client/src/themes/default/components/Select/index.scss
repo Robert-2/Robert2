@@ -1,4 +1,5 @@
 @use '~@/themes/default/style/globals';
+@use 'sass:color';
 
 .Select {
     $block: &;
@@ -9,16 +10,22 @@
         width: 100%;
     }
 
-    //
-    // - Statut: Invalide
-    //
+    &__option {
+        &--new {
+            color: color.adjust(globals.$input-text-color, $lightness: -5%);
+            font-style: italic;
+        }
+    }
 
-    &--invalid {
-        // stylelint-disable-next-line selector-class-pattern
-        .v-select:not(.vs--open) {
-            border-color: globals.$input-error-border-color;
-            background-color: globals.$input-error-background-color;
-            color: globals.$input-error-text-color;
+    &__no-results {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: globals.$spacing-small;
+
+        &__message {
+            margin: 0;
         }
     }
 
@@ -27,10 +34,23 @@
     //
 
     &--highlight {
-        #{$block}__input {
-            background-color: globals.$primary-color;
-            color: #fff;
-            font-weight: 600;
+        // stylelint-disable-next-line selector-class-pattern
+        .v-select:not(.vs--open) .vs__dropdown-toggle {
+            border-color: color.adjust(globals.$primary-color, $lightness: -7%);
+            box-shadow: 0 0 6px color.adjust(globals.$primary-color, $alpha: -0.5);
+        }
+    }
+
+    //
+    // - Statut: Invalide
+    //
+
+    &--invalid {
+        // stylelint-disable-next-line selector-class-pattern
+        .v-select:not(.vs--open) .vs__dropdown-toggle {
+            border-color: globals.$input-error-border-color;
+            background-color: globals.$input-error-background-color;
+            color: globals.$input-error-text-color;
         }
     }
 }

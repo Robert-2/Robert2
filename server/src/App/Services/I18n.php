@@ -47,33 +47,19 @@ final class I18n
         'fr' => 'FR',
     ];
 
-    /**
-     * Langue courante.
-     *
-     * @var string
-     */
+    /**  Langue courante. */
     private string $language;
 
-    /**
-     * Région de langue courante.
-     *
-     * @var string|null
-     */
+    /** Région de langue courante. */
     private string|null $region;
 
     /**
      * Est-ce que la langue a été spécifiée explicitement ou
      * est-ce une détection automatisée ?
-     *
-     * @var bool
      */
     private bool $isLangExplicitlySet;
 
-    /**
-     * Chargeur de messages.
-     *
-     * @var LoaderInterface
-     */
+    /** Chargeur de messages. */
     private LoaderInterface $loader;
 
     /**

@@ -1,4 +1,4 @@
-toggle:
+mode-switch:
     calendar: Calendrier
     listing: Liste
 
@@ -20,10 +20,7 @@ calendar:
     add-event: Nouvel événement
     event-saved: L'événement a bien été sauvegardé.
     loading-event: Chargement de l'événement...
-    center-on-today: Centrer sur aujourd’hui
-    display-all-parks: Tous les parcs
-    display-all-categories: Toutes catégories
-    event-with-missing-material-only: "Événements en manque de matériel uniquement\_?"
+    event-with-missing-material-only: "Avec manque de matériel\_?"
     help-add-event: Créer un nouvel événement
     help-center-view-on-today: Centrer le calendrier sur aujourd’hui
     help-timeline-event-operations: |-
@@ -49,16 +46,15 @@ listing:
     calendar: Calendrier
     listing: Liste
 
-    all-periods: Toutes périodes
-    all-states: Tous les états
     states:
         ending-today: Se terminant aujourd'hui
-        return-inventory-todo: Inventaire de retour à faire
+        return-inventory-todo: Retour à faire
         not-confirmed: Non confirmés
         archived: Archivés
 
     columns:
         title: Titre
+        state-icon: Icône d'état
         mobilization-period: Période de mobilisation
         operation-period: Période d'exploitation
         beneficiaries: Bénéficiaire(s)

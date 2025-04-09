@@ -4,6 +4,7 @@ import { Group } from './groups';
 import { CountrySchema } from './countries';
 import { withPaginationEnvelope } from './@schema';
 
+import type { UndefinedOnPartialDeep } from 'type-fest';
 import type { PaginatedData, ListingParams } from './@types';
 import type { SchemaInfer } from '@/utils/validation';
 
@@ -23,6 +24,21 @@ import type { SchemaInfer } from '@/utils/validation';
 export enum BookingsViewMode {
     /** Vue en calendrier (timeline) */
     CALENDAR = 'calendar',
+
+    /** Vue en liste. */
+    LISTING = 'listing',
+}
+
+/**
+ * Modes d'affichage de la page des techniciens.
+ *
+ * NOTE IMPORTANTE:
+ * En cas de modif., pensez à aussi mettre à jour les constantes du modèle back-end.
+ * {@see {@link /server/src/App/Models/User.php}}
+ */
+export enum TechniciansViewMode {
+    /** Vue sous forme de timeline. */
+    TIMELINE = 'timeline',
 
     /** Vue en liste. */
     LISTING = 'listing',
@@ -76,6 +92,9 @@ export const UserDetailsSchema = UserSchema.extend({
 export const UserSettingsSchema = z.strictObject({
     language: z.string(),
     default_bookings_view: z.nativeEnum(BookingsViewMode),
+    default_technicians_view: z.nativeEnum(TechniciansViewMode),
+    disable_contextual_popovers: z.boolean(),
+    disable_search_persistence: z.boolean(),
 });
 
 // ------------------------------------------------------
@@ -114,10 +133,15 @@ export type UserSettingsEdit = Partial<UserSettings>;
 // - Récupération
 //
 
-export type GetAllParams = ListingParams & {
-    deleted?: boolean,
-    group?: Group,
-};
+export type GetAllParams = (
+    & ListingParams
+    & UndefinedOnPartialDeep<{
+        deleted?: boolean,
+        group?: Group | null,
+        notBeneficiaries?: boolean,
+        notTechnicians?: boolean,
+    }>
+);
 
 // ------------------------------------------------------
 // -

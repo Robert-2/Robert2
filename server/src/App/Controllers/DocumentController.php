@@ -7,7 +7,6 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Loxya\Controllers\Traits\Crud;
 use Loxya\Http\Request;
 use Loxya\Models\Document;
-use Loxya\Services\Auth;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
@@ -20,7 +19,7 @@ final class DocumentController extends BaseController
     public function getFile(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $document = Document::findOrFailForUser($id, Auth::user());
+        $document = Document::findOrFail($id);
 
         $fileName = $document->name;
         $fileContent = file_get_contents($document->path);

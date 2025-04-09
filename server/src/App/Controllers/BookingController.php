@@ -11,10 +11,8 @@ use Loxya\Errors\Enums\ApiErrorCode;
 use Loxya\Errors\Exception\ApiBadRequestException;
 use Loxya\Errors\Exception\HttpUnprocessableEntityException;
 use Loxya\Http\Request;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
 use Loxya\Models\Park;
-use Loxya\Services\Auth;
 use Loxya\Services\Logger;
 use Loxya\Services\Mailer;
 use Loxya\Support\Database\QueryAggregator;
@@ -62,7 +60,7 @@ final class BookingController extends BaseController
         }
 
         /** @var Event $booking */
-        $booking = self::BOOKING_TYPES[$entity]::findOrFailForUser($id, Auth::user());
+        $booking = self::BOOKING_TYPES[$entity]::findOrFail($id);
 
         $useMultipleParks = Park::count() > 1;
 
@@ -87,7 +85,7 @@ final class BookingController extends BaseController
         }
 
         /** @var Event $booking */
-        $booking = self::BOOKING_TYPES[$entity]::findOrFailForUser($id, Auth::user());
+        $booking = self::BOOKING_TYPES[$entity]::findOrFail($id);
 
         $data = $booking->serialize($booking::SERIALIZE_BOOKING_DEFAULT);
         return $response->withJson($data, StatusCode::STATUS_OK);
@@ -167,7 +165,7 @@ final class BookingController extends BaseController
         $ascending = $request->getBooleanQueryParam('ascending');
         $limit = $request->getIntegerQueryParam('limit');
 
-        $search = $request->getStringQueryParam('search');
+        $search = $request->getSearchArrayQueryParam('search');
         $categoryId = $request->getQueryParam('category');
         $parkId = $request->getIntegerQueryParam('park');
         $period = $request->getPeriodQueryParam('period');
@@ -199,13 +197,7 @@ final class BookingController extends BaseController
         foreach ($queries as $modelClass => $modelQuery) {
             $modelQuery
                 ->when(
-                    Auth::is([Group::READONLY_PLANNING_SELF]),
-                    static fn (Builder $builder) => (
-                        $builder->withInvolvedUser(Auth::user())
-                    ),
-                )
-                ->when(
-                    $search !== null && mb_strlen($search) >= 2,
+                    !empty($search),
                     static fn ($builder) => $builder->search($search),
                 )
                 ->when($period !== null, static fn (Builder $builder) => (
@@ -266,12 +258,6 @@ final class BookingController extends BaseController
             // - Événements.
             Event::class => (
                 Event::inPeriod($period)
-                    ->when(
-                        Auth::is([Group::READONLY_PLANNING_SELF]),
-                        static fn (Builder $builder) => (
-                            $builder->withInvolvedUser(Auth::user())
-                        ),
-                    )
                     ->with(['materials', 'beneficiaries', 'technicians'])
             ),
         ]);

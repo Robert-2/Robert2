@@ -5,6 +5,7 @@ import { defineComponent } from '@vue/composition-api';
 import Fragment from '@/components/Fragment';
 import config from '@/globals/config';
 import formatAmount from '@/utils/formatAmount';
+import { UNCATEGORIZED } from '@/stores/api/materials';
 import StateMessage, { State } from '@/themes/default/components/StateMessage';
 import MaterialPopover from '@/themes/default/components/Popover/Material';
 import Dropdown from '@/themes/default/components/Dropdown';
@@ -108,22 +109,24 @@ const MaterialsSelectorList = defineComponent({
             const { materials, filters } = this;
 
             const filterResolvers: { [T in keyof Filters]: FilterResolver<T> } = {
-                search: ({ name, reference }: SourceMaterial, query: NonNullable<Filters['search']>) => {
-                    query = query.trim();
-                    if (query.length < 2) {
+                search: ({ name, reference }: SourceMaterial, rawTerms: Filters['search']) => {
+                    const terms = rawTerms.filter(
+                        (term: string) => term.trim().length > 1,
+                    );
+                    if (terms.length === 0) {
                         return true;
                     }
 
-                    return (
-                        stringIncludes(name, query) ||
-                        reference.toLowerCase().includes(query.toLowerCase())
-                    );
+                    return terms.some((term: string) => (
+                        stringIncludes(name, term) ||
+                        stringIncludes(reference, term)
+                    ));
                 },
                 park: (material: SourceMaterial, parkId: NonNullable<Filters['park']>) => (
                     material.park_id === parkId
                 ),
                 category: (material: SourceMaterial, categoryId: NonNullable<Filters['category']>) => (
-                    (material.category_id === null && categoryId === 'uncategorized') ||
+                    (material.category_id === null && categoryId === UNCATEGORIZED) ||
                     material.category_id === categoryId
                 ),
                 subCategory: (material: SourceMaterial, subCategoryId: NonNullable<Filters['subCategory']>) => (
@@ -447,7 +450,6 @@ const MaterialsSelectorList = defineComponent({
                                             // @see https://github.com/matfish2/vue-tables-2/blob/master/templates/VtTableBody.vue#L9
                                             key={`${material.id}--availability`}
                                             material={material}
-                                            filters={filters}
                                         />
                                     )
                                     : null

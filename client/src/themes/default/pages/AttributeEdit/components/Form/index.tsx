@@ -7,6 +7,7 @@ import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
 
+import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { Option, Options } from '@/utils/formatOptions';
 import type { Category } from '@/stores/api/categories';
@@ -102,8 +103,16 @@ const AttributeEditForm = defineComponent({
             return !!type && [AttributeType.INTEGER, AttributeType.FLOAT].includes(type);
         },
     },
-    mounted() {
+    created() {
         this.$store.dispatch('categories/fetch');
+    },
+    mounted() {
+        if (this.isNew) {
+            this.$nextTick(() => {
+                const $inputName = this.$refs.inputName as ComponentRef<typeof FormField>;
+                $inputName?.focus();
+            });
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -187,6 +196,7 @@ const AttributeEditForm = defineComponent({
             >
                 <Fieldset>
                     <FormField
+                        ref="inputName"
                         label={__('page.attribute-edit.name')}
                         class="AttributeEditForm__name"
                         v-model={data.name}

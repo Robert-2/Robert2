@@ -1,15 +1,34 @@
-title: Technicians
-title-trash: Deleted Technicians
-help: You can send an email to a technician by clicking on his/her address.
-
 action-add: New technician
-period-of-availability: Period of availability
-has-access-to-schedule: "Has access to schedule?"
+manage-roles: Manage roles
+roles: Roles
 
-confirm-delete: Move this technician in trash bin?
-confirm-permanently-delete: Do you really want to permanently delete this technician?
-confirm-restore: Do you really want to restore this technician?
+mode-switch:
+    listing: Listing
+    planning: Planning
 
-saved: Technician saved.
-deleted: Technician deleted.
-restored: Technician restored.
+#
+# - Sous-pages (vues)
+#
+
+sub-pages:
+    listing:
+        title: Technicians
+        title-trash: Deleted Technicians
+
+        period-of-availability: Period of availability
+
+        confirm-delete: Move this technician in trash bin?
+        confirm-permanently-delete: Do you really want to permanently delete this technician?
+        confirm-restore: Do you really want to restore this technician?
+
+        saved: Technician saved.
+        deleted: Technician deleted.
+        restored: Technician restored.
+
+    timeline:
+        title: Technicians planning
+
+        add-technician: Add a technician
+
+        no-technicians: There is no technicians yet.
+        no-technicians-with-this-search: No technicians were found with this search.

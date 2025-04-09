@@ -1,0 +1,108 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:math';
+@use 'sass:color';
+
+.TechniciansListing {
+    $block: &;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: globals.$spacing-medium;
+
+    &__table {
+        flex: 1;
+
+        &__cell {
+            &__empty {
+                color: globals.$text-light-color;
+                font-style: italic;
+            }
+
+            &--nickname,
+            &--email,
+            &--schedule-access,
+            &--address,
+            &--roles,
+            &--note {
+                display: none;
+            }
+
+            &--address {
+                white-space: pre-line;
+            }
+
+            &--schedule-access {
+                // - Important pour surcharger la définition du <th> de `.VueTables`.
+                // stylelint-disable-next-line declaration-no-important
+                text-align: center !important;
+            }
+
+            &--roles {
+                max-width: 250px;
+            }
+
+            &--note {
+                max-width: 200px;
+                white-space: pre-line;
+            }
+
+            //
+            // - Responsive
+            //
+
+            @media (min-width: globals.$screen-tablet) {
+                &--email {
+                    display: table-cell;
+                }
+            }
+
+            @media (min-width: globals.$screen-desktop) {
+                &--nickname,
+                &--schedule-access {
+                    display: table-cell;
+                }
+            }
+
+            @media (min-width: globals.$screen-big-desktop) {
+                &--address,
+                &--roles,
+                &--note {
+                    display: table-cell;
+                }
+            }
+        }
+    }
+
+    &:not(&--trashed) {
+        #{$block}__table__row {
+            cursor: pointer;
+
+            &:hover > #{$block}__table__cell {
+                background-color: color.adjust(globals.$bg-color-table-td, $lightness: 5%);
+            }
+        }
+    }
+
+    &__roles {
+        @extend %reset-list;
+
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.2rem;
+
+        &__item {
+            overflow: hidden;
+            max-width: 200px;
+            padding: 0.3rem 1rem;
+            border-radius: 15px;
+            background: globals.$bg-color-emphasis;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            @include globals.icon('tools') {
+                margin-right: globals.$spacing-thin;
+            }
+        }
+    }
+}

@@ -66,4 +66,6 @@ const MultiSwitch = defineComponent({
     },
 });
 
+export type { OptionData as Option };
+
 export default MultiSwitch;

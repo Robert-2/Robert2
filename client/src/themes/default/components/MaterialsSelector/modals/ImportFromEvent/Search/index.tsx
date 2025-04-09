@@ -1,5 +1,6 @@
 import './index.scss';
 import throttle from 'lodash/throttle';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
 import { defineComponent } from '@vue/composition-api';
 import apiEvents from '@/stores/api/events';
 import Icon from '@/themes/default/components/Icon';
@@ -40,7 +41,6 @@ const ImportFromEventSearch = defineComponent({
     props: {
         exclude: {
             type: Number as PropType<Props['exclude']>,
-            required: false,
             default: null,
         },
     },
@@ -58,7 +58,10 @@ const ImportFromEventSearch = defineComponent({
         };
     },
     mounted() {
-        this.handleSearchDebounced = throttle(this.handleSearch.bind(this), 400);
+        this.handleSearchDebounced = throttle(
+            this.handleSearch.bind(this),
+            DEBOUNCE_WAIT_DURATION.asMilliseconds(),
+        );
     },
     beforeDestroy() {
         this.handleSearchDebounced?.cancel();

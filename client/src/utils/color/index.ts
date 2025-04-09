@@ -98,6 +98,17 @@ class Color {
     }
 
     /**
+     * Retourne l'instance sous forme serializable dans un objet JSON.
+     *
+     * Note: Ce format pourra être ré-utilisé en entrée.
+     *
+     * @returns L'instance sous forme sérialisée.
+     */
+    public toJSON(): HexColorString | RgbaColorString {
+        return this.toString();
+    }
+
+    /**
      * Permet de créer une nouvelle instance de `Color` avec une nouvelle teinte.
      * (en gardant les autres propriétés de la précédente couleur)
      *
@@ -130,7 +141,7 @@ class Color {
      *
      * @returns `true` si la couleur est valide, `false` sinon.
      */
-    public static isValid(color: unknown): boolean {
+    public static isValid(color: unknown): color is RawColor | Color {
         if (color instanceof Color) {
             return true;
         }

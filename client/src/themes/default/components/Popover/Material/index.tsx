@@ -15,6 +15,7 @@ import {
 
 import type { PropType } from '@vue/composition-api';
 import type { Material } from '@/stores/api/materials';
+import type { Session } from '@/stores/api/session';
 
 type Props = {
     /**
@@ -65,6 +66,17 @@ const MaterialPopover = defineComponent({
         isOpen: false,
         popupPosition: { x: 0, y: 0 },
     }),
+    computed: {
+        disabled(): boolean {
+            const isLogged: boolean = this.$store.getters['auth/isLogged'];
+            if (!isLogged) {
+                return false;
+            }
+
+            const session = this.$store.state.auth.user as Session;
+            return session.disable_contextual_popovers;
+        },
+    },
     mounted() {
         this.registerPopupPositionUpdater();
     },
@@ -205,6 +217,7 @@ const MaterialPopover = defineComponent({
         const children = this.$slots.default;
         const {
             isOpen,
+            disabled,
             material,
             popupPosition,
             handleMouseEnter,
@@ -213,6 +226,10 @@ const MaterialPopover = defineComponent({
             handleMouseEnterPopup,
             handleMouseLeavePopup,
         } = this;
+
+        if (disabled) {
+            return children;
+        }
 
         return (
             <Fragment>

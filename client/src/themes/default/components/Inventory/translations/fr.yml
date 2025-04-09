@@ -1,6 +1,10 @@
 comment-label: "Commentaire\_:"
 departure-comment-label: "Commentaire lors du départ\_:"
 
+empty-state:
+    no-materials: Il n'y a aucun matériel à afficher.
+    no-filters-results: Aucun matériel ne correspond aux filtres actuels.
+
 #
 # - Fenêtres modales
 #

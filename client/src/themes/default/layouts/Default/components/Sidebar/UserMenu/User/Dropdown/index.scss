@@ -8,10 +8,10 @@
     flex-direction: column;
     min-width: 200px;
     padding: globals.$spacing-small 0;
-    border: 1px solid #303030;
+    border: globals.$dropdown-border;
     border-radius: globals.$border-radius-large;
-    background: #262626;
-    box-shadow: 0 4px 15px #1b1b1b;
+    background: globals.$dropdown-background-color;
+    box-shadow: globals.$dropdown-box-shadow;
     white-space: nowrap;
 
     &__item {

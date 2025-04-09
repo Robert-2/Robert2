@@ -21,7 +21,20 @@ interface:
     title: Interface
 
     language: Language
-    default-bookings-view: Default view of events
-    booking-view-mode:
-        calendar: Timeline
-        listing: List
+    default-views: Default views
+    interactions: Interactions
+
+    disable-contextual-popover: Disable contextual tooltips?
+    disable-search-persistence: Disable search and filter persistence?
+
+    bookings-view-mode:
+        label: Default view of the global schedule
+        options:
+            calendar: Timeline
+            listing: List
+
+    technicians-view-mode:
+        label: Default view of the technician listing
+        options:
+            listing: List
+            timeline: Planning

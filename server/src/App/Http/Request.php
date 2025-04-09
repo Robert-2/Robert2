@@ -134,7 +134,46 @@ class Request extends CoreRequest
     public function getStringQueryParam(string $key, string|null $default = null): string|null
     {
         $rawValue = $this->getQueryParam($key, null);
-        return $rawValue !== null ? trim((string) $rawValue) : $default;
+        return $rawValue !== null && is_string($rawValue) ? trim((string) $rawValue) : $default;
+    }
+
+    /**
+     * Retrieve query parameter as a string array.
+     *
+     * @template D of string[]
+     *
+     * @param string $key The key in which the parameter to retrieve is located.
+     * @param D $default The default value if the parameter does not exist.
+     *
+     * @return string[]|D The resulting string array.
+     */
+    public function getStringArrayQueryParam(string $key, array $default = []): array
+    {
+        $rawValues = $this->getQueryParam($key, null);
+        if ($rawValues === null) {
+            return $default;
+        }
+
+        $rawValues = !is_array($rawValues) ? [$rawValues] : $rawValues;
+        return array_map(
+            static fn ($rawValue) => trim((string) $rawValue),
+            array_filter($rawValues, 'is_string'),
+        );
+    }
+
+    /**
+     * Retrieve query parameter as a search array.
+     *
+     * @param string $key The key in which the parameter to retrieve is located.
+     *
+     * @return string[] The resulting search array.
+     */
+    public function getSearchArrayQueryParam(string $key): array
+    {
+        return array_filter(
+            $this->getStringArrayQueryParam($key),
+            static fn ($searchTerm) => strlen($searchTerm) >= 2,
+        );
     }
 
     /**
@@ -150,7 +189,31 @@ class Request extends CoreRequest
     public function getIntegerQueryParam(string $key, int|null $default = null): int|null
     {
         $rawValue = $this->getQueryParam($key, null);
-        return $rawValue !== null ? intval($rawValue) : $default;
+        return $rawValue !== null && is_numeric($rawValue) ? intval($rawValue) : $default;
+    }
+
+    /**
+     * Retrieve query parameter as a integer array.
+     *
+     * @template D of int[]
+     *
+     * @param string $key The key in which the parameter to retrieve is located.
+     * @param D $default The default value if the parameter does not exist.
+     *
+     * @return int[]|D The resulting integer array.
+     */
+    public function getIntegerArrayQueryParam(string $key, array $default = []): array
+    {
+        $rawValues = $this->getQueryParam($key, null);
+        if ($rawValues === null) {
+            return $default;
+        }
+
+        $rawValues = !is_array($rawValues) ? [$rawValues] : $rawValues;
+        return array_map(
+            static fn ($rawValue) => intval($rawValue),
+            array_filter($rawValues, 'is_numeric'),
+        );
     }
 
     /**

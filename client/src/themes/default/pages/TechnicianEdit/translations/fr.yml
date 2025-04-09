@@ -2,6 +2,10 @@ title-create: Nouveau technicien
 title-edit-simple: Modifier le technicien
 title-edit: "Modifier le technicien «\_{name}\_»"
 
+roles:
+    label: Rôles du technicien
+    help: Vous pouvez choisir plusieurs rôles pour le technicien.
+
 user-account: Compte utilisateur
 existing-user-help: "Pour modifier ou supprimer l'utilisateur lié à ce technicien, rendez-vous dans la partie «\_Utilisateurs\_»."
 

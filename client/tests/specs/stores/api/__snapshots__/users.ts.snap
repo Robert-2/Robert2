@@ -173,6 +173,9 @@ exports[`Users Api create() parse the returned data correctly (with #5) 1`] = `
 exports[`Users Api getSettings() parse the returned data correctly 1`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": true,
+  "disable_search_persistence": false,
   "language": "en",
 }
 `;
@@ -180,6 +183,9 @@ exports[`Users Api getSettings() parse the returned data correctly 1`] = `
 exports[`Users Api getSettings() parse the returned data correctly 2`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": true,
+  "disable_search_persistence": false,
   "language": "en",
 }
 `;
@@ -187,6 +193,9 @@ exports[`Users Api getSettings() parse the returned data correctly 2`] = `
 exports[`Users Api getSettings() parse the returned data correctly 3`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": true,
+  "disable_search_persistence": true,
   "language": "fr",
 }
 `;
@@ -194,6 +203,9 @@ exports[`Users Api getSettings() parse the returned data correctly 3`] = `
 exports[`Users Api getSettings() parse the returned data correctly 4`] = `
 {
   "default_bookings_view": "listing",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": false,
+  "disable_search_persistence": false,
   "language": "fr",
 }
 `;
@@ -201,6 +213,9 @@ exports[`Users Api getSettings() parse the returned data correctly 4`] = `
 exports[`Users Api getSettings() parse the returned data correctly 5`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": false,
+  "disable_search_persistence": false,
   "language": "fr",
 }
 `;
@@ -208,6 +223,9 @@ exports[`Users Api getSettings() parse the returned data correctly 5`] = `
 exports[`Users Api getSettings() parse the returned data correctly 6`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "timeline",
+  "disable_contextual_popovers": false,
+  "disable_search_persistence": false,
   "language": "en",
 }
 `;
@@ -554,6 +572,9 @@ exports[`Users Api update() parse the returned data correctly 5`] = `
 exports[`Users Api updateSettings() parse the returned data correctly 1`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": true,
+  "disable_search_persistence": false,
   "language": "en",
 }
 `;
@@ -561,6 +582,9 @@ exports[`Users Api updateSettings() parse the returned data correctly 1`] = `
 exports[`Users Api updateSettings() parse the returned data correctly 2`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": true,
+  "disable_search_persistence": false,
   "language": "en",
 }
 `;
@@ -568,6 +592,9 @@ exports[`Users Api updateSettings() parse the returned data correctly 2`] = `
 exports[`Users Api updateSettings() parse the returned data correctly 3`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": true,
+  "disable_search_persistence": true,
   "language": "fr",
 }
 `;
@@ -575,6 +602,9 @@ exports[`Users Api updateSettings() parse the returned data correctly 3`] = `
 exports[`Users Api updateSettings() parse the returned data correctly 4`] = `
 {
   "default_bookings_view": "listing",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": false,
+  "disable_search_persistence": false,
   "language": "fr",
 }
 `;
@@ -582,6 +612,9 @@ exports[`Users Api updateSettings() parse the returned data correctly 4`] = `
 exports[`Users Api updateSettings() parse the returned data correctly 5`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "listing",
+  "disable_contextual_popovers": false,
+  "disable_search_persistence": false,
   "language": "fr",
 }
 `;
@@ -589,6 +622,9 @@ exports[`Users Api updateSettings() parse the returned data correctly 5`] = `
 exports[`Users Api updateSettings() parse the returned data correctly 6`] = `
 {
   "default_bookings_view": "calendar",
+  "default_technicians_view": "timeline",
+  "disable_contextual_popovers": false,
+  "disable_search_persistence": false,
   "language": "en",
 }
 `;

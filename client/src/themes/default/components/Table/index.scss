@@ -3,6 +3,14 @@
 @use '~@/themes/default/style/globals';
 
 .Table {
+    > .row:first-child {
+        display: none;
+    }
+
+    .table-responsive {
+        margin-top: 0;
+    }
+
     &__cell {
         $sub-block: &;
 
@@ -15,20 +23,6 @@
                 display: flex;
                 gap: globals.$spacing-thin;
             }
-        }
-    }
-
-    //
-    // - Modifiers
-    //
-
-    &--static {
-        > .row:first-child {
-            display: none;
-        }
-
-        .table-responsive {
-            margin-top: 0;
         }
     }
 

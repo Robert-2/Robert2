@@ -1,6 +1,7 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
 import ClickOutside from 'vue-click-outside';
+import invariant from 'invariant';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 
@@ -32,6 +33,13 @@ type Action = {
      * - Si c'est une URL absolue, celle-ci s'ouvrira dans une autre fenêtre / onglet.
      */
     external?: boolean,
+
+    /**
+     * Si l'action secondaire est un lien, permet d'indiquer qu'il s'agit d'un fichier à télécharger.
+     *
+     * Si oui, alors cela forcera `external` à `true`.
+     */
+    download?: boolean,
 
     /**
      * L'éventuel icône à utiliser avant le texte de l'action secondaire.
@@ -85,6 +93,15 @@ type Props = {
     external?: boolean,
 
     /**
+     * Si le bouton principal est un lien, permet d'indiquer qu'il s'agit d'un fichier à télécharger.
+     *
+     * Si oui, alors cela forcera `external` à `true`.
+     *
+     * @default false
+     */
+    download?: boolean,
+
+    /**
      * L'éventuel icône à utiliser avant le texte du bouton principal.
      *
      * Doit contenir une chaîne de caractère avec les composantes suivantes séparées par `:`:
@@ -103,6 +120,8 @@ type Props = {
      *
      * Si c'est le cas (true), le bouton principal et toutes les actions secondaires seront
      * affichés grisés et ne seront pas cliquables.
+     *
+     * @default false
      */
     disabled?: boolean,
 
@@ -125,8 +144,8 @@ type Data = {
  * déroulant contenant des actions secondaires.
  *
  * Le bouton principal peut être soit un lien (externe ou non), soit un button.
- * Dans le premier cas, il faut passer les props `to` et éventuellement `external`,
- * et dans le second cas il suffit d'utiliser l'événement `onClick`.
+ * Dans le premier cas, il faut passer les props `to` et éventuellement `external`
+ *  ou `download, et dans le second cas il suffit d'utiliser l'événement `onClick`.
  *
  * Pour les actions secondaires, chaque item de la liste `actions` doit être du
  * type `Action` (voir documentation).
@@ -144,7 +163,11 @@ const ButtonDropdown = defineComponent({
             default: undefined,
         },
         external: {
-            type: Boolean as PropType<Required<Props>['external']>,
+            type: Boolean as PropType<Props['external']>,
+            default: undefined,
+        },
+        download: {
+            type: Boolean as PropType<Required<Props>['download']>,
             default: false,
         },
         icon: {
@@ -167,6 +190,21 @@ const ButtonDropdown = defineComponent({
     data: (): Data => ({
         isOpen: false,
     }),
+    computed: {
+        inheritedExternal(): boolean | undefined {
+            if (this.download) {
+                return undefined;
+            }
+
+            return this.external ?? false;
+        },
+    },
+    created() {
+        invariant(
+            this.download !== true || this.external === undefined,
+            'The `external` prop. must not be set when the `download` prop. is true.',
+        );
+    },
     methods: {
         // ------------------------------------------------------
         // -
@@ -199,7 +237,8 @@ const ButtonDropdown = defineComponent({
             icon,
             label,
             to,
-            external,
+            inheritedExternal,
+            download,
             handleClick,
             handleToggle,
             actions,
@@ -214,7 +253,8 @@ const ButtonDropdown = defineComponent({
                 <Button
                     to={to}
                     icon={icon}
-                    external={external}
+                    external={inheritedExternal}
+                    download={download}
                     onClick={handleClick}
                     disabled={disabled}
                     class="ButtonDropdown__main-button"
@@ -235,6 +275,7 @@ const ButtonDropdown = defineComponent({
                                 type={action.type}
                                 to={action.target}
                                 icon={action.icon}
+                                download={action.download}
                                 external={action.external}
                                 onClick={action.onClick ?? (() => {})}
                                 disabled={disabled}
@@ -250,6 +291,7 @@ const ButtonDropdown = defineComponent({
                                     type={action.secondary.type}
                                     to={action.secondary.target}
                                     icon={action.secondary.icon}
+                                    download={action.secondary.download}
                                     external={action.secondary.external}
                                     onClick={action.secondary.onClick ?? (() => {})}
                                     disabled={disabled}

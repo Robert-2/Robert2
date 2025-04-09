@@ -3,6 +3,7 @@ import omit from 'lodash/omit';
 import countries from './countries';
 import users from './users';
 import events from './events';
+import roles from './roles';
 
 const data = [
     {
@@ -21,6 +22,10 @@ const data = [
         full_address: null,
         country: null,
         note: null,
+        roles: [
+            roles.default(1),
+            roles.default(3),
+        ],
         user: users.default(2),
         events: [
             {
@@ -32,7 +37,7 @@ const data = [
                     end: '2018-12-18 22:00:00',
                     isFullDays: false,
                 },
-                position: 'Régisseur',
+                role: roles.default(1),
                 event: () => events.default(1),
             },
         ],
@@ -53,6 +58,9 @@ const data = [
         full_address: null,
         country: countries.default(2),
         note: null,
+        roles: [
+            roles.default(2),
+        ],
         user: null,
         events: [
             {
@@ -64,19 +72,19 @@ const data = [
                     end: '2018-12-18 18:00:00',
                     isFullDays: false,
                 },
-                position: 'Technicien plateau',
+                role: roles.default(2),
                 event: () => events.default(1),
             },
             {
                 id: 3,
                 event_id: 7,
                 technician_id: 2,
-                position: 'Ingénieur du son',
                 period: {
                     start: '2023-05-25 00:00:00',
                     end: '2023-05-29 00:00:00',
                     isFullDays: false,
                 },
+                role: roles.default(3),
                 event: () => events.default(7),
             },
         ],

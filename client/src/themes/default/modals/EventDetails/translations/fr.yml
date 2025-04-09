@@ -1,8 +1,6 @@
 edit: Modifier l'événement
 archive: Archiver l'événement
 unarchive: Désarchiver l'événement
-release-sheet-by-lists: Fiche de sortie (matériel classé par listes)
-release-sheet-by-parks: Fiche de sortie (matériel classé par parcs)
 copy-url-release-sheet: Copier le lien permanent de cette fiche de sortie.
 
 inventories-unavailable-help: >-
@@ -12,34 +10,6 @@ inventory-unavailable-help: >-
     L'événement contient des quantités en excédent, l'inventaire ne peut
     pas être effectué tant que celles-ci n'auront pas été corrigées.
 
-send-materials-list-to-beneficiaries:
-    button:
-        - Envoyer la liste au bénéficiaire
-        - Envoyer la liste aux bénéficiaires
-    title: Envoi de la liste du matériel
-    text:
-        - "Vous vous apprêtez à envoyer la liste complète du matériel de l'événement à l'adresse suivante\_:\n\n{emails}.\n\nVoulez-vous continuer\_?"
-        - "Vous vous apprêtez à envoyer la liste complète du matériel de l'événement aux adresses suivantes\_:\n\n{emails}.\n\nVoulez-vous continuer\_?"
-    confirm: Envoyer
-    success:
-        - La liste a bien été envoyée par e-mail au bénéficiaire.
-        - La liste a bien été envoyée par e-mail à {count} bénéficiaires.
-    nothing-sent: Aucun e-mail n'a été envoyé.
-
-send-summary-to-technicians:
-    button:
-        - Envoyer la fiche de sortie au technicien
-        - Envoyer la fiche de sortie aux techniciens
-    title: Envoi de fiche de sortie
-    text:
-        - "Vous vous apprêtez à envoyer fiche de sortie de l'événement en PDF à l'adresse suivante\_:\n\n{emails}.\n\nVoulez-vous continuer\_?"
-        - "Vous vous apprêtez à envoyer fiche de sortie de l'événement en PDF aux adresses suivantes\_:\n\n{emails}.\n\nVoulez-vous continuer\_?"
-    confirm: Envoyer
-    success:
-        - La fiche de sortie a bien été envoyée par e-mail au technicien.
-        - La fiche de sortie a bien été envoyée par e-mail à {count} techniciens.
-    nothing-sent: Aucun e-mail n'a été envoyé.
-
 #
 # - Tabs
 #
@@ -47,7 +17,7 @@ send-summary-to-technicians:
 infos:
     beneficiary-phone: "Tél\_:"
     beneficiary-email: "E-mail\_:"
-    preparer: "Préparateur\_:"
+    manager: "Chef de projet\_:"
 
 materials:
     problems-on-returned-materials: Problèmes sur le matériel retourné

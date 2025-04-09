@@ -138,6 +138,8 @@ final class Kernel
 
         // - Observers
         Models\Event::observe(Observers\EventObserver::class);
+        Models\EventTechnician::observe(Observers\EventTechnicianObserver::class);
+        Models\EventPosition::observe(Observers\EventPositionObserver::class);
         Models\EventMaterial::observe(Observers\EventMaterialObserver::class);
         Models\Material::observe(Observers\MaterialObserver::class);
         Models\Attribute::observe(Observers\AttributeObserver::class);

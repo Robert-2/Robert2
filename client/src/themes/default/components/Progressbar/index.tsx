@@ -11,7 +11,7 @@ export type Props = {
     minimalist?: boolean,
 };
 
-// @vue/component
+/** Barre de progression. */
 const Progressbar = defineComponent({
     name: 'Progressbar',
     props: {

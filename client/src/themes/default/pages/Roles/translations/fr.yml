@@ -1,0 +1,13 @@
+title: Rôles (postes) des techniciens
+help: "Les rôles de techniciens sont utilisés à l'étape «\_techniciens\_» de l'édition des événements."
+
+no-role-yet: Il n'y a aucun rôle de technicien pour le moment.
+create-first-role: Créer un premier rôle de technicien
+
+action-add: Nouveau rôle de technicien
+
+role-used: Ce rôle est assigné à un (ou des) technicien(s), il n'est donc pas possible de le supprimer.
+confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce rôle\_?"
+
+saved: Rôle sauvegardé.
+deleted: Rôle supprimé.

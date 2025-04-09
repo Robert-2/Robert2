@@ -20,7 +20,7 @@ declare module 'vue-tables-2-premium' {
     type ColumnsVisibility = Record<string, ColumnVisibility>;
 
     type TemplateRenderFunction<Datum = any> = (
-        (h: CreateElement, row: Datum, index: number) => JSX.Element | JSX.Element[] | string | number | null
+        (h: CreateElement, row: Datum, index: number) => JSX.Node
     );
 
     type RowClickEventPayload<Datum = any> = { row: Datum, event: PointerEvent, index: number };
@@ -39,6 +39,9 @@ declare module 'vue-tables-2-premium' {
         columnsDropdown?: boolean,
         preserveState?: boolean,
         saveState?: boolean,
+        saveSearch?: boolean,
+        visibleColumns?: string[],
+        hiddenColumns?: string[],
         columnsDisplay?: ColumnsVisibility,
         columnsClasses?: Record<string, string>,
         templates?: Record<string, TemplateRenderFunction<Datum>>,
@@ -69,6 +72,7 @@ declare module 'vue-tables-2-premium' {
         toggleChildRow(id: number): void;
         getOpenChildRows(limitToRows: number[] | null): VNode[];
         setCustomFilters(params: Record<string, unknown>): void;
+        setVisibleColumns(columns: string[]): void;
         resetCustomFilters(): void;
         setLoadingState(): void;
         $refs: {

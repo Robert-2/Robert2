@@ -1,29 +1,26 @@
 import '../index.scss';
 import clsx from 'clsx';
+import showModal from '@/utils/showModal';
 import { defineComponent } from '@vue/composition-api';
 import generateUniqueId from 'lodash/uniqueId';
 import { initColumnsDisplay } from '../@utils';
-import { defaultSearcher } from './_utils';
 import { Variant } from '../@constants';
+
+// - Modales
+import ColumnsSelector from '@/themes/default/modals/ColumnsSelector';
 
 import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { Column, Columns } from './_types';
 import type { ColumnsDisplay } from '../@utils';
+import type { OrderBy, RenderFunction } from '../@types';
 import type {
     ColumnSorter,
-    ColumnSearcher,
     ClientTableOptions,
     ClientTableInstance,
-    ColumnsVisibility,
     RowClickEventPayload,
 } from 'vue-tables-2-premium';
-import type {
-    OrderBy,
-    RenderFunction,
-    RenderedColumn,
-} from '../@types';
 
 export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>> = {
     /**
@@ -95,16 +92,6 @@ export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>>
      *   Vue (cf. ci-dessus).
      */
     rowClass?: ClassValue | ((row: Datum) => ClassValue),
-
-    /**
-     * Le sélecteur des colonnes affichés doit-il être affiché ?
-     *
-     * Si cette valeur n'est pas explicitement passée, le fait d'utiliser
-     * un nom pour le tableau activera le sélecteur de colonnes et la
-     * persistence de l'état du tableau. Dans les autres cas, le sélecteur
-     * ne sera pas visible.
-     */
-    withColumnsSelector?: boolean,
 };
 
 type InstanceProperties = {
@@ -167,10 +154,6 @@ const ClientTable = defineComponent({
             ] as PropType<Props['rowClass']>,
             default: undefined,
         },
-        withColumnsSelector: {
-            type: Boolean as PropType<Props['withColumnsSelector']>,
-            default: undefined,
-        },
     },
     emits: ['rowClick'],
     setup: (): InstanceProperties => ({
@@ -191,7 +174,7 @@ const ClientTable = defineComponent({
 
                     return {
                         ...acc,
-                        [column.key]: (h: CreateElement, row: any, index: number): RenderedColumn => {
+                        [column.key]: (h: CreateElement, row: any, index: number): JSX.Node => {
                             const renderedColumn = rawRenderColumn(h, row, index);
 
                             return column.key === 'actions'
@@ -207,7 +190,7 @@ const ClientTable = defineComponent({
         columnsHeadings(): Record<Column['key'], string> {
             return this.columns.reduce(
                 (acc: Record<Column['key'], string>, { key, title }: Column) => (
-                    { ...acc, [key]: title }
+                    { ...acc, [key]: title ?? '' }
                 ),
                 {},
             );
@@ -248,37 +231,10 @@ const ClientTable = defineComponent({
                 );
         },
 
-        columnsSearchable(): Array<Column['key']> {
-            return this.columns
-                .filter(({ searchable }: Column) => !!searchable)
-                .map(({ key }: Column) => key);
-        },
-
-        columnsSearches(): Record<string, ColumnSearcher> {
-            return this.columns
-                .filter(({ searchable }: Column) => !!searchable)
-                .reduce(
-                    (acc: Record<Column['key'], ColumnSearcher>, column: Column) => {
-                        const columnSearcher = typeof column.searchable === 'function'
-                            ? column.searchable
-                            : defaultSearcher(column.key);
-
-                        const searcher = (row: unknown, query: unknown): boolean => {
-                            if (typeof query !== 'string' || query.length < 1) {
-                                return false;
-                            }
-                            return columnSearcher(row, query);
-                        };
-                        return { ...acc, [column.key]: searcher };
-                    },
-                    {},
-                );
-        },
-
-        columnsDisplay(): ColumnsVisibility {
+        columnsDisplayed(): string[] {
             const columnsDisplay = this.columns.reduce(
                 (acc: ColumnsDisplay, column: Column) => {
-                    const visible = !(column.hidden ?? false);
+                    const visible = !(column.defaultHidden ?? false);
                     return { ...acc, [column.key]: visible };
                 },
                 {},
@@ -290,11 +246,6 @@ const ClientTable = defineComponent({
             return this.name !== undefined;
         },
 
-        withColumnsSelectorInferred(): boolean {
-            const { shouldPersistState, withColumnsSelector } = this;
-            return withColumnsSelector ?? shouldPersistState;
-        },
-
         options(): ClientTableOptions {
             const {
                 uniqueKey,
@@ -304,35 +255,28 @@ const ClientTable = defineComponent({
                 defaultOrderBy,
                 columnsHeadings,
                 columnsClasses,
-                columnsDisplay,
+                columnsDisplayed,
                 columnsSortable,
-                columnsSearchable,
-                columnsSearches,
                 columnsSorting,
                 columnsRenders,
                 shouldPersistState,
-                withColumnsSelectorInferred: withColumnsSelector,
             } = this;
 
             const options: ClientTableOptions = {
                 uniqueKey,
-                columnsDropdown: withColumnsSelector,
                 preserveState: shouldPersistState,
                 saveState: shouldPersistState,
                 sortable: columnsSortable,
-                filterable: (
-                    columnsSearchable.length > 0
-                        ? columnsSearchable
-                        : false
-                ),
                 headings: columnsHeadings,
                 templates: columnsRenders,
-                customSorting: columnsSorting,
+                saveSearch: false,
+                columnsDropdown: false,
                 filterByColumn: false,
-                filterAlgorithm: columnsSearches,
+                filterable: false,
+                customSorting: columnsSorting,
                 resizableColumns: resizable,
                 pagination: { show: paginated },
-                columnsDisplay,
+                visibleColumns: columnsDisplayed,
                 columnsClasses,
                 rowClassCallback: (row: any): ClassValue => (
                     clsx('Table__row', typeof rowClass === 'function' ? rowClass(row) : rowClass)
@@ -384,6 +328,11 @@ const ClientTable = defineComponent({
             this.$emit('rowClick', row);
         },
 
+        handleChangeVisibleColumns(newVisibleColumns: string[]) {
+            const $table = this.$refs.table as ClientTableInstance | undefined;
+            $table?.setVisibleColumns(newVisibleColumns);
+        },
+
         // ------------------------------------------------------
         // -
         // -    API Publique
@@ -399,6 +348,26 @@ const ClientTable = defineComponent({
             const $table = this.$refs.table as ClientTableInstance | undefined;
             $table?.setPage(number);
         },
+
+        /**
+         * Permet d'afficher le sélecteur de colonnes du tableau.
+         */
+        async showColumnsSelector(): Promise<void> {
+            const newVisibleColumns: string[] | undefined = (
+                await showModal(this.$modal, ColumnsSelector, {
+                    columns: this.columns,
+                    defaultSelected: this.columnsDisplayed,
+                    onChange: this.handleChangeVisibleColumns,
+                })
+            );
+
+            // - Si l'action est annulé dans la modale, on ne change rien.
+            if (newVisibleColumns === undefined) {
+                return;
+            }
+
+            this.handleChangeVisibleColumns(newVisibleColumns);
+        },
     },
     render() {
         const {
@@ -407,20 +376,14 @@ const ClientTable = defineComponent({
             uniqueId,
             variant,
             columnsKeys,
-            columnsSearchable,
             options,
             handleRowClick,
-            withColumnsSelectorInferred: withColumnsSelector,
         } = this;
-
-        const className = ['Table', `Table--${variant}`, {
-            'Table--static': columnsSearchable.length === 0 && !withColumnsSelector,
-        }];
 
         return (
             <v-client-table
                 ref="table"
-                class={className}
+                class={['Table', `Table--${variant}`]}
                 key={name ?? uniqueId}
                 name={name ?? uniqueId}
                 columns={columnsKeys}

@@ -175,6 +175,14 @@ final class BeneficiariesTest extends ApiTestCase
         $this->assertResponsePaginatedData(1, [
             self::data(1), // - Jean Fountain (Testing, Inc)
         ]);
+
+        // - Recherche multiple
+        $this->client->get('/api/beneficiaries?search[]=testing,+inc&search[]=client ben');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponsePaginatedData(2, [
+            self::data(3), // - Client Benef
+            self::data(1), // - Jean Fountain (Testing, Inc)
+        ]);
     }
 
     public function testGetOneNotFound(): void
@@ -291,11 +299,11 @@ final class BeneficiariesTest extends ApiTestCase
             'country_id' => 2,
             'country' => CountriesTest::data(2),
             'full_address' => "1 rue du test\n74000 Annecy",
+            'note' => null,
             'stats' => [
                 'borrowings' => 0,
             ],
             'user' => null,
-            'note' => null,
         ]);
 
         // - Test avec une adresse e-mail existante.

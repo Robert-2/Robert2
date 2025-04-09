@@ -26,18 +26,17 @@ final class UserController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
+        $search = $request->getSearchArrayQueryParam('search');
         $group = $request->getRawEnumQueryParam('group', Group::all());
-        $search = $request->getStringQueryParam('search');
         $limit = $request->getIntegerQueryParam('limit');
         $ascending = $request->getBooleanQueryParam('ascending', true);
         $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
         $orderBy = $request->getOrderByQueryParam('orderBy', User::class);
 
         $query = User::query()
-            ->when(
-                $search !== null && mb_strlen($search) >= 2,
-                static fn (Builder $subQuery) => $subQuery->search($search),
-            )
+            ->when(!empty($search), static fn (Builder $subQuery) => (
+                $subQuery->search($search)
+            ))
             ->when($group !== null, static fn (Builder $subQuery) => (
                 $subQuery->where('group', '=', $group)
             ))

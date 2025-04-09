@@ -2,6 +2,7 @@ import { dataFactory } from './@utils';
 import pick from 'lodash/pick';
 import omit from 'lodash/omit';
 import technicians from './technicians';
+import roles from './roles';
 import beneficiaries from './beneficiaries';
 import materials from './materials';
 import estimates from './estimates';
@@ -16,6 +17,7 @@ const data = [
         title: `Premier événement`,
         description: null,
         location: `Gap`,
+        manager: () => users.default(2),
         color: null,
         mobilization_period: {
             start: '2018-12-16 15:45:00',
@@ -56,8 +58,23 @@ const data = [
         has_missing_materials: null,
         has_deleted_materials: false,
         has_not_returned_materials: false,
+        has_unassigned_mandatory_positions: false,
         categories: [1, 2],
         parks: [1],
+        positions: [
+            {
+                id: 1,
+                name: 'Régisseur',
+                is_mandatory: true,
+                is_assigned: true,
+            },
+            {
+                id: 2,
+                name: 'Technicien plateau',
+                is_mandatory: false,
+                is_assigned: true,
+            },
+        ],
         technicians: [
             {
                 id: 1,
@@ -68,7 +85,7 @@ const data = [
                     end: '2018-12-18 22:00:00',
                     isFullDays: false,
                 },
-                position: 'Régisseur',
+                role: roles.default(1),
                 technician: () => technicians.default(1),
             },
             {
@@ -80,7 +97,7 @@ const data = [
                     end: '2018-12-18 18:00:00',
                     isFullDays: false,
                 },
-                position: 'Technicien plateau',
+                role: roles.default(2),
                 technician: () => technicians.default(2),
             },
         ],
@@ -204,6 +221,7 @@ const data = [
         title: 'Second événement',
         description: null,
         location: 'Lyon',
+        manager: () => users.default(1),
         color: '#ffba49',
         mobilization_period: {
             start: '2018-12-18 00:00:00',
@@ -243,6 +261,7 @@ const data = [
         has_missing_materials: null,
         has_deleted_materials: false,
         has_not_returned_materials: true,
+        has_unassigned_mandatory_positions: true,
         is_departure_inventory_done: false,
         departure_inventory_datetime: null,
         departure_inventory_author: null,
@@ -252,6 +271,14 @@ const data = [
         return_inventory_author: users.default(2),
         categories: [1],
         parks: [1],
+        positions: [
+            {
+                id: 4,
+                name: 'Installateur',
+                is_mandatory: true,
+                is_assigned: false,
+            },
+        ],
         materials: [
             {
                 id: 2,
@@ -361,6 +388,7 @@ const data = [
         title: 'Avant-premier événement',
         description: null,
         location: 'Brousse',
+        manager: () => null,
         color: null,
         mobilization_period: {
             start: '2018-12-15 08:30:00',
@@ -378,6 +406,7 @@ const data = [
         has_missing_materials: null,
         has_deleted_materials: false,
         has_not_returned_materials: null,
+        has_unassigned_mandatory_positions: null,
         is_archived: true,
         is_billable: false,
         is_confirmed: false,
@@ -390,6 +419,7 @@ const data = [
         return_inventory_author: users.default(1),
         categories: [1, 2],
         parks: [1],
+        positions: [],
         materials: [
             {
                 id: 5,
@@ -459,6 +489,7 @@ const data = [
         title: 'Concert X',
         description: null,
         location: 'Moon',
+        manager: () => null,
         color: '#ef5b5b',
         mobilization_period: {
             start: '2019-03-01 00:00:00',
@@ -486,8 +517,10 @@ const data = [
         has_missing_materials: true,
         has_deleted_materials: false,
         has_not_returned_materials: null,
+        has_unassigned_mandatory_positions: false,
         categories: [1, 3],
         parks: [1, 2],
+        positions: [],
         materials: [
             {
                 id: 6,
@@ -557,6 +590,7 @@ const data = [
         title: `Kermesse de l'école des trois cailloux`,
         description: null,
         location: 'Saint-Jean-la-Forêt',
+        manager: () => null,
         color: null,
         mobilization_period: {
             start: '2020-01-01 00:00:00',
@@ -584,8 +618,10 @@ const data = [
         has_missing_materials: true,
         has_deleted_materials: false,
         has_not_returned_materials: null,
+        has_unassigned_mandatory_positions: false,
         categories: [4],
         parks: [1],
+        positions: [],
         materials: [
             {
                 id: 8,
@@ -621,6 +657,7 @@ const data = [
         title: 'Un événement sans inspiration',
         description: null,
         location: 'La Clusaz',
+        manager: () => null,
         color: '#ef5b5b',
         mobilization_period: {
             start: '2019-03-15 00:00:00',
@@ -648,8 +685,10 @@ const data = [
         has_missing_materials: false,
         has_deleted_materials: false,
         has_not_returned_materials: null,
+        has_unassigned_mandatory_positions: false,
         categories: [],
         parks: [],
+        positions: [],
         materials: [],
         beneficiaries: [],
         technicians: [],
@@ -664,6 +703,7 @@ const data = [
         title: 'Médiévales de Machin-le-chateau 2023',
         description: null,
         location: 'Machin-le-chateau',
+        manager: () => users.default(1),
         color: null,
         mobilization_period: {
             start: '2023-05-25 00:00:00',
@@ -704,8 +744,17 @@ const data = [
         has_missing_materials: false,
         has_deleted_materials: false,
         has_not_returned_materials: null,
+        has_unassigned_mandatory_positions: false,
         categories: [1, 2, 3],
         parks: [1, 2],
+        positions: [
+            {
+                id: 3,
+                name: 'Ingénieur du son',
+                is_mandatory: false,
+                is_assigned: true,
+            },
+        ],
         materials: [
             {
                 id: 6,
@@ -843,12 +892,12 @@ const data = [
                 id: 3,
                 event_id: 7,
                 technician_id: 2,
-                position: 'Ingénieur du son',
                 period: {
                     start: '2023-05-25 00:00:00',
                     end: '2023-05-29 00:00:00',
                     isFullDays: false,
                 },
+                role: roles.default(3),
                 technician: () => technicians.default(2),
             },
         ],
@@ -865,6 +914,7 @@ const data = [
         title: 'Japan Festival 2024',
         description: null,
         location: 'Lausanne',
+        manager: () => null,
         color: '#ffffff',
         mobilization_period: {
             start: '2024-06-15 12:00:00',
@@ -892,8 +942,10 @@ const data = [
         has_missing_materials: false,
         has_deleted_materials: false,
         has_not_returned_materials: null,
+        has_unassigned_mandatory_positions: false,
         categories: [1],
         parks: [1],
+        positions: [],
         materials: [
             {
                 id: 6,
@@ -948,6 +1000,7 @@ const asDefault = dataFactory(data, (event) => (
         'mobilization_period',
         'operation_period',
         'materials_count',
+        'beneficiaries',
         'color',
         'location',
         'is_confirmed',
@@ -964,6 +1017,7 @@ const asDefault = dataFactory(data, (event) => (
 /** @type {import('./@utils').FactoryReturnType} */
 const asDetails = dataFactory(data, (event) => ({
     ...omit(event, ['parks', 'categories']),
+    manager: event.manager?.() ?? null,
     materials: event.materials.map((material) => (
         { ...material, material: material.material() }
     )),
@@ -988,11 +1042,14 @@ const asBookingExcerpt = dataFactory(data, (event) => ({
         'is_departure_inventory_done',
         'is_return_inventory_done',
         'has_not_returned_materials',
+        'has_unassigned_mandatory_positions',
         'categories',
         'parks',
+        'author',
         'created_at',
     ]),
     entity: BookingEntity.EVENT,
+    manager: event.manager?.() ?? null,
     technicians: event.technicians.map((technician) => (
         { ...technician, technician: technician.technician() }
     )),
@@ -1019,11 +1076,14 @@ const asBookingSummary = dataFactory(data, (event) => ({
         'is_return_inventory_done',
         'has_not_returned_materials',
         'has_missing_materials',
+        'has_unassigned_mandatory_positions',
         'categories',
         'parks',
+        'author',
         'created_at',
     ]),
     entity: BookingEntity.EVENT,
+    manager: event.manager?.() ?? null,
     technicians: event.technicians.map((technician) => (
         { ...technician, technician: technician.technician() }
     )),
@@ -1033,7 +1093,7 @@ const asBookingSummary = dataFactory(data, (event) => ({
 const asBookingDefault = dataFactory(data, (event) => ({
     ...omit(event, ['parks', 'categories']),
     entity: BookingEntity.EVENT,
-    preparer: event.preparer?.() ?? null,
+    manager: event.manager?.() ?? null,
     materials: event.materials.map((material) => (
         { ...material, material: material.material() }
     )),

@@ -126,7 +126,11 @@ const EventReturnHeader = defineComponent({
                                 {__('global.main-beneficiary')}
                             </dt>
                             <dd class="EventReturnHeader__infos__item__value">
-                                {mainBeneficiary.full_name}
+                                <span class="EventReturnHeader__infos__main-beneficiary">
+                                    <span class="EventReturnHeader__infos__main-beneficiary__name">
+                                        {`${mainBeneficiary.full_name}${mainBeneficiary.company ? ` (${mainBeneficiary.company.legal_name})` : ''}`}
+                                    </span>
+                                </span>
                             </dd>
                         </div>
                     )}

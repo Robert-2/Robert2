@@ -152,7 +152,7 @@ final class App
         $this->app->get('/invoices/{id:[0-9]+}/pdf[/]', $getActionFqn('InvoiceController:getOnePdf'));
         $this->app->get('/events/{id:[0-9]+}/pdf[/]', $getActionFqn('EventController:getOnePdf'));
         $this->app->get('/documents/{id:[0-9]+}', $getActionFqn('DocumentController:getFile'));
-        $this->app->get('/materials/pdf[/]', $getActionFqn('MaterialController:getAllPdf'));
+        $this->app->get('/materials/print[/]', $getActionFqn('MaterialController:printAll'));
 
         // - Static files
         $this->app->get('/static/materials/{id:[0-9]+}/picture[/]', $getActionFqn('MaterialController:getPicture'));

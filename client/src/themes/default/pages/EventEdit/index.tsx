@@ -20,7 +20,7 @@ import type { Step } from '@/themes/default/components/Stepper';
 type Data = (
     & {
         id: EventDetails['id'] | null,
-        currentStep: number,
+        currentStepId: Step['id'],
         isLoading: boolean,
         isDirty: boolean,
         criticalError: ErrorType | null,
@@ -38,7 +38,7 @@ const EventEdit = defineComponent({
     data(): Data {
         return {
             id: parseInteger(this.$route.params.id),
-            currentStep: 1,
+            currentStepId: 1,
             isDirty: false,
             isLoading: false,
             isFetched: false,
@@ -62,6 +62,10 @@ const EventEdit = defineComponent({
                 : config.billingMode !== BillingMode.NONE;
         },
 
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         pageTitle(): string {
             const { $t: __, isNew, isFetched, event } = this;
 
@@ -75,7 +79,7 @@ const EventEdit = defineComponent({
         },
 
         steps(): Step[] {
-            const { $t: __, event, isBillable } = this;
+            const { $t: __, event, isBillable, isTechniciansEnabled } = this;
             const isPersisted = event !== null;
 
             return [
@@ -90,7 +94,7 @@ const EventEdit = defineComponent({
                     reachable: isPersisted,
                     filled: (event?.beneficiaries ?? []).length > 0,
                 },
-                {
+                isTechniciansEnabled && {
                     id: 3,
                     name: __('page.event-edit.steps.technicians.title'),
                     reachable: isPersisted,
@@ -125,6 +129,12 @@ const EventEdit = defineComponent({
     },
     mounted() {
         this.fetchData();
+
+        // - Global listeners.
+        document.addEventListener('keydown', this.handleKeydown);
+    },
+    beforeDestroy() {
+        document.removeEventListener('keydown', this.handleKeydown);
     },
     methods: {
         // ------------------------------------------------------
@@ -148,8 +158,78 @@ const EventEdit = defineComponent({
         },
 
         handleOpenStep(stepId: number) {
-            this.currentStep = stepId;
+            this.currentStepId = stepId;
             this.isDirty = false;
+        },
+
+        handleKeydown(e: KeyboardEvent) {
+            const { key, altKey, ctrlKey } = e;
+
+            switch (key) {
+                case 'ArrowUp':
+                case 'ArrowLeft': {
+                    if (!altKey || !ctrlKey) {
+                        return;
+                    }
+
+                    e.preventDefault();
+                    const prevReachableStep = ((): Step | null => {
+                        const { steps, currentStepId } = this;
+
+                        let index = steps.findIndex((step: Step) => step.id === currentStepId);
+                        if (index === -1) {
+                            return null;
+                        }
+
+                        // eslint-disable-next-line no-plusplus
+                        while (--index >= 0) {
+                            if (steps[index].reachable ?? true) {
+                                return steps[index];
+                            }
+                        }
+
+                        return null;
+                    })();
+                    if (prevReachableStep !== null) {
+                        this.currentStepId = prevReachableStep.id;
+                        this.isDirty = false;
+                    }
+
+                    break;
+                }
+                case 'ArrowDown':
+                case 'ArrowRight': {
+                    if (!altKey || !ctrlKey) {
+                        return;
+                    }
+
+                    e.preventDefault();
+
+                    const nextReachableStep = ((): Step | null => {
+                        const { steps, currentStepId } = this;
+
+                        let index = steps.findIndex((step: Step) => step.id === currentStepId);
+                        if (index === -1) {
+                            return null;
+                        }
+
+                        // eslint-disable-next-line no-plusplus
+                        while (++index < steps.length) {
+                            if (steps[index].reachable ?? true) {
+                                return steps[index];
+                            }
+                        }
+
+                        return null;
+                    })();
+                    if (nextReachableStep !== null) {
+                        this.currentStepId = nextReachableStep.id;
+                        this.isDirty = false;
+                    }
+                    break;
+                }
+                // - No default.
+            }
         },
 
         // ------------------------------------------------------
@@ -209,7 +289,7 @@ const EventEdit = defineComponent({
             pageTitle,
             event,
             steps,
-            currentStep,
+            currentStepId,
             isDirty,
             isFetched,
             isLoading,
@@ -233,7 +313,7 @@ const EventEdit = defineComponent({
                 return null;
             }
 
-            const StepComponent: RawComponent | undefined = STEPS_COMPONENTS.get(currentStep);
+            const StepComponent: RawComponent | undefined = STEPS_COMPONENTS.get(currentStepId);
             return StepComponent === undefined ? null : (
                 <StepComponent
                     event={event}
@@ -253,7 +333,7 @@ const EventEdit = defineComponent({
                     <div class="EventEdit__sidebar">
                         <Stepper
                             steps={steps}
-                            currentStep={currentStep}
+                            currentStepId={currentStepId}
                             onOpenStep={handleOpenStep}
                         />
                         <MiniSummary

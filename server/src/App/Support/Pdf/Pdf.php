@@ -118,7 +118,7 @@ final class Pdf implements PdfInterface
 
     public function asResponse(Response $response): ResponseInterface
     {
-        if (env('DEBUG_PDF') === true && Config::getEnv() !== 'test') {
+        if (env('DEBUG_EXPORT') === true && Config::getEnv() !== 'test') {
             return $this->asResponseHtml($response);
         }
 

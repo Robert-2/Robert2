@@ -10,7 +10,7 @@ export enum Variant {
     BRANDS = 'brands',
 }
 
-const VARIANT_MAP = {
+export const VARIANT_MAP = {
     [Variant.REGULAR]: 'far',
     [Variant.SOLID]: 'fas',
     [Variant.BRANDS]: 'fab',

@@ -1,38 +1,53 @@
 import './index.scss';
+import Queue from 'p-queue';
 import Day from '@/utils/day';
+import isEqual from 'lodash/isEqual';
 import config from '@/globals/config';
 import debounce from 'lodash/debounce';
 import DateTime from '@/utils/datetime';
 import HttpCode from 'status-code-enum';
+import showModal from '@/utils/showModal';
 import { Group } from '@/stores/api/groups';
+import parseInteger from '@/utils/parseInteger';
+import stringIncludes from '@/utils/stringIncludes';
+import mergeDifference from '@/utils/mergeDifference';
 import { defineComponent } from '@vue/composition-api';
+import { isRequestErrorStatusCode } from '@/utils/errors';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
+import bookingFormatterFactory from '@/utils/formatTimelineBooking';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
-import Queue from 'p-queue';
-import EventDetails from '@/themes/default/modals/EventDetails';
 import Page from '@/themes/default/components/Page';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Timeline from '@/themes/default/components/Timeline';
-import CalendarHeader from './components/Header';
-import CalendarCaption from './components/Caption';
-import bookingFormatterFactory from '@/utils/formatTimelineBooking';
-import { isRequestErrorStatusCode } from '@/utils/errors';
-import parseInteger from '@/utils/parseInteger';
-import showModal from '@/utils/showModal';
-import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
+import Header from './components/Header';
+import Caption from './components/Caption';
 import {
     MIN_ZOOM,
     MAX_ZOOM,
     SNAP_TIME,
     FETCH_DELTA,
     MAX_FETCHES_PER_SECOND,
+    CALENDAR_PERIOD_STORAGE_KEY,
 } from './_constants';
 import {
+    persistFilters,
+    getPersistedFilters,
+    clearPersistedFilters,
     getDefaultPeriod,
+    getFiltersFromRoute,
     getCenterDateFromPeriod,
+    convertFiltersToRouteQuery,
 } from './_utils';
 
+// - Modals
+import EventDetails from '@/themes/default/modals/EventDetails';
+
 import type Period from '@/utils/period';
+import type { Filters } from './components/Filters';
+import type { Beneficiary } from '@/stores/api/beneficiaries';
+import type { User } from '@/stores/api/users';
 import type { EventDetails as EventDetailsType } from '@/stores/api/events';
+import type { Session } from '@/stores/api/session';
 import type { DebouncedMethod } from 'lodash';
 import type { ComponentRef } from 'vue';
 import type {
@@ -44,14 +59,8 @@ import type {
     BookingSummary,
 } from '@/stores/api/bookings';
 
-export type Filters = {
-    missingMaterial: boolean,
-    categoryId: number | null,
-    parkId: number | null,
-};
-
 type InstanceProperties = {
-    fetchMissingMaterialsQueue: Queue | undefined,
+    fetchIncompleteBookingsQueue: Queue | undefined,
     nowTimer: ReturnType<typeof setInterval> | undefined,
     handleRangeChangedDebounced: (
         | DebouncedMethod<typeof ScheduleCalendar, 'handleRangeChanged'>
@@ -78,15 +87,40 @@ type Data = {
     now: DateTime,
 };
 
-/** Page du calendrier des réservations / événements. */
+/** Page du calendrier des événements. */
 const ScheduleCalendar = defineComponent({
     name: 'ScheduleCalendar',
     setup: (): InstanceProperties => ({
         handleRangeChangedDebounced: undefined,
-        fetchMissingMaterialsQueue: undefined,
+        fetchIncompleteBookingsQueue: undefined,
         nowTimer: undefined,
     }),
     data(): Data {
+        const urlFilters = getFiltersFromRoute(this.$route);
+
+        // - Filtres par défaut.
+        const filters: Filters = {
+            search: [],
+            park: null,
+            category: null,
+            withMissingMaterial: false,
+            ...urlFilters,
+        };
+
+        // - Filtres sauvegardés.
+        const session = this.$store.state.auth.user as Session;
+        if (!session.disable_search_persistence) {
+            if (urlFilters === undefined) {
+                const savedFilters = getPersistedFilters();
+                Object.assign(filters, savedFilters ?? {});
+            }
+
+            // NOTE: Le local storage est mis à jour via un `watch` de `filters`.
+        } else {
+            clearPersistedFilters();
+        }
+
+        // - Périodes par défaut.
         const defaultPeriod = getDefaultPeriod();
         const fetchPeriod = defaultPeriod
             .setFullDays(true)
@@ -98,39 +132,112 @@ const ScheduleCalendar = defineComponent({
             isFetched: false,
             isSaving: false,
             hasCriticalError: false,
+            now: DateTime.now(),
             centerDate: null,
             defaultPeriod,
             fetchPeriod,
-            filters: {
-                missingMaterial: false,
-                categoryId: null,
-                parkId: (
-                    this.$route.query.park
-                        ? parseInteger(this.$route.query.park)
-                        : null
-                ),
-            },
-            now: DateTime.now(),
+            filters,
         };
     },
     computed: {
+        shouldPersistSearch(): boolean {
+            const session = this.$store.state.auth.user as Session;
+            return !session.disable_search_persistence;
+        },
+
+        title(): string {
+            const { $t: __ } = this;
+            return __('page.schedule.calendar.title');
+        },
+
         isTeamMember(): boolean {
             return this.$store.getters['auth/is']([Group.ADMINISTRATION, Group.MANAGEMENT]);
         },
 
         filteredBookings(): LazyBooking[] {
             const { bookings, filters } = this;
+            const search = filters.search.filter(
+                (term: string) => term.trim().length > 1,
+            );
 
             return bookings.filter(({ isComplete, booking }: LazyBooking) => {
                 // - Si on a un filtrage sur les événements, on ne laisse
                 //   passer que les bookings avec matériel manquant.
-                if (filters.missingMaterial && (!isComplete || !booking.has_missing_materials)) {
+                if (filters.withMissingMaterial && (!isComplete || !booking.has_missing_materials)) {
                     return false;
+                }
+
+                // - Recherche textuelle
+                if (search.length > 0) {
+                    const isMatching = search.some((term: string) => {
+                        const isBeneficiaryMatching = (beneficiary: Beneficiary): boolean => (
+                            stringIncludes(beneficiary.first_name, term) ||
+                            stringIncludes(beneficiary.last_name, term) ||
+                            stringIncludes(`${beneficiary.first_name} ${beneficiary.last_name}`, term) ||
+                            stringIncludes(`${beneficiary.last_name} ${beneficiary.first_name}`, term) ||
+                            (
+                                beneficiary.company !== null &&
+                                stringIncludes(beneficiary.company.legal_name, term)
+                            ) ||
+                            (
+                                beneficiary.reference !== null &&
+                                stringIncludes(beneficiary.reference, term)
+                            ) ||
+                            (
+                                beneficiary.email !== null &&
+                                stringIncludes(beneficiary.email, term)
+                            )
+                        );
+
+                        const isUserMatching = (author: User): boolean => (
+                            stringIncludes(author.first_name, term) ||
+                            stringIncludes(author.last_name, term) ||
+                            stringIncludes(`${author.first_name} ${author.last_name}`, term) ||
+                            stringIncludes(`${author.last_name} ${author.first_name}`, term) ||
+                            stringIncludes(author.pseudo, term) ||
+                            stringIncludes(author.email, term)
+                        );
+
+                        if (booking.entity === BookingEntity.EVENT) {
+                            // - Titre ou lieu de l'événement
+                            if (
+                                stringIncludes(booking.title, term) ||
+                                (
+                                    booking.location !== null &&
+                                    stringIncludes(booking.location, term)
+                                )
+                            ) {
+                                return true;
+                            }
+
+                            // - Bénéficiaires de l'événement
+                            const hasMatchingBeneficiary = booking.beneficiaries
+                                .some(isBeneficiaryMatching);
+                            if (hasMatchingBeneficiary) {
+                                return true;
+                            }
+
+                            // - Créateur de l'événement.
+                            if (isUserMatching(booking.author)) {
+                                return true;
+                            }
+
+                            // - Chef de projet de l'événement.
+                            if (booking.manager !== null && isUserMatching(booking.manager)) {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    });
+                    if (!isMatching) {
+                        return false;
+                    }
                 }
 
                 // - Si on a un filtrage sur un parc,
                 //   on vérifie que ce parc est présent parmi les parcs de l'événement.
-                const parkFilter = filters.parkId;
+                const parkFilter = filters.park;
                 if (
                     parkFilter !== null &&
                     booking.parks !== null &&
@@ -139,12 +246,11 @@ const ScheduleCalendar = defineComponent({
                     return false;
                 }
 
-                // - Si on a un filtrage sur une catégorie, on vérifie que la catégorie est présente
-                //   parmi les catégories de l'événement.
+                // - Catégorie
                 if (
-                    filters.categoryId !== null &&
+                    filters.category !== null &&
                     booking.categories !== null &&
-                    !booking.categories.includes(filters.categoryId)
+                    !booking.categories.includes(filters.category)
                 ) {
                     return false;
                 }
@@ -153,7 +259,7 @@ const ScheduleCalendar = defineComponent({
             });
         },
 
-        timelineBookings(): TimelineItem[] {
+        timelineItems(): TimelineItem[] {
             const { $t: __, now, filteredBookings } = this;
             const calendarSettings = this.$store.state.settings.calendar ?? {};
 
@@ -169,13 +275,37 @@ const ScheduleCalendar = defineComponent({
             ));
         },
     },
+    watch: {
+        filters: {
+            handler(newFilters: Filters) {
+                // - Persistance dans le local storage.
+                // @ts-expect-error -- `this` fait bien référence au component.
+                if (this.shouldPersistSearch) {
+                    persistFilters(newFilters);
+                }
+
+                // - Mise à jour de l'URL.
+                // @ts-expect-error -- `this` fait bien référence au component.
+                const prevRouteQuery = this.$route?.query ?? {};
+                const newRouteQuery = convertFiltersToRouteQuery(newFilters);
+                if (!isEqual(prevRouteQuery, newRouteQuery)) {
+                    // @ts-expect-error -- `this` fait bien référence au component.
+                    this.$router.replace({ query: newRouteQuery });
+                }
+            },
+            deep: true,
+            immediate: true,
+        },
+    },
     created() {
+        // - Debounce.
         this.handleRangeChangedDebounced = debounce(
             this.handleRangeChanged.bind(this),
             DEBOUNCE_WAIT_DURATION.asMilliseconds(),
         );
 
-        this.fetchMissingMaterialsQueue = new Queue({
+        // - Fetch queue.
+        this.fetchIncompleteBookingsQueue = new Queue({
             interval: DateTime.duration(1, 'second').asMilliseconds(),
             concurrency: config.maxConcurrentFetches,
             intervalCap: MAX_FETCHES_PER_SECOND,
@@ -187,7 +317,7 @@ const ScheduleCalendar = defineComponent({
     },
     beforeDestroy() {
         this.handleRangeChangedDebounced?.cancel();
-        this.fetchMissingMaterialsQueue?.clear();
+        this.fetchIncompleteBookingsQueue?.clear();
 
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
@@ -211,20 +341,8 @@ const ScheduleCalendar = defineComponent({
             $timeline?.moveTo(day.toDateTime().set('hour', 12));
         },
 
-        handleFilterMissingMaterial(filterMissingMaterial: Filters['missingMaterial']) {
-            this.filters.missingMaterial = filterMissingMaterial;
-        },
-
-        handleFilterByPark(parkId: Filters['parkId']) {
-            this.filters.parkId = parkId;
-        },
-
-        handleFilterByCategory(categoryId: Filters['categoryId']) {
-            this.filters.categoryId = categoryId;
-        },
-
         handleRangeChanged(newPeriod: Period) {
-            localStorage.setItem('calendarPeriod', JSON.stringify(newPeriod));
+            localStorage.setItem(CALENDAR_PERIOD_STORAGE_KEY, JSON.stringify(newPeriod));
             this.centerDate = getCenterDateFromPeriod(newPeriod);
 
             const newFetchPeriod = newPeriod
@@ -239,6 +357,29 @@ const ScheduleCalendar = defineComponent({
             if (needFetch) {
                 this.fetchPeriod = newFetchPeriod;
                 this.fetchData();
+            }
+        },
+
+        handleFiltersChange(newFilters: Filters) {
+            // - Recherche textuelle.
+            const newSearch = mergeDifference(this.filters.search, newFilters.search);
+            if (!isEqual(this.filters.search, newSearch)) {
+                this.filters.search = newSearch;
+            }
+
+            // - Parc.
+            if (this.filters.park !== newFilters.park) {
+                this.filters.park = newFilters.park;
+            }
+
+            // - Catégorie.
+            if (this.filters.category !== newFilters.category) {
+                this.filters.category = newFilters.category;
+            }
+
+            // - Avec matériel manquant.
+            if (this.filters.withMissingMaterial !== newFilters.withMissingMaterial) {
+                this.filters.withMissingMaterial = newFilters.withMissingMaterial;
             }
         },
 
@@ -364,7 +505,7 @@ const ScheduleCalendar = defineComponent({
             this.isLoading = true;
 
             // - Vide la file d'attente des requêtes avant de la re-peupler.
-            this.fetchMissingMaterialsQueue?.clear();
+            this.fetchIncompleteBookingsQueue?.clear();
 
             try {
                 // - On garde en mémoire les données des bookings précédemment récupérés complètement
@@ -415,7 +556,7 @@ const ScheduleCalendar = defineComponent({
                         this.handleUpdatedBooking(finalBooking);
                     });
 
-                await this.fetchMissingMaterialsQueue?.addAll(promises);
+                await this.fetchIncompleteBookingsQueue?.addAll(promises);
             } catch (error) {
                 // eslint-disable-next-line no-console
                 console.error(`Error occurred while retrieving missing materials:`, error);
@@ -427,27 +568,26 @@ const ScheduleCalendar = defineComponent({
     render() {
         const {
             $t: __,
+            title,
             filters,
             isLoading,
             isSaving,
             centerDate,
             defaultPeriod,
             hasCriticalError,
-            timelineBookings,
+            timelineItems,
             handleRefresh,
-            handleFilterByPark,
+            handleFiltersChange,
             handleRangeChangedDebounced,
             handleItemDoubleClick,
-            handleFilterByCategory,
             handleChangeCenterDate,
-            handleFilterMissingMaterial,
         } = this;
 
         if (hasCriticalError) {
             return (
                 <Page
                     name="schedule-calendar"
-                    title={__('page.schedule.calendar.title')}
+                    title={title}
                     centered
                 >
                     <CriticalError />
@@ -456,18 +596,20 @@ const ScheduleCalendar = defineComponent({
         }
 
         return (
-            <Page name="schedule-calendar" title={__('page.schedule.calendar.title')}>
+            <Page
+                name="schedule-calendar"
+                title={title}
+                loading={isLoading || isSaving}
+            >
                 <div class="ScheduleCalendar">
-                    <CalendarHeader
+                    <Header
                         ref="header"
                         filters={filters}
                         centerDate={centerDate}
                         isLoading={isLoading || isSaving}
                         onRefresh={handleRefresh}
                         onChangeCenterDate={handleChangeCenterDate}
-                        onFilterMissingMaterials={handleFilterMissingMaterial}
-                        onFilterByPark={handleFilterByPark}
-                        onFilterByCategory={handleFilterByCategory}
+                        onFiltersChange={handleFiltersChange}
                     />
                     <Timeline
                         ref="timeline"
@@ -476,7 +618,7 @@ const ScheduleCalendar = defineComponent({
                         zoomMin={MIN_ZOOM}
                         zoomMax={MAX_ZOOM}
                         snapTime={SNAP_TIME}
-                        items={timelineBookings}
+                        items={timelineItems}
                         onDoubleClick={handleItemDoubleClick}
                         onRangeChanged={handleRangeChangedDebounced}
                     />
@@ -484,7 +626,7 @@ const ScheduleCalendar = defineComponent({
                         <p class="ScheduleCalendar__footer__help">
                             {__('page.schedule.calendar.help')}
                         </p>
-                        <CalendarCaption />
+                        <Caption />
                     </div>
                 </div>
             </Page>
