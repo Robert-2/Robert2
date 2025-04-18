@@ -1,6 +1,5 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
-import Loading from '@/themes/default/components/Loading';
 
 import type { VNode } from 'vue';
 import type { PropType } from '@vue/composition-api';
@@ -49,6 +48,9 @@ export type Props = {
 /** Une page. */
 const Page = defineComponent({
     name: 'Page',
+    inject: [
+        'setGlobalLoading',
+    ],
     props: {
         name: {
             type: String as PropType<Props['name']>,
@@ -83,17 +85,32 @@ const Page = defineComponent({
         title(newTitle: Props['title']) {
             this.updateTitle(newTitle);
         },
+
+        loading: {
+            handler(isLoading: boolean) {
+                // @ts-expect-error -- `this` fait bien référence au component.
+                this.setLoading(isLoading);
+            },
+            immediate: true,
+        },
     },
     mounted() {
         this.updateTitle(this.title);
     },
     beforeDestroy() {
         this.updateTitle(undefined);
+        this.setLoading(false);
     },
     methods: {
         updateTitle(newTitle: string | undefined) {
             this.$store.commit('setPageRawTitle', newTitle ?? null);
             document.title = [newTitle, 'Loxya'].filter(Boolean).join(' - ');
+        },
+
+        setLoading(isLoading: boolean) {
+            // @ts-expect-error -- Normalement corrigé lors du passage à Vue 3 (et son meilleur typage).
+            // @see https://github.com/vuejs/core/pull/6804
+            this.setGlobalLoading(isLoading);
         },
 
         // ------------------------------------------------------
@@ -124,44 +141,55 @@ const Page = defineComponent({
             help,
             actions,
             centered,
-            loading,
+            $scopedSlots: slots,
             hasValidationError,
         } = this;
 
         const renderHelp = (): JSX.Element | null => {
-            if (!loading && !hasValidationError && !help) {
+            if (!hasValidationError && !help) {
                 return null;
             }
 
-            const renderHelpContent = (): JSX.Element => {
-                if (loading) {
-                    return <Loading horizontal />;
-                }
-
-                return (
-                    <p
-                        class={[
-                            'Page__header__help__message',
-                            { 'Page__header__help__message--error': hasValidationError },
-                        ]}
-                    >
-                        {hasValidationError ? __('errors.validation') : help}
-                    </p>
-                );
-            };
-            return <div class="Page__header__help">{renderHelpContent()}</div>;
+            return (
+                <p
+                    class={['Page__header__help', {
+                        'Page__header__help--error': hasValidationError,
+                    }]}
+                >
+                    {hasValidationError ? __('errors.validation') : help}
+                </p>
+            );
         };
 
         const renderHeader = (): JSX.Element | null => {
+            const renderHeaderContent = (): JSX.Node => {
+                const helpContent = renderHelp();
+                const customContent = slots.headerContent?.(undefined) ?? null;
+                if (helpContent === null && customContent === null) {
+                    return null;
+                }
+
+                return (
+                    <div class="Page__header__content">
+                        {helpContent}
+                        {customContent !== null && (
+                            <div class="Page__header__content__custom">
+                                {customContent}
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            const headerContent = renderHeaderContent();
             const hasActions = actions && actions.length > 0;
-            const helpElement = renderHelp();
-            if (helpElement === null && !hasActions) {
+            if (headerContent === null && !hasActions) {
                 return null;
             }
 
             return (
                 <div class="Page__header">
-                    {helpElement}
+                    {headerContent}
                     {hasActions && (
                         <nav class="Page__header__actions" key="header-actions">
                             {actions}

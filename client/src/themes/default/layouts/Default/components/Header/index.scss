@@ -21,9 +21,18 @@
         }
     }
 
-    &__title {
+    &__main {
         flex: 1;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        padding-right: globals.$spacing-medium;
+        gap: globals.$spacing-medium;
+    }
+
+    &__title {
         overflow: hidden;
+        margin: 0;
         color: #fff;
         font-size: 1.15rem;
         font-weight: 400;
@@ -31,11 +40,9 @@
         text-overflow: ellipsis;
     }
 
-    &__menu {
-        flex: 0 0 auto;
-        display: flex;
-        flex-flow: row nowrap;
-        align-self: stretch;
+    &__loading {
+        flex: none;
+        font-size: 0.9rem;
     }
 
     //
@@ -47,7 +54,7 @@
             display: none;
         }
 
-        &__title {
+        &__main {
             padding-left: globals.$spacing-medium;
         }
     }

@@ -30,6 +30,7 @@ module.exports = {
         '<rootDir>/tests/serializers/decimal.ts',
         '<rootDir>/tests/serializers/period.ts',
         '<rootDir>/tests/serializers/currency.ts',
+        '<rootDir>/tests/serializers/color.ts',
     ],
     transform: {
         '^.+\\.(js|mjs|cjs|jsx|ts|mts|cts|tsx)$': 'babel-jest',

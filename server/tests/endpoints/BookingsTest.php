@@ -5,11 +5,8 @@ namespace Loxya\Tests;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
-use Loxya\Models\EventTechnician;
-use Loxya\Models\Technician;
-use Loxya\Models\User;
+use Loxya\Models\Material;
 use Loxya\Support\Arr;
 
 final class BookingsTest extends ApiTestCase
@@ -56,13 +53,22 @@ final class BookingsTest extends ApiTestCase
             EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
         ]);
 
-        // - Test avec un terme de recherche (titre, lieu ou bénéficiaire).
-        $this->client->get('/api/bookings?paginated=1&search=test');
+        static::setCustomConfig(['maxItemsPerPage' => 7]);
+
+        // - Test avec un terme de recherche (titre, lieu, bénéficiaire, chef de projet ou auteur).
+        $this->client->get('/api/bookings?paginated=1&search=fountain');
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(2, [
+        $this->assertResponsePaginatedData(7, [
+            EventsTest::data(8, Event::SERIALIZE_BOOKING_EXCERPT),
+            EventsTest::data(7, Event::SERIALIZE_BOOKING_EXCERPT),
             EventsTest::data(5, Event::SERIALIZE_BOOKING_EXCERPT),
+            EventsTest::data(6, Event::SERIALIZE_BOOKING_EXCERPT),
+            EventsTest::data(4, Event::SERIALIZE_BOOKING_EXCERPT),
+            EventsTest::data(2, Event::SERIALIZE_BOOKING_EXCERPT),
             EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
         ]);
+
+        static::setCustomConfig(['maxItemsPerPage' => 5]);
 
         // - Test avec un filtre sur le parc "spare".
         $this->client->get('/api/bookings?paginated=1&park=2');
@@ -132,86 +138,6 @@ final class BookingsTest extends ApiTestCase
         $this->assertResponsePaginatedData(1, [
             EventsTest::data(7, Event::SERIALIZE_BOOKING_EXCERPT),
         ]);
-
-        /**
-         * Tests quand l'utilisateur appartient au groupe "readonly-planning-self".
-         * On ne doit récupérer que les bookings pour lesquels il est bénéficiaire,
-         * ou dans lesquels il est assigné en tant que technicien ou préparateur de
-         * commande.
-         */
-
-        // - Passage de l'utilisateur courant dans le groupe "readonly-planning-self".
-        User::findOrFail(1)->edit(['group' => Group::READONLY_PLANNING_SELF]);
-
-        // - Dans la période donnée, l'utilisateur courant est bénéficiaire de l'événement #1 seulement.
-        $this->client->get('/api/bookings?paginated=0&period[start]=2018-12-01&period[end]=2018-12-31');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
-            EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
-        ]);
-
-        // - Création d'un technicien lié à la personne de l'utilisateur courant,
-        $technician = Technician::create(['person_id' => 1]);
-
-        // - Assignation du technicien à l'événement #2.
-        Event::find(2)->technicians()->saveMany([
-            new EventTechnician([
-                'event_id' => 2,
-                'technician_id' => $technician->id,
-                'position' => 'Testeur',
-                'period' => ['start' => '2018-12-18 09:15:00', 'end' => '2018-12-18 18:00:00'],
-            ]),
-        ]);
-        $expectedTechnicianData = [
-            'id' => 4,
-            'event_id' => 2,
-            'technician_id' => 3,
-            'period' => [
-                'start' => '2018-12-18 09:15:00',
-                'end' => '2018-12-18 18:00:00',
-                'isFullDays' => false,
-            ],
-            'position' => 'Testeur',
-            'technician' => [
-                'id' => 3,
-                'user_id' => 1,
-                'first_name' => 'Jean',
-                'last_name' => 'Fountain',
-                'full_name' => 'Jean Fountain',
-                'nickname' => null,
-                'email' => 'tester@robertmanager.net',
-                'phone' => null,
-                'street' => '1, somewhere av.',
-                'postal_code' => '1234',
-                'locality' => 'Megacity',
-                'country_id' => 1,
-                'full_address' => "1, somewhere av.\n1234 Megacity",
-                'country' => CountriesTest::data(1),
-                'note' => null,
-            ],
-        ];
-
-        // - Dans la période donnée, l'utilisateur courant est maintenant bénéficiaire de l'événement #1,
-        //   et technicien de l'événement #2.
-        $this->client->get('/api/bookings?paginated=0&period[start]=2018-12-01&period[end]=2018-12-31');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData([
-            EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
-            array_replace_recursive(EventsTest::data(2, Event::SERIALIZE_BOOKING_EXCERPT), [
-                'technicians' => [$expectedTechnicianData],
-            ]),
-        ]);
-
-        // - Test avec pagination (page 1).
-        $this->client->get('/api/bookings?paginated=1');
-        $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponsePaginatedData(3, [
-            EventsTest::data(5, Event::SERIALIZE_BOOKING_EXCERPT),
-            array_replace_recursive(EventsTest::data(2, Event::SERIALIZE_BOOKING_EXCERPT), [
-                'technicians' => [$expectedTechnicianData],
-            ]),
-            EventsTest::data(1, Event::SERIALIZE_BOOKING_EXCERPT),
-        ]);
     }
 
     public function testGetOne(): void
@@ -226,7 +152,6 @@ final class BookingsTest extends ApiTestCase
 
     public function testGetOneSummary(): void
     {
-        // - Événements.
         $ids = array_column(EventsTest::data(null), 'id');
         foreach ($ids as $id) {
             $this->client->get(sprintf('/api/bookings/%s/%d/summary', Event::TYPE, $id));
@@ -287,6 +212,67 @@ final class BookingsTest extends ApiTestCase
         ]));
 
         Carbon::setTestNow(Carbon::create(2023, 5, 26, 18, 0, 0));
+
+        // - Modification avec réduction des quantités => Les quantités retournées doit être adapté.
+        $this->client->put(sprintf('/api/bookings/%s/7/materials', Event::TYPE), [
+            [
+                'id' => 6,
+                'quantity' => 1,
+            ],
+        ]);
+        $eventData = EventsTest::data(7, Event::SERIALIZE_BOOKING_DEFAULT);
+        $this->assertResponseData(array_replace($eventData, [
+            'materials_count' => 1,
+            'has_missing_materials' => false,
+            'total_without_global_discount' => '162.47',
+            'total_without_taxes' => '162.47',
+            'total_with_taxes' => '194.96',
+            'total_replacement' => '49.99',
+            'total_taxes' => [
+                [
+                    'name' => 'T.V.A.',
+                    'is_rate' => true,
+                    'value' => '20.000',
+                    'total' => '32.49',
+                ],
+            ],
+            'materials' => [
+                [
+                    'id' => 6,
+                    'name' => 'Behringer X Air XR18',
+                    'reference' => 'XR18',
+                    'category_id' => 1,
+                    'quantity' => 1,
+                    'unit_price' => '49.99',
+                    'degressive_rate' => '3.25',
+                    'unit_price_period' => '162.47',
+                    'total_without_discount' => '162.47',
+                    'discount_rate' => '0.0000',
+                    'total_discount' => '0.00',
+                    'total_without_taxes' => '162.47',
+                    'quantity_departed' => null,
+                    'quantity_returned' => 1,
+                    'quantity_returned_broken' => 1,
+                    'departure_comment' => null,
+                    'taxes' => [
+                        [
+                            'name' => 'T.V.A.',
+                            'is_rate' => true,
+                            'value' => '20.000',
+                        ],
+                    ],
+                    'unit_replacement_price' => '49.99',
+                    'total_replacement_price' => '49.99',
+                    'material' => array_merge(
+                        MaterialsTest::data(6, Material::SERIALIZE_WITH_CONTEXT_EXCERPT),
+                        [
+                            'degressive_rate' => '3.25',
+                            'rental_price_period' => '162.47',
+                        ],
+                    ),
+                ],
+            ],
+        ]));
     }
 
     public function testUpdateBillingData(): void

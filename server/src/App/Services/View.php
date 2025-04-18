@@ -5,6 +5,7 @@ namespace Loxya\Services;
 
 use Brick\Math\BigDecimal as Decimal;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\Feature;
 use Loxya\Support\Assert;
 use Loxya\Support\BaseUri;
 use Loxya\Support\Period;
@@ -70,39 +71,51 @@ final class View
         // - Functions
         //
 
-        $translate = new TwigFunction('__', [$i18n, 'translate']);
-        $plural = new TwigFunction('__n', [$i18n, 'plural']);
-        $version = new TwigFunction('version', $this->getVersion());
-        $this->view->getEnvironment()->addFunction($translate);
-        $this->view->getEnvironment()->addFunction($plural);
-        $this->view->getEnvironment()->addFunction($version);
-
-        $assetFunction = new TwigFunction('asset', $this->getAsset());
-        $clientAssetFunction = new TwigFunction('client_asset', $this->getClientAsset());
-        $this->view->getEnvironment()->addFunction($assetFunction);
-        $this->view->getEnvironment()->addFunction($clientAssetFunction);
+        $this->view->getEnvironment()->addFunction(
+            new TwigFunction('__', [$i18n, 'translate']),
+        );
+        $this->view->getEnvironment()->addFunction(
+            new TwigFunction('__n', [$i18n, 'plural']),
+        );
+        $this->view->getEnvironment()->addFunction(
+            new TwigFunction('version', $this->getVersion()),
+        );
+        $this->view->getEnvironment()->addFunction(
+            new TwigFunction('isFeatureEnabled', $this->isFeatureEnabled()),
+        );
+        $this->view->getEnvironment()->addFunction(
+            new TwigFunction('asset', $this->getAsset()),
+        );
+        $this->view->getEnvironment()->addFunction(
+            new TwigFunction('client_asset', $this->getClientAsset()),
+        );
 
         //
         // - Filters
         //
 
-        $ucfirstFilter = new TwigFilter('ucfirst', $this->ucfirstFilter());
-        $formatCurrencyFilter = new TwigFilter('format_currency', $this->formatCurrencyFilter());
-        $formatNumberFilter = new TwigFilter('format_number', $this->formatNumberFilter());
-        $formatNumberStyleFilter = new TwigFilter('format_*_number', $this->formatNumberStyleFilter());
-        $formatPeriodFilter = new TwigFilter('format_period', $this->formatPeriodFilter(), [
-            'needs_environment' => true,
-        ]);
-        $formatPeriodPartFilter = new TwigFilter('format_period_*', $this->formatPeriodPartFilter(), [
-            'needs_environment' => true,
-        ]);
-
-        $this->view->getEnvironment()->addFilter($ucfirstFilter);
-        $this->view->getEnvironment()->addFilter($formatCurrencyFilter);
-        $this->view->getEnvironment()->addFilter($formatNumberFilter);
-        $this->view->getEnvironment()->addFilter($formatNumberStyleFilter);
-        $this->view->getEnvironment()->addFilter($formatPeriodFilter);
-        $this->view->getEnvironment()->addFilter($formatPeriodPartFilter);
+        $this->view->getEnvironment()->addFilter(
+            new TwigFilter('ucfirst', $this->ucfirstFilter()),
+        );
+        $this->view->getEnvironment()->addFilter(
+            new TwigFilter('format_currency', $this->formatCurrencyFilter()),
+        );
+        $this->view->getEnvironment()->addFilter(
+            new TwigFilter('format_number', $this->formatNumberFilter()),
+        );
+        $this->view->getEnvironment()->addFilter(
+            new TwigFilter('format_*_number', $this->formatNumberStyleFilter()),
+        );
+        $this->view->getEnvironment()->addFilter(
+            new TwigFilter('format_period', $this->formatPeriodFilter(), [
+                'needs_environment' => true,
+            ]),
+        );
+        $this->view->getEnvironment()->addFilter(
+            new TwigFilter('format_period_*', $this->formatPeriodPartFilter(), [
+                'needs_environment' => true,
+            ]),
+        );
     }
 
     // ------------------------------------------------------
@@ -171,6 +184,13 @@ final class View
     private function getVersion(): callable
     {
         return static fn (): string => Config::getVersion();
+    }
+
+    private function isFeatureEnabled(): callable
+    {
+        return static fn (Feature $feature): bool => (
+            isFeatureEnabled($feature)
+        );
     }
 
     private function getClientAsset(): callable

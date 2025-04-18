@@ -1,40 +1,67 @@
 import './index.scss';
 import Queue from 'p-queue';
+import pick from 'lodash/pick';
+import omit from 'lodash/omit';
+import isEqual from 'lodash/isEqual';
 import createDeferred from 'p-defer';
+import throttle from 'lodash/throttle';
 import upperFirst from 'lodash/upperFirst';
 import config from '@/globals/config';
 import DateTime from '@/utils/datetime';
+import mergeDifference from '@/utils/mergeDifference';
 import { defineComponent } from '@vue/composition-api';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
 import apiBookings, { BookingEntity } from '@/stores/api/bookings';
-import { UNCATEGORIZED } from '@/stores/api/materials';
-import isValidInteger from '@/utils/isValidInteger';
 import { isRequestErrorStatusCode } from '@/utils/errors';
 import HttpCode from 'status-code-enum';
 import showModal from '@/utils/showModal';
 import getBookingIcon from '@/utils/getBookingIcon';
-import EventDetails from '@/themes/default/modals/EventDetails';
 import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
+import Dropdown from '@/themes/default/components/Dropdown';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Page from '@/themes/default/components/Page';
-import { ServerTable } from '@/themes/default/components/Table';
 import Button from '@/themes/default/components/Button';
 import { BookingsViewMode } from '@/stores/api/users';
-import Period, { PeriodReadableFormat } from '@/utils/period';
-import ViewToggle from '../../components/BookingsViewToggle';
-import ListFilters from './components/Filters';
+import { PeriodReadableFormat } from '@/utils/period';
+import ViewModeSwitch from '../../components/ViewModeSwitch';
+import FiltersPanel from './components/Filters';
+import {
+    ServerTable,
+    getLegacySavedSearch,
+} from '@/themes/default/components/Table';
+import {
+    persistFilters,
+    getPersistedFilters,
+    clearPersistedFilters,
+    getFiltersFromRoute,
+    convertFiltersToRouteQuery,
+} from './_utils';
 
+// - Modals
+import EventDetails from '@/themes/default/modals/EventDetails';
+
+import type { DebouncedMethod } from 'lodash';
 import type { ComponentRef, CreateElement, VNodeClass } from 'vue';
-import type { PaginatedData, PaginationParams } from '@/stores/api/@types';
+import type { PaginatedData, PaginationParams, SortableParams } from '@/stores/api/@types';
 import type { Columns } from '@/themes/default/components/Table/Server';
 import type { Beneficiary } from '@/stores/api/beneficiaries';
-import type { Filters, StateFilters } from './components/Filters';
-import type { BookingExcerpt, BookingSummary } from '@/stores/api/bookings';
+import type { Filters, StateFilter } from './components/Filters';
+import type { Session } from '@/stores/api/session';
 import type { DeferredPromise } from 'p-defer';
+import type {
+    BookingExcerpt,
+    BookingSummary,
+    BookingListFilters,
+} from '@/stores/api/bookings';
 
 type InstanceProperties = {
     nowTimer: ReturnType<typeof setInterval> | undefined,
     fetchSummariesQueue: Queue | undefined,
+    refreshTableDebounced: (
+        | DebouncedMethod<typeof ScheduleListing, 'refreshTable'>
+        | undefined
+    ),
 };
 
 type LazyBooking<F extends boolean = boolean> = (
@@ -44,6 +71,7 @@ type LazyBooking<F extends boolean = boolean> = (
 );
 
 type Data = {
+    filters: Filters,
     ready: DeferredPromise<undefined>,
     isLoading: boolean,
     hasCriticalError: boolean,
@@ -59,60 +87,72 @@ const MAX_ITEMS_PER_PAGE = 30;
  */
 export const MAX_FETCHES_PER_SECOND: number = 15;
 
-/** Page de listing des événements et réservations. */
+/** Page de listing des événements. */
 const ScheduleListing = defineComponent({
     name: 'ScheduleListing',
     setup: (): InstanceProperties => ({
         nowTimer: undefined,
         fetchSummariesQueue: undefined,
+        refreshTableDebounced: undefined,
     }),
-    data: (): Data => ({
-        ready: createDeferred(),
-        isLoading: false,
-        hasCriticalError: false,
-        now: DateTime.now(),
-    }),
-    computed: {
-        filters(): Filters {
-            const filters: Filters = {};
-            const routeQuery = this.$route?.query ?? {};
+    data(): Data {
+        const urlFilters = getFiltersFromRoute(this.$route);
 
-            // - Catégorie.
-            if ('category' in routeQuery) {
-                if (routeQuery.category === UNCATEGORIZED) {
-                    filters.category = UNCATEGORIZED;
-                } else if (isValidInteger(routeQuery.category)) {
-                    filters.category = parseInt(routeQuery.category, 10);
+        // - Filtres par défaut.
+        const filters: Filters = {
+            search: [],
+            period: null,
+            park: null,
+            category: null,
+            states: [],
+            ...urlFilters,
+        };
+
+        // - Filtres sauvegardés.
+        const session = this.$store.state.auth.user as Session;
+        if (!session.disable_search_persistence) {
+            if (urlFilters === undefined) {
+                const savedFilters = getPersistedFilters();
+                if (savedFilters !== null) {
+                    Object.assign(filters, savedFilters);
+                } else {
+                    // - Ancienne sauvegarde éventuelle, dans le component `<Table />`.
+                    const savedSearchLegacy = this.$options.name
+                        ? getLegacySavedSearch(this.$options.name)
+                        : null;
+
+                    if (savedSearchLegacy !== null) {
+                        Object.assign(filters, { search: [savedSearchLegacy] });
+                    }
                 }
             }
 
-            // - Parc.
-            if ('park' in routeQuery && isValidInteger(routeQuery.park)) {
-                filters.park = parseInt(routeQuery.park, 10);
-            }
+            // NOTE: Le local storage est mis à jour via un `watch` de `filters`.
+        } else {
+            clearPersistedFilters();
+        }
 
-            // - Période.
-            if ('period_start' in routeQuery && 'period_end' in routeQuery) {
-                filters.period = Period.from({
-                    start: routeQuery.period_start,
-                    end: routeQuery.period_end,
-                    isFullDays: true,
-                });
-            }
-
-            // - États du booking.
-            (['endingToday', 'returnInventoryTodo', 'archived', 'notConfirmed'] as Array<keyof StateFilters>)
-                .forEach((state: keyof StateFilters) => {
-                    if (state in routeQuery && routeQuery[state] === '1') {
-                        filters[state] = true;
-                    }
-                });
-
-            return filters;
+        return {
+            ready: createDeferred(),
+            isLoading: false,
+            hasCriticalError: false,
+            now: DateTime.now(),
+            filters,
+        };
+    },
+    computed: {
+        shouldPersistSearch(): boolean {
+            const session = this.$store.state.auth.user as Session;
+            return !session.disable_search_persistence;
         },
 
         hasMultipleParks(): boolean {
             return this.$store.state.parks.list.length > 1;
+        },
+
+        title(): string {
+            const { $t: __ } = this;
+            return __('page.schedule.listing.title');
         },
 
         columns(): Columns<LazyBooking> {
@@ -123,8 +163,11 @@ const ScheduleListing = defineComponent({
             return [
                 {
                     key: 'icon',
-                    title: '',
-                    class: 'ScheduleListing__cell ScheduleListing__cell--icon',
+                    label: __('page.schedule.listing.columns.state-icon'),
+                    class: [
+                        'ScheduleListing__table__cell',
+                        'ScheduleListing__table__cell--icon',
+                    ],
                     render(h: CreateElement, { isComplete, booking }: LazyBooking) {
                         const icon = getBookingIcon(booking, !isComplete, now);
                         return <Icon name={icon ?? 'circle-notch'} spin={icon === null} />;
@@ -132,8 +175,12 @@ const ScheduleListing = defineComponent({
                 },
                 {
                     key: 'title',
+                    hideable: false,
                     title: __('page.schedule.listing.columns.title'),
-                    class: 'ScheduleListing__cell ScheduleListing__cell--title',
+                    class: [
+                        'ScheduleListing__table__cell',
+                        'ScheduleListing__table__cell--title',
+                    ],
                     render(h: CreateElement, { booking }: LazyBooking) {
                         const getTitle = (): string => {
                             const { entity } = booking;
@@ -165,7 +212,10 @@ const ScheduleListing = defineComponent({
                 {
                     key: 'mobilization_start_date',
                     title: __('page.schedule.listing.columns.mobilization-period'),
-                    class: 'ScheduleListing__cell ScheduleListing__cell--mobilization-period',
+                    class: [
+                        'ScheduleListing__table__cell',
+                        'ScheduleListing__table__cell--mobilization-period',
+                    ],
                     sortable: true,
                     render(h: CreateElement, { booking }: LazyBooking) {
                         const { mobilization_period: mobilizationPeriod } = booking;
@@ -180,23 +230,17 @@ const ScheduleListing = defineComponent({
                 {
                     key: 'beneficiary',
                     title: __('page.schedule.listing.columns.beneficiaries'),
-                    class: 'ScheduleListing__cell ScheduleListing__cell--beneficiaries',
+                    class: [
+                        'ScheduleListing__table__cell',
+                        'ScheduleListing__table__cell--beneficiaries',
+                    ],
                     render(h: CreateElement, { booking }: LazyBooking) {
                         const { entity } = booking;
                         switch (entity) {
                             case BookingEntity.EVENT: {
-                                // - Utilisation d'un Set pour dé-doublonner les noms des
-                                //   bénéficiaires (si on a plusieurs contacts de la même company).
-                                const beneficiaries: Set<string> = new Set(
-                                    booking.beneficiaries
-                                        .map(({ company, full_name: fullName }: Beneficiary) => (
-                                            (company ? company.legal_name : fullName) ?? ''
-                                        )),
-                                );
-
-                                if (beneficiaries.size === 0) {
+                                if (booking.beneficiaries.length === 0) {
                                     return (
-                                        <span class="ScheduleListing__cell__empty">
+                                        <span class="ScheduleListing__table__cell__empty">
                                             {__('not-specified')}
                                         </span>
                                     );
@@ -204,11 +248,19 @@ const ScheduleListing = defineComponent({
 
                                 return (
                                     <ul class="ScheduleListing__beneficiaries">
-                                        {Array.from(beneficiaries).map((name: string) => (
-                                            <li key={name} class="ScheduleListing__beneficiaries__item">
-                                                {name}
-                                            </li>
-                                        ))}
+                                        {booking.beneficiaries.map((beneficiary: Beneficiary) => {
+                                            const { company, full_name: fullName } = beneficiary;
+
+                                            return (
+                                                <li key={beneficiary.id} class="ScheduleListing__beneficiaries__item">
+                                                    <span class="ScheduleListing__beneficiary">
+                                                        <span class="ScheduleListing__beneficiary__name">
+                                                            {`${fullName}${company ? ` (${company.legal_name})` : ''}`}
+                                                        </span>
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
                                 );
                             }
@@ -221,8 +273,11 @@ const ScheduleListing = defineComponent({
                 {
                     key: 'parks',
                     title: __('page.schedule.listing.columns.parks'),
-                    class: 'ScheduleListing__cell ScheduleListing__cell--parks',
-                    hidden: !hasMultipleParks,
+                    class: [
+                        'ScheduleListing__table__cell',
+                        'ScheduleListing__table__cell--parks',
+                    ],
+                    defaultHidden: !hasMultipleParks,
                     render(h: CreateElement, { booking }: LazyBooking) {
                         const parks: string[] = booking.parks.map(getParkName);
                         if (parks.length === 0) {
@@ -241,7 +296,10 @@ const ScheduleListing = defineComponent({
                 {
                     key: 'categories',
                     title: __('page.schedule.listing.columns.categories'),
-                    class: 'ScheduleListing__cell ScheduleListing__cell--categories',
+                    class: [
+                        'ScheduleListing__table__cell',
+                        'ScheduleListing__table__cell--categories',
+                    ],
                     render(h: CreateElement, { booking }: LazyBooking) {
                         if (booking.categories.length === 0) {
                             return null;
@@ -259,8 +317,10 @@ const ScheduleListing = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
-                    class: 'ScheduleListing__cell ScheduleListing__cell--actions',
+                    class: [
+                        'ScheduleListing__table__cell',
+                        'ScheduleListing__table__cell--actions',
+                    ],
                     render: (h: CreateElement, lazyBooking: LazyBooking) => (
                         <Button
                             icon="eye"
@@ -274,10 +334,45 @@ const ScheduleListing = defineComponent({
             ];
         },
     },
+    watch: {
+        filters: {
+            handler(newFilters: Filters, prevFilters: Filters | undefined) {
+                if (prevFilters !== undefined) {
+                    // @ts-expect-error -- `this` fait bien référence au component.
+                    this.refreshTableDebounced();
+                }
+
+                // - Persistance dans le local storage.
+                // @ts-expect-error -- `this` fait bien référence au component.
+                if (this.shouldPersistSearch) {
+                    persistFilters(newFilters);
+                }
+
+                // - Mise à jour de l'URL.
+                // @ts-expect-error -- `this` fait bien référence au component.
+                const prevRouteQuery = this.$route?.query ?? {};
+                const newRouteQuery = convertFiltersToRouteQuery(newFilters);
+                if (!isEqual(prevRouteQuery, newRouteQuery)) {
+                    // @ts-expect-error -- `this` fait bien référence au component.
+                    this.$router.replace({ query: newRouteQuery });
+                }
+            },
+            deep: true,
+            immediate: true,
+        },
+    },
     created() {
         // - Binding.
         this.fetch = this.fetch.bind(this);
 
+        // - Debounce.
+        this.refreshTableDebounced = throttle(
+            this.refreshTable.bind(this),
+            DEBOUNCE_WAIT_DURATION.asMilliseconds(),
+            { leading: false },
+        );
+
+        // - Fetch queue.
         this.fetchSummariesQueue = new Queue({
             interval: DateTime.duration(1, 'second').asMilliseconds(),
             concurrency: config.maxConcurrentFetches,
@@ -292,12 +387,12 @@ const ScheduleListing = defineComponent({
         this.nowTimer = setInterval(() => { this.now = DateTime.now(); }, 60_000);
     },
     beforeDestroy() {
+        this.refreshTableDebounced?.cancel();
+        this.fetchSummariesQueue?.clear();
+
         if (this.nowTimer) {
             clearInterval(this.nowTimer);
         }
-
-        // - Vide la file d'attente des requêtes.
-        this.fetchSummariesQueue?.clear();
     },
     methods: {
         // ------------------------------------------------------
@@ -335,33 +430,48 @@ const ScheduleListing = defineComponent({
         },
 
         handleFiltersChange(newFilters: Filters) {
-            const query: Record<string, string> = {};
-            if (newFilters.park !== undefined) {
-                query.park = newFilters.park.toString();
-            }
-            if (newFilters.category !== undefined) {
-                query.category = newFilters.category.toString();
-            }
-            if (newFilters.period !== undefined) {
-                const serializedPeriod = newFilters.period.toSerialized();
-                query.period_start = serializedPeriod.start;
-                query.period_end = serializedPeriod.end;
-            }
-            if (newFilters.endingToday !== undefined) {
-                query.endingToday = '1';
-            }
-            if (newFilters.returnInventoryTodo !== undefined) {
-                query.returnInventoryTodo = '1';
-            }
-            if (newFilters.archived !== undefined) {
-                query.archived = '1';
-            }
-            if (newFilters.notConfirmed !== undefined) {
-                query.notConfirmed = '1';
+            // - Recherche textuelle.
+            const newSearch = mergeDifference(this.filters.search, newFilters.search);
+            if (!isEqual(this.filters.search, newSearch)) {
+                this.filters.search = newSearch;
             }
 
-            this.$router.push({ query });
-            this.setTablePage(1);
+            // - Période.
+            if (
+                (this.filters.period === null && newFilters.period !== null) ||
+                (this.filters.period !== null && newFilters.period === null) ||
+                (
+                    (this.filters.period !== null && newFilters.period !== null) &&
+                    !this.filters.period.isSame(newFilters.period)
+                )
+            ) {
+                this.filters.period = newFilters.period;
+            }
+
+            // - Parc.
+            if (this.filters.park !== newFilters.park) {
+                this.filters.park = newFilters.park;
+            }
+
+            // - Catégorie.
+            if (this.filters.category !== newFilters.category) {
+                this.filters.category = newFilters.category;
+            }
+
+            // - États
+            const newStates = mergeDifference(this.filters.states, newFilters.states);
+            if (!isEqual(this.filters.states, newStates)) {
+                this.filters.states = newStates;
+            }
+        },
+
+        handleFiltersSubmit() {
+            this.refreshTable();
+        },
+
+        handleConfigureColumns() {
+            const $table = this.$refs.table as ComponentRef<typeof ServerTable>;
+            $table?.showColumnsSelector();
         },
 
         // ------------------------------------------------------
@@ -377,11 +487,19 @@ const ScheduleListing = defineComponent({
             this.ready.resolve();
         },
 
-        async fetch(pagination: PaginationParams): Promise<{ data: PaginatedData<LazyBooking[]> } | undefined> {
+        async fetch(pagination: PaginationParams & SortableParams): Promise<{ data: PaginatedData<LazyBooking[]> } | undefined> {
             await this.ready.promise;
 
+            pagination = pick(pagination, ['page', 'limit', 'ascending', 'orderBy']);
             this.isLoading = true;
-            const { filters } = this;
+
+            const { filters: rawFilters } = this;
+            const filters: BookingListFilters = omit(rawFilters, ['states']);
+            rawFilters.states.forEach((state: StateFilter) => {
+                if (rawFilters.states.includes(state)) {
+                    filters[state] = true;
+                }
+            });
 
             // - Vide la file d'attente des requêtes avant de la re-peupler.
             this.fetchSummariesQueue?.clear();
@@ -402,7 +520,7 @@ const ScheduleListing = defineComponent({
                 return { data: { data: lazyData, pagination: data.pagination } };
             } catch (error) {
                 if (isRequestErrorStatusCode(error, HttpCode.ClientErrorRangeNotSatisfiable)) {
-                    this.setTablePage(1);
+                    this.refreshTable();
                     return undefined;
                 }
 
@@ -438,17 +556,16 @@ const ScheduleListing = defineComponent({
             await this.fetchSummariesQueue?.addAll(promises);
         },
 
-        setTablePage(page: number) {
-            (this.$refs.table as ComponentRef<typeof ServerTable>)?.setPage(page);
-        },
-
         refreshTable() {
+            this.refreshTableDebounced?.cancel();
+
             (this.$refs.table as ComponentRef<typeof ServerTable>)?.refresh();
         },
     },
     render() {
         const {
             $t: __,
+            title,
             isLoading,
             hasCriticalError,
             filters,
@@ -457,22 +574,17 @@ const ScheduleListing = defineComponent({
             fetch,
             handleOpen,
             handleFiltersChange,
+            handleFiltersSubmit,
+            handleConfigureColumns,
         } = this;
 
         if (hasCriticalError) {
             return (
-                <Page name="schedule-listing" title={__('page.schedule.listing.title')} centered>
+                <Page name="schedule-listing" title={title} centered>
                     <CriticalError />
                 </Page>
             );
         }
-
-        const actions = [
-            <ViewToggle mode={BookingsViewMode.LISTING} />,
-            <Button type="add" to={{ name: 'add-event' }}>
-                {__('page.schedule.listing.add-event')}
-            </Button>,
-        ];
 
         const getRowClass = ({ booking }: LazyBooking): VNodeClass => {
             const isFuture = !booking.operation_period.isPastOrOngoing();
@@ -486,29 +598,51 @@ const ScheduleListing = defineComponent({
                 (isPast && !booking.is_archived && !!booking.has_not_returned_materials)
             );
 
-            return ['ScheduleListing__row', {
-                'ScheduleListing__row--with-warning': hasWarnings,
+            return ['ScheduleListing__table__row', {
+                'ScheduleListing__table__row--with-warning': hasWarnings,
             }];
         };
 
         return (
-            <Page name="schedule-listing" title={__('page.schedule.listing.title')} loading={isLoading} actions={actions}>
-                <div class="ScheduleListing">
-                    <div class="ScheduleListing__filters">
-                        <ListFilters
+            <Page
+                name="schedule-listing"
+                title={title}
+                loading={isLoading}
+                actions={[
+                    <ViewModeSwitch mode={BookingsViewMode.LISTING} />,
+                    <Button type="add" to={{ name: 'add-event' }} collapsible>
+                        {__('page.schedule.listing.add-event')}
+                    </Button>,
+                    <Dropdown>
+                        <Button icon="table" onClick={handleConfigureColumns}>
+                            {__('configure-columns')}
+                        </Button>
+                    </Dropdown>,
+                ]}
+                scopedSlots={{
+                    headerContent: (): JSX.Node => (
+                        <FiltersPanel
                             values={filters}
                             onChange={handleFiltersChange}
+                            onSubmit={handleFiltersSubmit}
                         />
-                    </div>
+                    ),
+                }}
+            >
+                <div class="ScheduleListing">
                     <ServerTable
                         ref="table"
                         key="default"
                         name={$options.name}
+                        class="ScheduleListing__table"
                         rowClass={getRowClass}
                         columns={columns}
                         fetcher={fetch}
                         onRowClick={handleOpen}
-                        defaultOrderBy={{ column: 'mobilization_start_date', ascending: false }}
+                        defaultOrderBy={{
+                            column: 'mobilization_start_date',
+                            ascending: false,
+                        }}
                         perPage={MAX_ITEMS_PER_PAGE}
                     />
                 </div>

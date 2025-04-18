@@ -1,3 +1,5 @@
+import type { UndefinedOnPartialDeep } from 'type-fest';
+
 //
 // - Types liés à la pagination / tri.
 //
@@ -40,18 +42,18 @@ export type PaginationParams = {
     limit?: number,
 };
 
-export type ListingParams = (
+export type ListingParams = UndefinedOnPartialDeep<(
     & {
         /**
          * Permet de rechercher un terme en particulier.
          *
          * @default undefined
          */
-        search?: string,
+        search?: string | string[],
     }
     & SortableParams
     & PaginationParams
-);
+)>;
 
 //
 // - Enveloppes.

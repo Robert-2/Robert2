@@ -1,4 +1,5 @@
 import './index.scss';
+import config from '@/globals/config';
 import { defineComponent } from '@vue/composition-api';
 import apiEvents from '@/stores/api/events';
 import BeneficiariesSelect from './BeneficiariesSelect';
@@ -44,6 +45,10 @@ const EventEditStepBeneficiaries = defineComponent({
         isBillingEnabled(): boolean {
             return this.event.is_billable;
         },
+
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
     },
     methods: {
         // ------------------------------------------------------
@@ -69,7 +74,7 @@ const EventEditStepBeneficiaries = defineComponent({
         handleSubmit(e: SubmitEvent) {
             e.preventDefault();
 
-            this.saveAndGoToStep(3);
+            this.saveAndGoToStep(this.isTechniciansEnabled ? 3 : 4);
         },
 
         handlePrevClick(e: MouseEvent) {
@@ -81,7 +86,7 @@ const EventEditStepBeneficiaries = defineComponent({
         handleNextClick(e: MouseEvent) {
             e.preventDefault();
 
-            this.saveAndGoToStep(3);
+            this.saveAndGoToStep(this.isTechniciansEnabled ? 3 : 4);
         },
 
         // ------------------------------------------------------

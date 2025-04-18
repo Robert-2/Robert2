@@ -1,0 +1,67 @@
+@use '~@/themes/default/style/globals';
+
+.MissingMaterials {
+    padding: globals.$spacing-medium globals.$spacing-large globals.$spacing-large;
+    border-radius: globals.$border-radius-normal;
+    background-color: globals.$bg-color-emphasis-danger;
+    color: globals.$color-emphasis-danger-base;
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: globals.$spacing-medium;
+        gap: globals.$spacing-thin;
+
+        &__title {
+            margin: 0;
+            font-size: 1.2rem;
+
+            @include globals.icon('box-open') {
+                margin-right: globals.$spacing-thin;
+            }
+        }
+
+        &__help {
+            margin: 0;
+            color: globals.$color-emphasis-danger-soft;
+        }
+    }
+
+    &__error {
+        margin: 0;
+        color: globals.$color-emphasis-danger-emphasis;
+        font-size: 1.1rem;
+        font-style: italic;
+
+        @include globals.icon('exclamation-circle') {
+            margin-right: globals.$spacing-thin;
+        }
+    }
+
+    &__list {
+        @extend %reset-list;
+
+        margin: 0;
+        padding: 0;
+
+        &__item {
+            display: flex;
+            font-size: 1.05rem;
+            gap: globals.$spacing-small;
+
+            &__name {
+                flex: 1;
+            }
+
+            &__quantity {
+                font-weight: 600;
+            }
+
+            & + & {
+                margin-top: 0.7rem;
+                padding-top: 0.7rem;
+                border-top: 1px solid globals.$divider-emphasis-danger;
+            }
+        }
+    }
+}

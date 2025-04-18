@@ -5,24 +5,33 @@
     flex-direction: column;
     height: 100%;
     min-width: 800px;
-    gap: globals.$spacing-small;
+    gap: globals.$spacing-medium;
 
     &__header {
         flex: 0;
         display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: globals.$spacing-medium;
+        flex-direction: column;
+        gap: globals.$spacing-small;
 
-        &__search {
-            flex: 0 0 280px;
-        }
+        &__main {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: globals.$spacing-medium;
 
-        &__help {
-            display: none;
+            &__help {
+                display: none;
 
-            @include globals.icon('info-circle') {
-                margin-right: globals.$spacing-small;
+                @include globals.icon('info-circle') {
+                    margin-right: globals.$spacing-small;
+                }
+            }
+
+            &__actions {
+                flex: 1;
+                display: flex;
+                justify-content: flex-end;
+                gap: globals.$spacing-small;
             }
         }
     }
@@ -36,10 +45,19 @@
 
     &__content {
         flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     &__timeline {
-        min-height: 100%;
+        flex: 1;
+        width: 100%;
+        height: 100%;
+
+        &__element {
+            margin-bottom: globals.$spacing-medium;
+        }
     }
 
     &__no-technician {
@@ -51,7 +69,7 @@
         height: 100%;
 
         &__message {
-            margin-bottom: globals.$spacing-large;
+            margin-bottom: globals.$spacing-medium;
             font-size: 1.2rem;
             line-height: 1.5;
             text-align: center;
@@ -68,7 +86,7 @@
         flex: 0;
         display: flex;
         justify-content: center;
-        padding: globals.$spacing-large 0;
+        padding: globals.$spacing-medium 0 globals.$spacing-large;
         gap: globals.$spacing-small;
     }
 
@@ -76,9 +94,9 @@
     // - Responsive
     //
 
-    @media (min-width: globals.$screen-desktop) {
+    @media (min-width: globals.$screen-big-desktop) {
         &__header {
-            &__help {
+            &__main__help {
                 display: block;
             }
         }

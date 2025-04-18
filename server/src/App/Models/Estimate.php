@@ -5,7 +5,6 @@ namespace Loxya\Models;
 
 use Brick\Math\BigDecimal as Decimal;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,7 +14,6 @@ use Loxya\Config\Config;
 use Loxya\Contracts\Pdfable;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Casts\AsDecimal;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
@@ -36,7 +34,7 @@ use Respect\Validation\Validator as V;
  * @property string $booking_type
  * @property int $booking_id
  * @property-read array $seller
- * @property-read Event $booking
+ * @property-read Event|Reservation $booking
  * @property string|null $booking_title
  * @property CarbonImmutable $booking_start_date
  * @property CarbonImmutable $booking_end_date
@@ -564,6 +562,10 @@ final class Estimate extends BaseModel implements Serializable, Pdfable
             ->values()
             ->all();
 
+        $hasMaterialDiscount = $this->materials->some(
+            static fn ($material) => !$material->discount_rate->isZero()
+        );
+
         return [
             'date' => $this->date,
             'seller' => $this->seller,
@@ -576,6 +578,7 @@ final class Estimate extends BaseModel implements Serializable, Pdfable
             ],
             'isLegacy' => $this->is_legacy,
             'hasTaxes' => !empty($this->total_taxes),
+            'hasMaterialDiscount' => $hasMaterialDiscount,
             'degressiveRate' => $this->degressive_rate,
             'dailyTotal' => $this->daily_total,
             'hasGlobalDiscount' => !$this->global_discount_rate->isZero(),
@@ -645,27 +648,6 @@ final class Estimate extends BaseModel implements Serializable, Pdfable
     // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
-
-    /**
-     * Retourne un devis via son identifiant, uniquement
-     * s'il est accessible par l'utilisateur donné.
-     *
-     * @param int $id L'identifiant du devis à récupérer.
-     * @param User $user L'utilisateur pour lequel on effectue la récupération.
-     *
-     * @return static Le devis correspondant à l'identifiant.
-     */
-    public static function findOrFailForUser(int $id, User $user): static
-    {
-        return static::query()
-            ->when(
-                $user->group === Group::READONLY_PLANNING_SELF,
-                static fn (Builder $subQuery) => (
-                    $subQuery->where('beneficiary_id', $user->person?->beneficiary?->id)
-                ),
-            )
-            ->findOrFail($id);
-    }
 
     public static function createFromBooking(Event $booking, User $creator): Estimate
     {

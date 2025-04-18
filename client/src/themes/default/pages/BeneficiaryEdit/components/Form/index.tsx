@@ -7,6 +7,7 @@ import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
 import CompanySelect from './CompanySelect';
 
+import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { Options } from '@/utils/formatOptions';
 import type { Country } from '@/stores/api/countries';
@@ -80,6 +81,10 @@ const BeneficiaryEditForm = defineComponent({
         };
     },
     computed: {
+        isNew(): boolean {
+            return this.savedData === null;
+        },
+
         hasUserAccount(): boolean {
             return !!this.savedData?.user;
         },
@@ -90,6 +95,14 @@ const BeneficiaryEditForm = defineComponent({
     },
     created() {
         this.$store.dispatch('countries/fetch');
+    },
+    mounted() {
+        if (this.isNew) {
+            this.$nextTick(() => {
+                const $inputFirstName = this.$refs.inputFirstName as ComponentRef<typeof FormField>;
+                $inputFirstName?.focus();
+            });
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -167,6 +180,7 @@ const BeneficiaryEditForm = defineComponent({
                 <Fieldset>
                     <div class="BeneficiaryEditForm__name">
                         <FormField
+                            ref="inputFirstName"
                             label="first-name"
                             class="BeneficiaryEditForm__first-name"
                             v-model={data.first_name}

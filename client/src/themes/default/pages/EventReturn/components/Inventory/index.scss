@@ -3,6 +3,8 @@
 .EventReturnInventory {
     $block: &;
 
+    height: 100%;
+
     &__summary {
         margin-bottom: globals.$spacing-large;
 

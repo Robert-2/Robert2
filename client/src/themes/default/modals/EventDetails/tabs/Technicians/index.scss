@@ -1,6 +1,32 @@
+@use '~@/themes/default/style/globals';
+
 .EventDetailsTechnicians {
     display: flex;
     flex-direction: column;
+
+    &__problems {
+        margin-bottom: globals.$spacing-medium;
+        padding: globals.$spacing-medium globals.$spacing-large;
+        border-radius: globals.$border-radius-normal;
+        background-color: globals.$bg-color-emphasis-danger;
+        color: globals.$color-emphasis-danger-base;
+
+        &__title {
+            margin: 0;
+            font-size: 1.2rem;
+
+            @include globals.icon('exclamation-triangle') {
+                margin-right: globals.$spacing-small;
+                font-size: 1.1rem;
+            }
+        }
+
+        &__list {
+            margin: globals.$spacing-medium 0 0;
+            padding-left: 1.3rem;
+            font-size: 1.05rem;
+        }
+    }
 
     &__timeline {
         flex: 1;

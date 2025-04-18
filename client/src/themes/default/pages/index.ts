@@ -14,9 +14,10 @@ import MaterialEdit from './MaterialEdit';
 import MaterialView from './MaterialView';
 import Attributes from './Attributes';
 import AttributeEdit from './AttributeEdit';
-import Technicians from './Technicians';
+import Technicians, { pages as techniciansPages } from './Technicians';
 import TechnicianEdit from './TechnicianEdit';
 import TechnicianView from './TechnicianView';
+import Roles from './Roles';
 import Parks from './Parks';
 import ParkEdit from './ParkEdit';
 import UserSettings from './Settings/User';
@@ -283,13 +284,13 @@ const pages: RouteConfig[] = [
     //
 
     {
-        name: 'technicians',
         path: '/technicians',
         component: Technicians,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMINISTRATION, Group.MANAGEMENT],
         },
+        children: techniciansPages,
     },
     {
         name: 'add-technician',
@@ -313,6 +314,15 @@ const pages: RouteConfig[] = [
         name: 'view-technician',
         path: '/technicians/:id(\\d+)/view',
         component: TechnicianView,
+        meta: {
+            requiresAuth: true,
+            requiresGroups: [Group.ADMINISTRATION, Group.MANAGEMENT],
+        },
+    },
+    {
+        name: 'roles',
+        path: '/roles',
+        component: Roles,
         meta: {
             requiresAuth: true,
             requiresGroups: [Group.ADMINISTRATION, Group.MANAGEMENT],

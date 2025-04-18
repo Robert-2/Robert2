@@ -12,27 +12,10 @@ event-technicians: Techniciens
 event-materials: Matériel
 event-confirmation: Confirmation
 
-no-technician-with-this-search: Aucun technicien n'a été trouvé avec cette recherche.
-no-technician-pass-this-step: |-
-    Il n'y a aucun technicien disponible pour cette période.
-    Vous pouvez passer cette étape.
-
-technician-item:
-    confirm-permanently-delete: Voulez-vous vraiment supprimer l'assignation de ce technicien ?
-
-assign-technician: 'Assigner {name} en tant que technicien(ne)'
-assign-name: 'Assigner {name}'
-modify-assignment: Modifier l'assignation
-remove-assignment: Supprimer l'assignation
-period-assigned: Période assignée
-start-end-dates-and-time: Dates et heures de début et fin
 saved: Événement sauvegardé.
 not-saved: L'événement comporte des modifications non sauvegardées
 beneficiary-billing-help: Seul le premier bénéficiaire de la liste apparaîtra sur la facture.
-technicians-help: >-
-    Double-cliquez sur la ligne d'un technicien à la date/heure de début voulue
-    pour l'assigner à l'événement.
-technicians-search-placeholder: Rechercher un nom ou adresse e-mail...
+
 clear-search: Effacer le terme de recherche
 
 steps:
@@ -43,7 +26,14 @@ steps:
         mobilization-period: Période de mobilisation du matériel
         mobilization-period-help: "Période pendant laquelle le matériel est mobilisé pour cet événement."
         sync-mobilization-period: "Utiliser une période de mobilisation du matériel identique aux dates de l'événement\_?"
-        color-on-calendar: Couleur sur le calendrier
+
+        color-on-calendar:
+            label: Couleur sur le calendrier
+
+        project-manager:
+            label: Chef de projet
+            help: Un utilisateur chargé de la supervision et du suivi de l'événement.
+            placeholder-help: Commencez à écrire pour rechercher un utilisateur...
 
         readonly-mobilization-period-warning:
             entirely: |
@@ -117,6 +107,7 @@ steps:
     beneficiaries:
         title: Bénéficiaires
 
+        main-beneficiary: Bénéficiaire principal
         numbered-label: "Bénéficiaire {number}"
         add-beneficiary: Ajouter un bénéficiaire
         remove-beneficiary: Enlever ce bénéficiaire
@@ -126,9 +117,31 @@ steps:
 
     technicians:
         title: Techniciens
+        help-technicians: >-
+            Double-cliquez sur la ligne d'un technicien à la date/heure de début voulue
+            pour l'assigner à l'événement.
+
+        no-technician-with-this-search: Aucun technicien n'a été trouvé avec cette recherche.
+        no-technician-pass-this-step: |-
+            Il n'y a aucun technicien disponible pour cette période.
+            Vous pouvez passer cette étape.
+
+        search-placeholder: Rechercher un nom ou adresse e-mail...
+
+        assign-technician: Assigner {name} en tant que technicien(ne)
+        period-assigned: Période assignée
+        assign: Assigner le technicien
+        assign-name: Assigner {name}
+        modify-assignment: Modifier l'assignation
+        remove-assignment: Supprimer l'assignation
+        start-end-dates-and-time: Dates et heures de début et fin
+        select-technician: Veuillez choisir un technicien.
 
         assignation-saved: Assignation du technicien sauvegardée.
         assignation-removed: Assignation du technicien supprimée.
+
+        technician-item:
+            confirm-permanently-delete: "Voulez-vous vraiment supprimer l'assignation de ce technicien\_?"
 
     materials:
         title: Matériel

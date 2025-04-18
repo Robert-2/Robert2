@@ -20,6 +20,10 @@ import { Timeline as TimelineCore } from '@loxya/vis-timeline';
 import DateTime, { DateTimeRoundingMethod } from '@/utils/datetime';
 import Loading from '@/themes/default/components/Loading';
 import { TimelineItemPeriodType } from './_types';
+import {
+    Variant as IconVariant,
+    VARIANT_MAP as ICON_VARIANT_MAP,
+} from '@/themes/default/components/Icon';
 
 import type { MomentInput } from 'moment';
 import type { DebouncedMethod } from 'lodash';
@@ -33,6 +37,7 @@ import type {
     TimelineClickEvent,
     TimelineDataChangeEvent,
     TimelineConfirmCallback,
+    TimelineGroupAction,
 } from './_types';
 import type {
     DataSet,
@@ -104,6 +109,13 @@ type Props = {
 
     /** L'indicateur (une ligne verticale) d'heure courante doit-t'il être caché ? */
     hideCurrentTime?: boolean,
+
+    /**
+     * Les éléments doivent-ils être empilés ?
+     *
+     * @default false
+     */
+    stacked?: boolean,
 };
 
 type Data = {
@@ -172,6 +184,10 @@ const Timeline = defineComponent({
             type: Boolean as PropType<Required<Props>['hideCurrentTime']>,
             default: false,
         },
+        stacked: {
+            type: Boolean as PropType<Required<Props>['stacked']>,
+            default: false,
+        },
     },
     emits: [
         'click',
@@ -229,7 +245,7 @@ const Timeline = defineComponent({
                 minHeight: '100%',
                 showCurrentTime: !hideCurrentTime,
                 groupHeightMode: 'fixed',
-                stack: false,
+                stack: this.stacked,
                 stackSubgroups: false,
                 tooltip: {
                     followMouse: true,
@@ -404,16 +420,60 @@ const Timeline = defineComponent({
                     name,
                     style: rawStyle = {},
                     className: rawClassName = [],
+                    actions,
                     ...item
                 } = rawItem;
 
                 const style = typeof rawStyle === 'object' ? { ...rawStyle } : {};
 
+                const content = document.createElement('div');
+                content.className = 'Timeline__group-content';
+
+                const nameElement = document.createElement('span');
+                nameElement.className = clsx('Timeline__group-content__name', rawClassName);
+                nameElement.textContent = name;
+                content.appendChild(nameElement);
+
+                if (actions && actions.length > 0) {
+                    const actionsElement = document.createElement('span');
+                    actionsElement.className = 'Timeline__group-content__actions';
+
+                    actions.forEach(({ icon, ariaLabel, onClick }: TimelineGroupAction) => {
+                        const button = document.createElement('button');
+                        button.className = 'Timeline__group-content__actions__item';
+                        button.ariaLabel = ariaLabel ?? null;
+                        button.onclick = onClick;
+
+                        // - Icône de l'action.
+                        const iconElement = document.createElement('i');
+                        iconElement.className = ((): string => {
+                            let normalizedIcon: { name: string, variant?: IconVariant };
+                            if (!icon.includes(':')) {
+                                normalizedIcon = { name: icon };
+                            } else {
+                                const [iconType, variant] = icon.split(':');
+                                normalizedIcon = Object.values(IconVariant).includes(variant as any)
+                                    ? { name: iconType, variant: variant as IconVariant }
+                                    : { name: iconType };
+                            }
+
+                            return clsx([
+                                ICON_VARIANT_MAP[normalizedIcon.variant ?? IconVariant.SOLID],
+                                `fa-${normalizedIcon.name}`,
+                            ]);
+                        })();
+                        button.appendChild(iconElement);
+
+                        actionsElement.appendChild(button);
+                    });
+
+                    content.appendChild(actionsElement);
+                }
+
                 return {
                     ...item,
-                    content: name,
+                    content,
                     style: styleObjectToString(style),
-                    className: clsx('Timeline__group', rawClassName),
                 };
             });
         },
@@ -589,7 +649,7 @@ const Timeline = defineComponent({
             const confirmCallback: TimelineConfirmCallback = (confirm: boolean): void => {
                 callback(confirm ? rawItem : null);
             };
-            this.$emit('itemMove', item, newPeriod, confirmCallback);
+            this.$emit('itemMove', item, newPeriod, rawItem.group ?? null, confirmCallback);
         },
 
         handleItemRemove(rawItem: TimelineItemCore, callback: (finalItem: TimelineItemCore | null) => void) {

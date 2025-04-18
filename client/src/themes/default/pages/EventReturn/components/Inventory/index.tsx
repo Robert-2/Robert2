@@ -97,6 +97,8 @@ const EventReturnInventory = defineComponent({
                         name,
                         reference,
                         category_id: material.category_id,
+                        sub_category_id: material.sub_category_id,
+                        tags: material.tags,
                         park_id: material.park_id,
                         awaitedQuantity: quantity,
                         comment: isDepartureInventoryDone

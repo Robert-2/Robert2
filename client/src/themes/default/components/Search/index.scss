@@ -1,0 +1,99 @@
+@use '~@/themes/default/style/globals';
+@use 'sass:color';
+@use 'sass:math';
+
+.Search {
+    $block: &;
+
+    position: relative;
+    display: flex;
+    width: 100%;
+
+    &__body {
+        display: flex;
+        width: 100%;
+    }
+
+    &__input {
+        flex: 1;
+        display: flex;
+        width: 100%;
+        min-width: 0;
+        padding: 5px 10px 5px 20px;
+        border: globals.$input-border-width solid globals.$input-border-color;
+        border-radius: 9999px 0 0 9999px;
+        background-color: globals.$input-background-color;
+        color: globals.$input-text-color;
+        font-family: globals.$base-font-family;
+        font-size: globals.$input-font-size;
+        line-height: globals.$input-line-height;
+
+        &__field {
+            @extend %reset-input;
+
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        &__clear {
+            @extend %reset-button;
+
+            width: 30px;
+            margin-right: -10px;
+            text-align: center;
+            touch-action: auto;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 300ms ease;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+
+    &__button {
+        @extend %reset-button;
+
+        padding: 11px 20px 11px 15px;
+        border: globals.$input-border-width solid globals.$input-border-color;
+        border-left: 0;
+        border-radius: 0 9999px 9999px 0;
+        background-color: globals.$input-background-color;
+        color: globals.$input-text-color;
+        font-family: globals.$base-font-family;
+        font-size: globals.$input-font-size;
+        line-height: globals.$input-line-height;
+        touch-action: auto;
+        cursor: pointer;
+
+        &:hover {
+            background-color: color.adjust(globals.$input-background-color, $lightness: 5%);
+            transition: background-color 300ms ease;
+        }
+
+        &:active {
+            background-color: color.adjust(globals.$input-background-color, $lightness: 2%);
+        }
+    }
+
+    //
+    // - State: active
+    //
+
+    &--active {
+        #{$block}__input,
+        #{$block}__button {
+            border-color: globals.$input-focus-border-color;
+            background-color: globals.$input-focus-background-color;
+            color: globals.$input-focus-text-color;
+        }
+
+        #{$block}__button {
+            &:hover {
+                background-color: color.adjust(globals.$input-focus-background-color, $lightness: 5%);
+            }
+        }
+    }
+}

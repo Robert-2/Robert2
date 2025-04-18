@@ -227,9 +227,8 @@ const InvoiceEditorExtras = defineComponent({
                                     options={taxesOptions}
                                     placeholder={__('tax-free')}
                                     class="InvoiceEditorExtras__item__tax__input"
-                                    onChange={(newValue: number | null | '') => {
-                                        const normalizedValue = newValue !== '' ? (newValue ?? null) : null;
-                                        handleChangeTax(extra._id, normalizedValue);
+                                    onChange={(newValue: CoreTax['id'] | null) => {
+                                        handleChangeTax(extra._id, newValue);
                                     }}
                                 />
                             </span>
@@ -251,7 +250,6 @@ const InvoiceEditorExtras = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: [
                         'InvoiceEditorExtras__item__cell',
                         'InvoiceEditorExtras__item__cell--actions',
@@ -343,7 +341,7 @@ const InvoiceEditorExtras = defineComponent({
             this.$emit('change', { ...datum, quantity: value });
         },
 
-        handleChangeTax(id: BillingExtra['_id'], newValue: number | null) {
+        handleChangeTax(id: BillingExtra['_id'], newValue: CoreTax['id'] | null) {
             const datum = this.data.find((_datum: RawExtraBillingData) => _datum._id === id);
             if (datum === undefined) {
                 return;

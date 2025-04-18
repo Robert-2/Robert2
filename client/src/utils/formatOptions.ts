@@ -4,6 +4,7 @@ type DataShape = { id: string | number, name?: string };
 export type Option<T extends DataShape> = {
     value: T['id'],
     label: string,
+    data?: T,
 };
 
 /** Représente un tableau d'objets {@link Option}. */
@@ -31,10 +32,10 @@ const formatOptions = <T extends DataShape>(
         return [];
     }
 
-    return data.map((item: T): Option<T> => {
-        const value = item.id;
-        const label = getLabel ? getLabel(item) : (item.name ?? 'N/A');
-        return { value, label };
+    return data.map((datum: T): Option<T> => {
+        const value = datum.id;
+        const label = getLabel ? getLabel(datum) : (datum.name ?? 'N/A');
+        return { value, label, data: datum };
     });
 };
 

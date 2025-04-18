@@ -1,0 +1,111 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Roles Api all() parse the returned data correctly 1`] = `
+[
+  {
+    "id": 1,
+    "is_used": true,
+    "name": "Régisseur",
+  },
+  {
+    "id": 2,
+    "is_used": true,
+    "name": "Technicien plateau",
+  },
+  {
+    "id": 3,
+    "is_used": true,
+    "name": "Ingénieur du son",
+  },
+  {
+    "id": 4,
+    "is_used": true,
+    "name": "Installateur",
+  },
+  {
+    "id": 5,
+    "is_used": false,
+    "name": "Intervenant extérieur",
+  },
+]
+`;
+
+exports[`Roles Api create() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "is_used": true,
+  "name": "Régisseur",
+}
+`;
+
+exports[`Roles Api create() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "is_used": true,
+  "name": "Technicien plateau",
+}
+`;
+
+exports[`Roles Api create() parse the returned data correctly (with #3) 1`] = `
+{
+  "id": 3,
+  "is_used": true,
+  "name": "Ingénieur du son",
+}
+`;
+
+exports[`Roles Api create() parse the returned data correctly (with #4) 1`] = `
+{
+  "id": 4,
+  "is_used": true,
+  "name": "Installateur",
+}
+`;
+
+exports[`Roles Api create() parse the returned data correctly (with #5) 1`] = `
+{
+  "id": 5,
+  "is_used": false,
+  "name": "Intervenant extérieur",
+}
+`;
+
+exports[`Roles Api update() parse the returned data correctly (with #1) 1`] = `
+{
+  "id": 1,
+  "is_used": true,
+  "name": "Régisseur",
+}
+`;
+
+exports[`Roles Api update() parse the returned data correctly (with #2) 1`] = `
+{
+  "id": 2,
+  "is_used": true,
+  "name": "Technicien plateau",
+}
+`;
+
+exports[`Roles Api update() parse the returned data correctly (with #3) 1`] = `
+{
+  "id": 3,
+  "is_used": true,
+  "name": "Ingénieur du son",
+}
+`;
+
+exports[`Roles Api update() parse the returned data correctly (with #4) 1`] = `
+{
+  "id": 4,
+  "is_used": true,
+  "name": "Installateur",
+}
+`;
+
+exports[`Roles Api update() parse the returned data correctly (with #5) 1`] = `
+{
+  "id": 5,
+  "is_used": false,
+  "name": "Intervenant extérieur",
+}
+`;

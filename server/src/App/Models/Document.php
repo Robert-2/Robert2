@@ -5,12 +5,11 @@ namespace Loxya\Models;
 
 use Adbar\Dot as DotArray;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Loxya\Config\Config;
+use Loxya\Config\Enums\Feature;
 use Loxya\Contracts\Serializable;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Support\Str;
 use Monolog\Level as LogLevel;
@@ -131,6 +130,17 @@ final class Document extends BaseModel implements Serializable
 
     public function checkEntityType($value)
     {
+        // - Si les techniciens sont désactivés, il n'est pas possible
+        //   d'assigner un document à cette entité.
+        $isDirty = !$this->exists || $this->isDirty('entity_type');
+        if (
+            $isDirty &&
+            $value === Technician::TYPE &&
+            !isFeatureEnabled(Feature::TECHNICIANS)
+        ) {
+            return false;
+        }
+
         return V::create()
             ->notEmpty()
             ->anyOf(
@@ -144,6 +154,17 @@ final class Document extends BaseModel implements Serializable
     public function checkEntityId($value)
     {
         V::notEmpty()->intVal()->check($value);
+
+        // - Si les techniciens sont désactivés, il n'est pas possible
+        //   d'assigner un document à cette entité.
+        $isDirty = !$this->exists || $this->isDirty('entity_id');
+        if (
+            $isDirty &&
+            $this->entity_type === Technician::TYPE &&
+            !isFeatureEnabled(Feature::TECHNICIANS)
+        ) {
+            return false;
+        }
 
         return match ($this->entity_type) {
             Event::TYPE => Event::includes($value),
@@ -427,39 +448,6 @@ final class Document extends BaseModel implements Serializable
         }
 
         return $deleted;
-    }
-
-    // ------------------------------------------------------
-    // -
-    // -    Méthodes de "repository"
-    // -
-    // ------------------------------------------------------
-
-    /**
-     * Retourne un document via son identifiant, uniquement s'il est
-     * accessible par l'utilisateur donné.
-     *
-     * @param int $id L'identifiant du document à récupérer.
-     * @param User $user L'utilisateur pour lequel on effectue la récupération.
-     *
-     * @return static Le document correspondant à l'identifiant.
-     */
-    public static function findOrFailForUser(int $id, User $user): static
-    {
-        return static::query()
-            ->when(
-                $user->group === Group::READONLY_PLANNING_SELF,
-                static fn (Builder $subQuery) => (
-                    $subQuery->whereHasMorph(
-                        'entity',
-                        [Event::TYPE],
-                        static fn (Builder $eventQuery) => (
-                            $eventQuery->withInvolvedUser($user)
-                        )
-                    )
-                )
-            )
-            ->findOrFail($id);
     }
 
     // ------------------------------------------------------

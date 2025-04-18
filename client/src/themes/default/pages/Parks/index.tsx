@@ -1,47 +1,114 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
+import pick from 'lodash/pick';
+import isEqual from 'lodash/isEqual';
+import throttle from 'lodash/throttle';
 import HttpCode from 'status-code-enum';
 import isTruthy from '@/utils/isTruthy';
-import { isRequestErrorStatusCode } from '@/utils/errors';
-import Page from '@/themes/default/components/Page';
-import Fragment from '@/components/Fragment';
-import CriticalError from '@/themes/default/components/CriticalError';
-import { ServerTable } from '@/themes/default/components/Table';
-import Dropdown from '@/themes/default/components/Dropdown';
-import Button from '@/themes/default/components/Button';
-import Link from '@/themes/default/components/Link';
-import formatAddress from '@/utils/formatAddress';
-import ItemsCount from './components/ItemsCount';
-import TotalAmount from './components/TotalAmount';
 import apiParks from '@/stores/api/parks';
 import config from '@/globals/config';
 import { confirm } from '@/utils/alert';
+import formatAddress from '@/utils/formatAddress';
+import mergeDifference from '@/utils/mergeDifference';
+import { defineComponent } from '@vue/composition-api';
+import { isRequestErrorStatusCode } from '@/utils/errors';
+import { DEBOUNCE_WAIT_DURATION } from '@/globals/constants';
+import Page from '@/themes/default/components/Page';
+import Fragment from '@/components/Fragment';
+import CriticalError from '@/themes/default/components/CriticalError';
+import Dropdown from '@/themes/default/components/Dropdown';
+import Button from '@/themes/default/components/Button';
+import Link from '@/themes/default/components/Link';
+import ItemsCount from './components/ItemsCount';
+import TotalAmount from './components/TotalAmount';
+import FiltersPanel, { FiltersSchema } from './components/Filters';
+import {
+    ServerTable,
+    getLegacySavedSearch,
+} from '@/themes/default/components/Table';
+import {
+    persistFilters,
+    getPersistedFilters,
+    clearPersistedFilters,
+} from '@/utils/filtersPersister';
 
-import type { CreateElement } from 'vue';
-import type { Column } from '@/themes/default/components/Table/Server';
+import type { DebouncedMethod } from 'lodash';
+import type { Filters } from './components/Filters';
+import type { ComponentRef, CreateElement } from 'vue';
 import type { Park } from '@/stores/api/parks';
-import type { ServerTableInstance } from 'vue-tables-2-premium';
-import type { PaginationParams } from '@/stores/api/@types';
+import type { Session } from '@/stores/api/session';
+import type { Column } from '@/themes/default/components/Table/Server';
+import type { PaginationParams, SortableParams } from '@/stores/api/@types';
 
 type Data = {
-    hasCriticalError: boolean,
+    filters: Filters,
     isLoading: boolean,
+    hasCriticalError: boolean,
     shouldDisplayTrashed: boolean,
     isTrashDisplayed: boolean,
 };
 
+type InstanceProperties = {
+    refreshTableDebounced: (
+        | DebouncedMethod<typeof Parks, 'refresh'>
+        | undefined
+    ),
+};
+
+/** La clé utilisé pour la persistence des filtres de la page. */
+const FILTERS_PERSISTENCE_KEY = 'Parks--filters';
+
 /** Page de listing des parcs de matériel. */
 const Parks = defineComponent({
     name: 'Parks',
-    data: (): Data => ({
-        hasCriticalError: false,
-        isLoading: false,
-        shouldDisplayTrashed: false,
-        isTrashDisplayed: false,
+    setup: (): InstanceProperties => ({
+        refreshTableDebounced: undefined,
     }),
+    data(): Data {
+        const filters: Filters = {
+            search: [],
+        };
+
+        // - Filtres sauvegardés.
+        const session = this.$store.state.auth.user as Session;
+        if (!session.disable_search_persistence) {
+            const savedFilters = getPersistedFilters(FILTERS_PERSISTENCE_KEY, FiltersSchema);
+            if (savedFilters !== null) {
+                Object.assign(filters, savedFilters);
+            } else {
+                // - Ancienne sauvegarde éventuelle, dans le component `<Table />`.
+                const savedSearchLegacy = this.$options.name
+                    ? getLegacySavedSearch(this.$options.name)
+                    : null;
+
+                if (savedSearchLegacy !== null) {
+                    Object.assign(filters, { search: [savedSearchLegacy] });
+                }
+            }
+        } else {
+            clearPersistedFilters(FILTERS_PERSISTENCE_KEY);
+        }
+
+        return {
+            isLoading: false,
+            hasCriticalError: false,
+            shouldDisplayTrashed: false,
+            isTrashDisplayed: false,
+            filters,
+        };
+    },
     computed: {
+        shouldPersistSearch(): boolean {
+            const session = this.$store.state.auth.user as Session;
+            return !session.disable_search_persistence;
+        },
+
         columns(): Array<Column<Park>> {
-            const { $t: __, isTrashDisplayed, handleDeleteItem, handleRestoreItem } = this;
+            const {
+                $t: __,
+                isTrashDisplayed,
+                handleDeleteItemClick,
+                handleRestoreItemClick,
+            } = this;
 
             return [
                 {
@@ -87,7 +154,7 @@ const Parks = defineComponent({
                     key: 'note',
                     title: __('notes'),
                     class: 'Parks__cell Parks__cell--note',
-                    hidden: true,
+                    defaultHidden: true,
                 },
                 !isTrashDisplayed && {
                     key: 'totalAmount',
@@ -115,7 +182,6 @@ const Parks = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: 'Parks__cell Parks__cell--actions',
                     render(h: CreateElement, { id, total_items: itemsCount }: Park) {
                         if (isTrashDisplayed) {
@@ -123,11 +189,15 @@ const Parks = defineComponent({
                                 <Fragment>
                                     <Button
                                         type="restore"
-                                        onClick={() => { handleRestoreItem(id); }}
+                                        onClick={(e: MouseEvent) => {
+                                            handleRestoreItemClick(e, id);
+                                        }}
                                     />
                                     <Button
                                         type="delete"
-                                        onClick={() => { handleDeleteItem(id); }}
+                                        onClick={(e: MouseEvent) => {
+                                            handleDeleteItemClick(e, id);
+                                        }}
                                     />
                                 </Fragment>
                             );
@@ -136,13 +206,6 @@ const Parks = defineComponent({
                         const hasItems = itemsCount > 0;
                         return (
                             <Fragment>
-                                <Button
-                                    icon="clipboard-list"
-                                    to={`${config.baseUrl}/materials/pdf?park=${id}`}
-                                    tooltip={__('page.parks.print-materials-of-this-park')}
-                                    disabled={!hasItems}
-                                    external
-                                />
                                 <Dropdown>
                                     <Button
                                         type="edit"
@@ -150,9 +213,22 @@ const Parks = defineComponent({
                                     >
                                         {__('action-edit')}
                                     </Button>
+                                    {hasItems && (
+                                        <Fragment>
+                                            <Button
+                                                icon="clipboard-list"
+                                                to={`${config.baseUrl}/materials/print?park=${id}`}
+                                                download
+                                            >
+                                                {__('page.parks.print-materials-of-this-park')}
+                                            </Button>
+                                        </Fragment>
+                                    )}
                                     <Button
                                         type="trash"
-                                        onClick={() => { handleDeleteItem(id); }}
+                                        onClick={(e: MouseEvent) => {
+                                            handleDeleteItemClick(e, id);
+                                        }}
                                         disabled={hasItems}
                                     >
                                         {__('action-delete')}
@@ -165,9 +241,34 @@ const Parks = defineComponent({
             ].filter(isTruthy);
         },
     },
+    watch: {
+        filters: {
+            handler() {
+                // @ts-expect-error -- `this` fait bien référence au component.
+                this.refreshTableDebounced();
+
+                // @ts-expect-error -- `this` fait bien référence au component.
+                if (this.shouldPersistSearch) {
+                    // @ts-expect-error -- `this` fait bien référence au component.
+                    persistFilters(FILTERS_PERSISTENCE_KEY, this.filters);
+                }
+            },
+            deep: true,
+        },
+    },
     created() {
         // - Binding.
         this.fetch = this.fetch.bind(this);
+
+        // - Debounce.
+        this.refreshTableDebounced = throttle(
+            this.refreshTable.bind(this),
+            DEBOUNCE_WAIT_DURATION.asMilliseconds(),
+            { leading: false },
+        );
+    },
+    beforeDestroy() {
+        this.refreshTableDebounced?.cancel();
     },
     methods: {
         // ------------------------------------------------------
@@ -176,7 +277,9 @@ const Parks = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async handleDeleteItem(id: Park['id']) {
+        async handleDeleteItemClick(e: MouseEvent, id: Park['id']) {
+            e.preventDefault();
+
             const { $t: __ } = this;
             const isSoft = !this.isTrashDisplayed;
 
@@ -196,7 +299,8 @@ const Parks = defineComponent({
             this.isLoading = true;
             try {
                 await apiParks.remove(id);
-                (this.$refs.table as ServerTableInstance | undefined)?.refresh();
+                this.refreshTable();
+
                 this.$store.dispatch('parks/refresh');
             } catch {
                 this.$toasted.error(__('errors.unexpected-while-deleting'));
@@ -205,7 +309,8 @@ const Parks = defineComponent({
             }
         },
 
-        async handleRestoreItem(id: Park['id']) {
+        async handleRestoreItemClick(e: MouseEvent, id: Park['id']) {
+            e.preventDefault();
             const { $t: __ } = this;
 
             const isConfirmed = await confirm({
@@ -219,7 +324,8 @@ const Parks = defineComponent({
             this.isLoading = true;
             try {
                 await apiParks.restore(id);
-                (this.$refs.table as ServerTableInstance | undefined)?.refresh();
+                this.refreshTable();
+
                 this.$store.dispatch('parks/refresh');
             } catch {
                 this.$toasted.error(__('errors.unexpected-while-restoring'));
@@ -230,7 +336,28 @@ const Parks = defineComponent({
 
         handleToggleShowTrashed() {
             this.shouldDisplayTrashed = !this.shouldDisplayTrashed;
-            (this.$refs.table as ServerTableInstance | undefined)?.setPage(1);
+            this.refreshTable();
+        },
+
+        handleConfigureColumns() {
+            if (this.isTrashDisplayed) {
+                return;
+            }
+
+            const $table = this.$refs.table as ComponentRef<typeof ServerTable>;
+            $table?.showColumnsSelector();
+        },
+
+        handleFiltersChange(newFilters: Filters) {
+            // - Recherche textuelle.
+            const newSearch = mergeDifference(this.filters.search, newFilters.search);
+            if (!isEqual(this.filters.search, newSearch)) {
+                this.filters.search = newSearch;
+            }
+        },
+
+        handleFiltersSubmit() {
+            this.refreshTable();
         },
 
         // ------------------------------------------------------
@@ -239,19 +366,21 @@ const Parks = defineComponent({
         // -
         // ------------------------------------------------------
 
-        async fetch(pagination: PaginationParams) {
+        async fetch(pagination: PaginationParams & SortableParams) {
+            pagination = pick(pagination, ['page', 'limit', 'ascending', 'orderBy']);
             this.isLoading = true;
 
             try {
                 const data = await apiParks.all({
                     ...pagination,
+                    ...this.filters,
                     deleted: this.shouldDisplayTrashed,
                 });
                 this.isTrashDisplayed = this.shouldDisplayTrashed;
                 return data;
             } catch (error) {
                 if (isRequestErrorStatusCode(error, HttpCode.ClientErrorRangeNotSatisfiable)) {
-                    (this.$refs.table as ServerTableInstance | undefined)?.setPage(1);
+                    this.refreshTable();
                     return undefined;
                 }
 
@@ -263,17 +392,27 @@ const Parks = defineComponent({
 
             return undefined;
         },
+
+        refreshTable() {
+            this.refreshTableDebounced?.cancel();
+
+            (this.$refs.table as ComponentRef<typeof ServerTable>)?.refresh();
+        },
     },
     render() {
         const {
             $t: __,
             fetch,
             $options,
+            filters,
             columns,
             isLoading,
             isTrashDisplayed,
             hasCriticalError,
+            handleConfigureColumns,
             handleToggleShowTrashed,
+            handleFiltersChange,
+            handleFiltersSubmit,
         } = this;
 
         if (hasCriticalError) {
@@ -289,11 +428,6 @@ const Parks = defineComponent({
             ? __('page.parks.title')
             : __('page.parks.title-trash');
 
-        // - Aide de page.
-        const help = !isTrashDisplayed
-            ? __('page.parks.help')
-            : undefined;
-
         // - Actions de la page.
         const actions = !isTrashDisplayed
             ? [
@@ -301,6 +435,9 @@ const Parks = defineComponent({
                     {__('page.parks.action-add')}
                 </Button>,
                 <Dropdown>
+                    <Button icon="table" onClick={handleConfigureColumns}>
+                        {__('configure-columns')}
+                    </Button>
                     <Button icon="trash" onClick={handleToggleShowTrashed}>
                         {__('open-trash-bin')}
                     </Button>
@@ -316,9 +453,17 @@ const Parks = defineComponent({
             <Page
                 name="parks"
                 title={title}
-                help={help}
                 loading={isLoading}
                 actions={actions}
+                scopedSlots={isTrashDisplayed ? undefined : {
+                    headerContent: (): JSX.Node => (
+                        <FiltersPanel
+                            values={filters}
+                            onChange={handleFiltersChange}
+                            onSubmit={handleFiltersSubmit}
+                        />
+                    ),
+                }}
             >
                 <div class="Parks">
                     <ServerTable

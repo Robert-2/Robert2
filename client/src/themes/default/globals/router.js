@@ -1,11 +1,25 @@
 import Vue from 'vue';
+import qs from 'qs';
 import Router from 'vue-router';
 import routes from '@/themes/default/pages';
 import store from './store';
 
 Vue.use(Router);
 
-const router = new Router({ mode: 'history', routes });
+const router = new Router({
+    mode: 'history',
+    routes,
+    parseQuery(query) {
+        return qs.parse(query);
+    },
+    stringifyQuery(query) {
+        const result = qs.stringify(query, {
+            encodeValuesOnly: true,
+            arrayFormat: 'brackets',
+        });
+        return result ? `?${result}` : '';
+    },
+});
 
 router.beforeEach((to, from, next) => {
     let restrictAccess = false;

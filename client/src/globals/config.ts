@@ -44,6 +44,9 @@ const GlobalConfigSchema = z.strictObject({
         cookie: z.string(),
         timeout: z.number().nullable(),
     }),
+    features: z.strictObject({
+        technicians: z.boolean(),
+    }),
     currency: z.currency(),
     companyName: z.string().nullable(),
     defaultPaginationLimit: z.number(),
@@ -97,6 +100,9 @@ const defaultConfig: RawGlobalConfig = {
     auth: {
         cookie: 'Authorization',
         timeout: 12, // - En heures (ou `null` pour un cookie de session).
+    },
+    features: {
+        technicians: true,
     },
     companyName: null,
     defaultPaginationLimit: 100,

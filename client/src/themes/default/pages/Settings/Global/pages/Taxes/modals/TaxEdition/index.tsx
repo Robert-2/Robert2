@@ -175,7 +175,6 @@ const ModalTaxEdition = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: 'ModalTaxEdition__sub-taxes__item__actions',
                     render: (h: CreateElement, { key }: TaxComponentEdit) => (
                         <Button

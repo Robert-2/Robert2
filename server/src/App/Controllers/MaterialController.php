@@ -12,6 +12,7 @@ use Loxya\Config\Config;
 use Loxya\Http\Request;
 use Loxya\Models\Country;
 use Loxya\Models\Document;
+use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
 use Loxya\Models\Material;
 use Loxya\Models\Park;
@@ -24,6 +25,7 @@ use Loxya\Support\Str;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\HttpCache\CacheProvider as HttpCacheProvider;
@@ -59,10 +61,10 @@ final class MaterialController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
+        $search = $request->getSearchArrayQueryParam('search');
         $paginated = $request->getBooleanQueryParam('paginated', true);
         $limit = $request->getIntegerQueryParam('limit');
         $ascending = $request->getBooleanQueryParam('ascending', true);
-        $search = $request->getStringQueryParam('search');
         $quantitiesPeriod = $request->getPeriodQueryParam('quantitiesPeriod');
         $orderBy = $request->getOrderByQueryParam('orderBy', Material::class);
         $onlyDeleted = $request->getBooleanQueryParam('onlyDeleted', false);
@@ -72,7 +74,7 @@ final class MaterialController extends BaseController
         $categoryId = $request->getQueryParam('category');
         $subCategoryId = $request->getIntegerQueryParam('subCategory');
         $parkId = $request->getIntegerQueryParam('park');
-        $tags = $request->getQueryParam('tags', []);
+        $tags = $request->getIntegerArrayQueryParam('tags');
 
         $isComplexeOrderBy = (
             in_array($orderBy, ['stock_quantity', 'out_of_order_quantity'], true) &&
@@ -80,10 +82,10 @@ final class MaterialController extends BaseController
         );
 
         $query = Material::query()
-            ->when(
-                $search !== null && mb_strlen($search) >= 2,
-                static fn (Builder $subQuery) => $subQuery->search($search),
-            )
+            ->prepareSerialize(Material::SERIALIZE_WITH_AVAILABILITY)
+            ->when(!empty($search), static fn (Builder $subQuery) => (
+                $subQuery->search($search)
+            ))
             ->when($onlyDeleted, static fn (Builder $subQuery) => (
                 $subQuery->onlyTrashed()
             ))
@@ -114,7 +116,7 @@ final class MaterialController extends BaseController
                 $builder->inPark($parkId)
             ))
             // - Tags.
-            ->when(!empty($tags) && is_array($tags), static fn (Builder $builder) => (
+            ->when(!empty($tags), static fn (Builder $builder) => (
                 $builder->whereHas('tags', static function ($query) use ($tags) {
                     $query->whereIn('id', $tags);
                 })
@@ -167,6 +169,7 @@ final class MaterialController extends BaseController
 
         $currentEvent = Event::findOrFail($eventId);
         $materials = Material::query()
+            ->prepareSerialize(Material::SERIALIZE_WITH_CONTEXT)
             ->withTrashed()
             ->orderBy('reference')
             ->get();
@@ -183,9 +186,13 @@ final class MaterialController extends BaseController
         return $response->withJson($materials, StatusCode::STATUS_OK);
     }
 
-    public function getAllPdf(Request $request, Response $response): ResponseInterface
+    public function printAll(Request $request, Response $response): ResponseInterface
     {
         $onlyParkId = $request->getIntegerQueryParam('park');
+
+        if (!Auth::is(Group::ADMINISTRATION)) {
+            throw new HttpForbiddenException($request);
+        }
 
         /** @var Collection<array-key, Park> $parks */
         $parks = Park::with('materials')->get();

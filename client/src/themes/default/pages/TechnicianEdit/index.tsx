@@ -1,7 +1,8 @@
 import './index.scss';
-import { defineComponent } from '@vue/composition-api';
 import axios from 'axios';
+import config from '@/globals/config';
 import HttpCode from 'status-code-enum';
+import { defineComponent } from '@vue/composition-api';
 import { ApiErrorCode } from '@/stores/api/@codes';
 import Page from '@/themes/default/components/Page';
 import CriticalError, { ErrorType } from '@/themes/default/components/CriticalError';
@@ -39,6 +40,10 @@ const TechnicianEdit = defineComponent({
         };
     },
     computed: {
+        isEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         isNew(): boolean {
             return this.id === null;
         },
@@ -66,6 +71,10 @@ const TechnicianEdit = defineComponent({
         return false;
     },
     mounted() {
+        if (!this.isEnabled) {
+            this.$router.replace({ name: 'home' });
+        }
+
         this.fetchData();
     },
     methods: {
@@ -75,8 +84,8 @@ const TechnicianEdit = defineComponent({
         // -
         // ------------------------------------------------------
 
-        handleSubmit(data: TechnicianEditType, withUser: boolean) {
-            this.save(data, withUser);
+        handleSubmit(data: TechnicianEditType) {
+            this.save(data);
         },
 
         handleCancel() {
@@ -112,7 +121,7 @@ const TechnicianEdit = defineComponent({
             }
         },
 
-        async save(data: TechnicianEditType, withUser: boolean) {
+        async save(data: TechnicianEditType) {
             if (this.isSaving) {
                 return;
             }
@@ -122,8 +131,8 @@ const TechnicianEdit = defineComponent({
 
             const doRequest = (): Promise<TechnicianDetails> => (
                 !this.isNew
-                    ? apiTechnicians.update(this.id!, data, withUser)
-                    : apiTechnicians.create(data, withUser)
+                    ? apiTechnicians.update(this.id!, data)
+                    : apiTechnicians.create(data)
             );
 
             try {

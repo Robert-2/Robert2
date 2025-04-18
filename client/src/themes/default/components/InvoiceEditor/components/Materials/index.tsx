@@ -263,7 +263,6 @@ const InvoiceEditorMaterials = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: [
                         'InvoiceEditorMaterials__item__cell',
                         'InvoiceEditorMaterials__item__cell--actions',

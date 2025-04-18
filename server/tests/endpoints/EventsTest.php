@@ -6,12 +6,9 @@ namespace Loxya\Tests;
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Event;
-use Loxya\Models\EventTechnician;
 use Loxya\Models\Material;
 use Loxya\Models\Setting;
-use Loxya\Models\Technician;
 use Loxya\Models\User;
 use Loxya\Support\Arr;
 use Loxya\Support\Filesystem\UploadedFile;
@@ -28,6 +25,7 @@ final class EventsTest extends ApiTestCase
                 'title' => "Premier événement",
                 'description' => null,
                 'location' => "Gap",
+                'manager' => UsersTest::data(2),
                 'color' => null,
                 'mobilization_period' => [
                     'start' => '2018-12-16 15:45:00',
@@ -68,8 +66,23 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => null,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => false,
+                'has_unassigned_mandatory_positions' => false,
                 'categories' => [1, 2],
                 'parks' => [1],
+                'positions' => [
+                    [
+                        'id' => 1,
+                        'name' => "Régisseur",
+                        'is_mandatory' => true,
+                        'is_assigned' => true,
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => "Technicien plateau",
+                        'is_mandatory' => false,
+                        'is_assigned' => true,
+                    ],
+                ],
                 'technicians' => [
                     [
                         'id' => 1,
@@ -80,7 +93,7 @@ final class EventsTest extends ApiTestCase
                             'end' => '2018-12-18 22:00:00',
                             'isFullDays' => false,
                         ],
-                        'position' => 'Régisseur',
+                        'role' => RolesTest::data(1),
                         'technician' => TechniciansTest::data(1),
                     ],
                     [
@@ -92,7 +105,7 @@ final class EventsTest extends ApiTestCase
                             'end' => '2018-12-18 18:00:00',
                             'isFullDays' => false,
                         ],
-                        'position' => 'Technicien plateau',
+                        'role' => RolesTest::data(2),
                         'technician' => TechniciansTest::data(2),
                     ],
                 ],
@@ -222,6 +235,7 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Second événement',
                 'description' => null,
                 'location' => 'Lyon',
+                'manager' => UsersTest::data(1),
                 'color' => '#ffba49',
                 'mobilization_period' => [
                     'start' => '2018-12-18 00:00:00',
@@ -261,6 +275,7 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => null,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => true,
+                'has_unassigned_mandatory_positions' => true,
                 'is_departure_inventory_done' => false,
                 'departure_inventory_datetime' => null,
                 'departure_inventory_author' => null,
@@ -270,6 +285,14 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_author' => UsersTest::data(2),
                 'categories' => [1],
                 'parks' => [1],
+                'positions' => [
+                    [
+                        'id' => 4,
+                        'name' => 'Installateur',
+                        'is_mandatory' => true,
+                        'is_assigned' => false,
+                    ],
+                ],
                 'materials' => [
                     [
                         'id' => 2,
@@ -383,6 +406,7 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Avant-premier événement',
                 'description' => null,
                 'location' => 'Brousse',
+                'manager' => null,
                 'color' => null,
                 'mobilization_period' => [
                     'start' => '2018-12-15 08:30:00',
@@ -400,6 +424,7 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => null,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
+                'has_unassigned_mandatory_positions' => null,
                 'is_archived' => true,
                 'is_billable' => false,
                 'is_confirmed' => false,
@@ -412,6 +437,7 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_author' => UsersTest::data(1),
                 'categories' => [1, 2],
                 'parks' => [1],
+                'positions' => [],
                 'materials' => [
                     [
                         'id' => 5,
@@ -487,6 +513,7 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Concert X',
                 'description' => null,
                 'location' => 'Moon',
+                'manager' => null,
                 'color' => '#ef5b5b',
                 'mobilization_period' => [
                     'start' => '2019-03-01 00:00:00',
@@ -514,8 +541,10 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => true,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
+                'has_unassigned_mandatory_positions' => false,
                 'categories' => [1, 3],
                 'parks' => [1, 2],
+                'positions' => [],
                 'materials' => [
                     [
                         'id' => 6,
@@ -591,6 +620,7 @@ final class EventsTest extends ApiTestCase
                 'title' => "Kermesse de l'école des trois cailloux",
                 'description' => null,
                 'location' => 'Saint-Jean-la-Forêt',
+                'manager' => null,
                 'color' => null,
                 'mobilization_period' => [
                     'start' => '2020-01-01 00:00:00',
@@ -618,8 +648,10 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => false,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
+                'has_unassigned_mandatory_positions' => false,
                 'categories' => [4],
                 'parks' => [1],
+                'positions' => [],
                 'materials' => [
                     [
                         'id' => 8,
@@ -657,6 +689,7 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Un événement sans inspiration',
                 'description' => null,
                 'location' => 'La Clusaz',
+                'manager' => null,
                 'color' => '#ef5b5b',
                 'mobilization_period' => [
                     'start' => '2019-03-15 00:00:00',
@@ -684,8 +717,10 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => false,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
+                'has_unassigned_mandatory_positions' => false,
                 'categories' => [],
                 'parks' => [],
+                'positions' => [],
                 'materials' => [],
                 'beneficiaries' => [],
                 'technicians' => [],
@@ -700,6 +735,7 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Médiévales de Machin-le-chateau 2023',
                 'description' => null,
                 'location' => 'Machin-le-chateau',
+                'manager' => UsersTest::data(1),
                 'color' => null,
                 'mobilization_period' => [
                     'start' => '2023-05-25 00:00:00',
@@ -740,8 +776,17 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => false,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
+                'has_unassigned_mandatory_positions' => false,
                 'categories' => [1, 2, 3],
                 'parks' => [1, 2],
+                'positions' => [
+                    [
+                        'id' => 3,
+                        'name' => "Ingénieur du son",
+                        'is_mandatory' => false,
+                        'is_assigned' => true,
+                    ],
+                ],
                 'materials' => [
                     [
                         'id' => 6,
@@ -887,13 +932,13 @@ final class EventsTest extends ApiTestCase
                         'id' => 3,
                         'event_id' => 7,
                         'technician_id' => 2,
-                        'position' => 'Ingénieur du son',
+                        'technician' => TechniciansTest::data(2),
                         'period' => [
                             'start' => '2023-05-25 00:00:00',
                             'end' => '2023-05-29 00:00:00',
                             'isFullDays' => false,
                         ],
-                        'technician' => TechniciansTest::data(2),
+                        'role' => RolesTest::data(3),
                     ],
                 ],
                 'invoices' => [],
@@ -909,6 +954,7 @@ final class EventsTest extends ApiTestCase
                 'title' => 'Japan Festival 2024',
                 'description' => null,
                 'location' => 'Lausanne',
+                'manager' => null,
                 'color' => '#ffffff',
                 'mobilization_period' => [
                     'start' => '2024-06-15 12:00:00',
@@ -936,8 +982,10 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => false,
                 'has_deleted_materials' => false,
                 'has_not_returned_materials' => null,
+                'has_unassigned_mandatory_positions' => false,
                 'categories' => [1],
                 'parks' => [1],
+                'positions' => [],
                 'materials' => [
                     [
                         'id' => 6,
@@ -981,6 +1029,7 @@ final class EventsTest extends ApiTestCase
                     'mobilization_period',
                     'operation_period',
                     'materials_count',
+                    'beneficiaries',
                     'is_confirmed',
                     'is_billable',
                     'is_archived',
@@ -1018,6 +1067,7 @@ final class EventsTest extends ApiTestCase
                         'description',
                         'location',
                         'color',
+                        'manager',
                         'mobilization_period',
                         'operation_period',
                         'beneficiaries',
@@ -1029,9 +1079,11 @@ final class EventsTest extends ApiTestCase
                         'is_departure_inventory_done',
                         'is_return_inventory_done',
                         'has_not_returned_materials',
+                        'has_unassigned_mandatory_positions',
                         'has_missing_materials',
                         'categories',
                         'parks',
+                        'author',
                         'created_at',
                     ]),
                     ['entity' => Event::TYPE],
@@ -1044,6 +1096,7 @@ final class EventsTest extends ApiTestCase
                         'title',
                         'location',
                         'color',
+                        'manager',
                         'mobilization_period',
                         'operation_period',
                         'beneficiaries',
@@ -1053,8 +1106,10 @@ final class EventsTest extends ApiTestCase
                         'is_departure_inventory_done',
                         'is_return_inventory_done',
                         'has_not_returned_materials',
+                        'has_unassigned_mandatory_positions',
                         'categories',
                         'parks',
+                        'author',
                         'created_at',
                     ]),
                     ['entity' => Event::TYPE],
@@ -1109,6 +1164,7 @@ final class EventsTest extends ApiTestCase
             'title' => "Un nouvel événement",
             'description' => null,
             'location' => "Avignon",
+            'manager' => null,
             'color' => null,
             'mobilization_period' => [
                 'start' => '2019-08-15 10:15:00',
@@ -1142,6 +1198,8 @@ final class EventsTest extends ApiTestCase
             'has_missing_materials' => false,
             'has_deleted_materials' => false,
             'has_not_returned_materials' => null,
+            'has_unassigned_mandatory_positions' => false,
+            'positions' => [],
             'technicians' => [],
             'beneficiaries' => [],
             'materials' => [],
@@ -1164,7 +1222,7 @@ final class EventsTest extends ApiTestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'position' => 'Régie générale',
+                    'role_id' => 1,
                     'period' => [
                         'start' => '2019-09-01 10:00:00',
                         'end' => '2019-09-03 20:00:00',
@@ -1173,7 +1231,7 @@ final class EventsTest extends ApiTestCase
                 ],
                 [
                     'id' => 2,
-                    'position' => null,
+                    'role_id' => null,
                     'period' => [
                         'start' => '2019-09-01 08:00:00',
                         'end' => '2019-09-03 22:00:00',
@@ -1194,30 +1252,39 @@ final class EventsTest extends ApiTestCase
             'beneficiaries' => [
                 BeneficiariesTest::data(3),
             ],
+            // - Les postes sont automatiquement ajoutés par l'EventTechnicianObserver.
+            'positions' => [
+                [
+                    'id' => 1,
+                    'name' => "Régisseur",
+                    'is_mandatory' => false,
+                    'is_assigned' => true,
+                ],
+            ],
             'technicians' => [
                 [
                     'id' => 5,
                     'event_id' => 10,
                     'technician_id' => 2,
+                    'technician' => TechniciansTest::data(2),
                     'period' => [
                         'start' => '2019-09-01 08:00:00',
                         'end' => '2019-09-03 22:00:00',
                         'isFullDays' => false,
                     ],
-                    'position' => null,
-                    'technician' => TechniciansTest::data(2),
+                    'role' => null,
                 ],
                 [
                     'id' => 4,
                     'event_id' => 10,
                     'technician_id' => 1,
+                    'technician' => TechniciansTest::data(1),
                     'period' => [
                         'start' => '2019-09-01 10:00:00',
                         'end' => '2019-09-03 20:00:00',
                         'isFullDays' => false,
                     ],
-                    'position' => 'Régie générale',
-                    'technician' => TechniciansTest::data(1),
+                    'role' => RolesTest::data(1),
                 ],
             ],
             'materials' => [
@@ -1341,22 +1408,23 @@ final class EventsTest extends ApiTestCase
         ]));
     }
 
-    public function testUpdateEventNoData(): void
+    public function testUpdate(): void
     {
+        Carbon::setTestNow(Carbon::create(2019, 3, 15, 18, 42, 36));
+
+        tap(Event::findOrFail(1), static function (Event $event) {
+            $event->is_return_inventory_done = false;
+            $event->save();
+        });
+
+        // - Inexistant
+        $this->client->put('/api/events/999', ['name' => '__inexistant__']);
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Sans données.
         $this->client->put('/api/events/1', []);
         $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
         $this->assertApiErrorMessage("No data was provided.");
-    }
-
-    public function testUpdateEventNotFound(): void
-    {
-        $this->client->put('/api/events/999', ['name' => '__inexistant__']);
-        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
-    }
-
-    public function testUpdateEvent(): void
-    {
-        Carbon::setTestNow(Carbon::create(2019, 3, 15, 18, 42, 36));
 
         // - Test avec des données simples
         $data = [
@@ -1453,7 +1521,7 @@ final class EventsTest extends ApiTestCase
             'technicians' => [
                 [
                     'id' => 1,
-                    'position' => 'Régisseur général',
+                    'role_id' => 1,
                     'period' => [
                         'start' => '2019-03-17 10:30:00',
                         'end' => '2019-03-18 23:30:00',
@@ -1462,7 +1530,7 @@ final class EventsTest extends ApiTestCase
                 ],
                 [
                     'id' => 2,
-                    'position' => 'Technicien polyvalent',
+                    'role_id' => 2,
                     'period' => [
                         'start' => '2019-03-18 13:30:00',
                         'end' => '2019-03-18 23:30:00',
@@ -1495,30 +1563,45 @@ final class EventsTest extends ApiTestCase
                 'beneficiaries' => [
                     BeneficiariesTest::data(2),
                 ],
+                // - Les postes sont automatiquement ajoutés par l'EventTechnicianObserver.
+                'positions' => [
+                    [
+                        'id' => 1,
+                        'name' => "Régisseur",
+                        'is_mandatory' => false,
+                        'is_assigned' => true,
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => "Technicien plateau",
+                        'is_mandatory' => false,
+                        'is_assigned' => true,
+                    ],
+                ],
                 'technicians' => [
                     [
                         'id' => 4,
                         'event_id' => 4,
                         'technician_id' => 1,
+                        'technician' => TechniciansTest::data(1),
                         'period' => [
                             'start' => '2019-03-17 10:30:00',
                             'end' => '2019-03-18 23:30:00',
                             'isFullDays' => false,
                         ],
-                        'position' => 'Régisseur général',
-                        'technician' => TechniciansTest::data(1),
+                        'role' => RolesTest::data(1),
                     ],
                     [
                         'id' => 5,
                         'event_id' => 4,
                         'technician_id' => 2,
+                        'technician' => TechniciansTest::data(2),
                         'period' => [
                             'start' => '2019-03-18 13:30:00',
                             'end' => '2019-03-18 23:30:00',
                             'isFullDays' => false,
                         ],
-                        'position' => 'Technicien polyvalent',
-                        'technician' => TechniciansTest::data(2),
+                        'role' => RolesTest::data(2),
                     ],
                 ],
                 'materials' => [
@@ -1661,84 +1744,22 @@ final class EventsTest extends ApiTestCase
                 'updated_at' => '2019-03-15 18:42:36',
             ],
         ));
+    }
 
-        // - Test quand l'utilisateur faisant la modification appartient au
-        //   groupe "readonly-planning-self" et qu'il fait partie des techniciens
-        //   assignés à l'événement : seul le champ "note" doit être modifiable.
-
+    public function testUpdateNote(): void
+    {
         Carbon::setTestNow(Carbon::create(2023, 5, 25, 12, 0, 0));
 
-        // - On crée un technicien lié à la personne de l'utilisateur courant.
-        $technician = Technician::create(['person_id' => 1]);
-        Event::find(7)->technicians()->saveMany([
-            new EventTechnician([
-                'event_id' => 7,
-                'technician_id' => $technician->id,
-                'position' => 'Testeur',
-                'period' => ['start' => '2023-05-25 09:15:00', 'end' => '2023-05-25 18:00:00'],
-            ]),
+        $this->client->put('/api/events/7/note', [
+            'note' => "Une nouvelle note",
         ]);
-        // - On passe l'utilisateur courant dans le groupe "readonly-planning-self".
-        User::findOrFail(1)->edit(['group' => Group::READONLY_PLANNING_SELF]);
-
-        $this->client->put('/api/events/7', array_merge($dataWithChildren, [
-            'note' => "Seul ce champ doit être modifié",
-        ]));
         $this->assertStatusCode(StatusCode::STATUS_OK);
-        $this->assertResponseData(Arr::except(
-            array_replace_recursive(
-                self::data(7, Event::SERIALIZE_DETAILS),
-                [
-                    'note' => "Seul ce champ doit être modifié",
-                    'author' => [
-                        'group' => Group::READONLY_PLANNING_SELF,
-                    ],
-                    'technicians' => [
-                        [
-                            'id' => 3,
-                            'event_id' => 7,
-                            'technician_id' => 2,
-                            'period' => [
-                                'start' => '2023-05-25 00:00:00',
-                                'end' => '2023-05-29 00:00:00',
-                                'isFullDays' => false,
-                            ],
-                            'position' => 'Ingénieur du son',
-                            'technician' => TechniciansTest::data(2),
-                        ],
-                        [
-                            'id' => 6,
-                            'event_id' => 7,
-                            'technician_id' => 3,
-                            'period' => [
-                                'start' => '2023-05-25 09:15:00',
-                                'end' => '2023-05-25 18:00:00',
-                                'isFullDays' => false,
-                            ],
-                            'position' => 'Testeur',
-                            'technician' => [
-                                'id' => 3,
-                                'user_id' => 1,
-                                'first_name' => 'Jean',
-                                'last_name' => 'Fountain',
-                                'full_name' => 'Jean Fountain',
-                                'nickname' => null,
-                                'email' => 'tester@robertmanager.net',
-                                'phone' => null,
-                                'street' => '1, somewhere av.',
-                                'postal_code' => '1234',
-                                'locality' => 'Megacity',
-                                'country_id' => 1,
-                                'full_address' => "1, somewhere av.\n1234 Megacity",
-                                'country' => CountriesTest::data(1),
-                                'note' => null,
-                            ],
-                        ],
-                    ],
-                    'updated_at' => '2023-05-25 12:00:00',
-                ],
-            ),
-            ['invoices', 'estimates'],
+        $this->assertResponseData(array_replace(
+            self::data(7, Event::SERIALIZE_DETAILS),
+            [
+                'note' => "Une nouvelle note",
+                'updated_at' => '2023-05-25 12:00:00',
+            ],
         ));
     }
 
@@ -1846,6 +1867,14 @@ final class EventsTest extends ApiTestCase
                 'technicians' => [],
                 'invoices' => [],
                 'estimates' => [],
+                'positions' => array_replace_recursive(
+                    self::data(1, Event::SERIALIZE_DETAILS)['positions'],
+                    [
+                        ['is_assigned' => false],
+                        ['is_assigned' => false],
+                    ],
+                ),
+                'has_unassigned_mandatory_positions' => true,
                 'total_without_global_discount' => '416.38',
                 'global_discount_rate' => '0.0000',
                 'total_global_discount' => '0.00',
@@ -1907,6 +1936,7 @@ final class EventsTest extends ApiTestCase
                 'departure_inventory_author' => null,
                 'is_return_inventory_started' => false,
                 'is_return_inventory_done' => false,
+                'has_unassigned_mandatory_positions' => false,
                 'return_inventory_datetime' => null,
                 'return_inventory_author' => null,
                 'materials' => array_replace_recursive(
@@ -2062,6 +2092,12 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_author' => null,
                 'is_confirmed' => false,
                 'technicians' => [],
+                'positions' => array_replace_recursive(
+                    self::data(7, Event::SERIALIZE_DETAILS)['positions'],
+                    [
+                        ['is_assigned' => false],
+                    ],
+                ),
                 'materials' => [
                     array_replace_recursive(
                         self::data(7, Event::SERIALIZE_DETAILS)['materials'][0],
@@ -2163,6 +2199,12 @@ final class EventsTest extends ApiTestCase
                 'return_inventory_author' => null,
                 'is_confirmed' => false,
                 'technicians' => [],
+                'positions' => array_replace_recursive(
+                    self::data(7, Event::SERIALIZE_DETAILS)['positions'],
+                    [
+                        ['is_assigned' => false],
+                    ],
+                ),
                 'materials' => [
                     array_replace(
                         self::data(7, Event::SERIALIZE_DETAILS)['materials'][0],
@@ -2401,6 +2443,7 @@ final class EventsTest extends ApiTestCase
                 'is_return_inventory_done' => false,
                 'return_inventory_author' => null,
                 'return_inventory_datetime' => null,
+                'has_unassigned_mandatory_positions' => false,
                 'updated_at' => '2018-12-18 10:00:00',
             ],
         );
@@ -2607,6 +2650,7 @@ final class EventsTest extends ApiTestCase
                 'departure_inventory_author' => null,
                 'departure_inventory_datetime' => null,
                 'is_return_inventory_done' => false,
+                'has_unassigned_mandatory_positions' => false,
                 'return_inventory_author' => null,
                 'return_inventory_datetime' => null,
                 'updated_at' => '2018-12-18 10:00:00',
@@ -2758,6 +2802,7 @@ final class EventsTest extends ApiTestCase
                 'has_missing_materials' => false,
                 'is_return_inventory_started' => false,
                 'is_return_inventory_done' => false,
+                'has_unassigned_mandatory_positions' => false,
                 'return_inventory_author' => null,
                 'return_inventory_datetime' => null,
                 'updated_at' => '2018-12-15 11:00:00',
@@ -3351,6 +3396,13 @@ final class EventsTest extends ApiTestCase
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
         $this->assertMatchesHtmlSnapshot((string) $responseStream);
+
+        // - Avec les techniciens désactivés.
+        static::setCustomConfig(['features.technicians' => false]);
+        $responseStream = $this->client->get('/events/7/pdf');
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertTrue($responseStream->isReadable());
+        $this->assertMatchesHtmlSnapshot((string) $responseStream);
     }
 
     public function testSearch(): void
@@ -3436,6 +3488,129 @@ final class EventsTest extends ApiTestCase
             'total_with_taxes' => '-513.60',
             'currency' => 'EUR',
         ]);
+    }
+
+    public function testCreateAssignment(): void
+    {
+        tap(Event::findOrFail(1), static function (Event $event) {
+            $event->is_return_inventory_done = false;
+            $event->save();
+        });
+
+        $this->client->post('/api/events/1/assignments', [
+            'event_id' => 1,
+            'technician_id' => 2,
+            'period' => [
+                'start' => '2018-12-17 10:00:00',
+                'end' => '2018-12-17 20:30:00',
+                'isFullDays' => false,
+            ],
+            'role_id' => 2,
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData([
+            'id' => 4,
+            'event_id' => 1,
+            'technician_id' => 2,
+            'technician' => TechniciansTest::data(2),
+            'period' => [
+                'start' => '2018-12-17 10:00:00',
+                'end' => '2018-12-17 20:30:00',
+                'isFullDays' => false,
+            ],
+            'role' => RolesTest::data(2),
+        ]);
+    }
+
+    public function testUpdateAssignment(): void
+    {
+        tap(Event::findOrFail(1), static function (Event $event) {
+            $event->is_return_inventory_done = false;
+            $event->save();
+        });
+
+        // - Inexistant (= l'assignation #7 n'appartient pas à l'événement #1).
+        $this->client->put('/api/events/1/assignments/3', []);
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Sans données.
+        $this->client->put('/api/events/1/assignments/1', []);
+        $this->assertStatusCode(StatusCode::STATUS_BAD_REQUEST);
+        $this->assertApiErrorMessage("No data was provided.");
+
+        // - Avec des données valides.
+        $this->client->put('/api/events/1/assignments/1', [
+            'role_id' => 1,
+            'period' => [
+                'start' => '2018-12-17 10:00:00',
+                'end' => '2018-12-18 20:00:00',
+                'isFullDays' => false,
+            ],
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_OK);
+        $this->assertResponseData(array_replace(
+            self::data(1, Event::SERIALIZE_DETAILS)['technicians'][0],
+            [
+                'role' => RolesTest::data(1),
+                'period' => [
+                    'start' => '2018-12-17 10:00:00',
+                    'end' => '2018-12-18 20:00:00',
+                    'isFullDays' => false,
+                ],
+            ],
+        ));
+    }
+
+    public function testDeleteAssignment(): void
+    {
+        tap(Event::findOrFail(1), static function (Event $event) {
+            $event->is_return_inventory_done = false;
+            $event->save();
+        });
+
+        // - Inexistant (= l'assignation #7 n'appartient pas à l'événement #1).
+        $this->client->delete('/api/events/1/assignments/3');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Suppression valide.
+        $this->client->delete('/api/events/1/assignments/2');
+        $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
+    }
+
+    public function testCreatePosition(): void
+    {
+        tap(Event::findOrFail(1), static function (Event $event) {
+            $event->is_return_inventory_done = false;
+            $event->save();
+        });
+
+        $this->client->post('/api/events/1/positions', [
+            'id' => 3,
+            'is_mandatory' => true,
+        ]);
+        $this->assertStatusCode(StatusCode::STATUS_CREATED);
+        $this->assertResponseData([
+            'id' => 3,
+            'name' => "Ingénieur du son",
+            'is_mandatory' => true,
+            'is_assigned' => false,
+        ]);
+    }
+
+    public function testDeletePosition(): void
+    {
+        tap(Event::findOrFail(1), static function (Event $event) {
+            $event->is_return_inventory_done = false;
+            $event->save();
+        });
+
+        // - Inexistant (= il n'y a pas de position #3 dans l'événement #1).
+        $this->client->delete('/api/events/1/positions/3');
+        $this->assertStatusCode(StatusCode::STATUS_NOT_FOUND);
+
+        // - Suppression valide.
+        $this->client->delete('/api/events/1/positions/2');
+        $this->assertStatusCode(StatusCode::STATUS_NO_CONTENT);
     }
 
     public function testAttachDocument(): void

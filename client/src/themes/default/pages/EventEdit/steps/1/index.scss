@@ -32,10 +32,24 @@
         }
     }
 
+    &__roles {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
+        gap: globals.$spacing-medium;
+
+        &__item {
+            flex: 1;
+
+            // stylelint-disable-next-line declaration-no-important -- Surcharge du `.FormField + .FormField`.
+            margin-top: 0 !important;
+        }
+    }
+
     &__is-billable {
         display: flex;
         align-items: center;
-        margin-top: 1rem;
+        margin-top: 1.5rem;
         gap: 10px;
 
         &__input {
@@ -60,6 +74,11 @@
     //
 
     @media (min-width: globals.$screen-tablet) {
+        &__roles {
+            flex-direction: row;
+            gap: globals.$spacing-medium;
+        }
+
         &__actions {
             padding-left: globals.$form-label-width;
         }

@@ -22,12 +22,6 @@ final class Group
      */
     public const READONLY_PLANNING_GENERAL = 'readonly-planning-general';
 
-    /**
-     * Représente le groupe des utilisateurs ayant uniquement accès
-     * à leur propre planning, en lecture seule.
-     */
-    public const READONLY_PLANNING_SELF = 'readonly-planning-self';
-
     // ------------------------------------------------------
     // -
     // -    Méthodes publiques
@@ -37,7 +31,6 @@ final class Group
     public static function all(): array
     {
         return [
-            Group::READONLY_PLANNING_SELF,
             Group::READONLY_PLANNING_GENERAL,
             Group::MANAGEMENT,
             Group::ADMINISTRATION,

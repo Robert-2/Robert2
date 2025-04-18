@@ -1,8 +1,10 @@
 import { z } from '@/utils/validation';
 
+import type { Tag } from '@/stores/api/tags';
 import type { Material } from '@/stores/api/materials';
 import type { Category } from '@/stores/api/categories';
 import type { ParkSummary as Park } from '@/stores/api/parks';
+import type { SubCategory } from '@/stores/api/subcategories';
 
 /** Les différents verrous possibles pour les inventaires. */
 export enum InventoryLock {
@@ -33,6 +35,8 @@ export type AwaitedMaterial<
         name: string,
         reference: string,
         category_id: Category['id'] | null,
+        sub_category_id: SubCategory['id'] | null,
+        tags: Tag[],
         park_id: Park['id'] | null,
         awaitedQuantity: number,
         /* eslint-enable @typescript-eslint/naming-convention */

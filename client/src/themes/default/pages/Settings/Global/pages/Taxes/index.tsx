@@ -121,7 +121,6 @@ const TaxesGlobalSettings = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     render: (h: CreateElement, tax: Tax) => {
                         const isDefault = defaultTaxIdSync === tax.id || defaultTaxId === tax.id;
                         const isDefaultUnsaved = isDefault && defaultTaxId !== tax.id;

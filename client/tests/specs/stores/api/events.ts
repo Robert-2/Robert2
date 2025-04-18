@@ -37,6 +37,13 @@ describe('Events Api', () => {
         });
     });
 
+    describe('updateNote()', () => {
+        it.each(data.details())('parse the returned data correctly (with #$id)', async (datum: any) => {
+            jest.spyOn(requester, 'put').mockResolvedValue({ data: datum });
+            expect(await apiEvents.updateNote(datum.id, 'A note.')).toMatchSnapshot();
+        });
+    });
+
     describe('setConfirmed()', () => {
         it.each(data.details())('parse the returned data correctly (with #$id)', async (datum: any) => {
             jest.spyOn(requester, 'put').mockResolvedValue({ data: datum });
@@ -100,27 +107,27 @@ describe('Events Api', () => {
         });
     });
 
-    describe('getTechnicianAssignment()', () => {
-        const _data = data.details().flatMap((event: any) => event.technicians);
-        it.each(_data)('parse the returned data correctly (with technician assignment #$id)', async (datum: any) => {
-            jest.spyOn(requester, 'get').mockResolvedValue({ data: datum });
-            expect(await apiEvents.getTechnicianAssignment(datum.id)).toMatchSnapshot();
-        });
-    });
-
-    describe('addTechnicianAssignment()', () => {
+    describe('createAssignment()', () => {
         const _data = data.details().flatMap((event: any) => event.technicians);
         it.each(_data)('parse the returned data correctly (with technician assignment #$id)', async (datum: any) => {
             jest.spyOn(requester, 'post').mockResolvedValue({ data: datum });
-            expect(await apiEvents.addTechnicianAssignment(datum.event_id, datum.technician_id, {} as any)).toMatchSnapshot();
+            expect(await apiEvents.createAssignment(datum.event_id, datum)).toMatchSnapshot();
         });
     });
 
-    describe('updateTechnicianAssignment()', () => {
+    describe('updateAssignment()', () => {
         const _data = data.details().flatMap((event: any) => event.technicians);
         it.each(_data)('parse the returned data correctly (with technician assignment #$id)', async (datum: any) => {
             jest.spyOn(requester, 'put').mockResolvedValue({ data: datum });
-            expect(await apiEvents.updateTechnicianAssignment(datum.id, {} as any)).toMatchSnapshot();
+            expect(await apiEvents.updateAssignment(datum.event_id, datum.id, {} as any)).toMatchSnapshot();
+        });
+    });
+
+    describe('createPosition()', () => {
+        const _data = data.details().flatMap((event: any) => event.positions);
+        it.each(_data)('parse the returned data correctly (with position #$id)', async (datum: any) => {
+            jest.spyOn(requester, 'post').mockResolvedValue({ data: datum });
+            expect(await apiEvents.createPosition(datum.event_id, datum)).toMatchSnapshot();
         });
     });
 

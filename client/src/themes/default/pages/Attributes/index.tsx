@@ -1,5 +1,8 @@
 import './index.scss';
+import isEqual from 'lodash/isEqual';
 import { confirm } from '@/utils/alert';
+import stringIncludes from '@/utils/stringIncludes';
+import mergeDifference from '@/utils/mergeDifference';
 import { defineComponent } from '@vue/composition-api';
 import apiAttributes, { AttributeType } from '@/stores/api/attributes';
 import Page from '@/themes/default/components/Page';
@@ -8,29 +11,78 @@ import ClientTable from '@/themes/default/components/Table/Client';
 import Dropdown from '@/themes/default/components/Dropdown';
 import Loading from '@/themes/default/components/Loading';
 import Button from '@/themes/default/components/Button';
+import FiltersPanel, { FiltersSchema } from './components/Filters';
+import {
+    persistFilters,
+    getPersistedFilters,
+    clearPersistedFilters,
+} from '@/utils/filtersPersister';
 
-import type { CreateElement } from 'vue';
+import type { Filters } from './components/Filters';
+import type { ComponentRef, CreateElement } from 'vue';
 import type { Category } from '@/stores/api/categories';
 import type { AttributeDetails as Attribute } from '@/stores/api/attributes';
 import type { Columns } from '@/themes/default/components/Table/Client';
+import type { Session } from '@/stores/api/session';
 
 type Data = {
+    filters: Filters,
     isDeleting: boolean,
     isFetched: boolean,
     hasCriticalError: boolean,
     attributes: Attribute[],
 };
 
+/** La clé utilisé pour la persistence des filtres de la page. */
+const FILTERS_PERSISTENCE_KEY = 'Attributes--filters';
+
 /** Page de listing des attributs de matériel. */
 const Attributes = defineComponent({
     name: 'Attributes',
-    data: (): Data => ({
-        isDeleting: false,
-        isFetched: false,
-        hasCriticalError: false,
-        attributes: [],
-    }),
+    data(): Data {
+        const filters: Filters = {
+            search: [],
+        };
+
+        // - Filtres sauvegardés.
+        const session = this.$store.state.auth.user as Session;
+        if (!session.disable_search_persistence) {
+            const savedFilters = getPersistedFilters(FILTERS_PERSISTENCE_KEY, FiltersSchema);
+            Object.assign(filters, savedFilters ?? {});
+        } else {
+            clearPersistedFilters(FILTERS_PERSISTENCE_KEY);
+        }
+
+        return {
+            isDeleting: false,
+            isFetched: false,
+            hasCriticalError: false,
+            attributes: [],
+            filters,
+        };
+    },
     computed: {
+        shouldPersistSearch(): boolean {
+            const session = this.$store.state.auth.user as Session;
+            return !session.disable_search_persistence;
+        },
+
+        filteredAttributes(): Attribute[] {
+            const { filters, attributes } = this;
+
+            // - Recherche textuelle.
+            const search = filters.search.filter(
+                (term: string) => term.trim().length > 1,
+            );
+            if (search.length === 0) {
+                return attributes;
+            }
+
+            return this.attributes.filter((attribute: Attribute): boolean => (
+                search.some((term: string) => stringIncludes(attribute.name, term))
+            ));
+        },
+
         columns(): Columns<Attribute> {
             const { $t: __, handleDeleteItemClick } = this;
 
@@ -39,7 +91,6 @@ const Attributes = defineComponent({
                     key: 'name',
                     title: __('page.attributes.name'),
                     sortable: true,
-                    searchable: true,
                     class: [
                         'Attributes__table__cell',
                         'Attributes__table__cell--name',
@@ -69,7 +120,6 @@ const Attributes = defineComponent({
                         'Attributes__table__cell',
                         'Attributes__table__cell--unit',
                     ],
-                    searchable: true,
                     render: (h: CreateElement, attribute: Attribute) => (
                         attribute.type === AttributeType.INTEGER || attribute.type === AttributeType.FLOAT
                             ? attribute.unit
@@ -133,7 +183,6 @@ const Attributes = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: [
                         'Attributes__table__cell',
                         'Attributes__table__cell--actions',
@@ -158,6 +207,18 @@ const Attributes = defineComponent({
                     ),
                 },
             ];
+        },
+    },
+    watch: {
+        filters: {
+            handler() {
+                // @ts-expect-error -- `this` fait bien référence au component.
+                if (this.shouldPersistSearch) {
+                    // @ts-expect-error -- `this` fait bien référence au component.
+                    persistFilters(FILTERS_PERSISTENCE_KEY, this.filters);
+                }
+            },
+            deep: true,
         },
     },
     mounted() {
@@ -213,6 +274,19 @@ const Attributes = defineComponent({
             }
         },
 
+        handleConfigureColumns() {
+            const $table = this.$refs.table as ComponentRef<typeof ClientTable>;
+            $table?.showColumnsSelector();
+        },
+
+        handleFiltersChange(newFilters: Filters) {
+            // - Recherche textuelle.
+            const newSearch = mergeDifference(this.filters.search, newFilters.search);
+            if (!isEqual(this.filters.search, newSearch)) {
+                this.filters.search = newSearch;
+            }
+        },
+
         // ------------------------------------------------------
         // -
         // -    Méthodes internes
@@ -231,11 +305,15 @@ const Attributes = defineComponent({
     render() {
         const {
             $t: __,
+            filters,
             columns,
-            attributes,
+            $options,
             isFetched,
             isDeleting,
+            filteredAttributes,
             hasCriticalError,
+            handleFiltersChange,
+            handleConfigureColumns,
         } = this;
 
         if (hasCriticalError || !isFetched) {
@@ -251,20 +329,33 @@ const Attributes = defineComponent({
                 name="attributes"
                 loading={isDeleting}
                 title={__('page.attributes.title')}
-                help={__('page.attributes.help')}
                 actions={[
                     <Button type="add" to={{ name: 'add-attribute' }} collapsible>
                         {__('page.attributes.add-btn')}
                     </Button>,
+                    <Dropdown>
+                        <Button icon="table" onClick={handleConfigureColumns}>
+                            {__('configure-columns')}
+                        </Button>
+                    </Dropdown>,
                 ]}
+                scopedSlots={{
+                    headerContent: (): JSX.Node => (
+                        <FiltersPanel
+                            values={filters}
+                            onChange={handleFiltersChange}
+                        />
+                    ),
+                }}
             >
                 <div class="Attributes">
                     <ClientTable
+                        ref="table"
+                        name={$options.name}
                         class="Attributes__table"
                         columns={columns}
-                        data={attributes}
+                        data={filteredAttributes}
                         defaultOrderBy="name"
-                        filterable
                     />
                 </div>
             </Page>

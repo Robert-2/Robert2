@@ -166,6 +166,24 @@ type Props = {
     options?: string[] | Option[],
 
     /**
+     * Lorsque le champ est de type `OtherType.SELECT`,
+     * s'agit-il d'un sélecteur à choix multiple ?
+     *
+     * @see {@link Select} pour plus de détails.
+     * @default false
+     */
+    multiple?: boolean,
+
+    /**
+     * Lorsque le champ est de type `OtherType.SELECT`,
+     * peut-on créer une nouvelle valeur en l'écrivant dans le champ ?
+     *
+     * @see {@link Select} pour plus de détails.
+     * @default false
+     */
+    canCreate?: boolean,
+
+    /**
      * Sert à définir le mode "période" lorsqu'il s'agit d'un
      * champ de type {@link DatePickerType}.
      *
@@ -304,6 +322,14 @@ const FormField = defineComponent({
             type: Array as PropType<Props['options']>,
             default: undefined,
         },
+        multiple: {
+            type: Boolean as PropType<Props['multiple']>,
+            default: false,
+        },
+        canCreate: {
+            type: Boolean as PropType<Props['canCreate']>,
+            default: false,
+        },
 
         // - Props. spécifiques aux sélecteurs de date.
         range: {
@@ -331,7 +357,7 @@ const FormField = defineComponent({
             default: false,
         },
     },
-    emits: ['change', 'input'],
+    emits: ['change', 'input', 'create'],
     computed: {
         invalid(): boolean {
             return (this.error ?? null) !== null;
@@ -384,6 +410,10 @@ const FormField = defineComponent({
 
         handleInput(...newValue: any) {
             this.$emit('input', ...newValue);
+        },
+
+        handleCreateOption(...newValue: any) {
+            this.$emit('create', ...newValue);
         },
 
         // ------------------------------------------------------
@@ -461,6 +491,8 @@ const FormField = defineComponent({
             readonly,
             verticalForm: vertical,
             options,
+            multiple,
+            canCreate,
             step,
             min,
             max,
@@ -472,6 +504,7 @@ const FormField = defineComponent({
             disabledDate,
             withoutMinutes,
             withFullDaysToggle,
+            handleCreateOption,
             handleChange,
             handleInput,
         } = this;
@@ -518,8 +551,11 @@ const FormField = defineComponent({
                                 disabled={!!(disabled || readonly)}
                                 invalid={invalid}
                                 value={value}
+                                multiple={multiple}
+                                canCreate={canCreate}
                                 onInput={handleInput}
                                 onChange={handleChange}
+                                onCreate={handleCreateOption}
                             />
                         )}
                         {type === OtherType.RADIO && (

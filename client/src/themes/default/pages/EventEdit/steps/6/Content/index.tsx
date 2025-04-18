@@ -1,14 +1,16 @@
 import './index.scss';
+import config from '@/globals/config';
 import { defineComponent } from '@vue/composition-api';
 import upperFirst from 'lodash/upperFirst';
 import Fragment from '@/components/Fragment';
 import Icon from '@/themes/default/components/Icon';
 import Link from '@/themes/default/components/Link';
 import MaterialsSorted from '@/themes/default/components/MaterialsSorted';
-import EventMissingMaterials from '@/themes/default/components/EventMissingMaterials';
+import MissingMaterials from '@/themes/default/components/MissingMaterials';
 import IconMessage from '@/themes/default/components/IconMessage';
 import Totals from '@/themes/default/components/Totals';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
+import { BookingEntity } from '@/stores/api/bookings';
 import { PeriodReadableFormat } from '@/utils/period';
 
 import type { PropType } from '@vue/composition-api';
@@ -34,6 +36,10 @@ const EventEditStepOverviewContent = defineComponent({
         },
     },
     computed: {
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         arePeriodsUnified(): boolean {
             const {
                 operation_period: operationPeriod,
@@ -75,6 +81,9 @@ const EventEditStepOverviewContent = defineComponent({
         },
 
         technicians(): TechnicianWithPeriods[] {
+            if (!this.isTechniciansEnabled) {
+                return [];
+            }
             return formatEventTechniciansList(this.event.technicians);
         },
     },
@@ -89,6 +98,7 @@ const EventEditStepOverviewContent = defineComponent({
             hasMaterials,
             hasDescription,
             arePeriodsUnified,
+            isTechniciansEnabled,
         } = this;
         const { beneficiaries } = event;
 
@@ -134,7 +144,7 @@ const EventEditStepOverviewContent = defineComponent({
                         </p>
                     )}
                 </header>
-                {(beneficiaries.length > 0 || technicians.length > 0) && (
+                {(beneficiaries.length > 0 || (isTechniciansEnabled && technicians.length > 0)) && (
                     <div class="EventEditStepOverviewContent__participants">
                         {beneficiaries.length > 0 && (
                             <div
@@ -148,32 +158,37 @@ const EventEditStepOverviewContent = defineComponent({
                                 </h4>
                                 <ul class="EventEditStepOverviewContent__participants__item__values">
                                     {beneficiaries.map((beneficiary: Beneficiary) => {
-                                        let label = (
-                                            <Link
-                                                to={{ name: 'view-beneficiary', params: { id: beneficiary.id } }}
-                                                class="EventEditStepOverviewContent__participants__item__values__item__link"
-                                            >
-                                                {beneficiary.full_name}
-                                            </Link>
-                                        );
+                                        const { company, full_name: fullName } = beneficiary;
 
-                                        if (beneficiary.company) {
-                                            label = <Fragment>{label} ({beneficiary.company.legal_name})</Fragment>;
-                                        }
+                                        const renderName = (): JSX.Element => {
+                                            const name = (
+                                                <Link
+                                                    to={{ name: 'view-beneficiary', params: { id: beneficiary.id } }}
+                                                    class="EventEditStepOverviewContent__participants__item__values__item__link"
+                                                >
+                                                    {fullName}
+                                                </Link>
+                                            );
+                                            return !company ? name : <Fragment>{name} ({company.legal_name})</Fragment>;
+                                        };
 
                                         return (
                                             <li
                                                 key={beneficiary.id}
                                                 class="EventEditStepOverviewContent__participants__item__values__item"
                                             >
-                                                {label}
+                                                <span class="EventEditStepOverviewContent__participants__beneficiary">
+                                                    <span class="EventEditStepOverviewContent__participants__beneficiary__name">
+                                                        {renderName()}
+                                                    </span>
+                                                </span>
                                             </li>
                                         );
                                     })}
                                 </ul>
                             </div>
                         )}
-                        {technicians.length > 0 && (
+                        {(isTechniciansEnabled && technicians.length > 0) && (
                             <div
                                 class={[
                                     'EventEditStepOverviewContent__participants__item',
@@ -205,16 +220,16 @@ const EventEditStepOverviewContent = defineComponent({
                                                     )}
                                                 </div>
                                                 <ul class="EventEditStepOverviewContent__participants__technician__periods">
-                                                    {technician.periods.map(({ id, period, position }: TechnicianPeriod) => (
+                                                    {technician.periods.map(({ id, period, role }: TechnicianPeriod) => (
                                                         <li
                                                             key={id}
                                                             class="EventEditStepOverviewContent__participants__technician__periods__item"
                                                         >
                                                             {period.toReadable(__, PeriodReadableFormat.MINIMALIST)}
-                                                            {!!(position && position.length > 0) && (
+                                                            {role !== null && (
                                                                 <Fragment>
                                                                     {' '}:{' '}
-                                                                    <span>{position}</span>
+                                                                    <span>{role.name}</span>
                                                                 </Fragment>
                                                             )}
                                                         </li>
@@ -244,7 +259,7 @@ const EventEditStepOverviewContent = defineComponent({
                         <Fragment>
                             {!!event.has_missing_materials && (
                                 <div class="EventEditStepOverviewContent__materials__missing">
-                                    <EventMissingMaterials id={event.id} />
+                                    <MissingMaterials booking={{ entity: BookingEntity.EVENT, ...event }} />
                                 </div>
                             )}
                             <div class="EventEditStepOverviewContent__materials__list">

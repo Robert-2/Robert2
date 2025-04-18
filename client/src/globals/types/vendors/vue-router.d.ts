@@ -6,4 +6,10 @@ declare module 'vue-router' {
         navigate(): void,
         isActive: boolean,
     };
+
+    export type RouteQuery = Record<string, string | Array<string | null> | Record<string, any>>;
+
+    export interface Route {
+        query: RouteQuery;
+    }
 }

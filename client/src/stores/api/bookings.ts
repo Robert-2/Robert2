@@ -1,5 +1,6 @@
 import { z } from '@/utils/validation';
 import requester from '@/globals/requester';
+import { UserSchema } from './users';
 import { BeneficiarySchema } from './beneficiaries';
 import { withPaginationEnvelope } from './@schema';
 import {
@@ -61,7 +62,7 @@ export const BookingExcerptSchema = (() => z.strictObject({
     entity: z.literal(BookingEntity.EVENT),
     title: z.string(),
     location: z.string().nullable(),
-    color: z.string().nullable(),
+    color: z.color().nullable(),
     mobilization_period: z.period(),
     operation_period: z.period(),
     beneficiaries: z.lazy(() => BeneficiarySchema.array()),
@@ -71,8 +72,11 @@ export const BookingExcerptSchema = (() => z.strictObject({
     is_departure_inventory_done: z.boolean(),
     is_return_inventory_done: z.boolean(),
     has_not_returned_materials: z.boolean().nullable(),
+    has_unassigned_mandatory_positions: z.boolean().nullable(),
     categories: z.number().array(), // - Ids des catégories liés.
     parks: z.number().array(), // - Ids des parcs liés.
+    manager: z.lazy(() => UserSchema).nullable(),
+    author: z.lazy(() => UserSchema),
     created_at: z.datetime(),
 }))();
 
@@ -85,7 +89,7 @@ export const createBookingSummarySchema = <T extends ZodRawShape>(augmentation: 
     reference: z.string().nullable(),
     description: z.string().nullable(),
     location: z.string().nullable(),
-    color: z.string().nullable(),
+    color: z.color().nullable(),
     mobilization_period: z.period(),
     operation_period: z.period(),
     beneficiaries: z.lazy(() => BeneficiarySchema.array()),
@@ -98,8 +102,11 @@ export const createBookingSummarySchema = <T extends ZodRawShape>(augmentation: 
     is_return_inventory_done: z.boolean(),
     has_missing_materials: z.boolean().nullable(),
     has_not_returned_materials: z.boolean().nullable(),
+    has_unassigned_mandatory_positions: z.boolean().nullable(),
     categories: z.number().array(), // - Ids des catégories liés.
     parks: z.number().array(), // - Ids des parcs liés.
+    manager: z.lazy(() => UserSchema).nullable(),
+    author: z.lazy(() => UserSchema),
     created_at: z.datetime(),
 }).extend<T>(augmentation);
 
@@ -207,18 +214,23 @@ export type ExtraResynchronizableField =
 // - Récupération
 //
 
-export type BookingListFilters = {
+export type BookingListFilters = Nullable<{
     period?: Period,
-    search?: string,
+    search?: string | string[],
     category?: Category['id'] | typeof UNCATEGORIZED,
     park?: Park['id'],
     endingToday?: boolean,
     returnInventoryTodo?: boolean,
     archived?: boolean,
     notConfirmed?: boolean,
-};
+}>;
 
-type GetAllParamsPaginated = BookingListFilters & SortableParams & PaginationParams & { paginated?: true };
+type GetAllParamsPaginated = (
+    & BookingListFilters
+    & SortableParams
+    & PaginationParams
+    & { paginated?: true }
+);
 type GetAllInPeriodParams = { paginated: false, period: Period };
 
 // ------------------------------------------------------

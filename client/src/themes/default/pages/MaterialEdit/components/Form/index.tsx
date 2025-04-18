@@ -11,6 +11,7 @@ import FormField from '@/themes/default/components/FormField';
 import Button from '@/themes/default/components/Button';
 import Decimal from 'decimal.js';
 
+import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { Settings } from '@/stores/api/settings';
 import type { Options } from '@/utils/formatOptions';
@@ -60,7 +61,6 @@ const getDefaults = (
         reference: null,
         description: null,
         park_id: null,
-        park_location_id: null,
         category_id: null,
         sub_category_id: null,
         rental_price: null,
@@ -126,6 +126,10 @@ const MaterialEditForm = defineComponent({
                 return false;
             }
             return this.subCategoriesOptions.length > 0;
+        },
+
+        isNew(): boolean {
+            return this.savedData === null;
         },
 
         showParksSelector(): boolean {
@@ -194,6 +198,14 @@ const MaterialEditForm = defineComponent({
         this.$store.dispatch('degressiveRates/fetch');
 
         this.fetchAttributes();
+
+        // - Focus sur le champ nom si création.
+        if (this.isNew) {
+            this.$nextTick(() => {
+                const $inputName = this.$refs.inputName as ComponentRef<typeof FormField>;
+                $inputName?.focus();
+            });
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -358,6 +370,7 @@ const MaterialEditForm = defineComponent({
             >
                 <Fieldset>
                     <FormField
+                        ref="inputName"
                         label="name"
                         v-model={data.name}
                         error={errors?.name}

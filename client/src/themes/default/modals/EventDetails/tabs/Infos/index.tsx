@@ -1,4 +1,5 @@
 import './index.scss';
+import config from '@/globals/config';
 import DateTime from '@/utils/datetime';
 import { defineComponent } from '@vue/composition-api';
 import { Group } from '@/stores/api/groups';
@@ -46,6 +47,9 @@ const EventDetailsInfos = defineComponent({
         },
 
         hasTechnicians(): boolean {
+            if (!this.isTechniciansEnabled) {
+                return false;
+            }
             return this.event.technicians.length > 0;
         },
 
@@ -54,6 +58,10 @@ const EventDetailsInfos = defineComponent({
                 Group.ADMINISTRATION,
                 Group.MANAGEMENT,
             ]);
+        },
+
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
         },
 
         hasMaterials(): boolean {
@@ -77,14 +85,6 @@ const EventDetailsInfos = defineComponent({
                 !event.is_return_inventory_done
             );
         },
-
-        beneficiariesNames(): string[] {
-            const { beneficiaries } = this.event;
-
-            return beneficiaries.map(({ company, full_name: fullName }: Beneficiary) => (
-                `${fullName}${company ? ` (${company.legal_name})` : ''}`
-            ));
-        },
     },
     mounted() {
         // - Actualise le timestamp courant toutes les minutes.
@@ -100,7 +100,7 @@ const EventDetailsInfos = defineComponent({
             $t: __,
             event,
             hasBeneficiaries,
-            beneficiariesNames,
+            isTechniciansEnabled,
             hasTechnicians,
             hasMaterials,
             isTeamMember,
@@ -112,6 +112,7 @@ const EventDetailsInfos = defineComponent({
             beneficiaries,
             technicians,
             author,
+            manager,
             description,
             is_confirmed: isConfirmed,
         } = event;
@@ -121,16 +122,29 @@ const EventDetailsInfos = defineComponent({
                 <div class="EventDetailsInfos__summary">
                     {hasBeneficiaries && (
                         <div class="EventDetailsInfos__summary__beneficiaries">
-                            <div class="EventDetailsInfos__summary__beneficiaries__list">
-                                <Icon
-                                    name="address-book"
-                                    class="EventDetailsInfos__summary__beneficiaries__list__icon"
-                                />
-                                <span class="EventDetailsInfos__summary__beneficiaries__list__content">
-                                    {__('for', { beneficiary: beneficiariesNames.join(', ') })}
-                                </span>
+                            <Icon
+                                name="address-book"
+                                class="EventDetailsInfos__summary__beneficiaries__icon"
+                            />
+                            <div class="EventDetailsInfos__summary__beneficiaries__data">
+                                <div class="EventDetailsInfos__summary__beneficiaries__names">
+                                    {__('for-dots')}{' '}
+                                    <ul class="EventDetailsInfos__summary__beneficiaries__list">
+                                        {beneficiaries.map((beneficiary: Beneficiary) => {
+                                            const { company, full_name: fullName } = beneficiary;
+
+                                            return (
+                                                <li class="EventDetailsInfos__summary__beneficiaries__list__item">
+                                                    <span class="EventDetailsInfos__summary__beneficiaries__list__item__name">
+                                                        {`${fullName}${company ? ` (${company.legal_name})` : ''}`}
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                                <MainBeneficiary beneficiary={beneficiaries[0]} />
                             </div>
-                            <MainBeneficiary beneficiary={beneficiaries[0]} />
                         </div>
                     )}
                     {!hasBeneficiaries && (
@@ -152,14 +166,35 @@ const EventDetailsInfos = defineComponent({
                             </a>
                         </div>
                     )}
-                    {!!(author || hasTechnicians) && (
+                    {!!(author || manager || (isTechniciansEnabled && hasTechnicians)) && (
                         <div class="EventDetailsInfos__summary__people">
                             {!!author && (
-                                <p class="EventDetailsInfos__summary__author">
-                                    {__('created-by')} {author.full_name}
+                                <p
+                                    class={[
+                                        'EventDetailsInfos__summary__people__item',
+                                        'EventDetailsInfos__summary__people__item--author',
+                                    ]}
+                                >
+                                    {__('created-by')}{' '}
+                                    <span class="EventDetailsInfos__summary__people__item__value">
+                                        {author.full_name}
+                                    </span>
                                 </p>
                             )}
-                            {hasTechnicians && (
+                            {manager !== null && (
+                                <p
+                                    class={[
+                                        'EventDetailsInfos__summary__people__item',
+                                        'EventDetailsInfos__summary__people__item--manager',
+                                    ]}
+                                >
+                                    {__('modal.event-details.infos.manager')}{' '}
+                                    <span class="EventDetailsInfos__summary__people__item__value">
+                                        {manager.full_name}
+                                    </span>
+                                </p>
+                            )}
+                            {(isTechniciansEnabled && hasTechnicians) && (
                                 <Technicians eventTechnicians={technicians} />
                             )}
                         </div>

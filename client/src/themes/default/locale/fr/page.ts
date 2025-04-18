@@ -18,6 +18,7 @@ export default {
     'technicians': require('@/themes/default/pages/Technicians/translations/fr.yml'),
     'technician-edit': require('@/themes/default/pages/TechnicianEdit/translations/fr.yml'),
     'technician-view': require('@/themes/default/pages/TechnicianView/translations/fr.yml'),
+    'roles': require('@/themes/default/pages/Roles/translations/fr.yml'),
     'parks': require('@/themes/default/pages/Parks/translations/fr.yml'),
     'park': require('@/themes/default/pages/ParkEdit/translations/fr.yml'),
     'settings': require('@/themes/default/pages/Settings/Global/translations/fr.yml'),

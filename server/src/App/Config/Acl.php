@@ -58,14 +58,21 @@ final class Acl
             ],
             'Technician' => [
                 'getAll',
+                'getAllWhileEvent',
+                'getAllWithAssignments',
                 'getEvents',
                 'getDocuments',
-                'getAllWhileEvent',
                 'getOne',
                 'create',
                 'attachDocument',
                 'update',
                 'restore',
+                'delete',
+            ],
+            'Role' => [
+                'getAll',
+                'create',
+                'update',
                 'delete',
             ],
             'Beneficiary' => [
@@ -111,7 +118,6 @@ final class Acl
                 'restore',
                 'delete',
                 'getPicture',
-                'getAllPdf',
             ],
             'Event' => [
                 'getAll',
@@ -124,6 +130,7 @@ final class Acl
                 'duplicate',
                 'attachDocument',
                 'update',
+                'updateNote',
                 'restore',
                 'updateDepartureInventory',
                 'finishDepartureInventory',
@@ -136,12 +143,11 @@ final class Acl
                 'createInvoice',
                 'archive',
                 'unarchive',
-            ],
-            'EventTechnician' => [
-                'getOne',
-                'create',
-                'update',
-                'delete',
+                'createAssignment',
+                'updateAssignment',
+                'deleteAssignment',
+                'createPosition',
+                'deletePosition',
             ],
             'Invoice' => [
                 'getOnePdf',
@@ -210,9 +216,10 @@ final class Acl
             ],
             'Technician' => [
                 'getAll',
+                'getAllWhileEvent',
+                'getAllWithAssignments',
                 'getEvents',
                 'getDocuments',
-                'getAllWhileEvent',
                 'getOne',
             ],
             'Beneficiary' => [
@@ -242,7 +249,6 @@ final class Acl
                 'getBookings',
                 'getAllWhileEvent',
                 'getPicture',
-                'getAllPdf',
             ],
             'Event' => [
                 'getAll',
@@ -250,9 +256,7 @@ final class Acl
                 'getDocuments',
                 'getMissingMaterials',
                 'getOnePdf',
-            ],
-            'EventTechnician' => [
-                'getOne',
+                'updateNote',
             ],
             'Invoice' => [
                 'getOnePdf',
@@ -273,69 +277,6 @@ final class Acl
             ],
             'Calendar' => [
                 'public',
-            ],
-            'Entry' => [
-                'external',
-                'default',
-            ],
-            'api-catch-not-found',
-        ],
-        Group::READONLY_PLANNING_SELF => [
-            'Auth' => [
-                'getSelf',
-                'logout',
-            ],
-            'Attribute' => [
-                'getAll',
-            ],
-            'User' => [
-                'getOne',
-                'getSettings',
-                'update',
-                'updateSettings',
-            ],
-            'Tag' => [
-                'getAll',
-            ],
-            'Category' => [
-                'getAll',
-            ],
-            'Country' => [
-                'getAll',
-                'getOne',
-            ],
-            'Park' => [
-                'getAll',
-                'getList',
-                'getOne',
-            ],
-            'Material' => [
-                'getPicture',
-            ],
-            'Event' => [
-                'getAll',
-                'getOne',
-                'getDocuments',
-                'getMissingMaterials',
-                'getOnePdf',
-                'update',
-            ],
-            'Setting' => [
-                'getAll',
-            ],
-            'Booking' => [
-                'getAll',
-                'getOne',
-                'getOneSummary',
-            ],
-            'Document' => [
-                'getFile',
-            ],
-            'Invoice' => [
-                'getOnePdf',
-            ],
-            'Estimate' => [
-                'getOnePdf',
             ],
             'Entry' => [
                 'external',

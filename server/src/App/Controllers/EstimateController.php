@@ -7,7 +7,6 @@ use DI\Container;
 use Loxya\Controllers\Traits\Crud;
 use Loxya\Http\Request;
 use Loxya\Models\Estimate;
-use Loxya\Services\Auth;
 use Loxya\Services\I18n;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
@@ -28,7 +27,7 @@ final class EstimateController extends BaseController
     public function getOnePdf(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $estimate = Estimate::findOrFailForUser($id, Auth::user());
+        $estimate = Estimate::findOrFail($id);
 
         return $estimate
             ->toPdf($this->i18n)

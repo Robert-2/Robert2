@@ -35,3 +35,9 @@ export const MAX_FETCHES_PER_SECOND: number = 15;
  *    en respectant cette contrainte de temps.
  */
 export const SNAP_TIME: SnapTime = { precision: 15, unit: 'minute' };
+
+/**
+ * Nom de la clé de local storage dans laquelle sera
+ * persisté la période du calendrier.
+ */
+export const CALENDAR_PERIOD_STORAGE_KEY: string = 'calendarPeriod';

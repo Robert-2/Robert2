@@ -70,13 +70,12 @@ const BeneficiaryViewBillingEstimates = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: [
                         'BeneficiaryViewBillingEstimates__col',
                         'BeneficiaryViewBillingEstimates__col--actions',
                     ],
                     render: (h: CreateElement, { url }: Estimate) => (
-                        <Button icon="download" to={url} external download />
+                        <Button icon="download" to={url} download />
                     ),
                 },
             ];

@@ -16,12 +16,12 @@ final class EventTechnicianTest extends TestCase
             'technician_id' => 1,
             'start_date' => '',
             'end_date' => '',
-            'position' => 'a',
+            'role_id' => 'not-a-role',
         ]);
         $expectedErrors1 = [
             'start_date' => "Ce champ est invalide.",
             'end_date' => "Ce champ est invalide.",
-            'position' => "2 caractères min., 191 caractères max.",
+            'role_id' => "Ce champ doit contenir un nombre entier.",
         ];
         $this->assertSameCanonicalize($expectedErrors1, $eventTechnician1->validationErrors());
 

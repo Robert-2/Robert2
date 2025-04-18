@@ -50,8 +50,16 @@ export default {
             return formatOptions(groups);
         },
     },
-    mounted() {
+    created() {
         this.$store.dispatch('groups/fetch');
+    },
+    mounted() {
+        if (this.isNew) {
+            this.$nextTick(() => {
+                const $inputPseudo = this.$refs.inputPseudo;
+                $inputPseudo?.focus();
+            });
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -91,6 +99,7 @@ export default {
             <form class="Form Form--fixed-actions" onSubmit={handleSubmit}>
                 <Fieldset>
                     <FormField
+                        ref="inputPseudo"
                         label="pseudo"
                         autocomplete="off"
                         v-model={data.pseudo}

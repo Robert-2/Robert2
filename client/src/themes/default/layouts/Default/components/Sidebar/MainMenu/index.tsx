@@ -1,4 +1,5 @@
 import './index.scss';
+import config from '@/globals/config';
 import { defineComponent } from '@vue/composition-api';
 import { BookingsViewMode } from '@/stores/api/users';
 import { Group } from '@/stores/api/groups';
@@ -11,7 +12,25 @@ import type { MenuLinkItem } from './Item';
 const DefaultLayoutSidebarMainMenu = defineComponent({
     name: 'DefaultLayoutSidebarMainMenu',
     computed: {
+        isAdmin(): boolean {
+            return this.$store.getters['auth/is']([Group.ADMINISTRATION]);
+        },
+
+        isMember(): boolean {
+            return this.$store.getters['auth/is'](Group.MANAGEMENT);
+        },
+
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         links(): MenuLinkItem[] {
+            const {
+                isAdmin,
+                isMember,
+                isTechniciansEnabled,
+            } = this;
+
             const links: MenuLinkItem[] = [];
 
             const { default_bookings_view: defaultBookingsView } = this.$store.state.auth.user as Session;
@@ -21,14 +40,14 @@ const DefaultLayoutSidebarMainMenu = defineComponent({
                 links.push({ ident: 'schedule-calendar', to: '/schedule/calendar', icon: 'calendar-alt' });
             }
 
-            const isAdmin = this.$store.getters['auth/is'](Group.ADMINISTRATION);
-            const isMember = this.$store.getters['auth/is'](Group.MANAGEMENT);
             if (isAdmin || isMember) {
-                links.push(
-                    { ident: 'materials', to: '/materials', icon: 'box' },
-                    { ident: 'technicians', to: '/technicians', icon: 'people-carry' },
-                    { ident: 'beneficiaries', to: '/beneficiaries', icon: 'address-book' },
-                );
+                links.push({ ident: 'materials', to: '/materials', icon: 'box' });
+
+                if (isTechniciansEnabled) {
+                    links.push({ ident: 'technicians', to: '/technicians', icon: 'people-carry' });
+                }
+
+                links.push({ ident: 'beneficiaries', to: '/beneficiaries', icon: 'address-book' });
             }
 
             if (isAdmin) {

@@ -91,6 +91,9 @@ final class EntryController extends BaseController
                 'url' => (string) $apiUri,
                 'headers' => $rawConfig['apiHeaders'],
             ],
+            'features' => [
+                'technicians' => $rawConfig['features']['technicians'],
+            ],
             'auth' => [
                 'cookie' => $rawConfig['auth']['cookie'],
                 'timeout' => $rawConfig['sessionExpireHours'],

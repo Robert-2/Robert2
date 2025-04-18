@@ -299,7 +299,7 @@
             <th>{{ __('designation') }}</th>
             <th class="center">{{ __('qty') }}</th>
             <th class="center">{{ __(hasTaxes ? 'unit-price-excl-tax' : 'unit-price') }}</th>
-            {%- if not isLegacy ~%}
+            {%- if not isLegacy and hasMaterialDiscount ~%}
             <th class="center">{{ __('discount') }}</th>
             {%- endif ~%}
             <th class="right">{{ __(hasTaxes ? 'total-excl-tax' : 'total') }}</th>
@@ -308,7 +308,7 @@
     <tbody>
         {%~ for subCategory, materialsList in materials %}
             <tr>
-                <td class="section-title" colspan="{{ isLegacy ? 4 : 5 }}">
+                <td class="section-title" colspan="{{ isLegacy or not hasMaterialDiscount ? 4 : 5 }}">
                     {%- if subCategory == '--' -%}
                         {{ __('not-categorized') }}
                     {%- else -%}
@@ -342,9 +342,13 @@
                     {{ material.unit_price_period|format_currency(currency, locale=locale) }}
                     {%- endif ~%}
                 </td>
-                {%- if not isLegacy ~%}
+                {%- if not isLegacy and hasMaterialDiscount ~%}
                 <td class="center">
-                    {{ material.discount_rate.dividedBy(100, 6)|format_percent_number({max_fraction_digit: 4}, locale=locale) }}
+                    {{-
+                        not material.discount_rate.isZero()
+                            ? material.discount_rate.dividedBy(100, 6)|format_percent_number({max_fraction_digit: 4}, locale=locale)
+                            : null
+                    -}}
                 </td>
                 {%- endif ~%}
                 <td class="right">

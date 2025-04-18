@@ -94,7 +94,6 @@ const FileManagerDocument = defineComponent({
                         icon="download"
                         to={url}
                         download={name}
-                        external
                     />
                     {!readonly && (
                         <Button type="trash" onClick={handleClickDelete} />

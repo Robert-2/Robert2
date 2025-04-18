@@ -1,5 +1,6 @@
 import core from 'zod';
 import Decimal from 'decimal.js';
+import Color from '@/utils/color';
 import Period, { SerializedPeriodSchema } from '@/utils/period';
 import DateTime from '@/utils/datetime';
 import Currency from '@/utils/currency';
@@ -157,6 +158,38 @@ const currency = () => (
         })
 );
 
+/**
+ * Prise en charge d'une couleur, qu'elle soit sous forme d'instance ou sous forme de chaîne de caractères.
+ *
+ * @returns Un wrapper de validation de couleur (instance ou chaîne de caractère).
+ *          Le retour sera en instance de `Color`.
+ */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const color = () => (
+    core
+        .union([core.string(), core.instanceof(Color)])
+        .transform((value: string | Color, ctx: RefinementCtx): Color => {
+            let error: unknown | undefined;
+            try {
+                if (Color.isValid(value)) {
+                    return new Color(value);
+                }
+            } catch (_error) {
+                error = _error;
+            }
+
+            ctx.addIssue({
+                code: core.ZodIssueCode.custom,
+                params: {
+                    code: 'invalid-color',
+                    cause: error ?? 'Invalid color string.',
+                },
+            });
+
+            return core.NEVER;
+        })
+);
+
 export type {
     infer as SchemaInfer,
     output as SchemaOutput,
@@ -164,4 +197,12 @@ export type {
     ZodType as SchemaType,
 } from 'zod';
 
-export const z = { ...core, decimal, period, datetime, day, currency };
+export const z = {
+    ...core,
+    decimal,
+    period,
+    datetime,
+    day,
+    currency,
+    color,
+};

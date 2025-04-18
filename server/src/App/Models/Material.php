@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection as CoreCollection;
+use Illuminate\Support\LazyCollection;
 use Loxya\Config\Config;
 use Loxya\Config\Enums\BillingMode;
 use Loxya\Contracts\PeriodInterface;
@@ -75,9 +76,10 @@ use Respect\Validation\Validator as V;
  * @property-read Collection<array-key, Document> $documents
  * @property-read Collection<array-key, Tag> $tags
  *
- * @method static Builder|static search(string $term)
+ * @method static Builder|static search(string|string[] $term)
  * @method static Builder|static inPark(int $parkId)
  * @method static Builder|static notInPark(array $parks)
+ * @method static Builder|static prepareSerialize(string $format)
  */
 final class Material extends BaseModel implements Serializable
 {
@@ -461,7 +463,7 @@ final class Material extends BaseModel implements Serializable
     /** @return Collection<array-key, Attribute> */
     public function getAttributesAttribute(): Collection
     {
-        $attributes = $this->attributes()->get();
+        $attributes = $this->getRelationValue('attributes');
         if (!$attributes) {
             return new Collection();
         }
@@ -867,8 +869,18 @@ final class Material extends BaseModel implements Serializable
         'out_of_order_quantity',
     ];
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeSearch(Builder $query, string|array $term): Builder
     {
+        if (is_array($term)) {
+            $query->where(static function (Builder $subQuery) use ($term) {
+                foreach ($term as $singleTerm) {
+                    $subQuery->orWhere(static fn (Builder $subSubQuery) => (
+                        $subSubQuery->search($singleTerm)
+                    ));
+                }
+            });
+            return $query;
+        }
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $safeTerm = addcslashes($term, '%_');
@@ -936,6 +948,18 @@ final class Material extends BaseModel implements Serializable
         return $query;
     }
 
+    public function scopePrepareSerialize(Builder $query, string $format = self::SERIALIZE_DEFAULT): Builder
+    {
+        $query->with([
+            'tags',
+            'attributes' => [
+                'categories',
+            ],
+        ]);
+
+        return $query;
+    }
+
     // ------------------------------------------------------
     // -
     // -    Méthodes utilitaires
@@ -953,15 +977,17 @@ final class Material extends BaseModel implements Serializable
      * - Soit une instance implémentant `PeriodInterface` dont les dates seront utilisées pour les dispos.
      * - Soit `null` si les disponibilités doivent être récupérées sans prendre en compte de période.
      *
-     * @param Collection<array-key, Material> $materials La liste du matériel.
+     * @template TCollection of Collection<array-key, Material>|LazyCollection<array-key, Material>
+     *
+     * @param TCollection $materials La liste du matériel.
      * @param PeriodInterface|null $period Le booking (ou simple Period) à utiliser comme limite de temps.
      *
-     * @return Collection<array-key, Material>
+     * @return TCollection
      */
     public static function allWithAvailabilities(
-        Collection $materials,
+        Collection|LazyCollection $materials,
         ?PeriodInterface $period = null,
-    ): Collection {
+    ): Collection|LazyCollection {
         if ($materials->isEmpty()) {
             return new Collection([]);
         }

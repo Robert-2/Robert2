@@ -3,6 +3,7 @@ import Day, { DayReadableFormat } from '@/utils/day';
 import invariant from 'invariant';
 import { PartReadableFormat, ReadableFormat } from './_constants';
 import DateTime, { DateTimeReadableFormat } from '@/utils/datetime';
+import Decimal from 'decimal.js';
 
 import type { SchemaInfer } from '@/utils/validation';
 import type { ManipulateUnit as DayManipulateUnit } from '@/utils/day';
@@ -295,11 +296,20 @@ class Period<IsFullDays extends boolean = boolean> {
     /**
      * Retourne le nombre d'heures de la période.
      *
-     * Toute heure commencée est comptabilisée (même si l'heure de fin se termine à xx:01).
+     * @param asDecimal - Faut-il retourner la durée en heure en nombre entier (`false`, par défaut),
+     *                  ou en nombre décimal (`true`) ?
+     *                  En nombre entier, toute heure commencée est comptabilisée (même si l'heure
+     *                  de fin se termine à xx:01).
      *
      * @returns Le nombre d'heure de la période.
      */
-    public asHours(): number {
+    public asHours(asDecimal: true): Decimal;
+    public asHours(asDecimal?: false): number;
+    public asHours(asDecimal: boolean = false): number | Decimal {
+        if (asDecimal) {
+            return new Decimal(this._end.diff(this._start, 'hours'));
+        }
+
         const start = this._start.startOf('hour');
         const end = this._end.format('mm:ss') !== '00:00'
             ? this._end.endOfHour(true)

@@ -6,6 +6,7 @@ import Button from '@/themes/default/components/Button';
 import type { PropType } from '@vue/composition-api';
 import type { GroupDetails } from '@/stores/api/groups';
 import type { TechnicianDetails } from '@/stores/api/technicians';
+import type { Role } from '@/stores/api/roles';
 
 type Props = {
     /** Le technicien dont on veut afficher les détails. */
@@ -47,14 +48,24 @@ const TechnicianViewInfos = defineComponent({
     mounted() {
         this.$store.dispatch('groups/fetch');
     },
+    methods: {
+        __(key: string, params?: Record<string, number | string>, count?: number): string {
+            key = !key.startsWith('global.')
+                ? `page.technician-view.infos.${key}`
+                : key.replace(/^global\./, '');
+
+            return this.$t(key, params, count);
+        },
+    },
     render() {
-        const { $t: __, completeName, email, userGroup, isAdmin } = this;
+        const { __, completeName, email, userGroup, isAdmin } = this;
         const {
             phone,
             country,
             user,
             note,
             full_address: address,
+            roles,
         } = this.technician;
 
         return (
@@ -66,48 +77,48 @@ const TechnicianViewInfos = defineComponent({
                     <div class="TechnicianViewInfos__main__contact">
                         <dl class="TechnicianViewInfos__info">
                             <dt class="TechnicianViewInfos__info__label">
-                                {__('phone')}
+                                {__('global.phone')}
                             </dt>
                             <dd class="TechnicianViewInfos__info__value">
                                 {phone ?? (
                                     <span class="TechnicianViewInfos__info__empty">
-                                        {__('not-specified')}
+                                        {__('global.not-specified')}
                                     </span>
                                 )}
                             </dd>
                         </dl>
                         <dl class="TechnicianViewInfos__info">
                             <dt class="TechnicianViewInfos__info__label">
-                                {__('email')}
+                                {__('global.email')}
                             </dt>
                             <dd class="TechnicianViewInfos__info__value">
                                 {email ? <a href={`mailto:${email}`}>{email}</a> : (
                                     <span class="TechnicianViewInfos__info__empty">
-                                        {__('not-specified')}
+                                        {__('global.not-specified')}
                                     </span>
                                 )}
                             </dd>
                         </dl>
                         <dl class="TechnicianViewInfos__info">
                             <dt class="TechnicianViewInfos__info__label">
-                                {__('address')}
+                                {__('global.address')}
                             </dt>
                             <dd class="TechnicianViewInfos__info__value">
                                 {address ?? (
                                     <span class="TechnicianViewInfos__info__empty">
-                                        {__('not-specified')}
+                                        {__('global.not-specified')}
                                     </span>
                                 )}
                             </dd>
                         </dl>
                         <dl class="TechnicianViewInfos__info">
                             <dt class="TechnicianViewInfos__info__label">
-                                {__('country')}
+                                {__('global.country')}
                             </dt>
                             <dd class="TechnicianViewInfos__info__value">
                                 {country?.name ?? (
                                     <span class="TechnicianViewInfos__info__empty">
-                                        {__('not-specified')}
+                                        {__('global.not-specified')}
                                     </span>
                                 )}
                             </dd>
@@ -117,7 +128,7 @@ const TechnicianViewInfos = defineComponent({
                         {!!user && (
                             <dl class="TechnicianViewInfos__info">
                                 <dt class="TechnicianViewInfos__info__label">
-                                    {__('page.beneficiary-view.infos.user-account')}
+                                    {__('user-account')}
                                 </dt>
                                 <dd class="TechnicianViewInfos__info__value">
                                     <span class="TechnicianViewInfos__pseudo">
@@ -132,7 +143,7 @@ const TechnicianViewInfos = defineComponent({
                                             type="transparent"
                                             icon="edit"
                                             to={{ name: 'edit-user', params: { id: user.id } }}
-                                            tooltip={__('page.technician-view.infos.modify-associated-user')}
+                                            tooltip={__('modify-associated-user')}
                                             class="TechnicianViewInfos__user-edit-button"
                                         />
                                     )}
@@ -149,6 +160,27 @@ const TechnicianViewInfos = defineComponent({
                                 </dd>
                             </dl>
                         )}
+                        <dl class="TechnicianViewInfos__info">
+                            <dt class="TechnicianViewInfos__info__label">
+                                {__('roles.title')}
+                            </dt>
+                            <dd class="TechnicianViewInfos__info__value">
+                                {roles.length === 0 && (
+                                    <span class="TechnicianViewInfos__info__empty">
+                                        {__('roles.empty')}
+                                    </span>
+                                )}
+                                {roles.length > 0 && (
+                                    <ul class="TechnicianViewInfos__roles">
+                                        {roles.map((role: Role) => (
+                                            <li key={role.id} class="TechnicianViewInfos__roles__item">
+                                                {role.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </dd>
+                        </dl>
                     </div>
                 </section>
             </div>

@@ -2,6 +2,7 @@ import './index.scss';
 import DateTime from '@/utils/datetime';
 import { PeriodReadableFormat } from '@/utils/period';
 import { defineComponent } from '@vue/composition-api';
+import EmptyMessage from '@/themes/default/components/EmptyMessage';
 import Timeline from '@/themes/default/components/Timeline';
 import formatEventTechniciansList from '@/utils/formatEventTechniciansList';
 
@@ -32,6 +33,10 @@ const EventDetailsTechnicians = defineComponent({
                 .setFullDays(false);
         },
 
+        hasAssignments(): boolean {
+            return this.event.technicians.length > 0;
+        },
+
         groups(): TimelineGroup[] {
             const techniciansList = formatEventTechniciansList(this.event.technicians);
             return techniciansList.map(({ id, name }: TechnicianWithPeriods) => ({ id, name }));
@@ -40,15 +45,20 @@ const EventDetailsTechnicians = defineComponent({
         events(): TimelineItem[] {
             const { $t: __, event } = this;
 
+            const eventInfos = (event.location ?? '').length > 0
+                ? `${event.title} (${event.location!})`
+                : event.title;
+
             return (event.technicians ?? []).map((assignment: EventTechnician) => {
                 const formattedPeriod = assignment.period.toReadable(__, PeriodReadableFormat.MINIMALIST);
-                const assignmentInfos = (assignment.position ?? '').length > 0
-                    ? `${formattedPeriod}: ${assignment.position!}`
+                const assignmentInfos = assignment.role !== null
+                    ? `${formattedPeriod}: ${assignment.role.name}`
                     : formattedPeriod;
 
                 return {
                     id: assignment.id,
                     summary: assignmentInfos,
+                    tooltip: `${eventInfos}\n${assignmentInfos}`,
                     period: assignment.period,
                     group: assignment.technician.id,
                     type: 'range',
@@ -57,7 +67,15 @@ const EventDetailsTechnicians = defineComponent({
         },
     },
     render() {
-        const { events, groups, assignationPeriod } = this;
+        const { hasAssignments, events, groups, assignationPeriod } = this;
+
+        if (!hasAssignments) {
+            return (
+                <div class="EventDetailsTechnicians">
+                    <EmptyMessage size="small" />
+                </div>
+            );
+        }
 
         return (
             <div class="EventDetailsTechnicians">

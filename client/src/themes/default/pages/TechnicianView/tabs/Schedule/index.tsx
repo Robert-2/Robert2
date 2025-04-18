@@ -10,10 +10,10 @@ import MonthCalendar from '@/themes/default/components/MonthCalendar';
 import Loading from '@/themes/default/components/Loading';
 import showModal from '@/utils/showModal';
 
+import type Color from '@/utils/color';
 import type { PropType } from '@vue/composition-api';
 import type { CalendarItem } from '@/themes/default/components/MonthCalendar';
 import type { Technician, TechnicianEvent } from '@/stores/api/technicians';
-import type { RawColor } from '@/utils/color';
 
 type Props = {
     /** Le technicien dont on veut voir le planning */
@@ -58,6 +58,8 @@ const TechnicianViewSchedule = defineComponent({
                 const { is_confirmed: isConfirmed } = event;
                 const isPast = assignment.period.isBefore(now);
 
+                const color: Color | null = event.color ?? null;
+
                 // - Si la date de fin est minuit du jour suivant, on la met à la seconde précédente
                 //   pour éviter que le slot apparaisse dans le jour suivant sur le calendrier.
                 const period = new Period(
@@ -74,15 +76,15 @@ const TechnicianViewSchedule = defineComponent({
                     : truncate(event.title, { length: 45 });
 
                 const formattedPeriod = assignment.period.toReadable(__, PeriodReadableFormat.MINIMALIST);
-                const assignmentInfos = (assignment.position ?? '').length > 0
-                    ? `${formattedPeriod}: ${assignment.position!}`
+                const assignmentInfos = assignment.role
+                    ? `${formattedPeriod}: ${assignment.role.name}`
                     : formattedPeriod;
 
                 return {
                     id: assignment.id,
                     summary: `${eventInfos}\n${assignmentInfos}`,
                     period,
-                    color: event.color as RawColor | null,
+                    color: color?.toHexString() ?? null,
                     className: ['TechnicianViewSchedule__item', {
                         'TechnicianViewSchedule__item--past': isPast,
                         'TechnicianViewSchedule__item--not-confirmed': !isConfirmed,

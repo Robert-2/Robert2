@@ -2,6 +2,10 @@ title-create: New technician
 title-edit-simple: Modify technician
 title-edit: 'Modify technician "{name}"'
 
+roles:
+    label: Roles of the technician
+    help: You can choose multiple roles for the technician.
+
 user-account: User account
 existing-user-help: "To modify or delete the user linked to this technician, go to the \"Users\" section."
 

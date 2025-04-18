@@ -55,6 +55,11 @@ final class Config
             'host' => 'proxy.loxya.test',
             'port' => 3128,
         ],
+        // - Activation / Désactivation des fonctionnalités.
+        'features' => [
+            /** Active, ou non, la gestion de techniciens. */
+            'technicians' => true,
+        ],
         'auth' => [
             'cookie' => 'auth',
         ],

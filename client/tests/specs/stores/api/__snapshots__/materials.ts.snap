@@ -1474,6 +1474,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
 {
   "data": [
     {
+      "author": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "beneficiaries": [
         {
           "company": {
@@ -1526,6 +1536,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "entity": "event",
       "has_missing_materials": null,
       "has_not_returned_materials": false,
+      "has_unassigned_mandatory_positions": false,
       "id": 1,
       "is_archived": false,
       "is_billable": true,
@@ -1533,6 +1544,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": true,
       "is_return_inventory_done": true,
       "location": "Gap",
+      "manager": {
+        "email": "tester2@robertmanager.net",
+        "first_name": "Roger",
+        "full_name": "Roger Rabbit",
+        "group": "management",
+        "id": 2,
+        "last_name": "Rabbit",
+        "phone": null,
+        "pseudo": "test2",
+      },
       "materials_count": 3,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-19 00:00:00",
@@ -1560,7 +1581,11 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
             "isFullDays": false,
             "start": "2018-12-17 09:00:00",
           },
-          "position": "Régisseur",
+          "role": {
+            "id": 1,
+            "is_used": true,
+            "name": "Régisseur",
+          },
           "technician": {
             "country": null,
             "country_id": null,
@@ -1575,6 +1600,18 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
             "note": null,
             "phone": null,
             "postal_code": null,
+            "roles": [
+              {
+                "id": 1,
+                "is_used": true,
+                "name": "Régisseur",
+              },
+              {
+                "id": 3,
+                "is_used": true,
+                "name": "Ingénieur du son",
+              },
+            ],
             "street": null,
             "user_id": 2,
           },
@@ -1588,7 +1625,11 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
             "isFullDays": false,
             "start": "2018-12-18 14:00:00",
           },
-          "position": "Technicien plateau",
+          "role": {
+            "id": 2,
+            "is_used": true,
+            "name": "Technicien plateau",
+          },
           "technician": {
             "country": {
               "code": "CH",
@@ -1607,6 +1648,13 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
             "note": null,
             "phone": "+33645698520",
             "postal_code": null,
+            "roles": [
+              {
+                "id": 2,
+                "is_used": true,
+                "name": "Technicien plateau",
+              },
+            ],
             "street": null,
             "user_id": null,
           },
@@ -1616,6 +1664,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "title": "Premier événement",
     },
     {
+      "author": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "beneficiaries": [
         {
           "company": null,
@@ -1641,12 +1699,13 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "categories": [
         1,
       ],
-      "color": "#ffba49",
+      "color": /* Color Instance => */ "#ffba49",
       "created_at": /* DateTime Instance => */ "2018-12-16 12:50:45",
       "description": null,
       "entity": "event",
       "has_missing_materials": null,
       "has_not_returned_materials": true,
+      "has_unassigned_mandatory_positions": true,
       "id": 2,
       "is_archived": false,
       "is_billable": true,
@@ -1654,6 +1713,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": true,
       "location": "Lyon",
+      "manager": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "materials_count": 5,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-20 00:00:00",
@@ -1676,6 +1745,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "title": "Second événement",
     },
     {
+      "author": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "beneficiaries": [],
       "categories": [
         1,
@@ -1687,6 +1766,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "entity": "event",
       "has_missing_materials": null,
       "has_not_returned_materials": null,
+      "has_unassigned_mandatory_positions": null,
       "id": 3,
       "is_archived": true,
       "is_billable": false,
@@ -1694,6 +1774,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": true,
       "is_return_inventory_done": true,
       "location": "Brousse",
+      "manager": null,
       "materials_count": 23,
       "mobilization_period": /* Period Instance => */ {
         "end": "2018-12-16 15:45:00",
@@ -1716,17 +1797,28 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "title": "Avant-premier événement",
     },
     {
+      "author": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "beneficiaries": [],
       "categories": [
         1,
         3,
       ],
-      "color": "#ef5b5b",
+      "color": /* Color Instance => */ "#ef5b5b",
       "created_at": /* DateTime Instance => */ "2019-01-01 20:12:00",
       "description": null,
       "entity": "event",
       "has_missing_materials": true,
       "has_not_returned_materials": null,
+      "has_unassigned_mandatory_positions": false,
       "id": 4,
       "is_archived": false,
       "is_billable": false,
@@ -1734,6 +1826,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "Moon",
+      "manager": null,
       "materials_count": 6,
       "mobilization_period": /* Period Instance => */ {
         "end": "2019-04-11 00:00:00",
@@ -1757,6 +1850,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "title": "Concert X",
     },
     {
+      "author": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "beneficiaries": [
         {
           "company": {
@@ -1808,6 +1911,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "entity": "event",
       "has_missing_materials": true,
       "has_not_returned_materials": null,
+      "has_unassigned_mandatory_positions": false,
       "id": 5,
       "is_archived": false,
       "is_billable": false,
@@ -1815,6 +1919,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "Saint-Jean-la-Forêt",
+      "manager": null,
       "materials_count": 2,
       "mobilization_period": /* Period Instance => */ {
         "end": "2020-01-02 00:00:00",
@@ -1837,14 +1942,25 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "title": "Kermesse de l'école des trois cailloux",
     },
     {
+      "author": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "beneficiaries": [],
       "categories": [],
-      "color": "#ef5b5b",
+      "color": /* Color Instance => */ "#ef5b5b",
       "created_at": /* DateTime Instance => */ "2019-02-01 12:00:00",
       "description": null,
       "entity": "event",
       "has_missing_materials": false,
       "has_not_returned_materials": null,
+      "has_unassigned_mandatory_positions": false,
       "id": 6,
       "is_archived": false,
       "is_billable": false,
@@ -1852,6 +1968,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "La Clusaz",
+      "manager": null,
       "materials_count": 0,
       "mobilization_period": /* Period Instance => */ {
         "end": "2019-04-02 00:00:00",
@@ -1872,6 +1989,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "title": "Un événement sans inspiration",
     },
     {
+      "author": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "beneficiaries": [],
       "categories": [
         1,
@@ -1884,6 +2011,7 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "entity": "event",
       "has_missing_materials": false,
       "has_not_returned_materials": null,
+      "has_unassigned_mandatory_positions": false,
       "id": 7,
       "is_archived": false,
       "is_billable": true,
@@ -1891,6 +2019,16 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
       "is_departure_inventory_done": false,
       "is_return_inventory_done": false,
       "location": "Machin-le-chateau",
+      "manager": {
+        "email": "tester@robertmanager.net",
+        "first_name": "Jean",
+        "full_name": "Jean Fountain",
+        "group": "administration",
+        "id": 1,
+        "last_name": "Fountain",
+        "phone": null,
+        "pseudo": "test1",
+      },
       "materials_count": 7,
       "mobilization_period": /* Period Instance => */ {
         "end": "2023-05-29 00:00:00",
@@ -1919,7 +2057,11 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
             "isFullDays": false,
             "start": "2023-05-25 00:00:00",
           },
-          "position": "Ingénieur du son",
+          "role": {
+            "id": 3,
+            "is_used": true,
+            "name": "Ingénieur du son",
+          },
           "technician": {
             "country": {
               "code": "CH",
@@ -1938,6 +2080,13 @@ exports[`Materials Api bookings() parse the returned data correctly 1`] = `
             "note": null,
             "phone": "+33645698520",
             "postal_code": null,
+            "roles": [
+              {
+                "id": 2,
+                "is_used": true,
+                "name": "Technicien plateau",
+              },
+            ],
             "street": null,
             "user_id": null,
           },

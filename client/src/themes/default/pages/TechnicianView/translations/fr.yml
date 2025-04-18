@@ -6,10 +6,45 @@ title: "Technicien «\_{name}\_»"
 #
 
 infos:
+    user-account: Compte utilisateur
     modify-associated-user: Modifier l'utilisateur associé
-    technician-is-preparer: Ce technicien est préparateur de commandes.
-    preparer-description: Il/elle peut donc être assigné(e) en tant que préparateur(trice) des événements.
+
+    notes: Notes
+    roles:
+        title: Rôles du technicien
+        empty: Aucun rôle n'est attribué à ce technicien.
 
 documents:
     confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce document\_?"
     deleted: Document supprimé.
+
+assignments:
+    title: Assignations
+    simple-list: Liste simple
+    by-event: Par événement
+    by-position: Par poste occupé
+    nothing-to-show: Ce technicien n'a été assigné à aucun événement pour l'instant.
+    assigned-to-role: "Assigné au role «\_{role}\_»"
+    assigned-without-role: Assigné sans role particulier
+    no-specific-role: Aucun role spécifié
+    event-title: "Événement «\_{title}\_»"
+    done: Terminé
+    currently-mobilized: En cours
+    mobilized-starting-from: Prévu le {date}
+    role: Rôle
+    assignment-period: Période d'assignation
+    assignments-count:
+        - "{count} assignation"
+        - "{count} assignations"
+    past-assignments-count:
+        - "{count} assignation passée."
+        - "{count} assignations passées."
+    future-assignments-count:
+        - "{count} assignation future."
+        - "{count} assignations futures."
+    total-assignments:
+        - "Total\_: {count} assignation."
+        - "Total\_: {count} assignations."
+    total-events-assignments: "Technicien assigné {count} fois, dans {eventsCount} événement(s) au total."
+    total-positions-assignments: "Technicien assigné {count} fois, avec {positionsCount} rôle(s) différent(s)."
+    including-ongoing: dont 1 en cours

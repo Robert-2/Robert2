@@ -25,10 +25,13 @@ return [
         '/persons[/]' => 'PersonController:getAll',
 
         '/technicians[/]' => 'TechnicianController:getAll',
+        '/technicians/while-event/{eventId:[0-9]+}[/]' => 'TechnicianController:getAllWhileEvent',
+        '/technicians/with-assignments[/]' => 'TechnicianController:getAllWithAssignments',
         '/technicians/{id:[0-9]+}/events[/]' => 'TechnicianController:getEvents',
         '/technicians/{id:[0-9]+}/documents[/]' => 'TechnicianController:getDocuments',
-        '/technicians/while-event/{eventId:[0-9]+}[/]' => 'TechnicianController:getAllWhileEvent',
         '/technicians/{id:[0-9]+}[/]' => 'TechnicianController:getOne',
+
+        '/roles[/]' => 'RoleController:getAll',
 
         '/beneficiaries[/]' => 'BeneficiaryController:getAll',
         '/beneficiaries/{id:[0-9]+}[/]' => 'BeneficiaryController:getOne',
@@ -58,8 +61,6 @@ return [
         '/events/{id:[0-9]+}[/]' => 'EventController:getOne',
         '/events/{id:[0-9]+}/missing-materials[/]' => 'EventController:getMissingMaterials',
         '/events/{id:[0-9]+}/documents[/]' => 'EventController:getDocuments',
-
-        '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:getOne',
 
         '/settings[/]' => 'SettingController:getAll',
 
@@ -91,6 +92,8 @@ return [
         '/technicians[/]' => 'TechnicianController:create',
         '/technicians/{id:[0-9]+}/documents[/]' => 'TechnicianController:attachDocument',
 
+        '/roles[/]' => 'RoleController:create',
+
         '/beneficiaries[/]' => 'BeneficiaryController:create',
 
         '/companies[/]' => 'CompanyController:create',
@@ -107,8 +110,23 @@ return [
         '/events/{id:[0-9]+}/invoices[/]' => 'EventController:createInvoice',
         '/events/{id:[0-9]+}/estimates[/]' => 'EventController:createEstimate',
         '/events/{id:[0-9]+}/documents[/]' => 'EventController:attachDocument',
+        '/events/{id:[0-9]+}/assignments[/]' => 'EventController:createAssignment',
+        '/events/{id:[0-9]+}/positions[/]' => 'EventController:createPosition',
 
-        '/event-technicians[/]' => 'EventTechnicianController:create',
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/lists[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
+        ) => 'BookingController:createList',
+
+        '/list-templates[/]' => 'ListTemplateController:create',
+
+        '/cart[/]' => 'CartController:create',
+        '/cart/checkout[/]' => 'CartController:checkout',
+
+        sprintf(
+            '/bookings/{entity:(?:%s)}/{id:[0-9]+}/report[/]',
+            implode('|', array_keys(BookingController::BOOKING_TYPES)),
+        ) => 'BookingController:sendListToBorrowers',
     ],
     'put' => [
         '/users/{id:(?:[0-9]+|self)}[/]' => 'UserController:update',
@@ -131,6 +149,8 @@ return [
         '/technicians/{id:[0-9]+}[/]' => 'TechnicianController:update',
         '/technicians/restore/{id:[0-9]+}[/]' => 'TechnicianController:restore',
 
+        '/roles/{id:[0-9]+}[/]' => 'RoleController:update',
+
         '/beneficiaries/{id:[0-9]+}[/]' => 'BeneficiaryController:update',
         '/beneficiaries/restore/{id:[0-9]+}[/]' => 'BeneficiaryController:restore',
 
@@ -146,6 +166,7 @@ return [
         '/attributes/{id:[0-9]+}[/]' => 'AttributeController:update',
 
         '/events/{id:[0-9]+}[/]' => 'EventController:update',
+        '/events/{id:[0-9]+}/note[/]' => 'EventController:updateNote',
         '/events/restore/{id:[0-9]+}[/]' => 'EventController:restore',
         '/events/{id:[0-9]+}/departure[/]' => 'EventController:updateDepartureInventory',
         '/events/{id:[0-9]+}/departure/finish[/]' => 'EventController:finishDepartureInventory',
@@ -153,8 +174,7 @@ return [
         '/events/{id:[0-9]+}/return/finish[/]' => 'EventController:finishReturnInventory',
         '/events/{id:[0-9]+}/archive[/]' => 'EventController:archive',
         '/events/{id:[0-9]+}/unarchive[/]' => 'EventController:unarchive',
-
-        '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:update',
+        '/events/{id:[0-9]+}/assignments/{assignmentId:[0-9]+}[/]' => 'EventController:updateAssignment',
 
         '/settings[/]' => 'SettingController:update',
 
@@ -183,12 +203,12 @@ return [
         '/taxes/{id:[0-9]+}[/]' => 'TaxController:delete',
         '/degressive-rates/{id:[0-9]+}[/]' => 'DegressiveRateController:delete',
         '/technicians/{id:[0-9]+}[/]' => 'TechnicianController:delete',
+        '/roles/{id:[0-9]+}[/]' => 'RoleController:delete',
         '/beneficiaries/{id:[0-9]+}[/]' => 'BeneficiaryController:delete',
         '/companies/{id:[0-9]+}[/]' => 'CompanyController:delete',
         '/parks/{id:[0-9]+}[/]' => 'ParkController:delete',
         '/materials/{id:[0-9]+}[/]' => 'MaterialController:delete',
         '/attributes/{id:[0-9]+}[/]' => 'AttributeController:delete',
-        '/event-technicians/{id:[0-9]+}[/]' => 'EventTechnicianController:delete',
         '/documents/{id:[0-9]+}[/]' => 'DocumentController:delete',
         '/estimates/{id:[0-9]+}[/]' => 'EstimateController:delete',
         '/settings/{key:[a-zA-Z0-9-.]+}[/]' => 'SettingController:reset',
@@ -196,5 +216,7 @@ return [
         '/events/{id:[0-9]+}[/]' => 'EventController:delete',
         '/events/{id:[0-9]+}/departure[/]' => 'EventController:cancelDepartureInventory',
         '/events/{id:[0-9]+}/return[/]' => 'EventController:cancelReturnInventory',
+        '/events/{id:[0-9]+}/assignments/{assignmentId:[0-9]+}[/]' => 'EventController:deleteAssignment',
+        '/events/{id:[0-9]+}/positions/{positionId:[0-9]+}[/]' => 'EventController:deletePosition',
     ],
 ];

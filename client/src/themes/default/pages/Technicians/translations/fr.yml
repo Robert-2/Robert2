@@ -1,15 +1,34 @@
-title: Techniciens
-title-trash: Techniciens supprimés
-help: Vous pouvez envoyer un email à un technicien en cliquant sur son adresse.
-
 action-add: Nouveau technicien
-period-of-availability: Période de disponibilité
-has-access-to-schedule: "A accès au planning\_?"
+manage-roles: Gérer les rôles
+roles: Rôles
 
-confirm-delete: "Mettre ce technicien à la corbeille\_?"
-confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce technicien\_?"
-confirm-restore: "Voulez-vous vraiment restaurer ce technicien\_?"
+mode-switch:
+    listing: Liste
+    planning: Planning
 
-saved: Technicien sauvegardé.
-deleted: Technicien supprimé.
-restored: Technicien restauré.
+#
+# - Sous-pages (vues)
+#
+
+sub-pages:
+    listing:
+        title: Techniciens
+        title-trash: Techniciens supprimés
+
+        period-of-availability: Période de disponibilité
+
+        confirm-delete: "Mettre ce technicien à la corbeille\_?"
+        confirm-permanently-delete: "Voulez-vous vraiment supprimer définitivement ce technicien\_?"
+        confirm-restore: "Voulez-vous vraiment restaurer ce technicien\_?"
+
+        saved: Technicien sauvegardé.
+        deleted: Technicien supprimé.
+        restored: Technicien restauré.
+
+    timeline:
+        title: Planning des techniciens
+
+        add-technician: Ajouter un technicien
+
+        no-technicians: Il n'y a aucun technicien pour le moment.
+        no-technicians-with-this-search: Aucun technicien n'a été trouvé avec cette recherche.

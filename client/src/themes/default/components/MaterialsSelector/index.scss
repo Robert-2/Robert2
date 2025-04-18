@@ -8,16 +8,18 @@
     &__header {
         flex: 0 0 auto;
         display: flex;
-        flex-wrap: wrap;
-        align-items: center;
+        flex-direction: column-reverse;
         gap: globals.$spacing-medium;
 
         &__filters {
             flex: 1;
+            max-width: 100%;
+            min-width: 0;
         }
 
         &__actions {
             display: flex;
+            margin-left: auto;
             gap: globals.$spacing-small;
         }
     }
@@ -35,5 +37,16 @@
         align-items: center;
         justify-content: center;
         min-height: 300px;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: 1500px) {
+        &__header {
+            flex-direction: row;
+            align-items: center;
+        }
     }
 }

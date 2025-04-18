@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection as CoreCollection;
 use Loxya\Config\Config;
 use Loxya\Config\Enums\BillingMode;
+use Loxya\Config\Enums\Feature;
 use Loxya\Contracts\Bookable;
 use Loxya\Contracts\Pdfable;
 use Loxya\Contracts\PeriodInterface;
@@ -85,9 +86,12 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property-read bool $has_deleted_materials
  * @property-read bool|null $has_not_returned_materials
  * @property-read bool|null $has_materials_returned_broken
+ * @property-read bool|null $has_unassigned_mandatory_positions
  * @property-read int[] $categories
  * @property-read int[] $parks
  * @property string|null $note
+ * @property int|null $manager_id
+ * @property-read User|null $manager
  * @property int|null $author_id
  * @property-read User|null $author
  * @property-read CarbonImmutable $created_at
@@ -95,6 +99,7 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property-read CarbonImmutable|null $deleted_at
  *
  * @property-read Collection<array-key, EventTechnician> $technicians
+ * @property-read Collection<array-key, EventPosition> $positions
  * @property-read Collection<array-key, Beneficiary> $beneficiaries
  * @property-read Collection<array-key, EventMaterial> $materials
  * @property-read Collection<array-key, EventExtra> $extras
@@ -103,14 +108,14 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
  * @property-read Collection<array-key, Document> $documents
  * @property-read Collection<array-key, Attribute> $totalisable_attributes
  *
- * @method static Builder|static search(string $term)
+ * @method static Builder|static search(string|string[] $term)
  * @method static Builder|static inProgress()
  * @method static Builder|static inPeriod(PeriodInterface $period)
  * @method static Builder|static inPeriod(string|\DateTimeInterface $start, string|\DateTimeInterface|null $end)
  * @method static Builder|static inPeriod(string|\DateTimeInterface|PeriodInterface $start, string|\DateTimeInterface|null $end = null)
  * @method static Builder|static havingMaterialInPark(int $parkId)
  * @method static Builder|static notReturned(PeriodInterface $period)
- * @method static Builder|static withInvolvedUser(User $user)
+ * @method static Builder|static withInvolvedUser(User $user, bool $checkBeneficiaries = true)
  */
 final class Event extends BaseModel implements Serializable, PeriodInterface, Bookable, Pdfable
 {
@@ -177,6 +182,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             'is_return_inventory_done' => V::boolType(),
             'return_inventory_datetime' => V::custom([$this, 'checkReturnInventoryDatetime']),
             'return_inventory_author_id' => V::custom([$this, 'checkReturnInventoryAuthorId']),
+            'manager_id' => V::custom([$this, 'checkManagerId']),
             'author_id' => V::custom([$this, 'checkAuthorId']),
         ];
     }
@@ -413,19 +419,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         return $isPastAndInventoryDone ?: 'event-cannot-be-archived';
     }
 
-    public function checkAuthorId($value)
-    {
-        V::nullable(V::intVal())->check($value);
-
-        // - Si le champ est vide ou qu'on est dans un update et que le
-        //   champ n'a pas changé, on laisse passer.
-        if ($value === null || ($this->exists && !$this->isDirty('author_id'))) {
-            return true;
-        }
-
-        return User::includes($value);
-    }
-
     public function checkDepartureInventoryAuthorId($value)
     {
         V::nullable(V::intVal())->check($value);
@@ -484,6 +477,32 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             : true;
     }
 
+    public function checkManagerId($value)
+    {
+        V::nullable(V::intVal())->check($value);
+
+        // - Si le champ est vide ou qu'on est dans un update et que le
+        //   champ n'a pas changé, on laisse passer.
+        if ($value === null || ($this->exists && !$this->isDirty('manager_id'))) {
+            return true;
+        }
+
+        return User::includes($value);
+    }
+
+    public function checkAuthorId($value)
+    {
+        V::nullable(V::intVal())->check($value);
+
+        // - Si le champ est vide ou qu'on est dans un update et que le
+        //   champ n'a pas changé, on laisse passer.
+        if ($value === null || ($this->exists && !$this->isDirty('author_id'))) {
+            return true;
+        }
+
+        return User::includes($value);
+    }
+
     // ------------------------------------------------------
     // -
     // -    Relations
@@ -494,6 +513,12 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     {
         return $this->hasMany(EventTechnician::class, 'event_id')
             ->orderBy('start_date')
+            ->orderBy('id');
+    }
+
+    public function positions(): HasMany
+    {
+        return $this->hasMany(EventPosition::class, 'event_id')
             ->orderBy('id');
     }
 
@@ -538,12 +563,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ->orderBy('id');
     }
 
-    public function author(): BelongsTo
-    {
-        return $this->belongsTo(User::class)
-            ->withTrashed();
-    }
-
     public function departureInventoryAuthor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'departure_inventory_author_id')
@@ -553,6 +572,18 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     public function returnInventoryAuthor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'return_inventory_author_id')
+            ->withTrashed();
+    }
+
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(User::class)
+            ->withTrashed();
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class)
             ->withTrashed();
     }
 
@@ -593,8 +624,9 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         'is_return_inventory_done' => 'boolean',
         'return_inventory_datetime' => 'string',
         'return_inventory_author_id' => 'integer',
-        'note' => 'string',
+        'manager_id' => 'integer',
         'author_id' => 'integer',
+        'note' => 'string',
         'created_at' => 'immutable_datetime',
         'updated_at' => 'immutable_datetime',
         'deleted_at' => 'immutable_datetime',
@@ -633,7 +665,21 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     /** @return Collection<array-key, EventTechnician> */
     public function getTechniciansAttribute(): Collection
     {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            return new Collection([]);
+        }
+
         return $this->getRelationValue('technicians');
+    }
+
+    /** @return Collection<array-key, EventPosition> */
+    public function getPositionsAttribute(): Collection
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            return new Collection([]);
+        }
+
+        return $this->getRelationValue('positions');
     }
 
     /** @return Collection<array-key, EventMaterial> */
@@ -646,6 +692,11 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     public function getExtrasAttribute(): Collection
     {
         return $this->getRelationValue('extras');
+    }
+
+    public function getManagerAttribute(): User|null
+    {
+        return $this->getRelationValue('manager');
     }
 
     public function getAuthorAttribute(): User|null
@@ -943,6 +994,19 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         );
     }
 
+    public function getHasUnassignedMandatoryPositionsAttribute(): bool|null
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS) || !$this->exists || $this->is_archived) {
+            return null;
+        }
+
+        return $this->positions->some(static fn (EventPosition $position) => (
+            // Note: `$position->is_assigned` peut être à `null`
+            //       si l'information n'est pas disponible.
+            $position->is_mandatory && $position->is_assigned === false
+        ));
+    }
+
     public function getIsDepartureInventoryPeriodOpenAttribute(): bool
     {
         return $this->mobilization_period->getStartDate()
@@ -1151,8 +1215,9 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         'is_billable',
         'global_discount_rate',
         'currency',
-        'note',
         'author_id',
+        'manager_id',
+        'note',
     ];
 
     public function setOperationPeriodAttribute(mixed $rawPeriod): void
@@ -1232,38 +1297,43 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         }
 
         // - Techniciens
-        $technicians = null;
-        if (isset($data['technicians'])) {
-            Assert::isArray($data['technicians'], "Key `technicians` must be an array.");
-            $technicians = $data['technicians'];
-        } elseif (
+        $hasPeriodChanged = (
             !($oldOperationPeriod?->isSame($this->operation_period) ?? true) ||
             !($oldMobilizationPeriod?->isSame($this->mobilization_period) ?? true)
-        ) {
-            $assignationPeriod = $this->mobilization_period->merge($this->operation_period);
-            $technicians = $this->technicians->reduce(
-                static function ($assignments, $oldAssignment) use ($assignationPeriod) {
-                    $newPeriod = $oldAssignment->computeNewPeriod($assignationPeriod);
-                    if ($newPeriod !== null) {
-                        $assignments[] = [
-                            'id' => $oldAssignment->technician_id,
-                            'position' => $oldAssignment->position,
-                            'period' => $newPeriod,
-                        ];
-                    }
-                    return $assignments;
-                },
-                [],
-            );
-        }
-        if ($technicians !== null) {
-            try {
-                $this->syncTechnicians($technicians);
-            } catch (ValidationException $e) {
-                throw new ValidationException([
-                    'technicians' => $e->getValidationErrors(),
-                ]);
+        );
+        if (isFeatureEnabled(Feature::TECHNICIANS)) {
+            $technicians = null;
+            if (isset($data['technicians'])) {
+                Assert::isArray($data['technicians'], "Key `technicians` must be an array.");
+                $technicians = $data['technicians'];
+            } elseif ($hasPeriodChanged) {
+                $assignationPeriod = $this->mobilization_period->merge($this->operation_period);
+                $technicians = $this->technicians->reduce(
+                    static function ($assignments, $oldAssignment) use ($assignationPeriod) {
+                        $newPeriod = $oldAssignment->computeNewPeriod($assignationPeriod);
+                        if ($newPeriod !== null) {
+                            $assignments[] = [
+                                'id' => $oldAssignment->technician_id,
+                                'role_id' => $oldAssignment->role_id,
+                                'period' => $newPeriod,
+                            ];
+                        }
+                        return $assignments;
+                    },
+                    [],
+                );
             }
+            if ($technicians !== null) {
+                try {
+                    $this->syncTechnicians($technicians);
+                } catch (ValidationException $e) {
+                    throw new ValidationException([
+                        'technicians' => $e->getValidationErrors(),
+                    ]);
+                }
+            }
+        } elseif ($hasPeriodChanged) {
+            $this->technicians()->delete();
         }
 
         // - Matériels
@@ -1314,9 +1384,16 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
     public function syncTechnicians(array $techniciansData): static
     {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new \LogicException(
+                "Technicians feature is disabled, this method " .
+                "should not have been called.",
+            );
+        }
+
         $schema = V::arrayType()->each(new Rule\KeySetStrict(
             new Rule\Key('id'),
-            new Rule\Key('position'),
+            new Rule\Key('role_id'),
             new Rule\Key('period'),
         ));
         if (!$schema->validate($techniciansData)) {
@@ -1333,7 +1410,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 return ($savedEventTechnician ?? new EventTechnician())->fill([
                     'event_id' => $this->id,
                     'technician_id' => $technicianData['id'],
-                    'position' => $technicianData['position'],
+                    'role_id' => $technicianData['role_id'],
                     'period' => $technicianData['period'],
                 ]);
             },
@@ -2020,21 +2097,25 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             // NOTE: À ne pas remonter avant le `$this->save()` car contient un `$this->refresh()`
             //       qui ferait un reset sur les données actuellement en cours d'edition.
             if ($shouldMoveMobilizationEndDate) {
-                $assignationPeriod = $this->mobilization_period->merge($this->operation_period);
-                $this->syncTechnicians($this->technicians->reduce(
-                    static function ($assignments, $oldAssignment) use ($assignationPeriod) {
-                        $newPeriod = $oldAssignment->computeNewPeriod($assignationPeriod);
-                        if ($newPeriod !== null) {
-                            $assignments[] = [
-                                'id' => $oldAssignment->technician_id,
-                                'position' => $oldAssignment->position,
-                                'period' => $newPeriod,
-                            ];
-                        }
-                        return $assignments;
-                    },
-                    [],
-                ));
+                if (isFeatureEnabled(Feature::TECHNICIANS)) {
+                    $assignationPeriod = $this->mobilization_period->merge($this->operation_period);
+                    $this->syncTechnicians($this->technicians->reduce(
+                        static function ($assignments, $oldAssignment) use ($assignationPeriod) {
+                            $newPeriod = $oldAssignment->computeNewPeriod($assignationPeriod);
+                            if ($newPeriod !== null) {
+                                $assignments[] = [
+                                    'id' => $oldAssignment->technician_id,
+                                    'role_id' => $oldAssignment->role_id,
+                                    'period' => $newPeriod,
+                                ];
+                            }
+                            return $assignments;
+                        },
+                        [],
+                    ));
+                } else {
+                    $this->technicians()->delete();
+                }
             }
 
             // - Met à jour les quantités cassés dans le stock.
@@ -2140,6 +2221,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             $newEvent = self::create([
                 'title' => $this->title,
                 'description' => $this->description,
+                'manager_id' => $this->manager_id,
                 'color' => $this->color,
                 'operation_period' => $newEventData['operation_period'] ?? null,
                 'mobilization_period' => $newEventData['mobilization_period'] ?? null,
@@ -2182,6 +2264,21 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                 ->all();
 
             $newEvent->syncMaterials($materials);
+
+            //
+            // - Postes des techniciens
+            //
+
+            if (isFeatureEnabled(Feature::TECHNICIANS) && $this->positions->isNotEmpty()) {
+                $positions = $this->positions
+                    ->map(static fn (EventPosition $position) => [
+                        'role_id' => $position->role_id,
+                        'is_mandatory' => $position->is_mandatory,
+                    ])
+                    ->all();
+
+                $newEvent->positions()->createMany($positions);
+            }
 
             //
             // - Lignes de facturation.
@@ -2237,8 +2334,18 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -
     // ------------------------------------------------------
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeSearch(Builder $query, string|array $term): Builder
     {
+        if (is_array($term)) {
+            $query->where(static function (Builder $subQuery) use ($term) {
+                foreach ($term as $singleTerm) {
+                    $subQuery->orWhere(static fn (Builder $subSubQuery) => (
+                        $subSubQuery->search($singleTerm)
+                    ));
+                }
+            });
+            return $query;
+        }
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $safeTerm = sprintf('%%%s%%', addcslashes($term, '%_'));
@@ -2250,6 +2357,16 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     // - Ici on passe `$term` et non `$safeTerm`, car `Beneficiary::search()`
                     //   se chargera de l'échappement.
                     $beneficiariesQuery->search($term)
+                ))
+                ->orWhereHas('manager', static fn (Builder $managerQuery) => (
+                    // - Ici on passe `$term` et non `$safeTerm`, car `User::search()`
+                    //   se chargera de l'échappement.
+                    $managerQuery->search($term)
+                ))
+                ->orWhereHas('author', static fn (Builder $authorQuery) => (
+                    // - Ici on passe `$term` et non `$safeTerm`, car `User::search()`
+                    //   se chargera de l'échappement.
+                    $authorQuery->search($term)
                 ))
         ));
     }
@@ -2341,28 +2458,33 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
 
     /**
      * Permet de ne récupérer que les événements dans lesquels un utilisateur
-     * donné est impliqué (bénéficiaire, technicien, préparateur de commande).
-     *
-     * @param Builder $query
-     * @param User $user
+     * donné est impliqué (bénéficiaire, technicien,
+     * chef de projet).
      */
-    public function scopeWithInvolvedUser(Builder $query, User $user): Builder
+    public function scopeWithInvolvedUser(Builder $query, User $user, bool $checkBeneficiaries = true): Builder
     {
-        if (!$user->person) {
-            return $query->whereRaw('1 <> 1');
-        }
+        return $query->where(static function (Builder $query) use ($user, $checkBeneficiaries) {
+            $query->whereBelongsTo($user, 'manager');
 
-        return $query
-            ->where(static fn (Builder $query) => (
-                $query->whereHas('beneficiaries', static fn (Builder $beneficiariesQuery) => (
-                    $beneficiariesQuery->whereBelongsTo($user->person)
-                ))
-                ->orWhereHas('technicians', static fn (Builder $eventTechniciansQuery) => (
-                    $eventTechniciansQuery->whereHas('technician', static fn (Builder $technician) => (
-                        $technician->whereBelongsTo($user->person)
-                    ))
-                ))
-            ));
+            if ($user->person) {
+                if ($checkBeneficiaries) {
+                    $query->orWhereHas('beneficiaries', static fn (Builder $beneficiariesQuery) => (
+                        $beneficiariesQuery->whereBelongsTo($user->person)
+                    ));
+                }
+
+                if (isFeatureEnabled(Feature::TECHNICIANS)) {
+                    $query
+                        ->orWhereHas('technicians', static fn (Builder $eventTechniciansQuery) => (
+                            $eventTechniciansQuery->whereHas('technician', static fn (Builder $technician) => (
+                                $technician->whereBelongsTo($user->person)
+                            ))
+                        ));
+                }
+            }
+
+            return $query;
+        });
     }
 
     // ------------------------------------------------------
@@ -2417,26 +2539,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             }
         }
 
-        $technicians = [];
-        foreach ($this->technicians as $eventTechnician) {
-            $technician = $eventTechnician->technician;
-
-            if (!array_key_exists($technician->id, $technicians)) {
-                $technicians[$technician->id] = [
-                    'id' => $technician->id,
-                    'name' => $technician->full_name,
-                    'phone' => $technician->phone,
-                    'assignments' => [],
-                ];
-            }
-
-            $technicians[$technician->id]['assignments'][] = [
-                'period' => $eventTechnician->period,
-                'position' => $eventTechnician->position,
-            ];
-        }
-
-        return Pdf::createFromTemplate('event-summary', $i18n, $pdfName, [
+        $data = [
             'now' => CarbonImmutable::now(),
             'event' => $this,
             'beneficiaries' => $this->beneficiaries,
@@ -2444,15 +2547,39 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             'sortedBy' => $sortedBy,
             'materialsSorted' => $materialsSorted,
             'materialDisplayMode' => $displayMode,
-            'technicians' => array_values($technicians),
             'totalisableAttributes' => $this->totalisable_attributes,
             'customText' => Setting::getWithKey('eventSummary.customText'),
             'showLegalNumbers' => Setting::getWithKey('eventSummary.showLegalNumbers'),
             'showReplacementPrices' => Setting::getWithKey('eventSummary.showReplacementPrices'),
             'showDescriptions' => Setting::getWithKey('eventSummary.showDescriptions'),
             'showTags' => Setting::getWithKey('eventSummary.showTags'),
+            'showUnitsSerialNumbers' => Setting::getWithKey('eventSummary.showUnitsSerialNumbers'),
             'showPictures' => Setting::getWithKey('eventSummary.showPictures'),
-        ]);
+        ];
+
+        if (isFeatureEnabled(Feature::TECHNICIANS)) {
+            $technicians = [];
+            foreach ($this->technicians as $eventTechnician) {
+                $technician = $eventTechnician->technician;
+
+                if (!array_key_exists($technician->id, $technicians)) {
+                    $technicians[$technician->id] = [
+                        'id' => $technician->id,
+                        'name' => $technician->full_name,
+                        'phone' => $technician->phone,
+                        'assignments' => [],
+                    ];
+                }
+
+                $technicians[$technician->id]['assignments'][] = [
+                    'period' => $eventTechnician->period,
+                    'position' => $eventTechnician->role?->name,
+                ];
+            }
+            $data['technicians'] = array_values($technicians);
+        }
+
+        return Pdf::createFromTemplate('event-summary', $i18n, $pdfName, $data);
     }
 
     // ------------------------------------------------------
@@ -2460,25 +2587,6 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
     // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
-
-    /**
-     * Retourne un événement via son identifiant, uniquement
-     * s'il est accessible par l'utilisateur donné.
-     *
-     * @param int $id L'identifiant de l'événement à récupérer.
-     * @param User $user L'utilisateur pour lequel on effectue la récupération.
-     *
-     * @return static L'événement correspondant à l'identifiant.
-     */
-    public static function findOrFailForUser(int $id, User $user): static
-    {
-        return static::query()
-            ->when(
-                $user->group === Group::READONLY_PLANNING_SELF,
-                static fn (Builder $subQuery) => $subQuery->withInvolvedUser($user),
-            )
-            ->findOrFail($id);
-    }
 
     // ------------------------------------------------------
     // -
@@ -2495,8 +2603,10 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             switch ($format) {
                 case self::SERIALIZE_DETAILS:
                     $event->append([
+                        'manager',
                         'beneficiaries',
                         'technicians',
+                        'positions',
                         'total_replacement',
                         'departure_inventory_author',
                         'return_inventory_author',
@@ -2504,6 +2614,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                         'has_not_returned_materials',
                         'has_missing_materials',
                         'has_deleted_materials',
+                        'has_unassigned_mandatory_positions',
                         'author',
                     ]);
                     if ($event->is_billable) {
@@ -2511,37 +2622,50 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
                     }
                     break;
 
+                case self::SERIALIZE_DEFAULT:
+                    $event->append(['beneficiaries']);
+                    break;
+
                 case self::SERIALIZE_BOOKING_EXCERPT:
                     $event->append([
+                        'manager',
                         'beneficiaries',
                         'technicians',
                         'has_not_returned_materials',
+                        'has_unassigned_mandatory_positions',
                         'categories',
                         'parks',
+                        'author',
                     ]);
                     break;
 
                 case self::SERIALIZE_BOOKING_SUMMARY:
                     $event->append([
+                        'manager',
                         'beneficiaries',
                         'technicians',
                         'has_not_returned_materials',
                         'has_missing_materials',
+                        'has_unassigned_mandatory_positions',
                         'categories',
                         'parks',
+                        'author',
                     ]);
                     break;
 
                 case self::SERIALIZE_BOOKING_DEFAULT:
                     $event->append([
+                        'manager',
                         'beneficiaries',
                         'technicians',
+                        'positions',
                         'departure_inventory_author',
                         'return_inventory_author',
                         'is_return_inventory_started',
                         'has_not_returned_materials',
                         'has_missing_materials',
                         'has_deleted_materials',
+                        'has_unassigned_mandatory_positions',
                         'total_replacement',
                         'author',
                     ]);
@@ -2643,26 +2767,37 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
         // - Si l'utilisateur n'est pas un membre de l'équipe, et qu'il
         //   n'est pas bénéficiaire de l'événement, on enlève les devis
         //   et les factures du payload.
+        $user = Auth::user();
         $canSeeBilling = (
             Auth::is([Group::ADMINISTRATION, Group::MANAGEMENT]) ||
             (
-                Auth::is(Group::READONLY_PLANNING_SELF) &&
-                Auth::user()?->beneficiary?->isAssignedToEvent($event)
+                $user !== null &&
+                Auth::is([
+                    Group::READONLY_PLANNING_GENERAL,
+                ]) &&
+                $user->beneficiary?->isAssignedToEvent($event)
             )
         );
         if (!$canSeeBilling) {
             $data->delete(['estimates', 'invoices']);
         }
 
-        // - Si l'utilisateur n'est pas un membre de l'équipe, et qu'il
-        //   n'est pas technicien assigné à l'événement ou préparateur de
-        //   commande, on enlève les notes du payload.
+        // - Si l'utilisateur n'est pas un membre de l'équipe, qu'il
+        //   n'est pas le chef de projet, ou un technicien assigné à l'événement,
+        //   on enlève les notes du payload.
         $canSeeNotes = (
             Auth::is([Group::ADMINISTRATION, Group::MANAGEMENT]) ||
             (
-                Auth::is(Group::READONLY_PLANNING_SELF) &&
+                $user !== null &&
+                Auth::is([
+                    Group::READONLY_PLANNING_GENERAL,
+                ]) &&
+                $event->manager?->is($user) ||
                 (
-                    Auth::user()?->technician?->isAssignedToEvent($event)
+                    isFeatureEnabled(Feature::TECHNICIANS) &&
+                    (
+                        $user->technician?->isAssignedToEvent($event)
+                    )
                 )
             )
         );
@@ -2706,6 +2841,7 @@ final class Event extends BaseModel implements Serializable, PeriodInterface, Bo
             ->delete([
                 'author_id',
                 'preparer_id',
+                'manager_id',
                 'operation_start_date',
                 'operation_end_date',
                 'operation_is_full_days',

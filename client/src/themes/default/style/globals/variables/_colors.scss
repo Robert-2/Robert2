@@ -2,6 +2,10 @@
 
 $primary-color: #0077b6;
 
+//
+// - Couleurs des backgrounds.
+//
+
 $bg-color-body: #2a282a;
 $bg-color-emphasis: #252325;
 $bg-color-emphasis-light: #2e2d2e;
@@ -11,6 +15,9 @@ $bg-color-emphasis-success: #2b2d29;
 
 $bg-color-table-th: #2e2e2e;
 $bg-color-table-td: #363636;
+
+$bg-color-list-item: #2e2e2e;
+$bg-color-list-item-emphasis: #363636;
 
 $bg-color-side-menu-item-hover: #262626;
 $bg-color-side-menu-item-active: #242424;
@@ -22,8 +29,10 @@ $bg-color-button-success: #2c7d43;
 $bg-color-button-warning: #b4320e;
 $bg-color-button-danger: #911d0a;
 
+$bg-color-highlighted-item: #7a2b0d;
+
 //
-// - Couleur des textes.
+// - Couleurs des textes.
 //
 
 $text-base-color: #e3e3e3;

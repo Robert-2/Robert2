@@ -8,15 +8,14 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Loxya\Config\Config;
+use Loxya\Config\Enums\Feature;
 use Loxya\Contracts\Serializable;
 use Loxya\Errors\Exception\ValidationException;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
-use Loxya\Services\Auth;
 use Loxya\Support\Arr;
 use Loxya\Support\Assert;
 use Respect\Validation\Validator as V;
@@ -46,10 +45,11 @@ use Respect\Validation\Validator as V;
  * @property-read CarbonImmutable|null $updated_at
  * @property-read CarbonImmutable|null $deleted_at
  *
+ * @property-read Collection<array-key, Role> $roles
  * @property-read Collection<array-key, EventTechnician> $assignments
  * @property-read Collection<array-key, Document> $documents
  *
- * @method static Builder|static search(string $term)
+ * @method static Builder|static search(string|string[] $term)
  */
 final class Technician extends BaseModel implements Serializable
 {
@@ -130,6 +130,27 @@ final class Technician extends BaseModel implements Serializable
         return $this->morphMany(Document::class, 'entity')
             ->orderBy('name', 'asc')
             ->orderBy('id', 'asc');
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'technician_roles')
+            ->using(TechnicianRole::class)
+            ->orderBy('name', 'asc');
+    }
+
+    // ------------------------------------------------------
+    // -
+    // -    Overwritten methods
+    // -
+    // ------------------------------------------------------
+
+    public function save(array $options = [])
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            throw new \LogicException("Disabled feature, can't save.");
+        }
+        return parent::save($options);
     }
 
     // ------------------------------------------------------
@@ -304,6 +325,12 @@ final class Technician extends BaseModel implements Serializable
         return $this->person->user;
     }
 
+    /** @return Collection<array-key, Role> */
+    public function getRolesAttribute(): Collection
+    {
+        return $this->getRelationValue('roles');
+    }
+
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -328,8 +355,18 @@ final class Technician extends BaseModel implements Serializable
         'nickname',
     ];
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeSearch(Builder $query, string|array $term): Builder
     {
+        if (is_array($term)) {
+            $query->where(static function (Builder $subQuery) use ($term) {
+                foreach ($term as $singleTerm) {
+                    $subQuery->orWhere(static fn (Builder $subSubQuery) => (
+                        $subSubQuery->search($singleTerm)
+                    ));
+                }
+            });
+            return $query;
+        }
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));
@@ -377,48 +414,17 @@ final class Technician extends BaseModel implements Serializable
     {
         $this->fill(Arr::except($data, ['person', 'user', 'user_id']));
 
-        $user = null;
         $person = $this->person ?? new Person();
-        if ($withUser && Auth::is(Group::ADMINISTRATION)) {
-            $bindUserId = $data['user_id'] ?? null;
-            if ($bindUserId) {
-                $user = User::find($bindUserId);
-                if ($user === null) {
-                    throw new ValidationException([
-                        'user' => __('user-does-not-exist'),
-                    ]);
-                }
-                $person = $user->person ?? $person;
-            }
-            if ($user === null && !$person?->user) {
-                $userData = is_array($data['user'] ?? []) ? ($data['user'] ?? []) : [];
-                $user = new User(array_replace($userData, [
-                    'group' => Group::READONLY_PLANNING_SELF,
-                    'language' => Config::get('defaultLang'),
-                    'password' => !empty($userData['password'])
-                        ? password_hash($userData['password'], PASSWORD_DEFAULT)
-                        : null,
-                ]));
-            }
-        }
         $person->fill($data['person'] ?? []);
 
-        if (!$this->isValid() || !$person->isValid() || ($user && !$user->isValid())) {
+        if (!$this->isValid() || !$person->isValid()) {
             throw new ValidationException(array_merge(
                 $this->validationErrors(),
                 ['person' => $person->validationErrors()],
-                ['user' => $user?->validationErrors() ?? null],
             ));
         }
 
-        return dbTransaction(function () use ($person, $user) {
-            if ($user && !$user->exists) {
-                if (!$user->save()) {
-                    throw new \RuntimeException("Unable to create the technician's related user.");
-                }
-                $person->user()->associate($user);
-            }
-
+        return dbTransaction(function () use ($person, $data) {
             if (!$person->save()) {
                 throw new \RuntimeException("Unable to save the technician's related person.");
             }
@@ -426,6 +432,12 @@ final class Technician extends BaseModel implements Serializable
 
             if (!$this->save()) {
                 throw new \RuntimeException("Unable to save the technician.");
+            }
+
+            // - Rôles
+            if (isset($data['roles'])) {
+                Assert::isArray($data['roles'], "Key `roles` must be an array.");
+                $this->roles()->sync($data['roles']);
             }
 
             return $this->refresh();
@@ -440,6 +452,9 @@ final class Technician extends BaseModel implements Serializable
      */
     public function isAssignedToEvent(Event $event): bool
     {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            return false;
+        }
         return $this->assignments->containsStrict('event_id', $event->id);
     }
 
@@ -467,9 +482,11 @@ final class Technician extends BaseModel implements Serializable
             if ($format !== self::SERIALIZE_SUMMARY) {
                 $technician->append(['country']);
             }
-
+            if ($format === self::SERIALIZE_DEFAULT) {
+                $technician->append(['roles']);
+            }
             if ($format === self::SERIALIZE_DETAILS) {
-                $technician->append(['user']);
+                $technician->append(['user', 'roles']);
             }
         });
 

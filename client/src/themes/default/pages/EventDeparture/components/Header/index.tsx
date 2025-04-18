@@ -143,7 +143,11 @@ const EventDepartureHeader = defineComponent({
                                 {__('global.main-beneficiary')}
                             </dt>
                             <dd class="EventDepartureHeader__infos__item__value">
-                                {mainBeneficiary.full_name}
+                                <span class="EventDepartureHeader__infos__main-beneficiary">
+                                    <span class="EventDepartureHeader__infos__main-beneficiary__name">
+                                        {`${mainBeneficiary.full_name}${mainBeneficiary.company ? ` (${mainBeneficiary.company.legal_name})` : ''}`}
+                                    </span>
+                                </span>
                             </dd>
                         </div>
                     )}

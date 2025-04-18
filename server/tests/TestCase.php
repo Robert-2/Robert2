@@ -83,6 +83,9 @@ abstract class TestCase extends CoreTestCase
                     ['name' => 'APE', 'value' => '947A'],
                 ],
             ],
+            'features' => [
+                'technicians' => true,
+            ],
             'email' => [
                 'from' => 'testing@loxya.com',
             ],

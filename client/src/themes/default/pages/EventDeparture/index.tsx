@@ -495,6 +495,7 @@ const EventDeparture = defineComponent({
             hasMaterialShortage,
             isInventoryPeriodOpen,
             isInventoryPeriodClosed,
+            isUpdatingMaterial,
             handleSave,
             handleCancel,
             handleTerminate,
@@ -562,6 +563,7 @@ const EventDeparture = defineComponent({
                     inventory={inventory}
                     errors={inventoryErrors}
                     displayGroup={displayGroup}
+                    paused={isUpdatingMaterial}
                     onChange={handleChangeInventory}
                     onRequestCancel={handleCancel}
                 />

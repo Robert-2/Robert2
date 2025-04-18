@@ -3,6 +3,12 @@
 .EventEditStepBeneficiariesSelect {
     $block: &;
 
+    $label-width: 160px;
+
+    &__field {
+        --label-width: #{$label-width};
+    }
+
     &__item {
         display: flex;
         gap: globals.$spacing-small;
@@ -28,7 +34,7 @@
 
     &__actions {
         margin-top: globals.$spacing-medium;
-        margin-left: globals.$form-label-width;
+        margin-left: $label-width;
     }
 
     //

@@ -1,5 +1,6 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
+import invariant from 'invariant';
 import Icon, { Variant as IconVariant } from '@/themes/default/components/Icon';
 import Fragment from '@/components/Fragment';
 
@@ -137,10 +138,18 @@ type Props = {
      * - Le routing interne ("Vue Router"), ne sera pas utilisé.
      *   (Il ne faut donc pas passer d'objet à `to` mais bien une chaîne)
      * - Si c'est une URL absolue, celle-ci s'ouvrira dans une autre fenêtre / onglet.
+     */
+    external?: boolean,
+
+    /**
+     * Si le bouton principal est un lien, permet d'indiquer qu'il s'agit d'un fichier,
+     * à télécharger, en spécifiant éventuellement son nom.
+     *
+     * Si oui, alors cela forcera `external` à `true`.
      *
      * @default false
      */
-    external?: boolean,
+    download?: boolean | string,
 
     /**
      * Le bouton doit-il afficher un indicateur de chargement ?
@@ -220,7 +229,11 @@ const Button = defineComponent({
             default: undefined,
         },
         external: {
-            type: Boolean as PropType<Required<Props>['external']>,
+            type: Boolean as PropType<Props['external']>,
+            default: undefined,
+        },
+        download: {
+            type: [Boolean, String] as PropType<Required<Props>['download']>,
             default: false,
         },
         collapsible: {
@@ -281,6 +294,20 @@ const Button = defineComponent({
                 ? { ...this.tooltip, content: this.tooltip.content }
                 : this.tooltip;
         },
+
+        inheritedExternal(): boolean {
+            if (this.download) {
+                return true;
+            }
+
+            return this.external ?? false;
+        },
+    },
+    created() {
+        invariant(
+            this.download !== true || this.external === undefined,
+            'The `external` prop. must not be set when the `download` prop. is true.',
+        );
     },
     methods: {
         // ------------------------------------------------------
@@ -304,7 +331,8 @@ const Button = defineComponent({
             loading,
             disabled,
             collapsible,
-            external,
+            download,
+            inheritedExternal,
             htmlType,
             iconPosition,
             normalizedType: type,
@@ -338,7 +366,7 @@ const Button = defineComponent({
         );
 
         if (to && !disabled) {
-            if (external) {
+            if (inheritedExternal) {
                 const isOutside = typeof to === 'string' && to.includes('://');
 
                 return (
@@ -348,6 +376,7 @@ const Button = defineComponent({
                         class={classNames}
                         target={isOutside ? '_blank' : undefined}
                         rel={isOutside ? 'noreferrer noopener' : undefined}
+                        download={download}
                     >
                         {content}
                     </a>

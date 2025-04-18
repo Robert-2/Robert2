@@ -5,7 +5,7 @@
         "technician_id": 1,
         "start_date": "2018-12-17 09:00:00",
         "end_date": "2018-12-18 22:00:00",
-        "position": "Régisseur"
+        "role_id": 1
     },
     {
         "id": 2,
@@ -13,7 +13,7 @@
         "technician_id": 2,
         "start_date": "2018-12-18 14:00:00",
         "end_date": "2018-12-18 18:00:00",
-        "position": "Technicien plateau"
+        "role_id": 2
     },
     {
         "id": 3,
@@ -21,6 +21,6 @@
         "technician_id": 2,
         "start_date": "2023-05-25 00:00:00",
         "end_date": "2023-05-29 00:00:00",
-        "position": "Ingénieur du son"
+        "role_id": 3
     }
 ]

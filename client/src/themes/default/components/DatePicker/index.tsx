@@ -124,6 +124,9 @@ type Props<T extends Type = Type, IsRange extends boolean = boolean> = {
     /** Le champ est-il désactivé ?  */
     disabled?: boolean,
 
+    /** Le champ doit-il être mis en surbrillance ? */
+    highlight?: boolean,
+
     /**
      * Le champ est-il en lecture seule ?
      *
@@ -138,7 +141,7 @@ type Props<T extends Type = Type, IsRange extends boolean = boolean> = {
     /** Le champ doit-il être marqué comme invalide ? */
     invalid?: boolean,
 
-    /** Le champ peut-il être vidé ?  */
+    /** Le champ peut-il être vidé ? */
     clearable?: boolean,
 };
 
@@ -222,6 +225,10 @@ const DatePicker = defineComponent({
         disabled: {
             type: Boolean as PropType<Props['disabled']>,
             default: undefined,
+        },
+        highlight: {
+            type: Boolean as PropType<Props['highlight']>,
+            default: false,
         },
         readonly: {
             type: [Boolean, String] as PropType<Required<Props>['readonly']>,
@@ -596,6 +603,7 @@ const DatePicker = defineComponent({
             withFullDaysToggle,
             withoutMinutes,
             withSnippets,
+            highlight,
             clearable,
             timePickerOptions,
             handleToggleFullDays,
@@ -714,6 +722,7 @@ const DatePicker = defineComponent({
 
         const className = ['DatePicker', {
             'DatePicker--invalid': invalid,
+            'DatePicker--highlight': highlight,
         }];
 
         return (

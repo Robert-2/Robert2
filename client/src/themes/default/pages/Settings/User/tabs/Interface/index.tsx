@@ -1,10 +1,13 @@
 import './index.scss';
 import Vue from 'vue';
 import axios from 'axios';
+import config from '@/globals/config';
 import { defineComponent } from '@vue/composition-api';
-import apiUsers, { BookingsViewMode } from '@/stores/api/users';
+import { Group } from '@/stores/api/groups';
+import apiUsers, { BookingsViewMode, TechniciansViewMode } from '@/stores/api/users';
 import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
+import Fieldset from '@/themes/default/components/Fieldset';
 import FormField from '@/themes/default/components/FormField';
 import Button from '@/themes/default/components/Button';
 import { ApiErrorCode } from '@/stores/api/@codes';
@@ -15,6 +18,9 @@ import type { Options } from '@/utils/formatOptions';
 type FormData = Pick<UserSettings, (
     | 'language'
     | 'default_bookings_view'
+    | 'default_technicians_view'
+    | 'disable_contextual_popovers'
+    | 'disable_search_persistence'
 )>;
 
 type Data = {
@@ -28,6 +34,9 @@ type Data = {
 const normalizeFormData = (savedData?: UserSettings): FormData => ({
     language: savedData?.language ?? '',
     default_bookings_view: savedData?.default_bookings_view ?? BookingsViewMode.CALENDAR,
+    default_technicians_view: savedData?.default_technicians_view ?? TechniciansViewMode.LISTING,
+    disable_contextual_popovers: savedData?.disable_contextual_popovers ?? false,
+    disable_search_persistence: savedData?.disable_search_persistence ?? false,
 });
 
 /** Onglet "interface" des paramètres utilisateur. */
@@ -44,22 +53,48 @@ const InterfaceUserSettings = defineComponent({
         validationErrors: undefined,
     }),
     computed: {
+        isTeamMember(): boolean {
+            return this.$store.getters['auth/is']([
+                Group.ADMINISTRATION,
+                Group.MANAGEMENT,
+            ]);
+        },
+
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         langsOptions: (): Options<{ id: 'fr' | 'en' }> => [
             { label: 'Français', value: 'fr' },
             { label: 'English', value: 'en' },
         ],
 
         bookingsViewModesOptions(): Options<{ id: BookingsViewMode }> {
-            const { $t: __ } = this;
+            const { __ } = this;
 
             return [
                 {
-                    label: __('page.user-settings.interface.booking-view-mode.calendar'),
+                    label: __('bookings-view-mode.options.calendar'),
                     value: BookingsViewMode.CALENDAR,
                 },
                 {
-                    label: __('page.user-settings.interface.booking-view-mode.listing'),
+                    label: __('bookings-view-mode.options.listing'),
                     value: BookingsViewMode.LISTING,
+                },
+            ];
+        },
+
+        techniciansViewModesOptions(): Options<{ id: TechniciansViewMode }> {
+            const { __ } = this;
+
+            return [
+                {
+                    label: __('technicians-view-mode.options.listing'),
+                    value: TechniciansViewMode.LISTING,
+                },
+                {
+                    label: __('technicians-view-mode.options.timeline'),
+                    value: TechniciansViewMode.TIMELINE,
                 },
             ];
         },
@@ -99,7 +134,7 @@ const InterfaceUserSettings = defineComponent({
         },
 
         async save() {
-            const { $t: __ } = this;
+            const { __ } = this;
 
             if (this.isSaving) {
                 return;
@@ -109,7 +144,7 @@ const InterfaceUserSettings = defineComponent({
             try {
                 const updatedSettings = await apiUsers.updateSettings('self', this.data);
                 this.data = normalizeFormData(updatedSettings);
-                this.$toasted.success(__('page.user-settings.saved'));
+                this.$toasted.success(__('page.saved'));
                 this.validationErrors = undefined;
 
                 localStorage.setItem('userLocale', updatedSettings.language);
@@ -118,30 +153,45 @@ const InterfaceUserSettings = defineComponent({
                 Vue.i18n.set(updatedSettings.language);
             } catch (error) {
                 if (!axios.isAxiosError(error)) {
-                    this.$toasted.error(__('errors.unexpected-while-saving'));
+                    this.$toasted.error(__('global.errors.unexpected-while-saving'));
                 } else {
                     const { code = ApiErrorCode.UNKNOWN, details = {} } = error.response?.data?.error ?? {};
                     if (code === ApiErrorCode.VALIDATION_FAILED) {
                         this.validationErrors = { ...details };
                     } else {
-                        this.$toasted.error(__('errors.unexpected-while-saving'));
+                        this.$toasted.error(__('global.errors.unexpected-while-saving'));
                     }
                 }
             } finally {
                 this.isSaving = false;
             }
         },
+
+        __(key: string, params?: Record<string, number | string>, count?: number): string {
+            if (!key.startsWith('global.')) {
+                if (!key.startsWith('page.')) {
+                    key = `page.interface.${key}`;
+                }
+                key = key.replace(/^page\./, 'page.user-settings.');
+            } else {
+                key = key.replace(/^global\./, '');
+            }
+            return this.$t(key, params, count);
+        },
     },
     render() {
         const {
-            $t: __,
-            hasCriticalError,
+            __,
+            isSaving,
             isFetching,
+            isTeamMember,
+            isTechniciansEnabled,
+            hasCriticalError,
             data,
             langsOptions,
             bookingsViewModesOptions,
+            techniciansViewModesOptions,
             validationErrors,
-            isSaving,
             handleSave,
         } = this;
 
@@ -156,28 +206,63 @@ const InterfaceUserSettings = defineComponent({
         return (
             <form class="InterfaceUserSettings" onSubmit={handleSave}>
                 <section class="InterfaceUserSettings__inputs">
-                    <FormField
-                        type="select"
-                        options={langsOptions}
-                        v-model={data.language}
-                        error={validationErrors?.language}
-                        label="page.user-settings.interface.language"
-                        class="InterfaceUserSettings__language"
-                        placeholder={false}
-                    />
-                    <FormField
-                        type="select"
-                        options={bookingsViewModesOptions}
-                        v-model={data.default_bookings_view}
-                        error={validationErrors?.default_bookings_view}
-                        label="page.user-settings.interface.default-bookings-view"
-                        class="InterfaceUserSettings__default-bookings-view"
-                        placeholder={false}
-                    />
+                    <Fieldset>
+                        <FormField
+                            type="select"
+                            options={langsOptions}
+                            v-model={data.language}
+                            error={validationErrors?.language}
+                            label={__('language')}
+                            class="InterfaceUserSettings__language"
+                            placeholder={false}
+                        />
+                    </Fieldset>
+                    <Fieldset title={__('default-views')}>
+                        <div class="InterfaceUserSettings__default-views">
+                            <FormField
+                                type="select"
+                                options={bookingsViewModesOptions}
+                                v-model={data.default_bookings_view}
+                                error={validationErrors?.default_bookings_view}
+                                label={__('bookings-view-mode.label')}
+                                class="InterfaceUserSettings__default-views__item"
+                                placeholder={false}
+                            />
+                            {(isTeamMember && isTechniciansEnabled) && (
+                                <FormField
+                                    type="select"
+                                    options={techniciansViewModesOptions}
+                                    v-model={data.default_technicians_view}
+                                    error={validationErrors?.default_technicians_view}
+                                    label={__('technicians-view-mode.label')}
+                                    class="InterfaceUserSettings__default-views__item"
+                                    placeholder={false}
+                                />
+                            )}
+                        </div>
+                    </Fieldset>
+                    <Fieldset title={__('interactions')}>
+                        <div class="InterfaceUserSettings__interactions">
+                            <FormField
+                                type="switch"
+                                v-model={data.disable_search_persistence}
+                                error={validationErrors?.disable_search_persistence}
+                                label={__('disable-search-persistence')}
+                                class="InterfaceUserSettings__interactions__item"
+                            />
+                            <FormField
+                                type="switch"
+                                v-model={data.disable_contextual_popovers}
+                                error={validationErrors?.disable_contextual_popovers}
+                                label={__('disable-contextual-popover')}
+                                class="InterfaceUserSettings__interactions__item"
+                            />
+                        </div>
+                    </Fieldset>
                 </section>
                 <section class="InterfaceUserSettings__actions">
                     <Button icon="save" htmlType="submit" type="primary" loading={isSaving}>
-                        {__('save')}
+                        {__('global.save')}
                     </Button>
                 </section>
             </form>

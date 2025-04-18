@@ -1,0 +1,13 @@
+title: Technician Roles (positions)
+help: Technician roles are used at the "technicians" step of events edition.
+
+no-role-yet: There is no technician roles at the moment.
+create-first-role: Create a first technician role
+
+action-add: New technician role
+
+role-used: This role is assigned to one (or more) technician(s), so it cannot be deleted.
+confirm-permanently-delete: Do you really want to permanently delete this role?
+
+saved: Role saved.
+deleted: Role deleted.

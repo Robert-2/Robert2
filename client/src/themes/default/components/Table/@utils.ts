@@ -1,13 +1,11 @@
-import type { ColumnsVisibility } from 'vue-tables-2-premium';
-
 export type ColumnsDisplay = Record<string, boolean>;
 
 const STORAGE_KEY_PREFIX = 'vuetables_';
 
-const initFromStorage = (tableName: string, columns: ColumnsDisplay): ColumnsDisplay => {
+const getStoredState = (tableName: string): Record<string, any> | null => {
     const storedTableState = localStorage.getItem(`${STORAGE_KEY_PREFIX}${tableName}`);
     if (!storedTableState) {
-        return columns;
+        return null;
     }
 
     let tableState;
@@ -15,9 +13,19 @@ const initFromStorage = (tableName: string, columns: ColumnsDisplay): ColumnsDis
         tableState = JSON.parse(storedTableState);
     } catch {
         localStorage.removeItem(`${STORAGE_KEY_PREFIX}${tableName}`);
-        return columns;
+        return null;
     }
 
+    return tableState ?? null;
+};
+
+export const getLegacySavedSearch = (tableName: string): string | null => {
+    const tableState = getStoredState(tableName);
+    return tableState?.query || null;
+};
+
+const getSavedColumnsDisplay = (tableName: string, columns: ColumnsDisplay): ColumnsDisplay => {
+    const tableState = getStoredState(tableName);
     if (!tableState) {
         return columns;
     }
@@ -34,16 +42,13 @@ const initFromStorage = (tableName: string, columns: ColumnsDisplay): ColumnsDis
     );
 };
 
-export const initColumnsDisplay = (tableName: string | undefined, columns: ColumnsDisplay): ColumnsVisibility => (
-    Object.fromEntries(
-        Object
-            .entries((
-                tableName !== undefined
-                    ? initFromStorage(tableName, columns)
-                    : columns
-            ))
-            .map(([name, visible]: [string, boolean]) => (
-                [name, `${visible ? 'min' : 'max'}_mobileP`]
-            )),
-    )
+export const initColumnsDisplay = (tableName: string | undefined, columns: ColumnsDisplay): string[] => (
+    Object
+        .entries((
+            tableName !== undefined
+                ? getSavedColumnsDisplay(tableName, columns)
+                : columns
+        ))
+        .filter(([, visible]: [string, boolean]) => visible)
+        .map(([name]: [string, boolean]) => name)
 );

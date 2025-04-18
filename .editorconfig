@@ -9,11 +9,8 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 max_line_length = 100
 
-[*.md]
+[*.{md,template,patch}]
 trim_trailing_whitespace = false
 
 [*.{html,twig}]
 insert_final_newline = false
-
-[*.template]
-trim_trailing_whitespace = false

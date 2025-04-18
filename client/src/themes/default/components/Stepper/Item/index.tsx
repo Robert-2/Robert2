@@ -6,6 +6,9 @@ import type { PropType } from '@vue/composition-api';
 import type { Step } from '..';
 
 type Props = {
+    /** Le numéro de l'étape. */
+    number: number,
+
     /** L'étape à afficher. */
     step: Step,
 
@@ -17,6 +20,10 @@ type Props = {
 const StepperItem = defineComponent({
     name: 'StepperItem',
     props: {
+        number: {
+            type: Number as PropType<Props['number']>,
+            required: true,
+        },
         step: {
             type: Object as PropType<Props['step']>,
             required: true,
@@ -48,8 +55,8 @@ const StepperItem = defineComponent({
         },
     },
     render() {
-        const { id, name, filled, reachable = true } = this.step;
-        const { icon, active, handleClick } = this;
+        const { name, filled, reachable = true } = this.step;
+        const { number, icon, active, handleClick } = this;
 
         return (
             <div
@@ -65,7 +72,7 @@ const StepperItem = defineComponent({
                 onClick={handleClick}
             >
                 <Icon class="StepperItem__icon" name={icon} />
-                <span class="StepperItem__index">{id}</span>
+                <span class="StepperItem__number">{number}</span>
                 <span class="StepperItem__name">{name}</span>
             </div>
         );

@@ -66,8 +66,10 @@ const BeneficiaryViewInfos = defineComponent({
 
         return (
             <div class="BeneficiaryViewInfos">
-                <h2 class="BeneficiaryViewInfos__name">
-                    {fullName}
+                <h2 class="BeneficiaryViewInfos__heading">
+                    <span class="BeneficiaryViewInfos__heading__name">
+                        {fullName}
+                    </span>
                 </h2>
                 <section class="BeneficiaryViewInfos__main">
                     <div class="BeneficiaryViewInfos__main__contact">

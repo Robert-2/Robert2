@@ -118,7 +118,6 @@ const ModalDegressiveRateEdition = defineComponent({
                 },
                 {
                     key: 'is_rate',
-                    title: '',
                     class: 'ModalDegressiveRateEdition__tiers__item__is-rate',
                     render: (h: CreateElement, { key }: DegressiveRateTierEdit) => {
                         // - Récupère le palier depuis le state sans quoi il n'est pas réactif.
@@ -174,7 +173,6 @@ const ModalDegressiveRateEdition = defineComponent({
                 },
                 {
                     key: 'actions',
-                    title: '',
                     class: 'ModalDegressiveRateEdition__tiers__item__actions',
                     render: (h: CreateElement, { key }: DegressiveRateTierEdit) => (
                         <Button

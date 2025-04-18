@@ -1,4 +1,4 @@
-toggle:
+mode-switch:
     calendar: Calendar
     listing: Listing
 
@@ -20,10 +20,7 @@ calendar:
     add-event: New event
     event-saved: The event was saved.
     loading-event: Loading event...
-    center-on-today: Center on today
-    display-all-parks: All parks
-    display-all-categories: All categories
-    event-with-missing-material-only: Events with missing material only?
+    event-with-missing-material-only: "With missing material?"
     help-add-event: Create a new event
     help-center-view-on-today: Center calendar on today
 
@@ -46,16 +43,15 @@ listing:
     calendar: Calendar
     listing: Listing
 
-    all-periods: All periods
-    all-states: All states
     states:
         ending-today: Ending today
-        return-inventory-todo: Return inventory to do
+        return-inventory-todo: Return to do
         not-confirmed: Not confirmed
         archived: Archived
 
     columns:
         title: Title
+        state-icon: State icon
         mobilization-period: Mobilization period
         operation-period: Operation period
         beneficiaries: Beneficiary(ies)

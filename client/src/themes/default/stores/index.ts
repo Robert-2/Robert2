@@ -6,6 +6,7 @@ import tagsStore from './tags';
 import degressiveRatesStore from './degressive-rates';
 import taxesStore from './taxes';
 import groupsStore from './groups';
+import rolesStore from './roles';
 
 export default {
     ...globalStores,
@@ -16,4 +17,5 @@ export default {
     degressiveRates: degressiveRatesStore,
     taxes: taxesStore,
     groups: groupsStore,
+    roles: rolesStore,
 };

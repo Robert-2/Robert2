@@ -1,7 +1,8 @@
 import './index.scss';
 import { defineComponent } from '@vue/composition-api';
+import { BookingEntity } from '@/stores/api/bookings';
 import MaterialsSorted from '@/themes/default/components/MaterialsSorted';
-import EventMissingMaterials from '@/themes/default/components/EventMissingMaterials';
+import MissingMaterials from '@/themes/default/components/MissingMaterials';
 import Totals from '@/themes/default/components/Totals';
 import ReturnSummary from './ReturnSummary';
 
@@ -32,7 +33,6 @@ const EventDetailsMaterials = defineComponent({
     render() {
         const { event, extras } = this;
         const {
-            id,
             materials,
             currency,
             is_billable: isBillable,
@@ -46,8 +46,8 @@ const EventDetailsMaterials = defineComponent({
                     <ReturnSummary event={event} />
                 )}
                 {(!isReturnInventoryDone && hasMissingMaterials) && (
-                    <EventMissingMaterials
-                        id={id}
+                    <MissingMaterials
+                        booking={{ entity: BookingEntity.EVENT, ...event }}
                         class="EventDetailsMaterials__missing"
                     />
                 )}

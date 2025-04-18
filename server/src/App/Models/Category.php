@@ -88,12 +88,14 @@ final class Category extends BaseModel implements Serializable
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class, 'attribute_categories')
+            ->using(AttributeCategory::class)
             ->select([
                 'attributes.id',
                 'attributes.name',
                 'attributes.type',
                 'attributes.unit',
-            ]);
+            ])
+            ->orderBy('id');
     }
 
     // ------------------------------------------------------

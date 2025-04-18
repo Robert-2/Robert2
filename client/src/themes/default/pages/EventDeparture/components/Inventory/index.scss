@@ -1,6 +1,8 @@
 @use '~@/themes/default/style/globals';
 
 .EventDepartureInventory {
+    height: 100%;
+
     &__summary {
         margin-bottom: globals.$spacing-large;
 

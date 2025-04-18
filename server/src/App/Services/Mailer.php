@@ -5,6 +5,7 @@ namespace Loxya\Services;
 
 use GuzzleHttp\Client;
 use Loxya\Config\Config;
+use Loxya\Support\Arr;
 use Loxya\Support\Assert;
 use Mailjet\Client as MailjetClient;
 use Mailjet\Resources;
@@ -39,7 +40,7 @@ final class Mailer
      * @param string $subject Le sujet du mail à envoyer.
      * @param string $message Le contenu du mail à envoyer.
      * @param array|null $attachments Les éventuelles données à envoyer en pièce jointe.
-     *                                Si non `null`, doit être un tableau contenant des tableaux qui contiennent les clés:
+     *                                Si non `null`, doit être un tableau ou un tableau de tableau contenant les clés:
      *                                - `content`: Le contenu du fichier de la pièce jointe).
      *                                - `filename`: Le nom du fichier de la pièce jointe).
      *                                - `mimeType`: Le type MIME du fichier de la pièce jointe).
@@ -49,6 +50,12 @@ final class Mailer
         $recipients = (array) $recipients;
         $subject = trim($subject);
         $message = trim($message);
+
+        if ($attachments !== null) {
+            $attachments = !Arr::isList($attachments)
+                ? [$attachments]
+                : $attachments;
+        }
 
         Assert::notEmpty($subject, "The mail subject cannot be empty.");
         Assert::notEmpty($message, "The mail content (message) cannot be empty.");

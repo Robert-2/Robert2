@@ -6,15 +6,19 @@ import axios from 'axios';
 import HttpCode from 'status-code-enum';
 import pick from 'lodash/pick';
 import config, { BillingMode } from '@/globals/config';
+import { ApiErrorCode } from '@/stores/api/@codes';
 import apiEvents from '@/stores/api/events';
 import Alert from '@/themes/default/components/Alert';
 import Button from '@/themes/default/components/Button';
 import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
-import { ApiErrorCode } from '@/stores/api/@codes';
+import Color from '@/utils/color';
 import getCSSProperty from '@/utils/getCSSProperty';
+import ManagerSelect from './ManagerSelect';
 
+import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
+import type { User } from '@/stores/api/users';
 import type { EventDetails, EventEdit, EventTechnician } from '@/stores/api/events';
 
 type Props = {
@@ -32,6 +36,7 @@ type Edited = Pick<EventEdit, (
     | 'mobilization_period'
     | 'location'
     | 'description'
+    | 'manager_id'
     | 'color'
     | 'is_billable'
     | 'is_confirmed'
@@ -50,6 +55,7 @@ const DEFAULT_VALUES: Edited = Object.freeze({
     mobilization_period: null,
     location: '',
     description: '',
+    manager_id: null,
     color: null,
     is_billable: config.billingMode !== BillingMode.NONE,
     is_confirmed: false,
@@ -58,13 +64,14 @@ const DEFAULT_VALUES: Edited = Object.freeze({
 const hasDirtyData = (savedData: EventDetails | null, pendingData: Edited): boolean => (
     savedData === null ||
     pendingData.title !== savedData.title ||
-    pendingData.color !== savedData.color ||
     pendingData.is_confirmed !== savedData.is_confirmed ||
     pendingData.is_billable !== savedData.is_billable ||
+    (pendingData.color?.toString() !== savedData.color?.toString()) ||
     !pendingData.operation_period?.isSame(savedData.operation_period) ||
     !pendingData.mobilization_period?.isSame(savedData.mobilization_period) ||
     (pendingData.description || null) !== (savedData.description || null) ||
-    (pendingData.location || null) !== (savedData.location || null)
+    (pendingData.location || null) !== (savedData.location || null) ||
+    (pendingData.manager_id ?? null) !== (savedData.manager?.id ?? null)
 );
 
 /** Étape 1 de l'édition d'un événement : Informations générales. */
@@ -101,6 +108,7 @@ const EventEditStepInfos = defineComponent({
             ...DEFAULT_VALUES,
             operation_period: defaultOperationPeriod,
             ...pick(this.event ?? {}, Object.keys(DEFAULT_VALUES)),
+            manager_id: this.event?.manager?.id ?? null,
         };
 
         const canSyncPeriods = (
@@ -134,6 +142,10 @@ const EventEditStepInfos = defineComponent({
             return this.event === null;
         },
 
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
+        },
+
         allowBillingToggling(): boolean {
             return config.billingMode === BillingMode.PARTIAL;
         },
@@ -142,11 +154,17 @@ const EventEditStepInfos = defineComponent({
             return this.data.operation_period?.asDays();
         },
 
-        defaultColor(): string | null {
-            return getCSSProperty('calendar-event-default-color');
+        defaultColor(): Color | null {
+            const defaultRawColor = getCSSProperty('calendar-event-default-color');
+            return defaultRawColor && Color.isValid(defaultRawColor)
+                ? new Color(defaultRawColor)
+                : null;
         },
 
         hasTechnicians(): boolean {
+            if (!this.isTechniciansEnabled) {
+                return false;
+            }
             return (this.event?.technicians ?? []).length > 0;
         },
 
@@ -166,11 +184,10 @@ const EventEditStepInfos = defineComponent({
         },
 
         hasAssignmentImpactingChange(): boolean {
-            if (this.event === null || !this.hasTechnicians) {
+            if (!this.isTechniciansEnabled || this.event === null || !this.hasTechnicians) {
                 return false;
             }
 
-            // - Si on a pas encore
             if (!this.data.operation_period || !this.data.mobilization_period) {
                 return false;
             }
@@ -182,7 +199,7 @@ const EventEditStepInfos = defineComponent({
         },
 
         hasAssignmentCriticalImpactingChange(): boolean {
-            if (!this.hasAssignmentImpactingChange) {
+            if (!this.isTechniciansEnabled || !this.hasAssignmentImpactingChange) {
                 return false;
             }
 
@@ -269,7 +286,7 @@ const EventEditStepInfos = defineComponent({
         technicianTransferWarning(): string | null {
             const { __, data } = this;
 
-            if (!this.hasAssignmentImpactingChange) {
+            if (!this.isTechniciansEnabled || !this.hasAssignmentImpactingChange) {
                 return null;
             }
 
@@ -294,6 +311,14 @@ const EventEditStepInfos = defineComponent({
         event() {
             this.setValuesFromEvent();
         },
+    },
+    mounted() {
+        if (this.isNew) {
+            this.$nextTick(() => {
+                const $inputTitle = this.$refs.inputTitle as ComponentRef<typeof FormField>;
+                $inputTitle?.focus();
+            });
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -326,6 +351,13 @@ const EventEditStepInfos = defineComponent({
             }
         },
 
+        handleChangeManager(managerId: User['id'] | null) {
+            this.data.manager_id = managerId;
+
+            const hasChanges = hasDirtyData(this.event, this.data);
+            this.$emit(hasChanges ? 'dataChange' : 'dataReset');
+        },
+
         handleChange() {
             const hasChanges = hasDirtyData(this.event, this.data);
             this.$emit(hasChanges ? 'dataChange' : 'dataReset');
@@ -352,6 +384,7 @@ const EventEditStepInfos = defineComponent({
                 ...DEFAULT_VALUES,
                 ...this.data,
                 ...pick(this.event ?? {}, Object.keys(DEFAULT_VALUES)),
+                manager_id: this.event?.manager?.id ?? null,
             };
 
             if (hasDirtyData(this.event, this.data)) {
@@ -418,6 +451,7 @@ const EventEditStepInfos = defineComponent({
     render() {
         const {
             __,
+            event,
             duration,
             data,
             defaultColor,
@@ -433,6 +467,7 @@ const EventEditStepInfos = defineComponent({
             validationErrors,
             handleChange,
             handleSubmit,
+            handleChangeManager,
             handleSyncPeriodsChange,
             handleOperationPeriodChange,
         } = this;
@@ -441,6 +476,7 @@ const EventEditStepInfos = defineComponent({
             <form class="EventEditStepInfos" onSubmit={handleSubmit}>
                 <Fieldset>
                     <FormField
+                        ref="inputTitle"
                         label="title"
                         v-model={data.title}
                         onInput={handleChange}
@@ -549,6 +585,20 @@ const EventEditStepInfos = defineComponent({
                         onInput={handleChange}
                         error={validationErrors?.description}
                     />
+                    <div class="EventEditStepInfos__roles">
+                        <FormField
+                            type="custom"
+                            label={__('project-manager.label')}
+                            help={__('project-manager.help')}
+                            class="EventEditStepInfos__roles__item"
+                            error={validationErrors?.manager_id}
+                        >
+                            <ManagerSelect
+                                defaultValue={event?.manager ?? null}
+                                onChange={handleChangeManager}
+                            />
+                        </FormField>
+                    </div>
                     {allowBillingToggling && (
                         <div class="EventEditStepInfos__is-billable">
                             <FormField
@@ -567,13 +617,13 @@ const EventEditStepInfos = defineComponent({
                         </div>
                     )}
                 </Fieldset>
-                <Fieldset title={__('global.customization')}>
+                <Fieldset title={__('global.display-customization')}>
                     <FormField
-                        label={__('color-on-calendar')}
+                        label={__('color-on-calendar.label')}
                         type="color"
                         v-model={data.color}
                         class="EventEditStepInfos__color"
-                        placeholder={defaultColor}
+                        placeholder={defaultColor?.toHexString()}
                         onChange={handleChange}
                         error={validationErrors?.color}
                     />

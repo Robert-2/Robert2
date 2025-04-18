@@ -20,7 +20,7 @@ use Respect\Validation\Validator as V;
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  *
- * @method static Builder|static search(string $term)
+ * @method static Builder|static search(string|string[] $term)
  */
 final class Country extends BaseModel implements Serializable
 {
@@ -107,8 +107,18 @@ final class Country extends BaseModel implements Serializable
         'name',
     ];
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeSearch(Builder $query, string|array $term): Builder
     {
+        if (is_array($term)) {
+            $query->where(static function (Builder $subQuery) use ($term) {
+                foreach ($term as $singleTerm) {
+                    $subQuery->orWhere(static fn (Builder $subSubQuery) => (
+                        $subSubQuery->search($singleTerm)
+                    ));
+                }
+            });
+            return $query;
+        }
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));

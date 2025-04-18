@@ -34,8 +34,7 @@
         margin-top: globals.$spacing-medium;
         gap: 10px;
 
-        #{$block}__park-selector,
-        #{$block}__park-location {
+        #{$block}__park-selector {
             flex: 1;
             margin-top: 0;
         }

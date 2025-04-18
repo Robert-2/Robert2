@@ -7,39 +7,39 @@
 
     &__table {
         flex: 1;
-    }
 
-    &__cell {
-        &__empty {
-            color: globals.$text-light-color;
-            font-style: italic;
-        }
-
-        &--group,
-        &--email,
-        &--phone {
-            display: none;
-        }
-
-        //
-        // - Responsive
-        //
-
-        @media (min-width: globals.$screen-mobile) {
-            &--group {
-                display: table-cell;
+        &__cell {
+            &__empty {
+                color: globals.$text-light-color;
+                font-style: italic;
             }
-        }
 
-        @media (min-width: globals.$screen-tablet) {
-            &--email {
-                display: table-cell;
-            }
-        }
-
-        @media (min-width: globals.$screen-desktop) {
+            &--group,
+            &--email,
             &--phone {
-                display: table-cell;
+                display: none;
+            }
+
+            //
+            // - Responsive
+            //
+
+            @media (min-width: globals.$screen-mobile) {
+                &--group {
+                    display: table-cell;
+                }
+            }
+
+            @media (min-width: globals.$screen-tablet) {
+                &--email {
+                    display: table-cell;
+                }
+            }
+
+            @media (min-width: globals.$screen-desktop) {
+                &--phone {
+                    display: table-cell;
+                }
             }
         }
     }

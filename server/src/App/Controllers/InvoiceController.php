@@ -6,7 +6,6 @@ namespace Loxya\Controllers;
 use DI\Container;
 use Loxya\Http\Request;
 use Loxya\Models\Invoice;
-use Loxya\Services\Auth;
 use Loxya\Services\I18n;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
@@ -25,7 +24,7 @@ final class InvoiceController extends BaseController
     public function getOnePdf(Request $request, Response $response): ResponseInterface
     {
         $id = $request->getIntegerAttribute('id');
-        $invoice = Invoice::findOrFailForUser($id, Auth::user());
+        $invoice = Invoice::findOrFail($id);
 
         return $invoice
             ->toPdf($this->i18n)

@@ -1,6 +1,6 @@
 import type { Merge } from 'type-fest';
 import type { Column as CoreColumn } from '../@types';
-import type { ColumnSearcher, ColumnSorter } from 'vue-tables-2-premium';
+import type { ColumnSorter } from 'vue-tables-2-premium';
 
 export type Column<Datum = any> = Merge<CoreColumn<Datum>, {
     /**
@@ -19,20 +19,6 @@ export type Column<Datum = any> = Merge<CoreColumn<Datum>, {
      * @default false
      */
     sortable?: boolean | ColumnSorter<Datum>,
-
-    /**
-     * La recherche doit-elle être activée sur cette colonne ?
-     *
-     * Peut contenir:
-     * - Un booléen, auquel cas une fonction de recherche "universelle" sera utilisée pour la recherche.
-     *   {@see {@link import('./_utils.ts').defaultSearcher}}
-     * - Une fonction personnalisée de recherche pour la colonne.
-     *   Cette fonction doit retourner un booléen en fonction de si oui ou non la colonne
-     *   est satisfaisante pour la recherche passée en paramètre (`query`).
-     *
-     * @default false
-     */
-    searchable?: boolean | ColumnSearcher<Datum>,
 }>;
 
 export type Columns<Data> = Array<Column<Data>>;

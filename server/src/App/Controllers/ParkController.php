@@ -19,14 +19,14 @@ final class ParkController extends BaseController
 
     public function getAll(Request $request, Response $response): ResponseInterface
     {
-        $search = $request->getStringQueryParam('search');
+        $search = $request->getSearchArrayQueryParam('search');
         $limit = $request->getIntegerQueryParam('limit');
         $ascending = $request->getBooleanQueryParam('ascending', true);
         $onlyDeleted = $request->getBooleanQueryParam('deleted', false);
 
         $query = Park::query()
             ->when(
-                $search !== null && mb_strlen($search) >= 2,
+                !empty($search),
                 static fn (Builder $subQuery) => $subQuery->search($search),
             )
             ->when($onlyDeleted, static fn (Builder $subQuery) => (

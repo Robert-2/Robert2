@@ -29,7 +29,7 @@
             color: globals.$text-base-color;
 
             > .Icon {
-                margin-right: 0.5rem;
+                margin-right: globals.$spacing-medium;
                 color: globals.$text-light-color;
             }
         }

@@ -1,0 +1,44 @@
+@use '~@/themes/default/style/globals';
+
+.ScheduleCalendarFilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: globals.$spacing-small;
+
+    &__with-missing-materials {
+        flex: none;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        gap: globals.$spacing-medium;
+
+        &__label {
+            white-space: nowrap;
+        }
+    }
+
+    &__search {
+        flex: 1;
+    }
+
+    //
+    // - Responsive
+    //
+
+    @media (min-width: globals.$screen-mobile) {
+        &__with-missing-materials {
+            flex-direction: column;
+            justify-content: unset;
+            width: auto;
+            padding: 0 5px;
+            gap: globals.$spacing-thin;
+        }
+    }
+
+    @media (min-width: globals.$screen-desktop) {
+        flex-wrap: nowrap;
+    }
+}

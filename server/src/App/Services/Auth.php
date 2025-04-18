@@ -139,10 +139,7 @@ final class Auth
 
     public static function user(): ?User
     {
-        if (empty(static::$user)) {
-            return static::$user;
-        }
-        return static::$user->refresh();
+        return static::$user;
     }
 
     public static function isAuthenticated(): bool

@@ -1,6 +1,7 @@
 import requester from '@/globals/requester';
 import apiTechnicians from '@/stores/api/technicians';
 import { withPaginationEnvelope } from '@fixtures/@utils';
+import Period from '@/utils/period';
 import documents from '@fixtures/documents';
 import data from '@fixtures/technicians';
 
@@ -17,6 +18,23 @@ describe('Technicians Api', () => {
         it('parse the returned data correctly', async () => {
             jest.spyOn(requester, 'get').mockResolvedValue({ data: data.withEvents() });
             expect(await apiTechnicians.allWhileEvent(1)).toMatchSnapshot();
+        });
+    });
+
+    describe('allWithAssignments()', () => {
+        const period = new Period('2024-01-01', '2024-01-02', true);
+
+        it('parse the returned data correctly when paginated', async () => {
+            const paginatedData = withPaginationEnvelope(data.withEvents());
+
+            jest.spyOn(requester, 'get').mockResolvedValue({ data: paginatedData });
+            expect(await apiTechnicians.allWithAssignments({ period })).toMatchSnapshot();
+        });
+
+        it('parse the returned data correctly when not paginated', async () => {
+            jest.spyOn(requester, 'get').mockResolvedValue({ data: data.withEvents() });
+            const response = await apiTechnicians.allWithAssignments({ paginated: false, period });
+            expect(response).toMatchSnapshot();
         });
     });
 

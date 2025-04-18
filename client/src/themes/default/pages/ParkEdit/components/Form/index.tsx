@@ -6,6 +6,7 @@ import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
 
+import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { Options } from '@/utils/formatOptions';
 import type { Country } from '@/stores/api/countries';
@@ -66,12 +67,24 @@ const ParkEditForm = defineComponent({
         return { data };
     },
     computed: {
+        isNew(): boolean {
+            return this.savedData === null;
+        },
+
         countriesOptions(): Options<Country> {
             return this.$store.getters['countries/options'];
         },
     },
     created() {
         this.$store.dispatch('countries/fetch');
+    },
+    mounted() {
+        if (this.isNew) {
+            this.$nextTick(() => {
+                const $inputName = this.$refs.inputName as ComponentRef<typeof FormField>;
+                $inputName?.focus();
+            });
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -108,6 +121,7 @@ const ParkEditForm = defineComponent({
             >
                 <Fieldset>
                     <FormField
+                        ref="inputName"
                         label="name"
                         v-model={data.name}
                         error={errors?.name}

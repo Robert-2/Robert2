@@ -41,7 +41,7 @@ const AssignTags = defineComponent({
             required: true,
         },
         defaultTags: {
-            type: Array as PropType<Props['defaultTags']>,
+            type: Array as PropType<Required<Props>['defaultTags']>,
             default: () => [],
         },
         persister: {
@@ -52,7 +52,7 @@ const AssignTags = defineComponent({
     emits: ['saved', 'close'],
     data(): Data {
         return {
-            values: this.defaultTags?.map(({ id }: Tag) => id) ?? [],
+            values: this.defaultTags.map(({ id }: Tag) => id),
             isSaving: false,
         };
     },
@@ -68,6 +68,9 @@ const AssignTags = defineComponent({
         tagsOptions(): Options<Tag> {
             return this.$store.getters['tags/options'];
         },
+    },
+    mounted() {
+        this.$store.dispatch('tags/fetch');
     },
     methods: {
         // ------------------------------------------------------

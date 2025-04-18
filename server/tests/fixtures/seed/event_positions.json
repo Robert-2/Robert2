@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "event_id": 1,
+        "role_id": 1,
+        "is_mandatory": true
+    },
+    {
+        "id": 2,
+        "event_id": 1,
+        "role_id": 2,
+        "is_mandatory": false
+    },
+    {
+        "id": 3,
+        "event_id": 2,
+        "role_id": 4,
+        "is_mandatory": true
+    },
+    {
+        "id": 4,
+        "event_id": 7,
+        "role_id": 3,
+        "is_mandatory": false
+    }
+]

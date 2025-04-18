@@ -6,6 +6,7 @@ namespace Loxya\Models;
 use Adbar\Dot as DotArray;
 use Brick\Math\BigDecimal as Decimal;
 use Brick\Math\RoundingMode;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
 use Loxya\Contracts\Serializable;
@@ -123,9 +124,28 @@ final class EventMaterial extends BaseModel implements Serializable
             return false;
         }
 
-        return !$this->exists || $this->isDirty('material_id')
+        $isValidMaterial = !$this->exists || $this->isDirty('material_id')
             ? !$material->trashed()
             : true;
+        if (!$isValidMaterial) {
+            return false;
+        }
+
+        // - L'identifiant de l'événement n'est pas encore défini...
+        //   => On ne peut pas vérifier si le matériel est déjà utilisé dans celui-ci.
+        if ($this->event_id === null) {
+            return true;
+        }
+
+        $alreadyExists = static::query()
+            ->where('event_id', $this->event_id)
+            ->where('material_id', $value)
+            ->when($this->exists, fn (Builder $subQuery) => (
+                $subQuery->where('id', '!=', $this->id)
+            ))
+            ->exists();
+
+        return !$alreadyExists ?: 'material-already-in-event';
     }
 
     public function checkUnitPrice($value)

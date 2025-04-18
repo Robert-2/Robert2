@@ -10,7 +10,7 @@ import CriticalError from '@/themes/default/components/CriticalError';
 import Loading from '@/themes/default/components/Loading';
 import Button from '@/themes/default/components/Button';
 import Dropdown from '@/themes/default/components/Dropdown';
-import Filters from './components/Filters';
+import FiltersPanel from './components/Filters';
 import List from './components/List';
 import store from './store';
 
@@ -30,7 +30,7 @@ import type {
     EmbeddedMaterial,
     SourceMaterial,
     SourceMaterialOverrides,
-    Filters as FiltersType,
+    Filters,
 } from './_types';
 
 type Props = {
@@ -73,7 +73,7 @@ type Data = {
     isInitialized: boolean,
     isFetched: boolean,
     criticalError: boolean,
-    filters: FiltersType,
+    filters: Filters,
     rawMaterials: (
         | MaterialWithAvailability[]
         | MaterialWithContext[]
@@ -92,8 +92,8 @@ type InstanceProperties = {
  *
  * @returns Les filtres "vides".
  */
-const getEmptyFilters = (onlySelected: boolean): FiltersType => ({
-    search: null,
+const getEmptyFilters = (onlySelected: boolean): Filters => ({
+    search: [],
     onlySelected,
     park: null,
     category: null,
@@ -243,7 +243,7 @@ const MaterialsSelector = defineComponent({
             this.$emit('change', store.getters.export());
         },
 
-        handleFiltersChanges(filters: FiltersType) {
+        handleFiltersChange(filters: Filters) {
             this.filters = filters;
         },
 
@@ -398,7 +398,7 @@ const MaterialsSelector = defineComponent({
             criticalError,
             hasSelectedMaterials,
             withBillingFinal: withBilling,
-            handleFiltersChanges,
+            handleFiltersChange,
             handleEventImport,
             handleShowAllMaterials,
             handleResyncMaterialData,
@@ -437,11 +437,10 @@ const MaterialsSelector = defineComponent({
             <div class="MaterialsSelector">
                 <header class="MaterialsSelector__header">
                     <div class="MaterialsSelector__header__filters">
-                        <Filters
-                            ref="filters"
+                        <FiltersPanel
                             values={filters}
                             withSelectedOnlyFilter={showSelectedOnlyFilter}
-                            onChange={handleFiltersChanges}
+                            onChange={handleFiltersChange}
                         />
                     </div>
                     <div class="MaterialsSelector__header__actions">

@@ -11,28 +11,10 @@ event-beneficiaries: Beneficiaries
 event-technicians: Technicians
 event-materials: Materials
 event-confirmation: Confirmation
-
-no-technician-with-this-search: No technicians were found with this search.
-no-technician-pass-this-step: |-
-    There is no technician available for this period.
-    You can skip this step.
-
-technician-item:
-    confirm-permanently-delete: Do you really want to remove this technician assignment?
-
-assign-technician: 'Assign {name} as a technician'
-assign-name: 'Assign {name}'
-modify-assignment: Modify assignment
-remove-assignment: Remove assignment
-period-assigned: Assigned period
-start-end-dates-and-time: Start and End dates and times
 saved: Event saved.
 not-saved: Event has unsaved modifications
 beneficiary-billing-help: Only the first beneficiary in the list will be displayed on the invoice.
-technicians-help: >-
-    Double-click on a technician's line to assign her/him to the event at the
-    needed start date/time.
-technicians-search-placeholder: Search for a name or email address...
+
 clear-search: Clear search term
 
 steps:
@@ -43,7 +25,14 @@ steps:
         mobilization-period: Mobilization period of the material
         mobilization-period-help: "Period during which materials are mobilized for this event."
         sync-mobilization-period: Use a material mobilization period identical to the event dates?
-        color-on-calendar: Color on calendar
+
+        color-on-calendar:
+            label: Color on calendar
+
+        project-manager:
+            label: Project manager
+            help: A user responsible for supervising and following the event.
+            placeholder-help: Start typing to search a user...
 
         readonly-mobilization-period-warning:
             entirely: |
@@ -116,6 +105,7 @@ steps:
     beneficiaries:
         title: Beneficiaries
 
+        main-beneficiary: Main beneficiary
         numbered-label: "Beneficiary {number}"
         add-beneficiary: Add a beneficiary
         remove-beneficiary: Remove this beneficiary
@@ -125,9 +115,33 @@ steps:
 
     technicians:
         title: Technicians
+        help-technicians: >-
+            Double-click on a technician's line to assign her/him to the event at the
+            needed start date/time.
+
+        no-technician-with-this-search: No technicians were found with this search.
+        no-technician-pass-this-step: |-
+            There is no technician available for this period.
+            You can skip this step.
+
+        search-placeholder: Search for a name or email address...
+
+        assign-technician: Assign {name} as a technician
+        assign-technician-to-position: "Assign a technician to the position \"{name}\""
+        assign-technician-without-position: Assign a technician without a specific position
+        period-assigned: Assigned period
+        assign: Assign technician
+        assign-name: Assign {name}
+        modify-assignment: Modify assignment
+        remove-assignment: Remove assignment
+        start-end-dates-and-time: Start and End dates and times
+        select-technician: Please select a technician.
 
         assignation-saved: Technician assignment successfully saved.
         assignation-removed: Technician assignment successfully removed.
+
+        technician-item:
+            confirm-permanently-delete: Do you really want to remove this technician assignment?
 
     materials:
         title: Materials

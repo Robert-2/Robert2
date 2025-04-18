@@ -1,6 +1,10 @@
 comment-label: "Comment:"
 departure-comment-label: "Departure comment:"
 
+empty-state:
+    no-materials: There is no material to show.
+    no-filters-results: No material matches current filters.
+
 #
 # - Fenêtres modales
 #

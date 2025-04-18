@@ -4,7 +4,7 @@ import type { Technician } from '@/stores/api/technicians';
 export type TechnicianPeriod = {
     id: EventTechnician['id'],
     period: EventTechnician['period'],
-    position: EventTechnician['position'],
+    role: EventTechnician['role'],
 };
 
 export type TechnicianWithPeriods = {
@@ -20,7 +20,7 @@ const formatEventTechniciansList = (eventTechnicians: EventTechnician[] | null |
     }
 
     const technicians = new Map<EventTechnician['id'], TechnicianWithPeriods>();
-    eventTechnicians.forEach(({ technician, id: periodId, period, position }: EventTechnician) => {
+    eventTechnicians.forEach(({ technician, id: periodId, period, role }: EventTechnician) => {
         if (!technician) {
             return;
         }
@@ -31,7 +31,7 @@ const formatEventTechniciansList = (eventTechnicians: EventTechnician[] | null |
             technicians.set(id, { id, name, phone, periods: [] });
         }
 
-        technicians.get(id)!.periods.push({ id: periodId, period, position });
+        technicians.get(id)!.periods.push({ id: periodId, period, role });
     });
 
     return Array.from(technicians.values());

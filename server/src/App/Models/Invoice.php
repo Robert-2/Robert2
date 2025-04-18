@@ -15,7 +15,6 @@ use Loxya\Config\Config;
 use Loxya\Contracts\Pdfable;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Casts\AsDecimal;
-use Loxya\Models\Enums\Group;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Services\I18n;
 use Loxya\Support\Arr;
@@ -584,6 +583,10 @@ final class Invoice extends BaseModel implements Serializable, Pdfable
             ->values()
             ->all();
 
+        $hasMaterialDiscount = $this->materials->some(
+            static fn ($material) => !$material->discount_rate->isZero()
+        );
+
         return [
             'number' => $this->number,
             'date' => $this->date,
@@ -597,6 +600,7 @@ final class Invoice extends BaseModel implements Serializable, Pdfable
             ],
             'isLegacy' => $this->is_legacy,
             'hasTaxes' => !empty($this->total_taxes),
+            'hasMaterialDiscount' => $hasMaterialDiscount,
             'degressiveRate' => $this->degressive_rate,
             'dailyTotal' => $this->daily_total,
             'hasGlobalDiscount' => !$this->global_discount_rate->isZero(),
@@ -667,27 +671,6 @@ final class Invoice extends BaseModel implements Serializable, Pdfable
     // -    Méthodes de "repository"
     // -
     // ------------------------------------------------------
-
-    /**
-     * Retourne une facture via son identifiant, uniquement
-     * s'il est accessible par l'utilisateur donné.
-     *
-     * @param int $id L'identifiant de la facture à récupérer.
-     * @param User $user L'utilisateur pour lequel on effectue la récupération.
-     *
-     * @return static Le la facture correspondant à l'identifiant.
-     */
-    public static function findOrFailForUser(int $id, User $user): static
-    {
-        return static::query()
-            ->when(
-                $user->group === Group::READONLY_PLANNING_SELF,
-                static fn (Builder $subQuery) => (
-                    $subQuery->where('beneficiary_id', $user->person?->beneficiary?->id)
-                ),
-            )
-            ->findOrFail($id);
-    }
 
     public static function createFromBooking(Event $booking, User $creator): Invoice
     {

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
+use Loxya\Config\Enums\Feature;
 use Loxya\Contracts\Serializable;
 use Loxya\Models\Traits\Serializer;
 use Loxya\Support\Assert;
@@ -34,10 +35,10 @@ use Respect\Validation\Validator as V;
  * @property-read CarbonImmutable $created_at
  * @property-read CarbonImmutable|null $updated_at
  *
- * @property-read Beneficiary $beneficiary
- * @property-read Technician $technician
+ * @property-read Beneficiary|null $beneficiary
+ * @property-read Technician|null $technician
  *
- * @method static Builder|static search(string $term)
+ * @method static Builder|static search(string|string[] $term)
  */
 final class Person extends BaseModel implements Serializable
 {
@@ -158,6 +159,14 @@ final class Person extends BaseModel implements Serializable
         return !empty($addressParts) ? implode("\n", $addressParts) : null;
     }
 
+    public function getTechnicianAttribute(): Technician|null
+    {
+        if (!isFeatureEnabled(Feature::TECHNICIANS)) {
+            return null;
+        }
+        return $this->getRelationValue('technician');
+    }
+
     // ------------------------------------------------------
     // -
     // -    Setters
@@ -195,8 +204,18 @@ final class Person extends BaseModel implements Serializable
         'full_name',
     ];
 
-    public function scopeSearch(Builder $query, string $term): Builder
+    public function scopeSearch(Builder $query, string|array $term): Builder
     {
+        if (is_array($term)) {
+            $query->where(static function (Builder $subQuery) use ($term) {
+                foreach ($term as $singleTerm) {
+                    $subQuery->orWhere(static fn (Builder $subSubQuery) => (
+                        $subSubQuery->search($singleTerm)
+                    ));
+                }
+            });
+            return $query;
+        }
         Assert::minLength($term, 2, "The term must contain more than two characters.");
 
         $term = sprintf('%%%s%%', addcslashes($term, '%_'));

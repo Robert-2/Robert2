@@ -111,7 +111,6 @@ const EventDetailsInvoice = defineComponent({
                         type={outdated ? 'secondary' : 'primary'}
                         class="EventDetailsInvoice__download"
                         to={url}
-                        external
                         download
                     >
                         {isVerticalLayout ? __('download') : __('global.download')}

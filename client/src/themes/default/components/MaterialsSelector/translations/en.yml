@@ -11,7 +11,17 @@ add-materials-from:
 
 filters:
     search-placeholder: Search a material...
-    selected-materials-only: Selected materials only
+    selected-materials-only: "Selected only?"
+
+#
+# - Listes
+#
+
+list:
+    actions:
+        show-all-materials-to-add-some: Show all materials to add some
+        resync-material-data: Resynchronize data...
+        remove-material: Remove material
 
 #
 # - Disponibilités dans les listes

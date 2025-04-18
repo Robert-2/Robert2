@@ -6,10 +6,45 @@ title: 'Technician "{name}"'
 #
 
 infos:
+    user-account: User account
     modify-associated-user: Modify associated user
-    technician-is-preparer: This technician can prepare orders.
-    preparer-description: He/she can therefore be assigned as event preparer.
+
+    notes: Notes
+    roles:
+        title: Technician roles
+        empty: No role is assigned to this technician.
 
 documents:
     confirm-permanently-delete: Do you really want to permanently delete this document?
     deleted: Document deleted.
+
+assignments:
+    title: Assignments
+    simple-list: Simple list
+    by-event: By event
+    by-position: By position
+    nothing-to-show: This technician has not been assigned to any events yet.
+    assigned-to-role: "Assigned to role \"{role}\""
+    assigned-without-role: Assigned without specific role
+    no-specific-role: No specific role
+    event-title: "Event \"{title}\""
+    done: Done
+    currently-mobilized: In progress
+    mobilized-starting-from: Scheduled for {date}
+    role: Role
+    assignment-period: Assignment period
+    assignments-count:
+        - "{count} assignment"
+        - "{count} assignments"
+    past-assignments-count:
+        - "{count} past assignment."
+        - "{count} past assignments."
+    future-assignments-count:
+        - "{count} future assignment."
+        - "{count} future assignments."
+    total-assignments:
+        - "Total: {count} assignment."
+        - "Total: {count} assignments."
+    total-events-assignments: "Technician assigned {count} times, in {eventsCount} event(s) in total."
+    total-positions-assignments: "Technician assigned {count} times, with {positionsCount} different role(s)."
+    including-ongoing: including 1 ongoing

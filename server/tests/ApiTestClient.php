@@ -6,6 +6,7 @@ namespace Loxya\Tests;
 use Adbar\Dot as DotArray;
 use Loxya\App;
 use Loxya\Http\Request;
+use Loxya\Services\Auth;
 use Psr\Http\Message\StreamInterface as Body;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\Http\Response;
@@ -102,6 +103,11 @@ final class ApiTestClient
         // - Reset des valeurs précédentes éventuelles.
         $this->request = null;
         $this->response = null;
+
+        // - On réinitialise l'utilisateur avant la requête.
+        if (Auth::user() !== null) {
+            Auth::reset();
+        }
 
         // - Request
         $method = strtoupper($method);

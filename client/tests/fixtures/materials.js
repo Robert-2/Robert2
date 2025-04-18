@@ -266,21 +266,16 @@ const data = [
 //
 
 /** @type {import('./@utils').FactoryReturnType} */
-const asDefault = dataFactory(data, (material) => {
-    if (material.is_unitary) {
-        material.units = material.units.map(
-            (lazyUnit) => lazyUnit(),
-        );
-    }
-    return omit(material, [
+const asDefault = dataFactory(data, (material) => (
+    omit(material, [
         'degressive_rate',
         'rental_price_period',
         'available_quantity',
         'departure_inventory_todo',
         'return_inventory_todo',
         'is_deleted',
-    ]);
-});
+    ])
+));
 
 /** @type {import('./@utils').FactoryReturnType} */
 const withAvailability = dataFactory(data, (material) => {

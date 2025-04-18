@@ -4,6 +4,7 @@ import { CountrySchema } from './countries';
 import { DocumentSchema } from './documents';
 import { EventSchema } from './events';
 import { UserSchema } from './users';
+import { RoleSchema } from './roles';
 import { withPaginationEnvelope } from './@schema';
 
 import type Period from '@/utils/period';
@@ -12,6 +13,7 @@ import type { SchemaInfer } from '@/utils/validation';
 import type { AxiosRequestConfig as RequestConfig } from 'axios';
 import type { PaginatedData, SortableParams, PaginationParams } from './@types';
 import type { Document } from './documents';
+import type { Role } from './roles';
 
 // ------------------------------------------------------
 // -
@@ -27,8 +29,8 @@ export const TechnicianEventSchema = z.strictObject({
     id: z.number(),
     event_id: z.number(),
     technician_id: z.number(),
-    period: z.period(), // FIXME
-    position: z.string().nullable(),
+    period: z.period(),
+    role: z.lazy(() => RoleSchema).nullable(),
     event: z.lazy(() => EventSchema),
 });
 
@@ -52,6 +54,7 @@ export const TechnicianSchema = z.strictObject({
     country_id: z.number().nullable(),
     country: z.lazy(() => CountrySchema).nullable(),
     full_address: z.string().nullable(),
+    roles: z.lazy(() => RoleSchema.array()),
     note: z.string().nullable(),
 });
 
@@ -92,22 +95,38 @@ export type TechnicianEdit = {
     country_id: number | null,
     user_id?: number,
     note: string | null,
+    roles: Array<Role['id']>,
 };
 
 //
 // - Récupération
 //
 
-export type Filters = {
-    search?: string,
+export type Filters = Nullable<{
+    search?: string | string[],
     availabilityPeriod?: Period,
-};
+    role?: Role['id'],
+}>;
 
 type GetAllParams = (
     & Filters
     & SortableParams
     & PaginationParams
     & { deleted?: boolean }
+);
+
+type GetAllWhileEventParams = {
+    role?: Role['id'],
+};
+
+type GetAllWithAssignmentsParams = {
+    period: Period,
+    paginated: false,
+};
+type GetAllWithAssignmentsPaginatedParams = (
+    & Omit<GetAllWithAssignmentsParams, 'paginated'>
+    & { paginated?: true }
+    & PaginationParams
 );
 
 // ------------------------------------------------------
@@ -124,25 +143,34 @@ const all = async ({ availabilityPeriod, ...otherParams }: GetAllParams = {}): P
     return withPaginationEnvelope(TechnicianSchema).parse(response.data);
 };
 
-const allWhileEvent = async (eventId: Event['id']): Promise<TechnicianWithEvents[]> => {
-    const response = await requester.get(`/technicians/while-event/${eventId}`);
+const allWhileEvent = async (eventId: Event['id'], params?: GetAllWhileEventParams): Promise<TechnicianWithEvents[]> => {
+    const response = await requester.get(`/technicians/while-event/${eventId}`, { params });
     return TechnicianWithEventsSchema.array().parse(response.data);
 };
+
+async function allWithAssignments(params: GetAllWithAssignmentsParams): Promise<TechnicianWithEvents[]>;
+async function allWithAssignments(params: GetAllWithAssignmentsPaginatedParams): Promise<PaginatedData<TechnicianWithEvents[]>>;
+async function allWithAssignments({ period, ...params }: GetAllWithAssignmentsParams | GetAllWithAssignmentsPaginatedParams): Promise<unknown> {
+    const normalizedParams = { paginated: true, ...params, ...period?.toQueryParams('period') };
+    const response = await requester.get('/technicians/with-assignments', { params: normalizedParams });
+
+    return normalizedParams.paginated
+        ? withPaginationEnvelope(TechnicianWithEventsSchema).parse(response.data)
+        : TechnicianWithEventsSchema.array().parse(response.data);
+}
 
 const one = async (id: Technician['id']): Promise<TechnicianDetails> => {
     const response = await requester.get(`/technicians/${id}`);
     return TechnicianDetailsSchema.parse(response.data);
 };
 
-const create = async (data: TechnicianEdit, withUser?: boolean): Promise<TechnicianDetails> => {
-    const params = withUser !== undefined ? { withUser } : undefined;
-    const response = await requester.post('/technicians', data, { params });
+const create = async (data: TechnicianEdit): Promise<TechnicianDetails> => {
+    const response = await requester.post('/technicians', data);
     return TechnicianDetailsSchema.parse(response.data);
 };
 
-const update = async (id: Technician['id'], data: TechnicianEdit, withUser?: boolean): Promise<TechnicianDetails> => {
-    const params = withUser !== undefined ? { withUser } : undefined;
-    const response = await requester.put(`/technicians/${id}`, data, { params });
+const update = async (id: Technician['id'], data: TechnicianEdit): Promise<TechnicianDetails> => {
+    const response = await requester.put(`/technicians/${id}`, data);
     return TechnicianDetailsSchema.parse(response.data);
 };
 
@@ -174,6 +202,7 @@ const attachDocument = async (id: Technician['id'], file: File, options: Request
 export default {
     all,
     allWhileEvent,
+    allWithAssignments,
     one,
     create,
     update,

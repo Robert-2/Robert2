@@ -4,13 +4,22 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 
 type Data = {
+    isLoading: boolean,
     isSidebarOpened: boolean,
 };
 
 /** Variante par défaut du layout de l'application. */
 const DefaultLayout = defineComponent({
     name: 'DefaultLayout',
+    provide() {
+        return {
+            'setGlobalLoading': (isLoading: boolean) => {
+                this.isLoading = isLoading;
+            },
+        };
+    },
     data: (): Data => ({
+        isLoading: false,
         isSidebarOpened: false,
     }),
     computed: {
@@ -37,6 +46,7 @@ const DefaultLayout = defineComponent({
         const children = this.$slots.default;
         const {
             isLogged,
+            isLoading,
             isSidebarOpened,
             handleSidebarToggle,
         } = this;
@@ -49,7 +59,12 @@ const DefaultLayout = defineComponent({
                     />
                 )}
                 <div class="DefaultLayout__body">
-                    {isLogged && <Header onToggleMenu={handleSidebarToggle} />}
+                    {isLogged && (
+                        <Header
+                            onToggleMenu={handleSidebarToggle}
+                            showLoading={isLoading}
+                        />
+                    )}
                     <div class="DefaultLayout__body__content">
                         {children}
                     </div>

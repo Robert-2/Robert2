@@ -374,11 +374,24 @@ final class MaterialsTest extends ApiTestCase
 
     public function testGetAllSearchByName(): void
     {
+        // - Recherche simple.
         $this->client->get('/api/materials?search=console');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(1);
-        $results = $this->client->getResponseAsArray();
-        $this->assertEquals('CL3', $results['data'][0]['reference']);
+        $this->assertResponseHasKeyEquals('data.0.reference', 'CL3');
+
+        // - Recherche simple (2).
+        $this->client->get('/api/materials?search[]=PA');
+        $this->assertResponsePaginatedData(2);
+        $this->assertResponseHasKeyEquals('data.0.reference', 'PAR64LED');
+        $this->assertResponseHasKeyEquals('data.1.reference', 'DBXPA2');
+
+        // - Recherche multiple.
+        $this->client->get('/api/materials?search[]=sds&search[]=PA');
+        $this->assertResponsePaginatedData(3);
+        $this->assertResponseHasKeyEquals('data.0.reference', 'PAR64LED');
+        $this->assertResponseHasKeyEquals('data.1.reference', 'DBXPA2');
+        $this->assertResponseHasKeyEquals('data.2.reference', 'SDS-6-01');
     }
 
     public function testGetMaterialNotFound(): void
@@ -477,7 +490,7 @@ final class MaterialsTest extends ApiTestCase
 
     public function testGetAllByTagsNotFound(): void
     {
-        $this->client->get('/api/materials?tags[0]=notFound');
+        $this->client->get('/api/materials?tags[]=9999');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponseData([
             'pagination' => [
@@ -491,7 +504,7 @@ final class MaterialsTest extends ApiTestCase
 
     public function testGetAllByTags(): void
     {
-        $this->client->get('/api/materials?tags[0]=1');
+        $this->client->get('/api/materials?tags[]=1');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertResponsePaginatedData(3);
     }
@@ -949,11 +962,11 @@ final class MaterialsTest extends ApiTestCase
         ]);
     }
 
-    public function testGetAllPdf(): void
+    public function testPrintAll(): void
     {
         Carbon::setTestNow(Carbon::create(2022, 9, 23, 12, 0, 0));
 
-        $responseStream = $this->client->get('/materials/pdf');
+        $responseStream = $this->client->get('/materials/print');
         $this->assertStatusCode(StatusCode::STATUS_OK);
         $this->assertTrue($responseStream->isReadable());
         $this->assertMatchesHtmlSnapshot((string) $responseStream);

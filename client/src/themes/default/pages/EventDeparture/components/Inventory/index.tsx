@@ -37,6 +37,14 @@ type Props = {
 
     /** Les éventuelles erreurs de l'inventaire (par matériel). */
     errors?: InventoryMaterialError[] | null,
+
+    /**
+     * Quand l'inventaire est en "pause", c'est à dire quand il est affiché
+     * mais qu'il ne devrait pas pouvoir être modifié.
+     *
+     * @default false
+     */
+    paused?: boolean,
 };
 
 type InstanceProperties = {
@@ -71,6 +79,10 @@ const EventDepartureInventory = defineComponent({
             type: Array as PropType<Required<Props>['errors']>,
             default: null,
         },
+        paused: {
+            type: Boolean as PropType<Required<Props>['paused']>,
+            default: false,
+        },
     },
     emits: ['change', 'requestCancel'],
     setup: (): InstanceProperties => ({
@@ -90,6 +102,8 @@ const EventDepartureInventory = defineComponent({
                         name,
                         reference,
                         category_id: material.category_id,
+                        sub_category_id: material.sub_category_id,
+                        tags: material.tags,
                         park_id: material.park_id,
                         awaitedQuantity: quantity,
                     };
@@ -219,6 +233,7 @@ const EventDepartureInventory = defineComponent({
             awaitedMaterials,
             errors,
             isDone,
+            paused,
             isComplete,
             isCancellable,
             handleChange,
@@ -248,6 +263,7 @@ const EventDepartureInventory = defineComponent({
                     errors={errors}
                     onChange={handleChange}
                     locked={isDone || [InventoryLock.STATE]}
+                    paused={paused}
                     withComments
                     strict
                 />

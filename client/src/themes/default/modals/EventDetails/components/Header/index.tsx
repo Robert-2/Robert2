@@ -14,7 +14,6 @@ import DuplicateEvent from '@/themes/default/modals/DuplicateEvent';
 import Icon from '@/themes/default/components/Icon';
 import Button from '@/themes/default/components/Button';
 import Dropdown from '@/themes/default/components/Dropdown';
-import ButtonDropdown from '@/themes/default/components/ButtonDropdown';
 
 import type { PropType } from '@vue/composition-api';
 import type { EventDetails } from '@/stores/api/events';
@@ -84,6 +83,10 @@ const EventDetailsHeader = defineComponent({
                 Group.ADMINISTRATION,
                 Group.MANAGEMENT,
             ]);
+        },
+
+        isTechniciansEnabled(): boolean {
+            return config.features.technicians;
         },
 
         hasStarted(): boolean {
@@ -549,27 +552,15 @@ const EventDetailsHeader = defineComponent({
                 </div>
                 <div class="EventDetailsHeader__actions">
                     {isPrintable && (
-                        <ButtonDropdown
+                        <Button
                             icon="print"
                             label={__('global.print')}
                             to={summaryPdfUrl}
-                            external
+                            download
                             class="EventDetailsHeader__actions__print"
-                            actions={[
-                                {
-                                    label: __('release-sheet-by-lists'),
-                                    icon: 'print',
-                                    target: `${summaryPdfUrl}?sortedBy=lists`,
-                                    external: true,
-                                },
-                                {
-                                    label: __('release-sheet-by-parks'),
-                                    icon: 'print',
-                                    target: `${summaryPdfUrl}?sortedBy=parks`,
-                                    external: true,
-                                },
-                            ]}
-                        />
+                        >
+                            {__('global.print')}
+                        </Button>
                     )}
                     {(isTeamMember && isEditable) && (
                         <Button

@@ -6,6 +6,7 @@ import FormField from '@/themes/default/components/FormField';
 import Fieldset from '@/themes/default/components/Fieldset';
 import Button from '@/themes/default/components/Button';
 
+import type { ComponentRef } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { Options } from '@/utils/formatOptions';
 import type { Country } from '@/stores/api/countries';
@@ -72,12 +73,24 @@ const CompanyEditForm = defineComponent({
         return { data };
     },
     computed: {
+        isLegalNameFilled(): boolean {
+            return this.data.legal_name !== '';
+        },
+
         countriesOptions(): Options<Country> {
             return this.$store.getters['countries/options'];
         },
     },
     created() {
         this.$store.dispatch('countries/fetch');
+    },
+    mounted() {
+        if (!this.isLegalNameFilled) {
+            this.$nextTick(() => {
+                const $inputLegalName = this.$refs.inputLegalName as ComponentRef<typeof FormField>;
+                $inputLegalName?.focus();
+            });
+        }
     },
     methods: {
         // ------------------------------------------------------
@@ -114,6 +127,7 @@ const CompanyEditForm = defineComponent({
             >
                 <Fieldset>
                     <FormField
+                        ref="inputLegalName"
                         label="legal-name"
                         autocomplete="off"
                         v-model={data.legal_name}

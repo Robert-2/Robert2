@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "technician_id": 1,
+        "role_id": 1
+    },
+    {
+        "id": 2,
+        "technician_id": 1,
+        "role_id": 3
+    },
+    {
+        "id": 3,
+        "technician_id": 2,
+        "role_id": 2
+    }
+]

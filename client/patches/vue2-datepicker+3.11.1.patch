@@ -1,8 +1,20 @@
 diff --git a/node_modules/vue2-datepicker/index.esm.js b/node_modules/vue2-datepicker/index.esm.js
-index ad89f7b..ce14f05 100644
+index ad89f7b..63070c4 100644
 --- a/node_modules/vue2-datepicker/index.esm.js
 +++ b/node_modules/vue2-datepicker/index.esm.js
-@@ -2077,7 +2077,16 @@ var CalendarRange = {
+@@ -781,6 +781,11 @@ var __vue_render__ = function __vue_render__() {
+     }
+   }, [_vm.visible ? _c('div', {
+     class: _vm.prefixClass + "-datepicker-main " + _vm.prefixClass + "-datepicker-popup",
++    on: {
++      "click": function (e) {
++        e.stopImmediatePropagation();
++      }
++    },
+     style: {
+       top: _vm.top,
+       left: _vm.left,
+@@ -2077,7 +2082,16 @@ var CalendarRange = {
        default: 'mx'
      }
    },
@@ -20,7 +32,7 @@ index ad89f7b..ce14f05 100644
    data: function data() {
      return {
        innerValue: [],
-@@ -2125,7 +2134,29 @@ var CalendarRange = {
+@@ -2125,7 +2139,29 @@ var CalendarRange = {
            startValue = _this$innerValue[0],
            endValue = _this$innerValue[1];
  
@@ -51,7 +63,7 @@ index ad89f7b..ce14f05 100644
          if (startValue.getTime() > date.getTime()) {
            this.innerValue = [date, startValue];
          } else {
-@@ -2133,9 +2164,10 @@ var CalendarRange = {
+@@ -2133,9 +2169,10 @@ var CalendarRange = {
          }
  
          this.emitDate(this.innerValue, type);
@@ -64,7 +76,7 @@ index ad89f7b..ce14f05 100644
      },
      onDateMouseEnter: function onDateMouseEnter(cell) {
        this.hoveredValue = cell;
-@@ -2187,6 +2219,30 @@ var CalendarRange = {
+@@ -2187,6 +2224,30 @@ var CalendarRange = {
      },
      getRangeClasses: function getRangeClasses(cellDate, currentDates, classnames) {
        var classes = [].concat(this.getClasses(cellDate, currentDates, classnames));
@@ -95,7 +107,7 @@ index ad89f7b..ce14f05 100644
        if (/disabled|active/.test(classnames)) return classes;
  
        var inRange = function inRange(data, range) {
-@@ -2210,6 +2266,9 @@ var CalendarRange = {
+@@ -2210,6 +2271,9 @@ var CalendarRange = {
        };
  
        if (currentDates.length === 2 && inRange(cellDate, currentDates)) {
@@ -105,7 +117,7 @@ index ad89f7b..ce14f05 100644
          return classes.concat('in-range');
        }
  
-@@ -2730,6 +2789,10 @@ var script$7 = {
+@@ -2730,6 +2794,10 @@ var script$7 = {
    },
    props: {
      date: Date,
@@ -116,7 +128,7 @@ index ad89f7b..ce14f05 100644
      options: {
        type: [Object, Function],
        default: function _default() {
-@@ -2753,7 +2816,12 @@ var script$7 = {
+@@ -2753,7 +2821,12 @@ var script$7 = {
        var options = this.options;
  
        if (typeof options === 'function') {
@@ -130,7 +142,7 @@ index ad89f7b..ce14f05 100644
        }
  
        var start = parseOption(options.start);
-@@ -2879,6 +2947,10 @@ var script$8 = {
+@@ -2879,6 +2952,10 @@ var script$8 = {
          return date;
        }
      },
@@ -141,7 +153,7 @@ index ad89f7b..ce14f05 100644
      format: {
        default: 'HH:mm:ss'
      },
-@@ -2936,7 +3008,11 @@ var script$8 = {
+@@ -2936,7 +3013,11 @@ var script$8 = {
      scrollDuration: {
        type: Number,
        default: 100
@@ -154,7 +166,7 @@ index ad89f7b..ce14f05 100644
    },
    data: function data() {
      return {
-@@ -3001,6 +3077,10 @@ var script$8 = {
+@@ -3001,6 +3082,10 @@ var script$8 = {
        return this.isDisabledTime(value) && this.isDisabledTime(value.setHours(minHour, 0, 0, 0)) && this.isDisabledTime(value.setHours(maxHour, 59, 59, 999));
      },
      isDisabled: function isDisabled(date, type) {
@@ -165,7 +177,7 @@ index ad89f7b..ce14f05 100644
        if (type === 'hour') {
          return this.isDisabledHour(date);
        }
-@@ -3016,6 +3096,10 @@ var script$8 = {
+@@ -3016,6 +3101,10 @@ var script$8 = {
        return this.isDisabledTime(date);
      },
      handleSelect: function handleSelect(value, type) {
@@ -176,7 +188,7 @@ index ad89f7b..ce14f05 100644
        var date = new Date(value);
  
        if (!this.isDisabled(value, type)) {
-@@ -3037,7 +3121,13 @@ var script$8 = {
+@@ -3037,7 +3126,13 @@ var script$8 = {
        }
  
        if (cellDate.getTime() === this.innerValue.getTime()) {
@@ -191,7 +203,7 @@ index ad89f7b..ce14f05 100644
        }
  
        return '';
-@@ -3073,6 +3163,7 @@ var __vue_render__$b = function __vue_render__() {
+@@ -3073,6 +3168,7 @@ var __vue_render__$b = function __vue_render__() {
    }, [_vm.timePickerOptions ? _c('list-options', {
      attrs: {
        "date": _vm.innerValue,
@@ -199,7 +211,7 @@ index ad89f7b..ce14f05 100644
        "get-classes": _vm.getClasses,
        "options": _vm.timePickerOptions,
        "format": _vm.innerForamt
-@@ -3129,7 +3220,16 @@ var TimeRange = {
+@@ -3129,7 +3225,16 @@ var TimeRange = {
        default: 'mx'
      }
    },
@@ -217,7 +229,7 @@ index ad89f7b..ce14f05 100644
    data: function data() {
      return {
        startValue: new Date(NaN),
-@@ -3160,6 +3260,10 @@ var TimeRange = {
+@@ -3160,6 +3265,10 @@ var TimeRange = {
        this.$emit('select', date, type === 'time' ? 'time-range' : type, index);
      },
      handleSelectStart: function handleSelectStart(date, type) {
@@ -228,7 +240,7 @@ index ad89f7b..ce14f05 100644
        this.startValue = date; // check the NaN
  
        if (!(this.endValue.getTime() >= date.getTime())) {
-@@ -3169,6 +3273,10 @@ var TimeRange = {
+@@ -3169,6 +3278,10 @@ var TimeRange = {
        this.emitChange(type, 0);
      },
      handleSelectEnd: function handleSelectEnd(date, type) {
@@ -239,7 +251,7 @@ index ad89f7b..ce14f05 100644
        // check the NaN
        this.endValue = date;
  
-@@ -3179,9 +3287,15 @@ var TimeRange = {
+@@ -3179,9 +3292,15 @@ var TimeRange = {
        this.emitChange(type, 1);
      },
      disabledStartTime: function disabledStartTime(date) {
@@ -255,7 +267,7 @@ index ad89f7b..ce14f05 100644
        return date.getTime() < this.startValue.getTime() || this.disabledTime(date, 1);
      }
    },
-@@ -3189,10 +3303,13 @@ var TimeRange = {
+@@ -3189,10 +3308,13 @@ var TimeRange = {
      var h = arguments[0];
      var defaultValues = Array.isArray(this.defaultValue) ? this.defaultValue : [this.defaultValue, this.defaultValue];
      var prefixClass = this.prefixClass;
@@ -269,7 +281,7 @@ index ad89f7b..ce14f05 100644
          value: this.startValue,
          defaultValue: defaultValues[0],
          disabledTime: this.disabledStartTime
-@@ -3202,6 +3319,8 @@ var TimeRange = {
+@@ -3202,6 +3324,8 @@ var TimeRange = {
        }))
      }), h(__vue_component__$b, {
        "props": _objectSpread2({}, _objectSpread2({}, this.$props, {
@@ -278,7 +290,7 @@ index ad89f7b..ce14f05 100644
          value: this.endValue,
          defaultValue: defaultValues[1],
          disabledTime: this.disabledEndTime
-@@ -3474,6 +3593,14 @@ var DatePicker = {
+@@ -3474,6 +3598,14 @@ var DatePicker = {
        type: Boolean,
        default: false
      },
@@ -293,7 +305,7 @@ index ad89f7b..ce14f05 100644
      clearable: {
        type: Boolean,
        default: true
-@@ -3541,8 +3668,15 @@ var DatePicker = {
+@@ -3541,8 +3673,15 @@ var DatePicker = {
      };
    },
    computed: {
@@ -310,7 +322,7 @@ index ad89f7b..ce14f05 100644
      },
      innerRangeSeparator: function innerRangeSeparator() {
        return this.rangeSeparator || (this.multiple ? ',' : ' ~ ');
-@@ -3597,7 +3731,13 @@ var DatePicker = {
+@@ -3597,7 +3736,13 @@ var DatePicker = {
        return this.formatDate(this.innerValue);
      },
      showClearIcon: function showClearIcon() {
@@ -325,7 +337,7 @@ index ad89f7b..ce14f05 100644
      },
      locale: function locale() {
        if (isObject(this.lang)) {
-@@ -3630,6 +3770,9 @@ var DatePicker = {
+@@ -3630,6 +3775,9 @@ var DatePicker = {
      if (_typeof(this.format) === 'object') {
        console.warn("[vue2-datepicker]: The prop `format` don't support Object any more. You can use the new prop `formatter` to replace it");
      }
@@ -335,7 +347,7 @@ index ad89f7b..ce14f05 100644
    },
    methods: {
      handleMouseEnter: function handleMouseEnter() {
-@@ -3784,6 +3927,10 @@ var DatePicker = {
+@@ -3784,6 +3932,10 @@ var DatePicker = {
        }
      },
      clear: function clear() {
@@ -346,7 +358,7 @@ index ad89f7b..ce14f05 100644
        this.emitValue(this.range ? [null, null] : null);
        this.$emit('clear');
      },
-@@ -3808,7 +3955,10 @@ var DatePicker = {
+@@ -3808,7 +3960,10 @@ var DatePicker = {
        }
      },
      openPopup: function openPopup(evt) {
@@ -358,7 +370,7 @@ index ad89f7b..ce14f05 100644
        this.defaultOpen = true;
        this.$emit('open', evt);
        this.$emit('update:open', true);
-@@ -3914,8 +4064,8 @@ var DatePicker = {
+@@ -3914,8 +4069,8 @@ var DatePicker = {
          autocomplete: 'off',
          value: this.text,
          class: this.inputClass || "".concat(this.prefixClass, "-input"),
@@ -369,7 +381,7 @@ index ad89f7b..ce14f05 100644
          placeholder: this.placeholder
        }, this.inputAttr);
  
-@@ -4044,13 +4194,21 @@ var DatePicker = {
+@@ -4044,13 +4199,21 @@ var DatePicker = {
      var h = arguments[0];
      var prefixClass = this.prefixClass,
          inline = this.inline,

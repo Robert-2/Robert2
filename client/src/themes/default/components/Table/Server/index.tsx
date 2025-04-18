@@ -1,28 +1,27 @@
 import '../index.scss';
 import clsx from 'clsx';
+import showModal from '@/utils/showModal';
 import generateUniqueId from 'lodash/uniqueId';
 import { defineComponent } from '@vue/composition-api';
 import config from '@/globals/config';
 import { initColumnsDisplay } from '../@utils';
 import { Variant } from '../@constants';
 
+// - Modales
+import ColumnsSelector from '@/themes/default/modals/ColumnsSelector';
+
 import type { ClassValue } from 'clsx';
 import type { CreateElement } from 'vue';
 import type { PropType } from '@vue/composition-api';
 import type { Column, Columns } from './_types';
 import type { ColumnsDisplay } from '../@utils';
+import type { OrderBy, RenderFunction } from '../@types';
 import type {
     RequestFunction,
-    ColumnsVisibility,
     ServerTableOptions,
     ServerTableInstance,
     RowClickEventPayload,
 } from 'vue-tables-2-premium';
-import type {
-    OrderBy,
-    RenderFunction,
-    RenderedColumn,
-} from '../@types';
 
 export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>> = {
     /**
@@ -78,9 +77,6 @@ export type Props<Datum = any, TColumns extends Columns<Datum> = Columns<Datum>>
      * - `minimalist`: Présentation minimaliste, sans fond ni séparateurs.
      */
     variant?: Variant,
-
-    /** Permet d'activer ou de désactiver le champ de filtrage du tableau. */
-    filterable?: boolean,
 
     /**
      * Classe(s) qui seront ajoutées aux lignes du tableau.
@@ -139,10 +135,6 @@ const ServerTable = defineComponent({
                 Object.values(Variant).includes(value as any)
             ),
         },
-        filterable: {
-            type: Boolean as PropType<Required<Props>['filterable']>,
-            default: true,
-        },
         defaultOrderBy: {
             type: [Object, String] as PropType<Props['defaultOrderBy']>,
             default: undefined,
@@ -182,7 +174,7 @@ const ServerTable = defineComponent({
 
                     return {
                         ...acc,
-                        [column.key]: (h: CreateElement, row: any, index: number): RenderedColumn => {
+                        [column.key]: (h: CreateElement, row: any, index: number): JSX.Node => {
                             const renderedColumn = rawRenderColumn(h, row, index);
 
                             return column.key === 'actions'
@@ -198,7 +190,7 @@ const ServerTable = defineComponent({
         columnsHeadings(): Record<Column['key'], string> {
             return this.columns.reduce(
                 (acc: Record<Column['key'], string>, { key, title }: Column) => (
-                    { ...acc, [key]: title }
+                    { ...acc, [key]: title ?? '' }
                 ),
                 {},
             );
@@ -222,10 +214,10 @@ const ServerTable = defineComponent({
                 .map(({ key }: Column) => key);
         },
 
-        columnsDisplay(): ColumnsVisibility {
+        columnsDisplayed(): string[] {
             const columnsDisplay = this.columns.reduce(
                 (acc: ColumnsDisplay, column: Column) => {
-                    const visible = !(column.hidden ?? false);
+                    const visible = !(column.defaultHidden ?? false);
                     return { ...acc, [column.key]: visible };
                 },
                 {},
@@ -237,42 +229,36 @@ const ServerTable = defineComponent({
             return this.name !== undefined;
         },
 
-        withColumnsSelectorInferred(): boolean {
-            const { shouldPersistState } = this;
-            return shouldPersistState;
-        },
-
         options(): ServerTableOptions {
             const {
                 fetcher,
                 uniqueKey,
                 rowClass,
-                filterable,
                 defaultOrderBy,
                 columnsHeadings,
                 columnsClasses,
-                columnsDisplay,
+                columnsDisplayed,
                 columnsSortable,
                 columnsRenders,
                 shouldPersistState,
-                withColumnsSelectorInferred: withColumnsSelector,
                 perPage = config.defaultPaginationLimit,
             } = this;
 
             const options: ServerTableOptions = {
                 uniqueKey,
-                columnsDropdown: withColumnsSelector,
                 preserveState: shouldPersistState,
                 saveState: shouldPersistState,
                 sortable: columnsSortable,
                 headings: columnsHeadings,
                 templates: columnsRenders,
+                saveSearch: false,
+                columnsDropdown: false,
                 filterByColumn: false,
-                filterable,
-                columnsDisplay,
-                columnsClasses,
+                filterable: false,
                 requestFunction: fetcher,
+                visibleColumns: columnsDisplayed,
                 perPage: perPage ?? config.defaultPaginationLimit,
+                columnsClasses,
                 rowClassCallback: (row: any): ClassValue => (
                     clsx('Table__row', typeof rowClass === 'function' ? rowClass(row) : rowClass)
                 ),
@@ -319,6 +305,11 @@ const ServerTable = defineComponent({
             this.$emit('rowClick', row);
         },
 
+        handleChangeVisibleColumns(newVisibleColumns: string[]) {
+            const $table = this.$refs.table as ServerTableInstance | undefined;
+            $table?.setVisibleColumns(newVisibleColumns);
+        },
+
         // ------------------------------------------------------
         // -
         // -    API Publique
@@ -342,27 +333,41 @@ const ServerTable = defineComponent({
             const $table = this.$refs.table as ServerTableInstance | undefined;
             $table?.refresh();
         },
+
+        /**
+         * Permet d'afficher le sélecteur de colonnes du tableau.
+         */
+        async showColumnsSelector(): Promise<void> {
+            const newVisibleColumns: string[] | undefined = (
+                await showModal(this.$modal, ColumnsSelector, {
+                    columns: this.columns,
+                    defaultSelected: this.columnsDisplayed,
+                    onChange: this.handleChangeVisibleColumns,
+                })
+            );
+
+            // - Si l'action est annulé dans la modale, on ne change rien.
+            if (newVisibleColumns === undefined) {
+                return;
+            }
+
+            this.handleChangeVisibleColumns(newVisibleColumns);
+        },
     },
     render() {
         const {
             name,
             uniqueId,
             variant,
-            filterable,
             columnsKeys,
             options,
             handleRowClick,
-            withColumnsSelectorInferred: withColumnsSelector,
         } = this;
-
-        const className = ['Table', `Table--${variant}`, {
-            'Table--static': !filterable && !withColumnsSelector,
-        }];
 
         return (
             <v-server-table
                 ref="table"
-                class={className}
+                class={['Table', `Table--${variant}`]}
                 key={name ?? uniqueId}
                 name={name ?? uniqueId}
                 columns={columnsKeys}
