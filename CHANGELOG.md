@@ -4,7 +4,7 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.1.0 (UNRELEASED)
+## 1.1.0 (2025-04-18)
 
 - La gestion des techniciens est maintenant désactivable globalement depuis la configuration 
   statique de l'application. Si vous disposez d'une instance hébergée par nos soins, n'hésitez pas
