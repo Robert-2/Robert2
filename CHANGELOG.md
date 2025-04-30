@@ -4,6 +4,11 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.1.1 (2025-04-30)
+
+- Corrige un souci avec la recherche sur les très vieux événements qui pouvaient 
+  provoquer un crash lorsque recherchés.
+
 ## 1.1.0 (2025-04-18)
 
 - La gestion des techniciens est maintenant désactivable globalement depuis la configuration 
