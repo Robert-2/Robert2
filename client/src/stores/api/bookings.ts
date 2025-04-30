@@ -76,7 +76,7 @@ export const BookingExcerptSchema = (() => z.strictObject({
     categories: z.number().array(), // - Ids des catégories liés.
     parks: z.number().array(), // - Ids des parcs liés.
     manager: z.lazy(() => UserSchema).nullable(),
-    author: z.lazy(() => UserSchema),
+    author: z.lazy(() => UserSchema).nullable(),
     created_at: z.datetime(),
 }))();
 
@@ -106,7 +106,7 @@ export const createBookingSummarySchema = <T extends ZodRawShape>(augmentation: 
     categories: z.number().array(), // - Ids des catégories liés.
     parks: z.number().array(), // - Ids des parcs liés.
     manager: z.lazy(() => UserSchema).nullable(),
-    author: z.lazy(() => UserSchema),
+    author: z.lazy(() => UserSchema).nullable(),
     created_at: z.datetime(),
 }).extend<T>(augmentation);
 

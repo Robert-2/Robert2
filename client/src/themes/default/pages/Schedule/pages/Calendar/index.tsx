@@ -218,7 +218,7 @@ const ScheduleCalendar = defineComponent({
                             }
 
                             // - Créateur de l'événement.
-                            if (isUserMatching(booking.author)) {
+                            if (booking.author !== null && isUserMatching(booking.author)) {
                                 return true;
                             }
 
