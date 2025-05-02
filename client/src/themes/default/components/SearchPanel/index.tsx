@@ -164,12 +164,14 @@ const SearchPanel = defineComponent({
     setup: (): InstanceProperties => ({
         cancelModalPositionUpdater: undefined,
     }),
-    data: (): Data => ({
-        tokens: [], // - Cf. les watchers.
-        search: '',
-        showModal: false,
-        modalPosition: { x: 0, y: 0 },
-    }),
+    data(): Data {
+        return {
+            tokens: [], // - Cf. les watchers.
+            search: '', // - Cf. les watchers.
+            showModal: false,
+            modalPosition: { x: 0, y: 0 },
+        };
+    },
     computed: {
         hasModalFilters(): boolean {
             return this.definitions.some((definition: FilterDefinition) => {
@@ -252,6 +254,9 @@ const SearchPanel = defineComponent({
                     existingTokens[index] = _token;
                 });
 
+                // @ts-expect-error -- `this` fait bien référence au component.
+                this.search = [...newTerms].join(' ');
+
                 // - Custom tokens.
                 const newTokens: Tokens = [];
                 definitions.forEach((definition: FilterDefinition) => {
@@ -277,7 +282,7 @@ const SearchPanel = defineComponent({
                 });
 
                 // @ts-expect-error -- `this` fait bien référence au component.
-                this.tokens = existingTokens.concat(...newTerms, ...newTokens)
+                this.tokens = existingTokens.concat(...newTokens)
                     .filter((token: Tokens[number] | undefined) => token !== undefined);
             },
             immediate: true,
@@ -287,7 +292,7 @@ const SearchPanel = defineComponent({
             handler(newTokens: Tokens) {
                 // @ts-expect-error -- `this` fait bien référence au component.
                 const { definitions, getDefaultValues } = this as {
-                    getDefaultValues(options?: { keepModalOnly?: boolean }): Filters,
+                    getDefaultValues(options?: { keepModalOnly?: boolean, keepSearch?: boolean }): Filters,
                     definitions: FilterDefinition[],
                 };
 
@@ -300,7 +305,6 @@ const SearchPanel = defineComponent({
                 const newValues: Filters = newTokens.reduce(
                     (result: Filters, _token: Tokens[number]) => {
                         if (typeof _token === 'string') {
-                            result.search.push(_token);
                             return result;
                         }
 
@@ -323,7 +327,7 @@ const SearchPanel = defineComponent({
                         }
                         return { ...result, [definition.type]: value };
                     },
-                    getDefaultValues({ keepModalOnly: true }),
+                    getDefaultValues({ keepModalOnly: true, keepSearch: true }),
                 );
 
                 // @ts-expect-error -- `this` fait bien référence au component.
