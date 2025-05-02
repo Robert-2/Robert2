@@ -4,6 +4,10 @@ Tous les changements notables sur le projet sont documentés dans ce fichier.
 
 Ce projet adhère au principe du [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.1.2 (2025-05-02)
+
+- Corrige les champs de recherche qui perdaient le terme recherché au changement de page.
+
 ## 1.1.1 (2025-04-30)
 
 - Corrige un souci avec la recherche sur les très vieux événements qui pouvaient 

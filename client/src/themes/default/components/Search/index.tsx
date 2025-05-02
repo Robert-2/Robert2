@@ -84,7 +84,7 @@ const Search = defineComponent({
     }),
     data(): Data {
         return {
-            inputValue: this.defaultValue ?? '',
+            inputValue: this.value ?? this.defaultValue ?? '',
             portalPositionX: 0,
         };
     },
